@@ -1,0 +1,17 @@
+module.exports.User = require('./user.model').User
+module.exports.Admins = require('./admins.model').Admins
+module.exports.adminRoles = require('./admin_roles.model').adminRoles
+module.exports.SideBarMenu = require('./sidebarmenu.model').SideBarMenu
+module.exports.cuisines = require('./cuisines.model').cuisines
+module.exports.zones = require('./zones.model').zones;
+module.exports.Permission = require('./permission.model').Permission
+module.exports.Restaurants = require('./restaurants.model').Restaurants
+module.exports.Categories = require('./categories.model').Categories
+module.exports.Addons = require('./addons.model').Addons
+module.exports.Food = require('./food.model').Food
+module.exports.Vendors = require('./vendors.model').Vendors
+module.exports.Products = require('./products.model').Products
+module.exports.Brands = require('./brands.model').Brands
+module.exports.Subcategories = require('./subCategories.model').Subcategories
+module.exports.Parts = require('./parts.model').Parts
+module.exports.Variants = require('./variants.model').Variants
