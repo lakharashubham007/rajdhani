@@ -1,12 +1,15 @@
-import { signUp } from "../AuthService";
+import { signUp } from "../AuthService"; // Load environment variables
+
+// Define the base URL for the API from .env
+const BASE_URL = 'https://api.i2rtest.in/v1';
 
 // Define the base URL for the API
-const BASE_URL = 'http://localhost:8087/v1';
+// const BASE_URL = 'http://localhost:8087/v1';
 
 // Define the endpoints
 const apis = {
     baseurl: {
-        Baseimageurl: `http://localhost:8087/v1/get-Images/image/`
+        Baseimageurl: `http://localhost:8087/v1/get-Images/image/` || `https://api.i2rtest.in/v1/get-Images/image/`
     },
     auth: {
         login: `${BASE_URL}/auth/login`,
