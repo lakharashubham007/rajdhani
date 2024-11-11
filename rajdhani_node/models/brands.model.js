@@ -8,7 +8,7 @@ const brandsSchema = new mongoose.Schema(
             trim: true,
             maxlength: 100,
         },
-        logo: {
+        image: {
             type: String,
             trim: true,
             maxlength: 100,
