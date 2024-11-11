@@ -22,7 +22,7 @@ const upload = multer({
 ]);
 
 router.post("/create-brand",upload,  Authentication, Authorization, brandsController.createBrand );
-router.get("/cusine-list",  brandsController.getBrands);
+router.get("/brand-list", Authentication, Authorization,  brandsController.getBrands);
 
 
 module.exports = router; 
