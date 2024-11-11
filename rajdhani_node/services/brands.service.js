@@ -59,10 +59,26 @@ const deleteBrand = async (id) => {
   }
 };
 
+// Update Brand Status
+const updateBrandStatus = async (brandId, status) => {
+  try {
+      const updatedBrand = await Brands.findByIdAndUpdate(
+          brandId,
+          { status },
+          { new: true } // Return the updated document
+      );
+      return updatedBrand;
+  } catch (error) {
+      console.error('Error updating brand status:', error);
+      throw error;
+  }
+};
+
 module.exports = {
   createBrand,
   getBrands,
   getBrandById,
   updateBrand,
-  deleteBrand
+  deleteBrand,
+  updateBrandStatus
 };

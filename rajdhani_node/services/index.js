@@ -14,5 +14,7 @@ module.exports.vendorService = require("./vendors.service");
 module.exports.brandsService = require("./brands.service");
 module.exports.partsService = require("./parts.service");
 module.exports.productService = require("./products.service");
-module.exports.variantService = require("./variants.service")
-
+module.exports.variantService = require("./variants.service");
+module.exports.categoriesService = require('./category.service');
+module.exports.subcategoryService = require('./subcategories.service');
+module.exports.subSubcategoryService = require('./subSubcategories.service');

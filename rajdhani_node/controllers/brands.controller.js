@@ -64,10 +64,32 @@ const deleteBrand = async (req, res) => {
     }
 };
 
+const updateBrandStatus = async (req, res) => {
+    try {
+        const brandId = req.params.id;
+        const status = req.body.status; // Expecting { "status": true } or { "status": false }
+        const updatedBrand = await brandsService.updateBrandStatus(brandId, status);
+
+        if (!updatedBrand) {
+            return res.status(404).json({ success: false, message: 'Brand not found' });
+        }
+
+        res.json({
+            success: true,
+            brand: updatedBrand,
+            message: 'Brand status updated successfully!'
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
 module.exports = {
     createBrand,
     getBrands,
     getBrandById,
     updateBrand,
-    deleteBrand
+    deleteBrand,
+    updateBrandStatus
 };

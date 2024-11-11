@@ -23,6 +23,9 @@ const upload = multer({
 
 router.post("/create-brand",upload,  Authentication, Authorization, brandsController.createBrand );
 router.get("/brand-list", Authentication, Authorization,  brandsController.getBrands);
-
+router.patch("/edit-brand/:id", Authentication, Authorization,  brandsController.updateBrand);
+router.get("/brand-list/:id", Authentication, Authorization,  brandsController.getBrandById);
+router.delete("/delete-brand/:id", Authentication, Authorization,  brandsController.deleteBrand);
+router.patch("/update-brand-status/:id", Authentication, brandsController.updateBrandStatus);
 
 module.exports = router; 

@@ -6,7 +6,7 @@ const zone = require('./zones.route');
 const permission = require('./permission.route')
 // const roles = require('./role.route')
 const restaurants = require('./restaurants.route')
-const category = require('./categories.route')
+// const category = require('./categories.route')
 const addons = require('./addon.route')
 const food = require('./food.route')
 const imageRoute = require('./images.route')
@@ -20,10 +20,10 @@ router.use("/zones", zone);
 router.use("/permission",permission)
 // router.use("/role",roles)
 router.use("/restaurant",restaurants);
-router.use("/category",category)
+// router.use("/category",category)
 router.use("/addons", addons)
 router.use("/food",food)
-router.use("/get-Images", imageRoute);
+router.use("/images", imageRoute);
 
 
 
