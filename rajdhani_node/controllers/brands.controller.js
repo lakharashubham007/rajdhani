@@ -52,23 +52,57 @@ const getBrandById = async (req, res) => {
     }
 };
 
-// Update a Brand by ID
+// // Update a Brand by ID
+// const updateBrand = async (req, res) => {
+//     try {
+//         const image = req.files && req.files.image && req.files.image[0] 
+//         ? req.files.image[0].originalname 
+//         : 'def.png'; 
+
+//         const brand = await brandsService.updateBrand(req.params.id, req.body, image );
+//         if (!brand) {
+//             return res.status(404).json({ success: false, message: 'Brand not found' });
+//         }
+//         res.json({ success: true, brand: brand, message: 'Brand updated successfully!' });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ success: false, message: 'Internal Server Error' });
+//     }
+// };
 const updateBrand = async (req, res) => {
     try {
-        const image = req.files && req.files.image && req.files.image[0] 
-        ? req.files.image[0].originalname 
-        : 'def.png'; 
-        
-        const brand = await brandsService.updateBrand(req.params.id, req.body, image );
+        // Initialize the image variable
+        let image;
+
+        // Step 1: Check if new image is uploaded
+        if (req.files && req.files.image && req.files.image[0]) {
+            // New image uploaded, use the new image name
+            image = req.files.image[0].originalname;
+        } else {
+            // No new image, so we fetch the current image from the database
+            const brand = await brandsService.getBrandById(req.params.id);
+            if (brand) {
+                image = brand.image;  // Use the existing image from the database
+            } else {
+                image = 'def.png';  // If brand not found, fallback to a default image
+            }
+        }
+
+        // Step 2: Update the brand with the current image or new image
+        const brand = await brandsService.updateBrand(req.params.id, req.body, image);
+
+        // Step 3: Handle success or failure
         if (!brand) {
             return res.status(404).json({ success: false, message: 'Brand not found' });
         }
+
         res.json({ success: true, brand: brand, message: 'Brand updated successfully!' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
+
 
 // Delete a Brand by ID
 const deleteBrand = async (req, res) => {
