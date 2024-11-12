@@ -52,14 +52,46 @@ const getBrandById = async (req, res) => {
     }
 };
 
+
+// Updating a brand
+const updateBrand = async (req, res) => {
+    try {
+        // Prepare the fields to update
+        const updateData = {};
+
+        // Check if name is in the request body, then add it to updateData
+        if (req.body.name) {
+            updateData.name = req.body.name;
+        }
+
+        // Check if image is in the request files, then add it to updateData
+        if (req.files && req.files.image && req.files.image[0]) {
+            updateData.image = req.files.image[0].originalname;
+        }
+
+        // Additional fields can be conditionally added in the same way
+
+        // Update timestamp
+        updateData.updated_at = Date.now();
+
+        // Call the service to update brand with only the changed fields
+        const brand = await brandsService.updateBrand(req.params.id, updateData);
+        
+        if (!brand) {
+            return res.status(404).json({ success: false, message: 'Brand not found' });
+        }
+        res.json({ success: true, brand: brand, message: 'Brand updated successfully!' });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
 // // Update a Brand by ID
 // const updateBrand = async (req, res) => {
 //     try {
-//         const image = req.files && req.files.image && req.files.image[0] 
-//         ? req.files.image[0].originalname 
-//         : 'def.png'; 
-
-//         const brand = await brandsService.updateBrand(req.params.id, req.body, image );
+       
+//         const brand = await brandsService.updateBrand(req.params.id, req.body, req.files?.image[0]?.originalname );
 //         if (!brand) {
 //             return res.status(404).json({ success: false, message: 'Brand not found' });
 //         }
@@ -69,40 +101,6 @@ const getBrandById = async (req, res) => {
 //         res.status(500).json({ success: false, message: 'Internal Server Error' });
 //     }
 // };
-const updateBrand = async (req, res) => {
-    try {
-        // Initialize the image variable
-        let image;
-
-        // Step 1: Check if new image is uploaded
-        if (req.files && req.files.image && req.files.image[0]) {
-            // New image uploaded, use the new image name
-            image = req.files.image[0].originalname;
-        } else {
-            // No new image, so we fetch the current image from the database
-            const brand = await brandsService.getBrandById(req.params.id);
-            if (brand) {
-                image = brand.image;  // Use the existing image from the database
-            } else {
-                image = 'def.png';  // If brand not found, fallback to a default image
-            }
-        }
-
-        // Step 2: Update the brand with the current image or new image
-        const brand = await brandsService.updateBrand(req.params.id, req.body, image);
-
-        // Step 3: Handle success or failure
-        if (!brand) {
-            return res.status(404).json({ success: false, message: 'Brand not found' });
-        }
-
-        res.json({ success: true, brand: brand, message: 'Brand updated successfully!' });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ success: false, message: 'Internal Server Error' });
-    }
-};
-
 
 // Delete a Brand by ID
 const deleteBrand = async (req, res) => {

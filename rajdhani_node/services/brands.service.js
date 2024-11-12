@@ -63,13 +63,12 @@ const getBrandById = async (id) => {
   }
 };
 
-// Update a Brand by ID
-const updateBrand = async (id, data, file) => {
+const updateBrand = async (id, updateData) => {
   try {
     const updatedBrand = await Brands.findByIdAndUpdate(
       id,
-      { ...data, ...(file && { image: file }) },
-      { new: true }
+      updateData,
+      { new: true } // Return the updated document
     );
     return updatedBrand;
   } catch (error) {
@@ -77,6 +76,22 @@ const updateBrand = async (id, data, file) => {
     throw error;
   }
 };
+
+
+// // Update a Brand by ID
+// const updateBrand = async (id, data, file) => {
+//   try {
+//     const updatedBrand = await Brands.findByIdAndUpdate(
+//       id,
+//       { ...data, ...(file && { image: file }) },
+//       { new: true }
+//     );
+//     return updatedBrand;
+//   } catch (error) {
+//     console.error('Error updating brand:', error);
+//     throw error;
+//   }
+// };
 
 // Delete a Brand by ID
 const deleteBrand = async (id) => {
