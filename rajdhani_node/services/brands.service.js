@@ -12,15 +12,47 @@ const createBrand = async (data, file) => {
 };
 
 // Get all Brands
-const getBrands = async () => {
+// const getBrands = async () => {
+//   try {
+//     const brandList = await Brands.find({});
+//     return brandList;
+//   } catch (error) {
+//     console.error('Error getting brands:', error);
+//     throw error;
+//   }
+// };
+
+
+
+// Get all Brands with pagination, sorting, and search
+const getBrands = async (page, limit, sort, search) => {
   try {
-    const brandList = await Brands.find({});
-    return brandList;
+    const skip = (page - 1) * limit;
+
+    // Build a dynamic filter for searching
+    const filter = search ? { name: { $regex: search, $options: 'i' } } : {};
+
+    // Find brands with applied filters, sorting, and pagination
+    const brandList = await Brands.find(filter)
+      .sort({ [sort]: 1 }) // Sort by the specified field in ascending order
+      .skip(skip)
+      .limit(limit);
+
+    // Get the total count of documents for pagination info
+    const totalBrands = await Brands.countDocuments(filter);
+
+    return {
+      brands: brandList,
+      totalBrands,
+      totalPages: Math.ceil(totalBrands / limit),
+      currentPage: page
+    };
   } catch (error) {
     console.error('Error getting brands:', error);
     throw error;
   }
 };
+
 
 // Get a single Brand by ID
 const getBrandById = async (id) => {
@@ -62,15 +94,15 @@ const deleteBrand = async (id) => {
 // Update Brand Status
 const updateBrandStatus = async (brandId, status) => {
   try {
-      const updatedBrand = await Brands.findByIdAndUpdate(
-          brandId,
-          { status },
-          { new: true } // Return the updated document
-      );
-      return updatedBrand;
+    const updatedBrand = await Brands.findByIdAndUpdate(
+      brandId,
+      { status },
+      { new: true } // Return the updated document
+    );
+    return updatedBrand;
   } catch (error) {
-      console.error('Error updating brand status:', error);
-      throw error;
+    console.error('Error updating brand status:', error);
+    throw error;
   }
 };
 

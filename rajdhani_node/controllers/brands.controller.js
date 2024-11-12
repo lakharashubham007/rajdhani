@@ -12,15 +12,31 @@ const createBrand = async (req, res) => {
 };
 
 // Get all Brands
+// const getBrands = async (req, res) => {
+//     try {
+//         const brands = await brandsService.getBrands();
+//         res.json({ success: true, brands: brands });
+//     } catch (error) {
+//         console.error(error);
+//         res.status(500).json({ success: false, message: 'Internal Server Error' });
+//     }
+// };
+
+// Get all Brands
 const getBrands = async (req, res) => {
     try {
-        const brands = await brandsService.getBrands();
+        const page = parseInt(req.query.page) || 1; // Default to page 1
+        const limit = parseInt(req.query.limit) || 10; // Default to 10 items per page
+        const sort = req.query.sort || 'name'; // Default sorting by name
+        const search = req.query.search || ''; // Default empty search
+        const brands = await brandsService.getBrands(page, limit, sort, search);
         res.json({ success: true, brands: brands });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
+
 
 // Get a single Brand by ID
 const getBrandById = async (req, res) => {
