@@ -34,7 +34,7 @@ const getBrands = async (page, limit, sort, search) => {
     let sortOptions = {};
     if (sort) {
       const [field, order] = sort.split(':');
-      sortOptions[field] = order === 'desc' ? -1 : 1; // -1 for descending, 1 for ascending
+      sortOptions[field] = order === 'dsc' ? -1 : 1; // -1 for descending, 1 for ascending
     } else {
       sortOptions = { name: 1 }; // Default sort by name in ascending order if sort is not provided
     }

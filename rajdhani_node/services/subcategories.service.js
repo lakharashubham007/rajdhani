@@ -12,15 +12,56 @@ const createSubcategory = async (data, file) => {
 };
 
 // Get all Subcategories
-const getSubcategories = async () => {
+// const getSubcategories = async () => {
+//   try {
+//     const subcategoryList = await Subcategories.find({}).populate('category_id');
+//     return subcategoryList;
+//   } catch (error) {
+//     console.error('Error getting subcategories:', error);
+//     throw error;
+//   }
+// };
+
+// Get all Subcategories with pagination, sorting, and search
+const getSubcategories = async (page, limit, sort, search) => {
   try {
-    const subcategoryList = await Subcategories.find({}).populate('category_id');
-    return subcategoryList;
+    const skip = (page - 1) * limit;
+
+    // Dynamic filter for search functionality
+    const filter = search ? { name: { $regex: search, $options: 'i' } } : {};
+
+    // Parse sorting parameter
+    const sortOptions = {};
+    if (sort) {
+      const [field, order] = sort.split(':');
+      sortOptions[field] = order === 'dsc' ? -1 : 1;
+    } else {
+      sortOptions.name = 1; // Default sort by name in ascending order
+    }
+
+    // Query the database with filters, sorting, and pagination
+    const subcategoryList = await Subcategories.find(filter)
+      .populate('category_id') // Populate category reference if needed
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit);
+
+    // Get total count for pagination metadata
+    const totalSubcategories = await Subcategories.countDocuments(filter);
+
+    return {
+      subcategories: subcategoryList,
+      totalSubcategories,
+      totalPages: Math.ceil(totalSubcategories / limit),
+      currentPage: page,
+      rowsPerPage: limit
+    };
   } catch (error) {
     console.error('Error getting subcategories:', error);
     throw error;
   }
 };
+
 
 // Get a single Subcategory by ID
 const getSubcategoryById = async (id) => {
@@ -34,12 +75,12 @@ const getSubcategoryById = async (id) => {
 };
 
 // Update a Subcategory by ID
-const updateSubcategory = async (id, data, file) => {
+const updateSubcategory = async (id, updateData) => {
   try {
     const updatedSubcategory = await Subcategories.findByIdAndUpdate(
       id,
-      { ...data, ...(file && { image: file }) },
-      { new: true }
+      updateData,
+      { new: true } // Return the updated document
     );
     return updatedSubcategory;
   } catch (error) {
@@ -47,6 +88,7 @@ const updateSubcategory = async (id, data, file) => {
     throw error;
   }
 };
+
 
 // Delete a Subcategory by ID
 const deleteSubcategory = async (id) => {

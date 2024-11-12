@@ -11,16 +11,45 @@ const createCategory = async (data, file) => {
   }
 };
 
-// Get all Categories
-const getCategories = async () => {
+// Service to get all categories with pagination, sorting, and search
+const getCategories = async (page, limit, sort, search) => {
   try {
-    const categoryList = await Categories.find({});
-    return categoryList;
+    const skip = (page - 1) * limit;
+
+    // Build a dynamic filter for searching
+    const filter = search ? { name: { $regex: search, $options: 'i' } } : {};
+
+    // Parse the sort parameter
+    let sortOptions = {};
+    if (sort) {
+      const [field, order] = sort.split(':');
+      sortOptions[field] = (order === 'dsc') ? -1 : 1; // -1 for descending, 1 for ascending
+    } else {
+      sortOptions = { name: 1 }; // Default sort by name in ascending order if sort is not provided
+    }
+
+    // Find categories with applied filters, sorting, and pagination
+    const categoryList = await Categories.find(filter)
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit);
+
+    // Get the total count of documents for pagination info
+    const totalCategories = await Categories.countDocuments(filter);
+
+    return {
+      categories: categoryList,
+      totalCategories,
+      totalPages: Math.ceil(totalCategories / limit),
+      currentPage: page,
+      rowsPerPage: limit
+    };
   } catch (error) {
     console.error('Error getting categories:', error);
     throw error;
   }
 };
+
 
 // Get a single Category by ID
 const getCategoryById = async (id) => {
@@ -33,13 +62,13 @@ const getCategoryById = async (id) => {
   }
 };
 
-// Update a Category by ID
-const updateCategory = async (id, data, file) => {
+// Update a Category by ID in the service
+const updateCategory = async (id, updateData) => {
   try {
     const updatedCategory = await Categories.findByIdAndUpdate(
       id,
-      { ...data, ...(file && { image: file }) },
-      { new: true }
+      updateData,
+      { new: true } // Return the updated document
     );
     return updatedCategory;
   } catch (error) {
@@ -47,6 +76,7 @@ const updateCategory = async (id, data, file) => {
     throw error;
   }
 };
+
 
 // Delete a Category by ID
 const deleteCategory = async (id) => {
@@ -62,15 +92,15 @@ const deleteCategory = async (id) => {
 // Update Category Status
 const updateCategoryStatus = async (categoryId, status) => {
   try {
-      const updatedCategory = await Categories.findByIdAndUpdate(
-          categoryId,
-          { status },
-          { new: true } // Return the updated document
-      );
-      return updatedCategory;
+    const updatedCategory = await Categories.findByIdAndUpdate(
+      categoryId,
+      { status },
+      { new: true } // Return the updated document
+    );
+    return updatedCategory;
   } catch (error) {
-      console.error('Error updating category status:', error);
-      throw error;
+    console.error('Error updating category status:', error);
+    throw error;
   }
 };
 
