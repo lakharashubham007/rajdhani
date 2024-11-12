@@ -63,6 +63,8 @@ const getBrandById = async (id) => {
   }
 };
 
+//update new methods
+
 const updateBrand = async (id, updateData) => {
   try {
     const updatedBrand = await Brands.findByIdAndUpdate(
