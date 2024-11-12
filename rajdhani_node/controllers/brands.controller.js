@@ -55,7 +55,11 @@ const getBrandById = async (req, res) => {
 // Update a Brand by ID
 const updateBrand = async (req, res) => {
     try {
-        const brand = await brandsService.updateBrand(req.params.id, req.body, req.files?.image[0]?.originalname);
+        const image = req.files && req.files.image && req.files.image[0] 
+        ? req.files.image[0].originalname 
+        : 'def.png'; 
+        
+        const brand = await brandsService.updateBrand(req.params.id, req.body, image );
         if (!brand) {
             return res.status(404).json({ success: false, message: 'Brand not found' });
         }
