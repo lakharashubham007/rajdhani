@@ -3,7 +3,7 @@ const config = require("../config/config");
 const { tokenTypes } = require("../config/tokens");
 // const { Admins } = require("../models/user.model");
 const { Admins } = require("../models/admins.model");
-const { Vendors } = require("../models");
+const { Vendors, Clients } = require("../models");
 
 
 
@@ -72,6 +72,35 @@ const generateVendorAuthTokens = async (user) => {
     vendor: updatedUser
 };
 }
+
+
+const generateClientAuthTokens = async (user) => {
+  
+  const accessTokenExpires = Math.floor(Date.now() / 1000) + config.jwt.accessExpirationMinutes * 60;
+
+  const accessToken = generateToken(
+    user._id,
+    accessTokenExpires,
+    tokenTypes.ACCESS
+  );
+
+  await Clients.updateOne(
+    { _id: user._id },
+    { $set: { remembertoken: accessToken } }
+  );
+
+
+  // Retrieve the updated user document
+  const updatedUser = await Clients.findById(user._id);
+
+
+  return {
+    token: accessToken,
+    expires: new Date(accessTokenExpires * 1000),
+    client: updatedUser
+};
+}
+
 /**
  
   const accessTokenExpires = Math.floor(Date.now() / 1000) + config.jwt.accessExpirationMinutes * 60;
@@ -94,5 +123,6 @@ const generateVendorAuthTokens = async (user) => {
 module.exports = {
   generateToken,
   generateAuthTokens,
-  generateVendorAuthTokens
+  generateVendorAuthTokens,
+  generateClientAuthTokens
 };

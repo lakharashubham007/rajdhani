@@ -10,6 +10,14 @@ const loginUserWithEmailAndPassword = async (email, password) => {
   return user;
 };
 
+const loginClientWithEmailAndPassword = async (email, password) => {
+  const user = await userService.getClientByEmail(email);
+  if (!user || !await user.isPasswordMatch(password)) {
+    throw new ApiError(httpStatus.UNAUTHORIZED, "Incorrect email or password");
+  }
+  return user;
+};
+
 const loginVendorWithEmailAndPassword = async (email, password) => {
   const vendor = await userService.getVendorByEmail(email);
   if (!vendor || !await vendor.isPasswordMatch(password)) {
@@ -35,6 +43,7 @@ const logoutVendor = async (token) => {
 };
 
 module.exports = {
+  loginClientWithEmailAndPassword,
   loginVendorWithEmailAndPassword,
   loginUserWithEmailAndPassword,
   logoutUser,

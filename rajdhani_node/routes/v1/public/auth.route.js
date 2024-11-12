@@ -22,8 +22,10 @@ const upload = multer({
 ]);
 
 router.post("/register", upload, authController.register );
+router.post("/register-client", upload, authController.registerClient );
 router.get("/admins", authController.getAdmins)
 router.post("/login", authController.login);
+router.post("/login-client", authController.loginClient);
 router.post("/logout", authController.logout);
 router.post("/login-restaurant", authController.loginRestaurant);
 router.post("/login-employee", authController.loginEmployee);

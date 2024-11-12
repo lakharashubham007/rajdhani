@@ -30,9 +30,18 @@ const getBrands = async (page, limit, sort, search) => {
     // Build a dynamic filter for searching
     const filter = search ? { name: { $regex: search, $options: 'i' } } : {};
 
+    // Parse the sort parameter
+    let sortOptions = {};
+    if (sort) {
+      const [field, order] = sort.split(':');
+      sortOptions[field] = order === 'desc' ? -1 : 1; // -1 for descending, 1 for ascending
+    } else {
+      sortOptions = { name: 1 }; // Default sort by name in ascending order if sort is not provided
+    }
+
     // Find brands with applied filters, sorting, and pagination
     const brandList = await Brands.find(filter)
-      .sort({ [sort]: 1 }) // Sort by the specified field in ascending order
+      .sort(sortOptions) // Sort by the specified field in ascending order
       .skip(skip)
       .limit(limit);
 
@@ -43,7 +52,8 @@ const getBrands = async (page, limit, sort, search) => {
       brands: brandList,
       totalBrands,
       totalPages: Math.ceil(totalBrands / limit),
-      currentPage: page
+      currentPage: page,
+      rowsPerPage: limit
     };
   } catch (error) {
     console.error('Error getting brands:', error);

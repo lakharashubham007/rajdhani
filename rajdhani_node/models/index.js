@@ -16,3 +16,5 @@ module.exports.Products = require('./products.model').Products
 module.exports.Brands = require('./brands.model').Brands
 module.exports.Parts = require('./parts.model').Parts
 module.exports.Variants = require('./variants.model').Variants
+module.exports.Clients = require('./clients.model').Clients
+
