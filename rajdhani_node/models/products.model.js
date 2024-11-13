@@ -33,7 +33,7 @@ const productSchema = new mongoose.Schema(
         },
         subcategory_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Categories', // Reference to the Subcategories (stored in the same collection as categories)
+            ref: 'Subcategories', // Reference to the Subcategories (stored in the same collection as categories)
             default: null, // Nullable, for products without subcategories
         },
         brand_id: {

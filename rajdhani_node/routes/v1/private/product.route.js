@@ -1,26 +1,31 @@
 const express = require("express");
 const router = express.Router();
-const {  productsController } = require("../../../controllers");
-
+const { productsController } = require("../../../controllers");
 const multer = require("multer");
 const { Authentication, Authorization } = require("../../../middleware");
 
-// Save Image
+// Configure multer for image and gallery uploads
 const upload = multer({
     storage: multer.diskStorage({
         destination: function (req, file, cb) {
             cb(null, "images");
         },
         filename: function (req, file, cb) {
-            console.log(file);
             cb(null, file.originalname);
-            // cb(null, file.originalname + "-" + Date.now() + ".jpg")
         },
     }),
 }).fields([
-    { name: 'image', maxCount: 1 }
+    { name: 'image', maxCount: 1 },
+    { name: 'gallery', maxCount: 10 } // Allow multiple images for the gallery
 ]);
 
-router.post("/create-product", upload,  Authentication, Authorization, productsController.createProduct);
+// Routes for Product Operations
 
-module.exports = router; 
+router.post("/create-product", upload, Authentication, Authorization, productsController.createProduct);
+router.get("/get-products", Authentication, Authorization, productsController.getProducts);
+router.get("/get-product/:id", Authentication, Authorization, productsController.getProductById);
+router.patch("/update-product/:id", upload, Authentication, Authorization, productsController.updateProduct);
+router.delete("/delete-product/:id", Authentication, Authorization, productsController.deleteProduct);
+router.patch("/update-product-status/:id", Authentication, Authorization, productsController.updateProductStatus);
+
+module.exports = router;

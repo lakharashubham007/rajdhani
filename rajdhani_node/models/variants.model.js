@@ -1,56 +1,54 @@
 const mongoose = require("mongoose");
 
-const variantSchema = new mongoose.Schema(
-    {
-        name: {
-            type: String,
-            required: true,
-            trim: true,
-            maxlength: 150, // Variant name
-        },
-        description: {
-            type: String,
-            trim: true,
-            maxlength: 500, // Description of the variant
-        },
-        specification: {
-            type: String,
-            trim: true,
-            maxlength: 500, // Specification details
-        },
-        tax: {
-            type: Number,
-            default: 0, // Tax percentage (e.g., 18 for 18%)
-            min: 0,
-        },
-        price: {
-            type: Number,
-            required: true,
-            min: 0, // Ensure price is non-negative
-        },
-        status: {
-            type: Boolean,
-            default: true, // Active status by default
-        },
-        part_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Parts', // Reference to the Parts collection
-            required: true,
-        },
-        created_at: {
-            type: Date,
-            default: Date.now, // Automatically set to current date/time
-        },
-        updated_at: {
-            type: Date,
-            default: Date.now, // Automatically set to current date/time
-        },
-    },
-    {
-        timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' },
-    }
-);
+// Variant Category Schema
+const variantCategorySchema = new mongoose.Schema({
+    name: { type: String, required: true, trim: true, maxlength: 150 },
+    description: { type: String, trim: true, maxlength: 500 },
+}, { timestamps: true });
 
-const Variants = mongoose.model("Variants", variantSchema);
+const VariantCategory = mongoose.model("VariantCategory", variantCategorySchema);
 
-module.exports.Variants = Variants;
+// Variant Subcategory Schema
+const variantSubCategorySchema = new mongoose.Schema({
+    name: { type: String, required: true, trim: true, maxlength: 150 },
+    description: { type: String, trim: true, maxlength: 500 },
+    variantCategoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'VariantCategory', required: true },
+}, { timestamps: true });
+
+const VariantSubCategory = mongoose.model("VariantSubCategory", variantSubCategorySchema);
+
+// Variant Sub-Subcategory Schema
+const variantSubSubCategorySchema = new mongoose.Schema({
+    name: { type: String, required: true, trim: true, maxlength: 150 },
+    description: { type: String, trim: true, maxlength: 500 },
+    variantSubCategoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'VariantSubCategory', required: true },
+}, { timestamps: true });
+
+const VariantSubSubCategory = mongoose.model("VariantSubSubCategory", variantSubSubCategorySchema);
+
+// Variant Schema
+const variantSchema = new mongoose.Schema({
+    name: { type: String, required: true, trim: true, maxlength: 150 },
+    description: { type: String, trim: true, maxlength: 500 },
+    variantCode: { type: String, trim: true, maxlength: 50 },
+    variantSku: { type: String, trim: true, maxlength: 50 },
+    variantQrCode: { type: String, trim: true, maxlength: 50 },
+    fittingSizeId: { type: mongoose.Schema.Types.ObjectId, ref: 'FittingSize' },
+    threadId: { type: mongoose.Schema.Types.ObjectId, ref: 'Thread' },
+    variantCategoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'VariantCategory' },
+    variantSubCategoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'VariantSubCategory' },
+    variantSubSubCategoryId: { type: mongoose.Schema.Types.ObjectId, ref: 'VariantSubSubCategory' },
+    brandId: { type: mongoose.Schema.Types.ObjectId, ref: 'Brand' },
+    status: { type: Boolean, default: true },
+    createdAt: { type: Date, default: Date.now },
+    updatedAt: { type: Date, default: Date.now },
+}, { timestamps: true });
+
+const Variants = mongoose.model("Variant", variantSchema);
+
+module.exports = {
+    Variants,
+    VariantCategory,
+    VariantSubCategory,
+    VariantSubSubCategory
+};

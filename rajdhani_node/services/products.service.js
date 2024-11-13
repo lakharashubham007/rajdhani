@@ -1,78 +1,83 @@
-const { Products } = require('../models');
+const { Products } = require('../models'); // Assuming the Products model is located here
 
-// Create a new Product
-const createProduct = async (data) => {
-    try {
-        const newProduct = await Products.create({
-            name: data.name,
-            description: data.description,
-            image: data.image,
-            gallery: data.gallery,
-            category_id: data.category_id,
-            subcategory_id: data.subcategory_id,
-            brand_id: data.brand_id,
-            part_id: data.part_id,
-            price: data.price,
-            tags: data.tags,
-            status: true,
-        });
-        return newProduct;
-    } catch (error) {
-        console.error('Error creating product:', error);
-        throw error;
-    }
+// Create a new Product - Service
+const createProduct = async (data, files) => {
+  try {
+    const productData = {
+      ...data,
+      image: files && files.image ? files.image[0]?.originalname : 'default-product-image.png',
+      gallery: files && files.gallery ? files.gallery.map(file => file.originalname) : [], // Process gallery images
+    };
+
+    const newProduct = await Products.create(productData);
+    return newProduct;
+  } catch (error) {
+    console.error('Error creating product:', error);
+    throw error;
+  }
 };
 
-// Get all Products
-const getProducts = async () => {
-    try {
-        const products = await Products.find({})
-            .populate('category_id', 'name')
-            .populate('subcategory_id', 'name')
-            .populate('brand_id', 'name')
-            .populate('part_id', 'name');
-        return products;
-    } catch (error) {
-        console.error('Error fetching products:', error);
-        throw error;
-    }
-};
 
-// Get a single Product by ID
-const getProductById = async (productId) => {
+// Get all Products with pagination, sorting, and search
+const getProducts = async (page, limit, sort, search) => {
     try {
-        const product = await Products.findById(productId)
-            .populate('category_id', 'name')
-            .populate('subcategory_id', 'name')
-            .populate('brand_id', 'name')
-            .populate('part_id', 'name');
-        return product;
+      const skip = (page - 1) * limit;
+  
+      // Build a dynamic filter for searching
+      const filter = search ? { 
+        $or: [
+          { name: { $regex: search, $options: 'i' } },
+          { description: { $regex: search, $options: 'i' } }
+        ] 
+      } : {};
+  
+      // Parse the sort parameter
+      let sortOptions = {};
+      if (sort) {
+        const [field, order] = sort.split(':');
+        sortOptions[field] = (order === 'dsc') ? -1 : 1; // -1 for descending, 1 for ascending
+      } else {
+        sortOptions = { name: 1 }; // Default sort by name in ascending order if sort is not provided
+      }
+  
+      // Find products with applied filters, sorting, and pagination
+      const productList = await Products.find(filter)
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limit);
+  
+      // Get the total count of documents for pagination info
+      const totalProducts = await Products.countDocuments(filter);
+  
+      return {
+        products: productList,
+        totalProducts,
+        totalPages: Math.ceil(totalProducts / limit),
+        currentPage: page,
+        rowsPerPage: limit
+      };
     } catch (error) {
-        console.error('Error fetching product by ID:', error);
-        throw error;
+      console.error('Error fetching products:', error);
+      throw error;
     }
+  };
+
+// Get a Product by ID
+const getProductById = async (id) => {
+  try {
+    const product = await Products.findById(id);
+    return product;
+  } catch (error) {
+    console.error('Error fetching product by ID:', error);
+    throw error;
+  }
 };
 
 // Update a Product by ID
-const updateProduct = async (productId, data) => {
+const updateProduct = async (id, updateData) => {
     try {
-        const updatedProduct = await Products.findByIdAndUpdate(
-            productId,
-            {
-                name: data.name,
-                description: data.description,
-                image: data.image,
-                gallery: data.gallery,
-                category_id: data.category_id,
-                subcategory_id: data.subcategory_id,
-                brand_id: data.brand_id,
-                part_id: data.part_id,
-                price: data.price,
-                tags: data.tags,
-                updated_at: Date.now(),
-            },
-            { new: true } // Return the updated document
-        );
+        updateData.updated_at = Date.now();
+        const updatedProduct = await Products.findByIdAndUpdate(id, updateData, { new: true });
         return updatedProduct;
     } catch (error) {
         console.error('Error updating product:', error);
@@ -80,21 +85,33 @@ const updateProduct = async (productId, data) => {
     }
 };
 
+// Update the status of a Product by ID
+const updateProductStatus = async (id, status) => {
+  try {
+    const updatedProduct = await Products.findByIdAndUpdate(id, { status, updated_at: Date.now() }, { new: true });
+    return updatedProduct;
+  } catch (error) {
+    console.error('Error updating product status:', error);
+    throw error;
+  }
+};
+
 // Delete a Product by ID
-const deleteProduct = async (productId) => {
-    try {
-        const deletedProduct = await Products.findByIdAndDelete(productId);
-        return deletedProduct;
-    } catch (error) {
-        console.error('Error deleting product:', error);
-        throw error;
-    }
+const deleteProduct = async (id) => {
+  try {
+    const product = await Products.findByIdAndDelete(id);
+    return product;
+  } catch (error) {
+    console.error('Error deleting product:', error);
+    throw error;
+  }
 };
 
 module.exports = {
-    createProduct,
-    getProducts,
-    getProductById,
-    updateProduct,
-    deleteProduct,
+  createProduct,
+  getProducts,
+  getProductById,
+  updateProduct,
+  updateProductStatus,
+  deleteProduct,
 };

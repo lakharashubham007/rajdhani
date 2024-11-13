@@ -11,16 +11,6 @@ const createBrand = async (req, res) => {
     }
 };
 
-// Get all Brands
-// const getBrands = async (req, res) => {
-//     try {
-//         const brands = await brandsService.getBrands();
-//         res.json({ success: true, brands: brands });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ success: false, message: 'Internal Server Error' });
-//     }
-// };
 
 // Get all Brands
 const getBrands = async (req, res) => {
@@ -87,20 +77,6 @@ const updateBrand = async (req, res) => {
     }
 };
 
-// // Update a Brand by ID
-// const updateBrand = async (req, res) => {
-//     try {
-       
-//         const brand = await brandsService.updateBrand(req.params.id, req.body, req.files?.image[0]?.originalname );
-//         if (!brand) {
-//             return res.status(404).json({ success: false, message: 'Brand not found' });
-//         }
-//         res.json({ success: true, brand: brand, message: 'Brand updated successfully!' });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ success: false, message: 'Internal Server Error' });
-//     }
-// };
 
 // Delete a Brand by ID
 const deleteBrand = async (req, res) => {

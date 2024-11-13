@@ -16,5 +16,20 @@ module.exports.Products = require('./products.model').Products
 module.exports.Brands = require('./brands.model').Brands
 module.exports.Parts = require('./parts.model').Parts
 module.exports.Variants = require('./variants.model').Variants
+module.exports.VariantCategory = require('./variants.model').VariantCategory
+module.exports.VariantSubCategory = require('./variants.model').VariantSubCategory
+module.exports.VariantSubSubCategory = require('./variants.model').VariantSubSubCategory
+module.exports.FittingSize = require('./fittingSizes.model').FittingSize
+module.exports.Thread = require('./threads.model').Thread
+module.exports.Materials = require('./materials.model').Materials
+
+// module.exports. = require('./').
+// module.exports. = require('./').
+// module.exports. = require('./').
+// module.exports. = require('./').
+
+// module.exports.FittingSize = require('./').FittingSize
+
 module.exports.Clients = require('./clients.model').Clients
+
 

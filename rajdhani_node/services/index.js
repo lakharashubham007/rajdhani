@@ -15,6 +15,20 @@ module.exports.brandsService = require("./brands.service");
 module.exports.partsService = require("./parts.service");
 module.exports.productService = require("./products.service");
 module.exports.variantService = require("./variants.service");
+module.exports.variantCategoryService = require("./variantCategory.service");
+module.exports.variantSubCategoryService = require("./variantSubCategor.service");
+module.exports.variantSubSubCategoryService = require("./variantSubSubCategory.service");
+module.exports.fittingSizeService = require("./fittingSize.service");
+module.exports.threadService = require("./threads.service");
+module.exports.materialService = require("./material.service");
+
+// module.exports. = require("./");
+// module.exports. = require("./");
+// module.exports. = require("./");
+// module.exports. = require("./");
+
+
+
 module.exports.categoriesService = require('./category.service');
 module.exports.subcategoryService = require('./subcategories.service');
 module.exports.subSubcategoryService = require('./subSubcategories.service');
