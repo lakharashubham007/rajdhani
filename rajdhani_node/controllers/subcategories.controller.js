@@ -71,7 +71,7 @@ const getSubcategoryById = async (req, res) => {
 const updateSubcategory = async (req, res) => {
     try {
         // Define fields to check in req.body and map them to updateData if present
-        const fieldsToUpdate = ['name', 'type', 'parent_id', 'position', 'status', 'priority'];
+        const fieldsToUpdate = ['name', 'type', 'parent_id', 'position', 'status', 'priority', 'category_id'];
         const updateData = {};
 
         // Conditionally add fields present in request body
