@@ -28,6 +28,7 @@ router.patch("/update-category-status/:id", Authentication, categoriesController
 // Subcategory Routes
 router.post("/create-subcategory", upload, Authentication, Authorization, subcategoriesController.createSubcategory);
 router.get("/subcategory-list", Authentication, Authorization, subcategoriesController.getSubcategories);
+router.get("/subcategories", Authentication, subcategoriesController.getAllSubcategories);
 router.patch("/edit-subcategory/:id", upload, Authentication, Authorization, subcategoriesController.updateSubcategory);
 router.get("/subcategory-list/:id", Authentication, Authorization, subcategoriesController.getSubcategoryById);
 router.delete("/delete-subcategory/:id", Authentication, Authorization, subcategoriesController.deleteSubcategory);

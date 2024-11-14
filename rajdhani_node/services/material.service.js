@@ -11,6 +11,18 @@ const createMaterial = async (data) => {
   }
 };
 
+// getAllMaterials
+const getAllMaterials = async () => {
+  try {
+    const materials = await Materials.find({});
+    return materials;
+  } catch (error) {
+    console.error('Error getting subcategories:', error);
+    throw error;
+  }
+};
+
+
 // Get all materials with pagination, sorting, and search
 const getMaterials = async (page, limit, sort, search) => {
   try {
@@ -95,5 +107,6 @@ module.exports = {
   getMaterialById,
   updateMaterial,
   deleteMaterial,
-  updateMaterialStatus
+  updateMaterialStatus,
+  getAllMaterials
 };

@@ -4,7 +4,19 @@ const {materialService} = require('../services');
 const createMaterial = async (req, res) => {
   try {
     const material = await materialService.createMaterial(req.body);
-    res.json({ success: true, material, message: 'Material created successfully!' });
+    res.json({ success: true, materials: material, message: 'Material created successfully!' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+//getAllMaterials
+// Get all materials with pagination, sorting, and search
+const getAllMaterials = async (req, res) => {
+  try {
+    const materials = await materialService.getAllMaterials();
+    res.json({ success: true, materials });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -20,7 +32,7 @@ const getMaterials = async (req, res) => {
     const search = req.query.search || '';
     
     const materials = await materialService.getMaterials(page, limit, sort, search);
-    res.json({ success: true, materials });
+    res.json({ success: true, ...materials });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -94,8 +106,8 @@ const deleteMaterial = async (req, res) => {
 // Update material status
 const updateMaterialStatus = async (req, res) => {
   try {
-    const { status } = req.body; // status should be a boolean (true/false)
-    const updatedMaterial = await materialService.updateMaterialStatus(req.params.id, status);
+    const { isActive } = req.body; // status should be a boolean (true/false)
+    const updatedMaterial = await materialService.updateMaterialStatus(req.params.id, isActive);
     if (!updatedMaterial) {
       return res.status(404).json({ success: false, message: 'Material not found' });
     }
@@ -112,5 +124,6 @@ module.exports = {
   getMaterialById,
   updateMaterial,
   deleteMaterial,
-  updateMaterialStatus
+  updateMaterialStatus,
+  getAllMaterials
 };

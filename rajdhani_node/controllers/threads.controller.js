@@ -11,7 +11,18 @@ const createThread = async (req, res) => {
   }
 };
 
-// Get all Threads with pagination, sorting, and search
+// Controller to get all threads
+const getAllThreads = async (req, res) => {
+  try {
+    const threads = await threadService.getAllThreads();
+    res.json({ success: true, threads });
+  } catch (error) {
+    console.error('Error getting threads:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+// Get  Threads with pagination, sorting, and search
 const getThreads = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -20,7 +31,7 @@ const getThreads = async (req, res) => {
     const search = req.query.search || '';
 
     const threads = await threadService.getThreads(page, limit, sort, search);
-    res.json({ success: true, threads });
+    res.json({ success: true, ...threads });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -118,5 +129,6 @@ module.exports = {
   getThreadById,
   updateThread,
   deleteThread,
-  updateThreadStatus
+  updateThreadStatus,
+  getAllThreads
 };

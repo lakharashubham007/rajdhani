@@ -16,7 +16,9 @@ const upload = multer({
 // Variant routes
 router.post("/create-variant", upload, Authentication, Authorization, variantController.createVariant);
 router.get("/variant-list", Authentication, Authorization, variantController.getVariants);
-router.get("/variant/:id", Authentication, Authorization, variantController.getVariantById);
+router.get("/all-variants", Authentication, variantController.getAllVariants);
+
+router.get("/variant-list/:id", Authentication, Authorization, variantController.getVariantById);
 router.patch("/edit-variant/:id", upload, Authentication, Authorization, variantController.updateVariant);
 router.delete("/delete-variant/:id", Authentication, Authorization, variantController.deleteVariant);
 router.patch("/update-variant-status/:id", Authentication, variantController.updateVariantStatus);

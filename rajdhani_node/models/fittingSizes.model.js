@@ -11,7 +11,6 @@ const fittingSizeSchema = new mongoose.Schema(
         measurementUnit: {
             type: String,
             enum: ["inch", "mm"],
-            required: true
         },
         isActive: { 
             type: Boolean, 

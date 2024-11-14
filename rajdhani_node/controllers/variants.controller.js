@@ -15,7 +15,18 @@ const createVariant = async (req, res) => {
     }
 };
 
-// Get all Variants with pagination, sorting, and search
+// Controller method to get all variants
+const getAllVariants = async (req, res) => {
+    try {
+      const variants = await variantService.getAllVariants();
+      res.json({ success: true, variants });
+    } catch (error) {
+      console.error('Error fetching variants:', error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+  };
+
+// Get  Variants with pagination, sorting, and search
 const getVariants = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1; // Default to page 1
@@ -23,7 +34,7 @@ const getVariants = async (req, res) => {
         const sort = req.query.sort || 'name'; // Default sorting by name
         const search = req.query.search || ''; // Default empty search
         const variants = await variantService.getVariants(page, limit, sort, search);
-        res.json({ success: true, variants: variants });
+        res.json({ success: true, ...variants });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
@@ -128,5 +139,6 @@ module.exports = {
     getVariantById,
     updateVariant,
     deleteVariant,
-    updateVariantStatus
+    updateVariantStatus,
+    getAllVariants
 };

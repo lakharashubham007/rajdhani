@@ -11,16 +11,16 @@ const createSubcategory = async (req, res) => {
     }
 };
 
-// // Get all Subcategories
-// const getSubcategories = async (req, res) => {
-//     try {
-//         const subcategories = await subcategoryService.getSubcategories();
-//         res.json({ success: true, subcategories: subcategories });
-//     } catch (error) {
-//         console.error(error);
-//         res.status(500).json({ success: false, message: 'Internal Server Error' });
-//     }
-// };
+// Get all Subcategories
+const getAllSubcategories = async (req, res) => {
+    try {
+        const subcategories = await subcategoryService.getAllSubcategories();
+        res.json({ success: true, subcategories: subcategories });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
 
 // Get all Subcategories with pagination, sorting, and search
 const getSubcategories = async (req, res) => {
@@ -123,5 +123,6 @@ module.exports = {
     getSubcategories,
     getSubcategoryById,
     updateSubcategory,
-    deleteSubcategory
+    deleteSubcategory,
+    getAllSubcategories
 };

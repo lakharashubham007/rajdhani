@@ -11,7 +11,19 @@ const createThread = async (data) => {
   }
 };
 
-// Get all Threads with pagination, sorting, and searching
+
+// Get all threads without pagination, sorting, or search
+const getAllThreads = async () => {
+  try {
+    const threads = await Thread.find({}); // Fetch all threads
+    return threads;
+  } catch (error) {
+    console.error('Error fetching threads:', error);
+    throw error;
+  }
+};
+
+// Get Threads with pagination, sorting, and searching
 const getThreads = async (page, limit, sort, search) => {
   try {
     const skip = (page - 1) * limit;
@@ -99,5 +111,6 @@ module.exports = {
   getThreadById,
   updateThread,
   deleteThread,
-  updateThreadStatus
+  updateThreadStatus,
+  getAllThreads
 };

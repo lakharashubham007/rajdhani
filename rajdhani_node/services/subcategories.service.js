@@ -12,15 +12,15 @@ const createSubcategory = async (data, file) => {
 };
 
 // Get all Subcategories
-// const getSubcategories = async () => {
-//   try {
-//     const subcategoryList = await Subcategories.find({}).populate('category_id');
-//     return subcategoryList;
-//   } catch (error) {
-//     console.error('Error getting subcategories:', error);
-//     throw error;
-//   }
-// };
+const getAllSubcategories = async () => {
+  try {
+    const subcategoryList = await Subcategories.find({}).populate('category_id');
+    return subcategoryList;
+  } catch (error) {
+    console.error('Error getting subcategories:', error);
+    throw error;
+  }
+};
 
 // Get all Subcategories with pagination, sorting, and search
 const getSubcategories = async (page, limit, sort, search) => {
@@ -106,5 +106,6 @@ module.exports = {
   getSubcategories,
   getSubcategoryById,
   updateSubcategory,
-  deleteSubcategory
+  deleteSubcategory,
+  getAllSubcategories
 };

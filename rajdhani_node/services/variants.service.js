@@ -3,10 +3,27 @@ const { Variants } = require('../models'); // Assuming Variants is the model for
 // Create a new Variant
 const createVariant = async (data, file) => {
   try {
-    const newVariant = await Variants.create({ ...data, image: file || 'def.png' });
+    const newVariant = (await Variants.create({ ...data, image: file || 'def.png' }));
     return newVariant;
   } catch (error) {
     console.error('Error creating variant:', error);
+    throw error;
+  }
+};
+
+// Service method to get all variants with populated references
+const getAllVariants = async () => {
+  try {
+    const variants = await Variants.find()
+      .populate('fittingSizeId')
+      .populate('threadId')
+      .populate('variantCategoryId')
+      .populate('variantSubCategoryId')
+      .populate('variantSubSubCategoryId')
+      .populate('brandId');
+    return variants;
+  } catch (error) {
+    console.error('Error getting all variants:', error);
     throw error;
   }
 };
@@ -32,7 +49,14 @@ const getVariants = async (page, limit, sort, search) => {
     const variantList = await Variants.find(filter)
       .sort(sortOptions)
       .skip(skip)
-      .limit(limit);
+      .limit(limit)
+      .populate('fittingSizeId')
+      .populate('threadId')
+      .populate('variantCategoryId')
+      .populate('variantSubCategoryId')
+      .populate('variantSubSubCategoryId')
+      .populate('brandId');
+    
 
     // Get the total count of documents for pagination info
     const totalVariants = await Variants.countDocuments(filter);
@@ -108,5 +132,6 @@ module.exports = {
   getVariantById,
   updateVariant,
   deleteVariant,
-  updateVariantStatus
+  updateVariantStatus,
+  getAllVariants
 };
