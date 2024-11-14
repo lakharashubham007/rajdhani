@@ -23,7 +23,7 @@ const getProducts = async (req, res) => {
         const sort = req.query.sort || 'name';
         const search = req.query.search || '';
         const products = await productService.getProducts(page, limit, sort, search);
-        res.json({ success: true, products });
+        res.json({ success: true, ...products });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });

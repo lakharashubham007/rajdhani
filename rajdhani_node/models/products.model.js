@@ -33,18 +33,43 @@ const productSchema = new mongoose.Schema(
         },
         subcategory_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Subcategories', // Reference to the Subcategories (stored in the same collection as categories)
-            default: null, // Nullable, for products without subcategories
+            ref: 'Subcategories', // Reference to the Subcategories collection
+            default: null, // Nullable for products without subcategories
+        },
+        subsubcategory_id: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'SubSubcategory', // Reference to Subsubcategories collection
+            default: null, // Nullable for products without sub-subcategories
         },
         brand_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Brands', // Reference to the Brands collection
             default: null,
         },
-        part_id: {
+        variant_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Parts', // Reference to the Parts collection for specific parts
+            ref: 'Variant', // Reference to Variants collection
             default: null,
+        },
+        material: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Material', // Reference to Material collection
+            default: null,
+        },
+        fittingSize: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'FittingSize', // Reference to Variants collection
+            default: null,
+        },
+        // thread_type: {
+        //     type: String,
+        //     enum: ["ORS", "Metric", "BSP", "JIC"], // Thread types
+        //     required: true,
+        // },
+        connection_type: {
+            type: String,
+            enum: ["Nut Crimp", "Flare", "O-Ring"], // Connection types
+            // required: true,
         },
         price: {
             type: Number,
@@ -55,21 +80,7 @@ const productSchema = new mongoose.Schema(
             type: Boolean,
             default: true, // Active status by default
         },
-        tags: [
-            {
-                type: String,
-                trim: true,
-                maxlength: 50, // Optional tags for better search/filtering
-            }
-        ],
-        created_at: {
-            type: Date,
-            default: Date.now, // Automatically set to the current date/time
-        },
-        updated_at: {
-            type: Date,
-            default: Date.now,
-        },
+       
     },
     {
         timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, // Adds createdAt and updatedAt fields

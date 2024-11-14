@@ -42,6 +42,13 @@ const getProducts = async (page, limit, sort, search) => {
   
       // Find products with applied filters, sorting, and pagination
       const productList = await Products.find(filter)
+         .populate('category_id')
+         .populate('subcategory_id')
+         .populate('subsubcategory_id')
+         .populate('brand_id')
+         .populate('variant_id')
+         .populate('material')
+         .populate('fittingSize')
         .sort(sortOptions)
         .skip(skip)
         .limit(limit);
