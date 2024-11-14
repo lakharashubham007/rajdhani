@@ -23,6 +23,7 @@ const upload = multer({
 
 router.post("/create-brand",upload,  Authentication, Authorization, brandsController.createBrand );
 router.get("/brand-list", Authentication, Authorization,  brandsController.getBrands);
+router.get("/brands", Authentication,  brandsController.getAllBrands);
 router.patch("/edit-brand/:id",upload, Authentication, Authorization,  brandsController.updateBrand);
 router.get("/brand-list/:id", Authentication, Authorization,  brandsController.getBrandById);
 router.delete("/delete-brand/:id", Authentication, Authorization,  brandsController.deleteBrand);

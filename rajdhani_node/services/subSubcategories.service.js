@@ -11,6 +11,17 @@ const createSubSubcategory = async (data, file) => {
   }
 };
 
+// Get all SubSubcategories
+const getAllSubSubcategories = async () => {
+  try {
+      const subSubcategoryList = await SubSubcategory.find({}).populate('subcategory_id'); // Populate if there's a reference field
+      return subSubcategoryList;
+  } catch (error) {
+      console.error('Error getting subSubcategories:', error);
+      throw error;
+  }
+};
+
 // Service: Get all Sub-Subcategories with pagination, sorting, and search
 const getSubSubcategories = async (page, limit, sort, search) => {
   try {
@@ -110,5 +121,6 @@ module.exports = {
   getSubSubcategories,
   getSubSubcategoryById,
   updateSubSubcategory,
-  deleteSubSubcategory
+  deleteSubSubcategory,
+  getAllSubSubcategories
 };

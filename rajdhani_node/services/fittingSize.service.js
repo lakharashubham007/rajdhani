@@ -10,6 +10,18 @@ const createFittingSize = async (data) => {
     throw error;
   }
 };
+// Get all Fitting Sizes
+const getAllFittingSizes = async () => {
+  try {
+    const fittingSizes = await FittingSize.find({});
+    return fittingSizes;
+  } catch (error) {
+    console.error('Error getting fitting sizes:', error);
+    throw error;
+  }
+};
+
+
 
 // Service to get all Fitting Sizes with pagination, sorting, and search
 const getFittingSizes = async (page, limit, sort, search) => {
@@ -110,5 +122,6 @@ module.exports = {
   getFittingSizeById,
   updateFittingSize,
   deleteFittingSize,
-  updateFittingSizeStatus
+  updateFittingSizeStatus,
+  getAllFittingSizes
 };

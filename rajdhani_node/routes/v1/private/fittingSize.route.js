@@ -23,6 +23,7 @@ const upload = multer({
 // Create a new Fitting Size
 router.post("/create-fitting-size", Authentication, Authorization, fittingSizeController.createFittingSize);
 router.get("/fitting-size-list", Authentication, Authorization, fittingSizeController.getFittingSizes);
+router.get("/all-fitting-sizes", Authentication, fittingSizeController.getAllFittingSizes);
 router.get("/fitting-size-list/:id", Authentication, Authorization, fittingSizeController.getFittingSizeById);
 router.patch("/edit-fitting-size/:id", Authentication, Authorization, fittingSizeController.updateFittingSize);
 router.delete("/delete-fitting-size/:id", Authentication, Authorization, fittingSizeController.deleteFittingSize);

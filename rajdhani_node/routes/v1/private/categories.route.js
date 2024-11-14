@@ -20,6 +20,7 @@ const upload = multer({
 // Category Routes
 router.post("/create-category", upload, Authentication, Authorization, categoriesController.createCategory);
 router.get("/category-list", Authentication, Authorization, categoriesController.getCategories);
+router.get("/categories", Authentication, categoriesController.getAllCategories);
 router.patch("/edit-category/:id", upload, Authentication, Authorization, categoriesController.updateCategory);
 router.get("/category-list/:id", Authentication, Authorization, categoriesController.getCategoryById);
 router.delete("/delete-category/:id", Authentication, Authorization, categoriesController.deleteCategory);
@@ -36,6 +37,7 @@ router.delete("/delete-subcategory/:id", Authentication, Authorization, subcateg
 // SubSubcategory Routes
 router.post("/create-subsubcategory", upload, Authentication, Authorization, subSubcategoriesController.createSubSubcategory);
 router.get("/subsubcategory-list", Authentication, Authorization, subSubcategoriesController.getSubSubcategories);
+router.get("/subsubcategories", Authentication, subSubcategoriesController.getAllSubSubcategories);
 router.patch("/edit-subsubcategory/:id", upload, Authentication, Authorization, subSubcategoriesController.updateSubSubcategory);
 router.get("/subsubcategory-list/:id", Authentication, Authorization, subSubcategoriesController.getSubSubcategoryById);
 router.delete("/delete-subsubcategory/:id", Authentication, Authorization, subSubcategoriesController.deleteSubSubcategory);

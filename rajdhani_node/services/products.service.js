@@ -2,18 +2,38 @@ const { Products } = require('../models'); // Assuming the Products model is loc
 
 // Create a new Product - Service
 const createProduct = async (data, files) => {
+
   try {
+
+    console.log('Gallery files:', files.gallery); 
+
     const productData = {
       ...data,
       image: files && files.image ? files.image[0]?.originalname : 'default-product-image.png',
       gallery: files && files.gallery ? files.gallery.map(file => file.originalname) : [], // Process gallery images
     };
 
+    console.log('Processed product data:', productData); // Log the processed data before saving
+
+   
+
     const newProduct = await Products.create(productData);
     return newProduct;
   } catch (error) {
     console.error('Error creating product:', error);
     throw error;
+  }
+};
+
+
+// Service method to get all products
+const getAllProducts = async () => {
+  try {
+      const products = await Products.find({});
+      return products; // Return all products
+  } catch (error) {
+      console.error('Error fetching all products:', error);
+      throw error; // Throw error to be caught by the controller
   }
 };
 
@@ -121,4 +141,5 @@ module.exports = {
   updateProduct,
   updateProductStatus,
   deleteProduct,
+  getAllProducts
 };

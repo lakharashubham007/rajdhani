@@ -11,6 +11,17 @@ const createCategory = async (req, res) => {
     }
 };
 
+// Get all Categories
+const getAllCategories = async (req, res) => {
+    try {
+        const categories = await categoriesService.getAllCategories();
+        res.json({ success: true, categories: categories });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
 
 // Controller to get paginated, sorted, and searchable category list
 const getCategories = async (req, res) => {
@@ -136,5 +147,6 @@ module.exports = {
     getCategoryById,
     updateCategory,
     deleteCategory,
-    updateCategoryStatus
+    updateCategoryStatus,
+    getAllCategories
 };

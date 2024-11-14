@@ -4,6 +4,8 @@ const { productService } = require("../services");
 const createProduct = async (req, res) => {
     try {
         const productData = req.body;
+
+        console.log('Received files:', req.files);  //
         
         // Pass the files for image and gallery to the service
         const product = await productService.createProduct(productData, req.files);
@@ -11,6 +13,17 @@ const createProduct = async (req, res) => {
         res.json({ success: true, product, message: 'Product created successfully!' });
     } catch (error) {
         console.error(error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+// Controller to get all products
+const getAllProducts = async (req, res) => {
+    try {
+        const products = await productService.getAllProducts();
+        res.json({ success: true, products });
+    } catch (error) {
+        console.error('Error fetching products:', error);
         res.status(500).json({ success: false, message: 'Internal Server Error' });
     }
 };
@@ -128,5 +141,6 @@ module.exports = {
     getProductById,
     updateProduct,
     deleteProduct,
-    updateProductStatus
+    updateProductStatus,
+    getAllProducts
 };

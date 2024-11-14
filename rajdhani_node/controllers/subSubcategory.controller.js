@@ -11,6 +11,18 @@ const createSubSubcategory = async (req, res) => {
   }
 };
 
+// Get all SubSubcategories
+const getAllSubSubcategories = async (req, res) => {
+  try {
+      const subSubcategories = await subSubcategoryService.getAllSubSubcategories();
+      res.json({ success: true, subSubcategories: subSubcategories });
+  } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+
 // Controller: Get all Sub-Subcategories with pagination, sorting, and search
 const getSubSubcategories = async (req, res) => {
   try {
@@ -113,4 +125,5 @@ module.exports = {
   getSubSubcategoryById,
   updateSubSubcategory,
   deleteSubSubcategory,
+  getAllSubSubcategories
 };

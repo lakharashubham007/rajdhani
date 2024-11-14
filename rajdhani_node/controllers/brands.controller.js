@@ -11,8 +11,20 @@ const createBrand = async (req, res) => {
     }
 };
 
-
 // Get all Brands
+const getAllBrands = async (req, res) => {
+    try {
+      const brands = await brandsService.getAllBrands();
+      res.json({ success: true, brands });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+  };
+  
+
+
+// Get Brands
 const getBrands = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1; // Default to page 1
@@ -119,5 +131,6 @@ module.exports = {
     getBrandById,
     updateBrand,
     deleteBrand,
-    updateBrandStatus
+    updateBrandStatus,
+    getAllBrands
 };

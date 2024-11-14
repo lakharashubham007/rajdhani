@@ -12,15 +12,15 @@ const createBrand = async (data, file) => {
 };
 
 // Get all Brands simple method wihtout any pagination and searching sorting for tetsing purpose 
-// const getBrands = async () => {
-//   try {
-//     const brandList = await Brands.find({});
-//     return brandList;
-//   } catch (error) {
-//     console.error('Error getting brands:', error);
-//     throw error;
-//   }
-// };
+const getAllBrands = async () => {
+  try {
+    const brandList = await Brands.find({});
+    return brandList;
+  } catch (error) {
+    console.error('Error getting brands:', error);
+    throw error;
+  }
+};
 
 // Get all Brands with pagination, sorting, and search
 const getBrands = async (page, limit, sort, search) => {
@@ -137,5 +137,6 @@ module.exports = {
   getBrandById,
   updateBrand,
   deleteBrand,
-  updateBrandStatus
+  updateBrandStatus,
+  getAllBrands
 };

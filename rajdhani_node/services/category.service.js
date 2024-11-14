@@ -11,6 +11,18 @@ const createCategory = async (data, file) => {
   }
 };
 
+
+// Get all Categories
+const getAllCategories = async () => {
+  try {
+      const categoryList = await Categories.find({});
+      return categoryList;
+  } catch (error) {
+      console.error('Error getting categories:', error);
+      throw error;
+  }
+};
+
 // Service to get all categories with pagination, sorting, and search
 const getCategories = async (page, limit, sort, search) => {
   try {
@@ -110,5 +122,6 @@ module.exports = {
   getCategoryById,
   updateCategory,
   deleteCategory,
-  updateCategoryStatus
+  updateCategoryStatus,
+  getAllCategories
 };

@@ -12,6 +12,17 @@ const createFittingSize = async (req, res) => {
 };
 
 // Get all Fitting Sizes
+const getAllFittingSizes = async (req, res) => {
+  try {
+    const fittingSizes = await fittingSizeService.getAllFittingSizes();
+    res.status(200).json({ success: true, fittingSizes });
+  } catch (error) {
+    console.error('Error in getting fitting sizes:', error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+// Get specific Fitting Sizes
 const getFittingSizes = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
@@ -112,5 +123,6 @@ module.exports = {
   getFittingSizeById,
   updateFittingSize,
   deleteFittingSize,
-  updateFittingSizeStatus
+  updateFittingSizeStatus,
+  getAllFittingSizes
 };
