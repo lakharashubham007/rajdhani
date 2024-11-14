@@ -12,7 +12,7 @@ router.get("/material", Authentication, Authorization, materialController.getMat
 router.get("/materials-list", Authentication, materialController.getAllMaterials);
 
 // Get a material by ID
-router.get("/material-list/:id", Authentication, Authorization, materialController.getMaterialById);
+router.get("/materials-list/:id", Authentication, Authorization, materialController.getMaterialById);
 // Update a material by ID
 router.patch("/edit-material/:id", Authentication, Authorization, materialController.updateMaterial);
 // Delete a material by ID
