@@ -92,11 +92,6 @@ const updateFittingSizeStatus = async (req, res) => {
       const { id } = req.params;
       const { isActive } = req.body; // Assume that `isActive` is sent in the request body
   
-      // Check if `isActive` is a boolean value
-      if (typeof isActive !== 'boolean') {
-        return res.status(400).json({ success: false, message: 'isActive must be a boolean' });
-      }
-  
       // Call the service to update the 'isActive' status
       const updatedFittingSize = await fittingSizeService.updateFittingSizeStatus(id, isActive);
   
