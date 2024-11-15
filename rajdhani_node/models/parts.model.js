@@ -13,48 +13,63 @@ const partsSchema = new mongoose.Schema(
             trim: true,
             maxlength: 1000, // A reasonable length for descriptions
         },
-        image: {
+        type: {
             type: String,
             trim: true,
-            maxlength: 191,
-            default: 'default-image.png', // Default image if not provided
+            maxlength: 191, // Matches SQL varchar(191)
         },
-        gallery: {
-            type: [String], // Array of strings for multiple images
-            default: [],
-        },
-        brand_id: {
+        material_id: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Brands', // Reference to the Brands collection
+            ref: 'Material', // Reference to the Brands collection
             required: true,
         },
-        hsn_no: {
-            type: String,
-            trim: true,
-            maxlength: 50,
+        fittingsize_id:{
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'FittingSize', // Reference to the Brands collection
+            required: true,
         },
-        ean_no: {
-            type: String,
-            trim: true,
-            maxlength: 50,
-        },
-        tax: {
-            type: Number, // Store tax as a percentage or fixed amount
-            default: 0,
-        },
+        // image: {
+        //     type: String,
+        //     trim: true,
+        //     maxlength: 191,
+        //     default: 'default-image.png', // Default image if not provided
+        // },
+        // gallery: {
+        //     type: [String], // Array of strings for multiple images
+        //     default: [],
+        // },
+        // brand_id: {
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     ref: 'Brands', // Reference to the Brands collection
+        //     required: true,
+        // },
+        // hsn_no: {
+        //     type: String,
+        //     trim: true,
+        //     maxlength: 50,
+        // },
+        // ean_no: {
+        //     type: String,
+        //     trim: true,
+        //     maxlength: 50,
+        // },
+        // tax: {
+        //     type: Number, // Store tax as a percentage or fixed amount
+        //     default: 0,
+        // },
+        // category_id: {
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     ref: 'Categories', // Reference to the Categories collection
+        //     required: true,
+        // },
+        // subcategory_id: {
+        //     type: mongoose.Schema.Types.ObjectId,
+        //     ref: 'Subcategories', // Reference to the Subcategories collection
+        //     required: true,
+        // },
         status: {
             type: Boolean,
             default: true, // Active by default
-        },
-        category_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Categories', // Reference to the Categories collection
-            required: true,
-        },
-        subcategory_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Subcategories', // Reference to the Subcategories collection
-            required: true,
         },
         created_at: {
             type: Date,

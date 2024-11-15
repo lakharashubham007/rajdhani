@@ -22,8 +22,9 @@ const upload = multer({
 // Routes for Parts
 router.post("/create-part", upload, Authentication, Authorization, partsController.createPart);
 router.get("/part", Authentication, Authorization, partsController.getParts);
+router.get("/parts-list", Authentication,  partsController.getAllParts);
 router.get("/part/:id", Authentication, Authorization, partsController.getPartById);
-router.patch("/update-part/:id", upload, Authentication, Authorization, partsController.updatePart);
+router.patch("/edit-part/:id", upload, Authentication, Authorization, partsController.updatePart);
 router.patch("/update-part-status/:id", Authentication, Authorization, partsController.updatePartStatus);
 router.delete("/delete-part/:id", Authentication, Authorization, partsController.deletePart);
 

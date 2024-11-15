@@ -3,38 +3,48 @@ const {partsService} = require('../services');
 // Create a new Part
 const createPart = async (req, res) => {
   try {
-    const { name, description, brand_id, hsn_no, ean_no, tax, category_id, subcategory_id } = req.body;
+    // const { name, description, brand_id, hsn_no, ean_no, tax, category_id, subcategory_id } = req.body;
 
-    if (!name || !brand_id || !category_id || !subcategory_id) {
-      return res.status(400).json({ success: false, message: 'Name, Brand, Category, and Subcategory are required' });
-    }
+    // if (!name || !brand_id || !category_id || !subcategory_id) {
+    //   return res.status(400).json({ success: false, message: 'Name, Brand, Category, and Subcategory are required' });
+    // }
 
-    const partData = {
-      name,
-      description,
-      brand_id,
-      hsn_no,
-      ean_no,
-      tax,
-      category_id,
-      subcategory_id,
-    };
+    // const partData = {
+    //   name,
+    //   description,
+    //   brand_id,
+    //   hsn_no,
+    //   ean_no,
+    //   tax,
+    //   category_id,
+    //   subcategory_id,
+    // };
 
-    // Check if an image is provided
-    if (req.files && req.files.image && req.files.image[0]) {
-      partData.image = req.files.image[0].originalname;
-    }
+    // // Check if an image is provided
+    // if (req.files && req.files.image && req.files.image[0]) {
+    //   partData.image = req.files.image[0].originalname;
+    // }
 
-    // Check if any gallery images are provided
-    if (req.files && req.files.gallery && req.files.gallery.length) {
-      partData.gallery = req.files.gallery.map(file => file.originalname);
-    }
+    // // Check if any gallery images are provided
+    // if (req.files && req.files.gallery && req.files.gallery.length) {
+    //   partData.gallery = req.files.gallery.map(file => file.originalname);
+    // }
+    const Part = await partsService.createPart(req.body);
 
-    const newPart = await partsService.createPart(partData);
-
-    res.json({ success: true, newPart, message: 'Part created successfully!' });
+    res.json({ success: true, Part, message: 'Part created successfully!' });
   } catch (error) {
     console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+// Controller to get all threads
+const getAllParts = async (req, res) => {
+  try {
+    const parts = await partsService.getAllParts();
+    res.json({ success: true, parts });
+  } catch (error) {
+    console.error('Error getting parts:', error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
@@ -77,7 +87,7 @@ const updatePart = async (req, res) => {
   try {
     // Define the fields that may need updating
     const fieldsToUpdate = [
-      'name', 'description', 'image', 'gallery', 'brand_id', 'hsn_no', 'ean_no', 'tax', 'status', 'category_id', 'subcategory_id'
+      'name', 'description','type','material_id','fittingsize_id', 'image', 'gallery', 'brand_id', 'hsn_no', 'ean_no', 'tax', 'status', 'category_id', 'subcategory_id'
     ];
     const updateData = {};
 
@@ -159,4 +169,5 @@ module.exports = {
   updatePart,
   updatePartStatus,
   deletePart,
+  getAllParts
 };

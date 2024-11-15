@@ -63,7 +63,7 @@ const updateVariant = async (req, res) => {
         const fieldsToUpdate = [
             'name', 'description', 'variantCode', 'variantSku', 'variantQrCode', 
             'fittingSizeId', 'threadId', 'variantCategoryId', 'variantSubCategoryId', 
-            'variantSubSubCategoryId', 'brandId'
+            'variantSubSubCategoryId', 'brandId','variantType'
         ];
         const updateData = {};
 

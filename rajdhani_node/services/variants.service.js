@@ -15,12 +15,12 @@ const createVariant = async (data, file) => {
 const getAllVariants = async () => {
   try {
     const variants = await Variants.find()
-      .populate('fittingSizeId')
-      .populate('threadId')
-      .populate('variantCategoryId')
-      .populate('variantSubCategoryId')
-      .populate('variantSubSubCategoryId')
-      .populate('brandId');
+      // .populate('fittingSizeId')
+      // .populate('threadId')
+      // .populate('variantCategoryId')
+      // .populate('variantSubCategoryId')
+      // .populate('variantSubSubCategoryId')
+      // .populate('brandId');
     return variants;
   } catch (error) {
     console.error('Error getting all variants:', error);
@@ -50,12 +50,12 @@ const getVariants = async (page, limit, sort, search) => {
       .sort(sortOptions)
       .skip(skip)
       .limit(limit)
-      .populate('fittingSizeId')
-      .populate('threadId')
-      .populate('variantCategoryId')
-      .populate('variantSubCategoryId')
-      .populate('variantSubSubCategoryId')
-      .populate('brandId');
+      // .populate('fittingSizeId')
+      // .populate('threadId')
+      // .populate('variantCategoryId')
+      // .populate('variantSubCategoryId')
+      // .populate('variantSubSubCategoryId')
+      // .populate('brandId');
     
 
     // Get the total count of documents for pagination info

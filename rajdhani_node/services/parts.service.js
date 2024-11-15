@@ -3,9 +3,10 @@ const { Parts } = require('../models'); // Assuming the Parts model is located h
 
 
 // Create a new Variant
-const createPart = async (data, file) => {
+const createPart = async (data) => {
     try {
-      const newPart = await Parts.create({ ...data, image: file || 'def.png' });
+      // const newPart = await Parts.create({ ...data, image: file || 'def.png' });
+      const newPart = (await (await Parts.create({ ...data })));
       return newPart;
     } catch (error) {
       console.error('Error creating part:', error);
@@ -13,7 +14,19 @@ const createPart = async (data, file) => {
     }
   };
 
-// Get all Parts with pagination, sorting, and search
+  // Get all parts without pagination, sorting, or search
+const getAllParts = async () => {
+  try {
+    const parts = await Parts.find({}).populate('material_id').populate('fittingsize_id'); // Fetch all threads
+    return parts;
+  } catch (error) {
+    console.error('Error fetching parts:', error);
+    throw error;
+  }
+};
+
+
+// Get  Parts with pagination, sorting, and search
 const getParts = async (page, limit, sort, search) => {
   try {
     const query = {
@@ -25,7 +38,9 @@ const getParts = async (page, limit, sort, search) => {
     const parts = await Parts.find(query)
       .sort({ [sort]: 1 })
       .skip((page - 1) * limit)
-      .limit(limit);
+      .limit(limit)
+      .populate('material_id').populate('fittingsize_id');
+
 
     return parts;
   } catch (error) {
@@ -85,4 +100,5 @@ module.exports = {
   updatePart,
   updatePartStatus,
   deletePart,
+  getAllParts
 };
