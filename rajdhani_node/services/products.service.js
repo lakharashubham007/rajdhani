@@ -113,7 +113,16 @@ const getProducts = async (page, limit, sort, search) => {
 // Get a Product by ID
 const getProductById = async (id) => {
   try {
-    const product = await Products.findById(id);
+    const product = await Products.findById(id)
+    .populate('category_id')
+    .populate('subcategory_id')
+    .populate('subsubcategory_id')
+    .populate('brand')
+    .populate('variant')
+    .populate('material')
+    .populate('fittingSize')
+    .populate('thread_type')
+    .populate('parts') ;
     return product;
   } catch (error) {
     console.error('Error fetching product by ID:', error);

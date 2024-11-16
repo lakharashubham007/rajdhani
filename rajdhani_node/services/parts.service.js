@@ -25,29 +25,51 @@ const getAllParts = async () => {
   }
 };
 
-
-// Get  Parts with pagination, sorting, and search
 const getParts = async (page, limit, sort, search) => {
   try {
-    const query = {
-      $or: [
-        { name: { $regex: search, $options: 'i' } },
-        { description: { $regex: search, $options: 'i' } },
-      ],
-    };
-    const parts = await Parts.find(query)
-      .sort({ [sort]: 1 })
-      .skip((page - 1) * limit)
-      .limit(limit)
-      .populate('material_id').populate('fittingsize_id');
+      const skip = (page - 1) * limit;
 
+      // Build a dynamic filter for searching
+      const filter = search
+          ? {
+                $or: [
+                    { name: { $regex: search, $options: 'i' } },
+                    { description: { $regex: search, $options: 'i' } },
+                ],
+            }
+          : {};
 
-    return parts;
+      // Parse the sort parameter
+      let sortOptions = {};
+      if (sort) {
+          const [field, order] = sort.split(':');
+          sortOptions[field] = order === 'dsc' ? -1 : 1; // -1 for descending, 1 for ascending
+      } else {
+          sortOptions = { name: 1 }; // Default sort by name in ascending order if sort is not provided
+      }
+
+      const parts = await Parts.find(filter)
+          .populate('material_id', 'name description') // Populate material details
+          .populate('fittingsize_id', 'size description') // Populate fitting size details
+          .sort(sortOptions)
+          .skip(skip)
+          .limit(limit);
+
+      const totalParts = await Parts.countDocuments(filter);
+
+      return {
+          parts,
+          totalParts,
+          totalPages: Math.ceil(totalParts / limit),
+          currentPage: page,
+          rowsPerPage: limit,
+      };
   } catch (error) {
-    console.error('Error fetching parts:', error);
-    throw error;
+      console.error('Error fetching parts:', error);
+      throw error;
   }
 };
+
 
 // Get a Part by ID
 const getPartById = async (id) => {

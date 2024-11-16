@@ -59,7 +59,7 @@ const getParts = async (req, res) => {
 
     const parts = await partsService.getParts(page, limit, sort, search);
 
-    res.json({ success: true, parts });
+    res.json({ success: true, ...parts });
   } catch (error) {
     console.error(error);
     res.status(500).json({ success: false, message: 'Internal Server Error' });
