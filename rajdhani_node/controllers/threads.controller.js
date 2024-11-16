@@ -56,7 +56,7 @@ const getThreadById = async (req, res) => {
 const updateThread = async (req, res) => {
     try {
       // Define the fields that may need updating
-      const fieldsToUpdate = ['threadSize', 'measurementUnit', 'isActive']; // These are the fields in the Thread schema
+      const fieldsToUpdate = ['threadSize', 'thread_type','measurementUnit', 'isActive']; // These are the fields in the Thread schema
       const updateData = {};
   
       // Conditionally add fields from request body to updateData

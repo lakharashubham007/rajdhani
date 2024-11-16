@@ -61,8 +61,9 @@ const getProductById = async (req, res) => {
 const updateProduct = async (req, res) => {
     try {
         const fieldsToUpdate = [
-            'name', 'description', 'price', 'category_id', 'subcategory_id', 
-            'brand_id', 'part_id', 'tags', 'status'
+            'name','description','price','category_id','subcategory_id','subsubcategory_id','brand',
+            'variant','material','fittingSize','thread_type','parts','pressure_rating',
+            'temperature_range','connection_type','product_Type','product_id',
         ];
         const updateData = {};
 

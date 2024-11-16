@@ -9,6 +9,11 @@ const threadSchema = new mongoose.Schema(
             unique: true,
             maxlength: 50
         },
+        thread_type: {
+            type: String,
+            // enum: ["ORS", "Metric", "BSP", "JIC"], // Thread types
+            required: true,
+        },
         measurementUnit: {
             type: String,
             enum: ["inch", "mm"],

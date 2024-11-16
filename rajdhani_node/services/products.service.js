@@ -7,8 +7,27 @@ const createProduct = async (data, files) => {
 
     console.log('Gallery files:', files.gallery); 
 
+     // Parse the `parts` field if it's sent as a string
+     let parsedParts = [];
+     if (data.parts) {
+       if (typeof data.parts === 'string') {
+         try {
+           parsedParts = JSON.parse(data.parts.replace(/'/g, '"'));
+         } catch (error) {
+           console.error('Error parsing parts field:', error);
+           throw new Error('Invalid parts format. Please provide a valid JSON array.');
+         }
+       } else if (Array.isArray(data.parts)) {
+         parsedParts = data.parts;
+       } else {
+         console.warn('Unexpected format for parts field:', data.parts);
+       }
+     }
+ 
+
     const productData = {
       ...data,
+      parts: parsedParts,
       image: files && files.image ? files.image[0]?.originalname : 'default-product-image.png',
       gallery: files && files.gallery ? files.gallery.map(file => file.originalname) : [], // Process gallery images
     };
@@ -65,10 +84,12 @@ const getProducts = async (page, limit, sort, search) => {
          .populate('category_id')
          .populate('subcategory_id')
          .populate('subsubcategory_id')
-         .populate('brand_id')
-         .populate('variant_id')
+         .populate('brand')
+         .populate('variant')
          .populate('material')
          .populate('fittingSize')
+         .populate('thread_type')
+         .populate('parts') 
         .sort(sortOptions)
         .skip(skip)
         .limit(limit);

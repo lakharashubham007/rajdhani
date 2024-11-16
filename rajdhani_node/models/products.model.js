@@ -13,6 +13,16 @@ const productSchema = new mongoose.Schema(
             trim: true,
             maxlength: 500, // Detailed description of the product
         },
+        product_id: {
+            type: String,
+            trim: true,
+            maxlength: 150, // Name of the product
+        },
+        product_Type: {
+            type: String,
+            trim: true,
+            maxlength: 150, // Name of the product
+        },
         image: {
             type: String,
             trim: true,
@@ -29,7 +39,6 @@ const productSchema = new mongoose.Schema(
         category_id: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Categories', // Reference to the Categories collection
-            required: true,
         },
         subcategory_id: {
             type: mongoose.Schema.Types.ObjectId,
@@ -41,12 +50,12 @@ const productSchema = new mongoose.Schema(
             ref: 'SubSubcategory', // Reference to Subsubcategories collection
             default: null, // Nullable for products without sub-subcategories
         },
-        brand_id: {
+        brand: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Brands', // Reference to the Brands collection
             default: null,
         },
-        variant_id: {
+        variant: {
             type: mongoose.Schema.Types.ObjectId,
             ref: 'Variant', // Reference to Variants collection
             default: null,
@@ -61,11 +70,30 @@ const productSchema = new mongoose.Schema(
             ref: 'FittingSize', // Reference to Variants collection
             default: null,
         },
-        // thread_type: {
-        //     type: String,
-        //     enum: ["ORS", "Metric", "BSP", "JIC"], // Thread types
-        //     required: true,
-        // },
+        thread_type: {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: 'Thread', // Reference to Thread collection
+            default: null,
+        },
+        parts: [
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Parts', // Reference to the Parts collection
+                default: null,
+            }
+        ],
+        pressure_rating: {
+            type: String,
+            
+            trim: true,
+            maxlength: 150, // Name of the product
+        },
+        temperature_range: {
+            type: String,
+            
+            trim: true,
+            maxlength: 150, // Name of the product
+        },
         connection_type: {
             type: String,
             enum: ["Nut Crimp", "Flare", "O-Ring"], // Connection types
