@@ -74,7 +74,7 @@ const getParts = async (page, limit, sort, search) => {
 // Get a Part by ID
 const getPartById = async (id) => {
   try {
-    const part = await Parts.findById(id);
+    const part = await Parts.findById(id).populate('material_id').populate('fittingsize_id');
     return part;
   } catch (error) {
     console.error('Error fetching part by ID:', error);
