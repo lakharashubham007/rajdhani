@@ -82,7 +82,7 @@ function Login(props) {
 								{/* logo */}
 								<div className="text-center mb-2">
 									<Link to={"/dashboard"}>
-										<img src={logoFull} alt="logo" style={{ height: '80px', width: '80px' }} />
+										<img src={logoFull} alt="logo" style={{ height: '90px', width:'auto' }} />
 									</Link>
 								</div>
 								{/* Tag or intro Line */}

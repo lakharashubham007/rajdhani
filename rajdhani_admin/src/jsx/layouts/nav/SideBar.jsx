@@ -77,7 +77,7 @@ const SideBar = () => {
 
   const [sidebarMenus, setSidebarMenus] = useState([]);
 
-  console.log(sidebarMenus, "sidebarmenus are here")
+  // console.log(sidebarMenus, "sidebarmenus are here")
 
   useEffect(() => {
     // Define the function to fetch sidebar menus

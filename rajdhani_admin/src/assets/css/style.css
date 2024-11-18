@@ -23165,3 +23165,47 @@ span#counter {
       color: #fff; }
 
 /*# sourceMappingURL=style.css.map */
+
+/*================================================
+Pagination CSS
+=================================================*/
+
+.pagination {
+  margin-top: 20px;
+  display: flex;
+  justify-content: center;
+  list-style: none;
+  padding: 0;
+}
+
+.pagination li {
+  display: inline-block;
+  margin: 0 5px;
+}
+
+.pagination a {
+  color: #6a73fa !important;
+  text-decoration: none;
+  padding: 6px 12px;
+  border: 1px solid #6a73fa1a;
+  border-radius: 4px;
+  transition: background-color 0.3s ease;
+  font-weight: 400;
+}
+
+.pagination a:hover {
+  background-color: #6a73fa1a !important;
+  color: #6a73fa !important;
+}
+
+.pagination .selected a {
+  background-color: #6a73fa !important;
+  color: #fff !important;
+}
+
+.pagination .disabled a {
+  pointer-events: none;
+  background-color: #eee !important;
+  color: #aaa !important;
+  border: 1px solid #aaa;
+}

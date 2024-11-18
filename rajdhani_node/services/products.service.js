@@ -5,7 +5,7 @@ const createProduct = async (data, files) => {
 
   try {
 
-    console.log('Gallery files:', files.gallery); 
+    console.log('Gallery files are here:', files.gallery); 
 
      // Parse the `parts` field if it's sent as a string
      let parsedParts = [];

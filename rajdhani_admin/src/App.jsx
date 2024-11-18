@@ -73,9 +73,8 @@ function App(props) {
                             <div className="sk-child sk-bounce3"></div>
                         </div>
                     </div>
-                }
-                >
-                    <Index />
+                }>
+                 <Index />
                 </Suspense>
             </>
         );

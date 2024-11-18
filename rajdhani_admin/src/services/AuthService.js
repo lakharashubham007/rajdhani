@@ -86,6 +86,7 @@ export function runLogoutTimer(dispatch, timer, navigate) {
 
 export function checkAutoLogin(dispatch, navigate) {
     const tokenDetailsString = localStorage.getItem('tokens');
+    console.log("tokenDetailsString",tokenDetailsString)
 
     let tokenDetails = '';
     if (!tokenDetailsString) {
@@ -93,7 +94,7 @@ export function checkAutoLogin(dispatch, navigate) {
 		return;
     }
 
-    tokenDetails = JSON.parse(tokenDetailsString);
+    // tokenDetails = JSON.parse(tokenDetailsString);
     let expireDate = new Date(tokenDetails.expires);
     let todaysDate = new Date();
 

@@ -8,7 +8,8 @@ import {
 } from '../../../store/actions/AuthActions';
 
 // image
-import logoFull from "../../../assets/images/bhokhe.png";
+// import logoFull from "../../../assets/images/bhokhe.png";
+import logoFull from "../../../assets/images/rajdhani.png";
 
 function Register(props) {
     const [showPassword, setShowPassword] = useState(false);
@@ -56,7 +57,7 @@ function Register(props) {
                 <div className="card mb-0 h-auto">
                   <div className="card-body">
                     <div className="text-center mb-2">
-                        <Link to="/login"><img src={logoFull} alt="logo" style={{height: "80px", width: "80px"}} /></Link>
+                        <Link to="/login"><img src={logoFull} alt="logo" style={{height: "90px", width: "auto"}} /></Link>
                     </div>
                     <h4 className="text-center mb-4 ">Sign up your account</h4>
                       {props.errorMessage && (

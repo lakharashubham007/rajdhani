@@ -1,0 +1,77 @@
+.uploadImageContainer {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    width: 150px; /* Logo size */
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background-color: #f9f9f9;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+}
+
+.coverContainer {
+    border: 2px dashed #ccc;
+    border-radius: 8px;
+    width: 300px; /* Cover size (2:1 ratio) */
+    height: 150px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    background-color: #f9f9f9;
+    position: relative;
+    text-align: center;
+    overflow: hidden;
+}
+
+.imgPlaceholder {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    text-align: center;
+}
+
+.img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.hover {
+    border-color: #007bff;
+    background-color: #e9f4ff;
+}
+
+.imgUploadIcon {
+    color: #888;
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.deleteIcon {
+    position: absolute;
+    top: 0px;
+    right: 0px;
+    background-color: #FF6D6D;
+    color: white;
+    border-radius: 100%;
+    padding: 5px 10px;
+    cursor: pointer;
+    z-index: 2;
+    font-size: 10px;
+    font-weight: bold;
+}
+
+.select-file-img{
+    height:50px;
+    width:50px;
+    border-radius: 10px;
+}

@@ -161,8 +161,6 @@ import Restaurants from "../pages/Restaurants/Restaurants";
 import Cuisine from "../pages/Cuisine/Cuisine";
 import Zone from "../pages/Zone/Zone";
 import { components } from "react-select";
-import Categories from "../pages/Categories/Categories";
-import SubCategories from "../pages/Categories/SubCategories";
 import Addons from "../pages/Addons/Addons";
 import AddFood from "../pages/Foods/AddFood";
 import AllOrders from "../pages/Orders/AllOrders";
@@ -176,6 +174,19 @@ import RestaurantsDetail from "../pages/OrderOnline/OrderOnline/RestaurantsDetai
 import MenuList from "../pages/OrderOnline/OrderOnline/MenuList";
 import EditRestaurant from "../pages/Restaurants/EditRestaurant";
 import EditFood from "../pages/Foods/EditFood";
+import Brands from "../pages/Brands/Brands";
+import OldCategories from "../pages/OldCategories/OldCategories";
+import OldSubCategories from "../pages/OldCategories/OldSubCategories";
+import Categories from "../pages/Categories/Categories";
+import SubCategories from "../pages/Categories/SubCategories";
+import SubSubCategories from "../pages/Categories/SubSubCategories";
+import FittingSize from "../pages/FittingSize/FittingSize";
+import Threads from "../pages/Threads/Threads";
+import Materials from "../pages/Materials/Materials";
+import Variants from "../pages/Variants/Variants";
+import AddProduct from "../pages/Products/AddNewProduct";
+import AllProductList from "../pages/Products/ProductList";
+import Parts from "../pages/Parts/Parts";
 
 
 // import Todo from './pages/Todo';
@@ -201,9 +212,26 @@ const Markup = () => {
     { url: 'cuisines', component: <Cuisine /> },
     { url: 'zone', component: <Zone /> },
 
+    //Brands
+    { url: 'brands', component: <Brands /> },
+    { url: 'categories', component: <Categories /> },
+    { url: 'subcategories', component: <SubCategories /> },
+    { url: 'subsubcategories', component: <SubSubCategories /> },
+    
+    { url: 'fittingsize', component: <FittingSize /> },
+    { url: 'threads', component: <Threads /> },
+    { url: 'materials', component: <Materials /> },
+    { url: 'variants', component: <Variants /> },
+    { url: 'parts', component: <Parts /> },
+    
+  
+    // Products
+    { url: 'addnewproduct', component: <AddProduct /> },
+    { url: 'productlist', component: <AllProductList /> },
+
     //Food Mangment
-    { url: 'category', component: <Categories /> },
-    { url: 'sub-category', component: <SubCategories /> },
+    { url: 'category', component: <OldCategories /> },
+    { url: 'sub-category', component: <OldSubCategories /> },
 
     //Addons
     { url: 'addons', component: <Addons /> },

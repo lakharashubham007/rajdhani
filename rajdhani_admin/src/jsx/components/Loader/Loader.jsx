@@ -8,7 +8,7 @@ const Loader = ({ visible }) => {
     <div className="loaderr-containerr">
       <div className="loaderr-contentt">
         <img
-          src={require("../../../assets/images/bhokhe.png")
+          src={require("../../../assets/images/rajdhani.png")
           }
           alt="Logo"
           className="loaderr-logoo"

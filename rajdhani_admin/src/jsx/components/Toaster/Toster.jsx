@@ -2,9 +2,14 @@ import React from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+//  success ✔️
+// warning ❗
+// error ❌ 
+// Info❓
+
 const Toaster = {
   success: (message) => {
-    toast.success(`✔️ ${message}`, {
+    toast.success(`${message}`, {
       position: "top-right",
       autoClose: 2000,
       hideProgressBar: false,
@@ -14,7 +19,7 @@ const Toaster = {
     });
   },
   warning: (message) => {
-    toast.warn(`❗ ${message}`, {
+    toast.warn(`${message}`, {
       position: "top-right",
       autoClose: 2000,
       hideProgressBar: false,
@@ -24,7 +29,7 @@ const Toaster = {
     });
   },
   error: (message) => {
-    toast.error(`❌ ${message}`, {
+    toast.error(`${message}`, {
       position: "top-right",
       autoClose: 2000,
       hideProgressBar: false,
@@ -34,7 +39,7 @@ const Toaster = {
     });
   },
   info: (message) => {
-    toast.info(`❓ ${message}`, {
+    toast.info(`${message}`, {
       position: "top-right",
       autoClose: 2000,
       hideProgressBar: false,
