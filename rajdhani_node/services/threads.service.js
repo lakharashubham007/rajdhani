@@ -34,7 +34,7 @@ const getThreads = async (page, limit, sort, search) => {
       const [field, order] = sort.split(':');
       sortOptions[field] = order === 'dsc' ? -1 : 1; // Sorting logic (ascending/descending)
     } else {
-      sortOptions = { threadSize: 1 }; // Default sorting by thread size
+      sortOptions = { created_at: -1 }; // Default sorting by thread size
     }
 
     const threadList = await Thread.find(filter)

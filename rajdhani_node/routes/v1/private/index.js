@@ -9,6 +9,8 @@ const variant = require('./variants.route')
 const thread = require('./threads.route')
 const fittingsize = require('./fittingSize.route')
 const material = require('./material.route')
+const supplier = require('./supplier.route')
+
 
 const router = express.Router();
 
@@ -22,6 +24,8 @@ router.use("/role",roles)
 router.use("/threads",thread)
 router.use("/fittingsizes",fittingsize)
 router.use("/materials",material)
+router.use("/suppliers",supplier)
+
 
 
 

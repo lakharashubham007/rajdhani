@@ -108,9 +108,7 @@ const updateProduct = async (req, res) => {
 
         // Fetch the existing product from the database
         const existingProduct = await productService.getProductById(productId);
-        console.log("existingProduct ----> ", existingProduct);
-
-
+        
         if (!existingProduct) {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
@@ -123,7 +121,7 @@ const updateProduct = async (req, res) => {
             'name', 'description', 'price', 'category_id', 'subcategory_id',
             'subsubcategory_id', 'brand', 'variant', 'material', 'fittingSize',
             'thread_type', 'pressure_rating', 'temperature_range', 'connection_type',
-            'product_Type', 'product_id', 'status'
+            'product_Type', 'product_id'
         ];
 
         fieldsToUpdate.forEach(field => {
@@ -146,11 +144,10 @@ const updateProduct = async (req, res) => {
         } else {
             updateData.gallery = existingProduct.gallery;
         }
-        console.log("newParts=-=-=-=-=-=-=-=",req.body.parts, Array.isArray(req.body.parts))
+
         // Handle parts array update
         if (req.body.parts) {
             const newParts = req.body.parts; // The new parts array from the request
-            console.log("newParts=-=-=-=-=-=-=-=",req.body.parts,JSON.parse(newParts))
             // Update only the `parts` field in the product document
             updateData.parts = JSON.parse(newParts);;
             console.log("Updated parts:", newParts);
@@ -159,13 +156,8 @@ const updateProduct = async (req, res) => {
             updateData.parts = existingProduct.parts;
         }
 
-
-       
-
         // Save updated data back to the database
         const updatedProduct = await productService.updateProduct(productId, updateData);
-
-
 
         res.json({ success: true, product: updatedProduct, message: 'Product updated successfully!' });
     } catch (error) {

@@ -22,8 +22,8 @@ module.exports.VariantSubSubCategory = require('./variants.model').VariantSubSub
 module.exports.FittingSize = require('./fittingSizes.model').FittingSize
 module.exports.Thread = require('./threads.model').Thread
 module.exports.Materials = require('./materials.model').Materials
+module.exports.Supplier = require('./supplier.model').Supplier
 
-// module.exports. = require('./').
 // module.exports. = require('./').
 // module.exports. = require('./').
 // module.exports. = require('./').
