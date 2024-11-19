@@ -133,7 +133,6 @@ const getProductById = async (id) => {
 // Update a Product by ID
 const updateProduct = async (id, updateData) => {
     try {
-        updateData.updated_at = Date.now();
         const updatedProduct = await Products.findByIdAndUpdate(id, updateData, { new: true });
         return updatedProduct;
     } catch (error) {
