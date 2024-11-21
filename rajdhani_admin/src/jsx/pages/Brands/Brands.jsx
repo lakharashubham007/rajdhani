@@ -15,6 +15,7 @@ import Switch from "react-switch";
 import ReactPaginate from 'react-paginate';
 import moment from 'moment';
 import DeleteWarningMdl from '../../components/common/DeleteWarningMdl';
+import useDebounce from '../../components/common/Debounce';
 
 const theadData = [
     { heading: 'S.No.', sortingVale: "sno" },
@@ -52,8 +53,9 @@ const Brands = () => {
     const [test, settest] = useState(0)
     const [showDeleteMdl,setShowDeleteMdl]=useState(false);
     const [deleteTableDataId,setDeleteTableDataId] = useState("");
-    
-    
+    const debouncedSearchValue = useDebounce(searchInputValue, 500); 
+
+
     const resetForm = () => {
         setFormData({
             name: "",
@@ -134,7 +136,7 @@ const Brands = () => {
 
     useEffect(() => {
         fetchBrands()
-    }, [updateCuisines,currentPage,sort,searchInputValue])
+    }, [updateCuisines,currentPage,sort,debouncedSearchValue])
 
     const handleUpdateSubmit=async()=>{
     //    let fData

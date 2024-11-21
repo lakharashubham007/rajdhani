@@ -16,6 +16,7 @@ import ReactPaginate from 'react-paginate';
 import { addCategoryApi, deleteCategoriesApi, getCategoriesApi, GetCategoryById, UpdateCategory, UpdateCategoryApi, UpdateCategoryStatusApi } from '../../../services/apis/CategoryApi';
 import moment from 'moment';
 import DeleteWarningMdl from '../../components/common/DeleteWarningMdl';
+import useDebounce from '../../components/common/Debounce';
 
 const theadData = [
     { heading: 'S.No.', sortingVale: "sno" },
@@ -53,7 +54,8 @@ const Categories = () => {
     const [test, settest] = useState(0);
     const [showDeleteMdl,setShowDeleteMdl]=useState(false);
     const [deleteTableDataId,setDeleteTableDataId] = useState("");
-    
+    const debouncedSearchValue = useDebounce(searchInputValue, 500);
+
     const resetForm = () => {
         setFormData({
             name: "",
@@ -134,7 +136,7 @@ const Categories = () => {
 
     useEffect(() => {
         fetchCategories()
-    }, [UpdateCategory,currentPage,sort,searchInputValue])
+    }, [UpdateCategory,currentPage,sort,debouncedSearchValue])
 
     const handleUpdateSubmit=async()=>{
         try {

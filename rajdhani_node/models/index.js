@@ -23,8 +23,7 @@ module.exports.FittingSize = require('./fittingSizes.model').FittingSize
 module.exports.Thread = require('./threads.model').Thread
 module.exports.Materials = require('./materials.model').Materials
 module.exports.Supplier = require('./supplier.model').Supplier
-
-// module.exports. = require('./').
+module.exports.PurchaseOrder = require('./purchaseOrders.model').PurchaseOrder
 // module.exports. = require('./').
 // module.exports. = require('./').
 

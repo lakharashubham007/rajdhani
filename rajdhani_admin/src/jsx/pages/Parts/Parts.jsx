@@ -31,6 +31,7 @@ import Switch from "react-switch";
 import ReactPaginate from "react-paginate";
 import { addPartApi, deletePartApi, getAllPartsApi, GetEditPartData, getPartsApi, UpdatePart, UpdatePartStatus } from "../../../services/apis/Parts";
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
+import useDebounce from "../../components/common/Debounce";
 
 const options = [
   { value: "veg", label: "Veg" },
@@ -48,6 +49,7 @@ const theadData = [
     { heading: "Name", sortingVale: "name" },
     { heading: "Type", sortingVale: "type" },
     { heading: "Created At", sortingVale: "created_at" },
+    { heading: "Status", sortingVale: "status" },
     { heading: "Action", sortingVale: "action" },
   ];
 
@@ -98,7 +100,8 @@ const Parts = () => {
     material_id:"",
     fittingsize_id:"",
   });
-
+  const debouncedSearchValue = useDebounce(searchInputValue, 500);
+  
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
@@ -135,7 +138,7 @@ const Parts = () => {
 
   useEffect(() => {
     fetchParts();
-  }, [UpdateCategory, currentPage, sort, searchInputValue]);
+  }, [UpdateCategory, currentPage, sort, debouncedSearchValue]);
 
 
   const chageData = (frist, sec) => {
@@ -553,7 +556,7 @@ const fetchAllMaterialList=async()=>{
             <div className="card-body">
               <div>
                 <div className="mb-3 row">
-                  <div className="col-sm-4">
+                  <div className="col-sm-3">
                     <label className="col-sm-3 col-form-label">Name</label>
                     <input
                       name="name"
@@ -568,7 +571,7 @@ const fetchAllMaterialList=async()=>{
                     )}
                   </div>
                 
-                  <div className="col-sm-4">
+                  <div className="col-sm-3">
                     <label className="col-sm-3 col-form-label">Type</label>
                     <input
                       name="type"
@@ -609,12 +612,9 @@ const fetchAllMaterialList=async()=>{
                   )}
                 </div>
 
-            
-                </div>
-                <div className="mb-3 row">
                 <div className="col-sm-3 ">
                   <label className="col-sm-6 col-form-label">FittingSize</label>
-                  ,
+                  
                   <Select
                     value={selectedFittingSizeOption}
                     onChange={(option) => {
@@ -637,6 +637,10 @@ const fetchAllMaterialList=async()=>{
                     </span>
                   )}
                 </div>
+            
+                </div>
+                <div className="mb-3 row">
+                
                   <div className="col-sm-8">
                     <label className="col-sm-3 col-form-label">
                       Description

@@ -9,7 +9,7 @@ import {
   Card,
   Form,
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../layouts/PageTitle";
 import {
   addCuisinesApi,
@@ -19,52 +19,35 @@ import Loader from "../../components/Loader/Loader";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import "../../../assets/css/brand.css";
-import Swal from "sweetalert2";
 import { Toaster } from "../../components/Toaster/Toster";
-import uplodIcon from "../../../assets/images/upload-icon.png";
-import {
-  addBrandsApi,
-  deleteBrandsApi,
-  getBrandsApi,
-  GetEditBrandData,
-  UpdateBrand,
-  UpdateBrandStatus,
-} from "../../../services/apis/BrandApi";
 import Switch from "react-switch";
 import ReactPaginate from "react-paginate";
-import {
-  addCategoryApi,
-  addSubCategoryApi,
-  deleteCategoriesApi,
-  deleteSubCategoriesApi,
-  GetAllCategoriesApi,
-  getCategoriesApi,
-  GetCategoryById,
-  getSubCategoriesApi,
-  GetSubCategoryById,
-  UpdateCategory,
-  UpdateCategoryApi,
-  UpdateCategoryStatusApi,
-  UpdateSubCategoryApi,
-  UpdateSubCategoryStatusApi,
-} from "../../../services/apis/CategoryApi";
+
 import moment from "moment";
 import Select from "react-select";
-import { addFittingSizeApi, deleteFittingSizeApi, GetEditFittingSizeData, getFittingSizeApi, UpdateFittingSize, UpdateFittingSizeStatus } from "../../../services/apis/FittingSize";
-import { addMaterialApi, deleteMaterialApi, GetEditMaterialData, getMaterialsApi, UpdateMaterial, UpdateMaterialStatus } from "../../../services/apis/Materials";
+import { addFittingSizeApi, deleteFittingSizeApi, GetEditFittingSizeData, getFittingSizeApi, UpdateFittingSize,
+   UpdateFittingSizeStatus } from "../../../services/apis/FittingSize";
+import { addThreadApi, deleteThreadApi, GetEditThreadData, getThreadApi, UpdateThread, UpdateThreadStatus } from "../../../services/apis/Thread";
+import { deleteProductApi, getProductApi, UpdateProductStatus } from "../../../services/apis/Product";
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
 import useDebounce from "../../components/common/Debounce";
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
   { heading: "Id", sortingVale: "_id" },
-  { heading: "Name", sortingVale: "name" },
+  { heading: "Name", sortingVale: "name"},
+  { heading: "Type", sortingVale: "product_Type" },
+  { heading: "Product Id", sortingVale: "product_id" },
+
+  { heading: "Pressure Rating", sortingVale: "pressure_rating" },
+  { heading: "Price", sortingVale: "price" },
+
   { heading: "Created At", sortingVale: "created_at" },
   { heading: "Status", sortingVale: "status" },
   { heading: "Action", sortingVale: "action" },
 ];
 
-const Materials = () => {
+const AllSupplierList = () => {
   const [sort, setSortata] = useState(10);
   const [loading, setLoading] = useState(false);
   const [modalCentered, setModalCentered] = useState(false);
@@ -73,10 +56,12 @@ const Materials = () => {
     document.querySelectorAll("#holidayList tbody tr")
   );
   const [formData, setFormData] = useState({
-   name:""
+    threadSize:"",
+    threadType:"",
+    measurementUnit:""
   });
   const [UpdateCategory, setUpdateCategory] = useState(false);
-  const [materialsList, setMaterialsList] = useState([]);
+  const [productList, setProductList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -90,9 +75,12 @@ const Materials = () => {
   const [deleteTableDataId,setDeleteTableDataId] = useState("");
   const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
+const navigate= useNavigate()
   const resetForm = () => {
     setFormData({
-     name:""
+      threadSize:"",
+      threadType:"",
+      measurementUnit:""
     });
     setLogo(null); // Reset the displayed image
     setErrors({}); // Clear errors
@@ -100,7 +88,9 @@ const Materials = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.name) newErrors.name = "Name is required.";
+    if (!formData.threadSize) newErrors.threadSize = "ThreadSize is required.";
+    // if (!formData.threadType) newErrors.threadType = "ThreadType is required.";
+    if (!formData.measurementUnit) newErrors.measurementUnit = "MeasurementUnit is required.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -112,23 +102,23 @@ const Materials = () => {
     });
     setErrors({
       ...error,
-      name: "",
+      name:"",
     });
   };
 
 //   getSubCategoriesApi
-  const fetchMaterials=async(sortValue)=>{
+  const fetchProductList=async(sortValue)=>{
         // Set loading to true when the API call starts
         setLoading(true);
         try {
-          const res = await getMaterialsApi(
+          const res = await getProductApi(
             currentPage,
             sort,
             sortValue,
             searchInputValue
           );
     
-          setMaterialsList(res.data?.materials);
+          setProductList(res.data);
 
           setUpdateCategory(false);
         } catch (error) {
@@ -142,12 +132,12 @@ const Materials = () => {
   }
 
   useEffect(() => {
-    fetchMaterials();
+    fetchProductList();
   }, [UpdateCategory, currentPage, sort, debouncedSearchValue]);
 
   const handleUpdateSubmit = async () => {
     try {
-      const res = await UpdateMaterial(editCategoryId, formData);
+      const res = await UpdateThread(editCategoryId, formData);
       if (res.status === 200) {
         setUpdateCategory(true);
         Toaster.success(res?.data?.message);
@@ -155,7 +145,7 @@ const Materials = () => {
         setModalCentered(false);
         setIsEdit(false);
   
-        fetchMaterials();
+        fetchProductList();
         setSelectedOption(null)
       } else {
         Toaster.error(
@@ -172,41 +162,6 @@ const Materials = () => {
     }
   };
 
-  const handleSubmit = async () => {
-
-    if (!validateForm()) {
-      return; // If validation fails, do not proceed further
-    }
-    if (isEdit) {
-      handleUpdateSubmit();
-    } else {
-      setLoading(true); // Start the loader
-      try {
-        const res = await addMaterialApi(formData);
-        if (res.status === 200) {
-          setUpdateCategory(true);
-          Toaster.success(res?.data?.message); // Display success message
-          resetForm();
-          setModalCentered(false); // Close modal if necessary
-          setSelectedOption(null)
-        } else {
-          // Handle any non-200 response cases
-          Toaster.error(
-            res?.data?.message || "Something went wrong. Please try again."
-          );
-        }
-      } catch (error) {
-        // If there's an error in the request itself (network error, timeout, etc.)
-        Toaster.error(
-          error.response?.data?.message ||
-            "An error occurred. Please try again."
-        );
-        console.error("Error:", error.message);
-      } finally {
-        setLoading(false); // Stop the loader
-      }
-    }
-  };
 
   const chageData = (frist, sec) => {
     for (var i = 0; i < data.length; ++i) {
@@ -238,44 +193,30 @@ const Materials = () => {
 
     if (iconData.complete) {
       const sortValue = { value: name, type: "asc" };
-      fetchMaterials(sortValue);
+      fetchProductList(sortValue);
     } else {
       const sortValue = { value: name, type: "dsc" };
-      fetchMaterials(sortValue);
+      fetchProductList(sortValue);
     }
   }
 
-  const handleEditMaterial = async (id) => {
-    try {
-      const res = await GetEditMaterialData(id);
-      if (res?.data?.success) {
-        const data = res?.data?.material;
- 
-        setEditCategoryId(data?._id);
-        setFormData({
-          name: data?.name,
-        }); 
-        // setModalCentered(true);
-        setIsEdit(true);
-  
-      }
-    } catch (err) {
-      console.log(err);
-    }
+  const handleEditThread = async (id) => {
+    navigate(`/editproductdata/${id}`)
+   
   };
 
-  const handleDeleteMaterial=(id)=>{
+  const handleDeleteProduct=(id)=>{
     setDeleteTableDataId(id);
     setShowDeleteMdl(true)
   }
 
   const handleDeleteSubmit = async () => {
     try {
-      const res = await deleteMaterialApi(deleteTableDataId);
+      const res = await deleteProductApi(deleteTableDataId);
       //   console.log("response",res);
       if (res.status === 200) {
         Toaster.success(res?.data?.message); // Display success message
-        fetchMaterials();
+        fetchProductList();
         setDeleteTableDataId("");
         setShowDeleteMdl(false);
       } else {
@@ -288,15 +229,15 @@ const Materials = () => {
     }
   };
 
-  const handleStatusChange =async (FittingSizeId, currentStatus) => {
+  const handleStatusChange =async (ProductId, currentStatus) => {
     const fdata={
-      isActive:!currentStatus
+      status:!currentStatus
     }
     try{
-        const res =await UpdateMaterialStatus(FittingSizeId,fdata);
+        const res =await UpdateProductStatus(ProductId,fdata);
         if (res.status === 200) {
          Toaster.success(res?.data?.message); // Display success message
-         fetchMaterials()
+         fetchProductList()
       } else {
         Toaster.error(res?.data?.message || "Something went wrong. Please try again.");
       }
@@ -324,58 +265,19 @@ const Materials = () => {
     <>
       <DeleteWarningMdl title={"table data"} showDeleteMdl={showDeleteMdl} setShowDeleteMdl={setShowDeleteMdl} 
         setDeleteTableDataId={setDeleteTableDataId} handleDeleteSubmit={handleDeleteSubmit}/>
-
       <ToastContainer />
       <Loader visible={loading} />
       <PageTitle
-        activeMenu={"Materials"}
+        activeMenu={"Products"}
         motherMenu={"Home"}
         motherMenuLink={"/dashboard"}
       />
-
-            {/* SECTION 3RD Restaurant Info*/}
-            <div className="col-xl-12 col-lg-12">
-                <div className="card">
-                    <div className="card-header">
-                        <h4 className="card-title">Material</h4>
-                    </div>
-                    <div className="card-body">
-                    <div>
-                  
-                      <div className="mb-3 row mt-3">
-                     
-                        <div className="col-sm-6">
-                          <label className="col-sm-3 col-form-label">
-                            Name
-                          </label>
-                          <input
-                            type="text"
-                            name="name"
-                            value={formData?.name}
-                            className="form-control"
-                            placeholder="Name"
-                            onChange={handleInputChange}
-                          />
-                          {error?.name && (
-                            <span className="text-danger fs-12">
-                              {error?.name}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    </div>
-                    <div className="text-end p-3">
-                        <button type="submit" onClick={handleSubmit} className="btn btn-primary rounded-sm">Submit</button>
-                    </div>
-                </div>
-            </div>
 
       <Row>
         <Col lg={12}>
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Material List</h4>
+              <h4 className="card-title">Product List</h4>
               {/* <Link to={"/add-staff"} className="btn btn-primary">+ Add New</Link> */}
               {/* <Button
                 variant="primary"
@@ -430,24 +332,20 @@ const Materials = () => {
                       </label>
                     </div>
                   </div>
-                  <table
-                    id="example4"
-                    className="display dataTable no-footer w-100"
-                  >
+
+                  <table id="example4" className="display dataTable no-footer w-100">
                     <thead>
                       <tr>
                         {theadData?.map((item, ind) => {
                           return (
-                            <th
-                              key={ind}
+                            <th key={ind}
                               onClick={() => {
                                 SotingData(item?.sortingVale, ind);
                                 setIconDate((prevState) => ({
                                   complete: !prevState.complete,
                                   ind: ind,
                                 }));
-                              }}
-                            >
+                              }}>
                               {item.heading}
                               <span>
                                 {ind !== iconData.ind && (
@@ -475,7 +373,7 @@ const Materials = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {materialsList?.map((data, ind) => (
+                      {productList?.products?.map((data, ind) => (
                         <tr key={ind}>
                           <td>
                             <strong>{ind + 1}</strong>
@@ -483,16 +381,39 @@ const Materials = () => {
                           <td>{data?._id}</td>
                           
                           <td className="d-flex align-items-center gap-2">
-                            {data?.name}
+                          {data?.image ? (
+                            <img className='select-file-img' src={`https://api.i2rtest.in/v1/images/image/${data?.image}`} alt={data?.name}/>
+                            ) : (
+                             ""
+                                // <span>No Image Available</span>
+                            )} {data?.name}
                           </td>
                           
+                          <td className="">
+                            {data?.product_Type}
+                          </td>
+
+                          <td className="">
+                            {data?.product_id}
+                          </td>
+
+                          <td className="">
+                            {data?.pressure_rating}
+                          </td>
+
+                          <td className="">
+                            {data?.price}
+                          </td>
+                                                    
                           <td>
-                            {moment(data?.created_at).format("DD MMM YYYY, h:mm:ss a")}
+                            {moment(data?.created_at).format(
+                              "DD MMM YYYY, h:mm:ss a"
+                            )}
                           </td>
                           <td> 
                            <Switch
-                            checked={data?.isActive} 
-                            onChange={() => handleStatusChange(data?._id, data?.isActive)} 
+                            checked={data?.status} 
+                            onChange={() => handleStatusChange(data?._id, data?.status)} 
                             offColor="#f0f1ff" 
                             onColor="#6a73fa"
                             offHandleColor="#6a73fa"
@@ -504,16 +425,13 @@ const Materials = () => {
                            />
                           </td>
                           <td>
-                            <button
-                              className="btn btn-xs sharp btn-primary me-1"
-                              onClick={() => handleEditMaterial(data?._id)}
-                            >
+                            <button className="btn btn-xs sharp btn-primary me-1"
+                              onClick={() => handleEditThread(data?._id)}>
                               <i className="fa fa-pencil" />
                             </button>
-                            <button
-                              className="btn btn-xs sharp btn-danger"
-                              onClick={() => handleDeleteMaterial(data?._id)}
-                            >
+
+                            <button className="btn btn-xs sharp btn-danger"
+                              onClick={() => handleDeleteProduct(data?._id)}>
                               <i className="fa fa-trash" />
                             </button>
                           </td>
@@ -527,8 +445,8 @@ const Materials = () => {
                       <div className="pagination-container">
                         <ReactPaginate
                           pageCount={Math.ceil(
-                            materialsList?.totalFittingSizes /
-                              materialsList?.rowsPerPage
+                            productList?.totalProducts /
+                              productList?.rowsPerPage
                           )}
                           pageRangeDisplayed={1}
                           marginPagesDisplayed={2}
@@ -545,83 +463,10 @@ const Materials = () => {
               </div>
             </div>
           </div>
-
-          {/* <!-- Modal --> */}
-          <Modal
-            className="fade"
-            show={modalCentered}
-            onHide={setModalCentered}
-            centered
-          >
-            <Modal.Header>
-              <Modal.Title>
-                {" "}
-                {isEdit ? "Edit Sub Category" : "+ Add New Sub Category"}
-              </Modal.Title>
-              <Button
-                onClick={() => {
-                  setModalCentered(false);
-                  resetForm();
-                  setIsEdit(false);
-                }}
-                variant=""
-                className="btn-close"
-              ></Button>
-            </Modal.Header>
-            <Modal.Body>
-              <div className="col-xl-12 col-lg-12 ">
-                <div className="card">
-                  <div className="card-body">
-                    <div>
-
-                      <div className="mb-3 row mt-3">
-                        <div className="col-sm-12">
-                          <label className="col-sm-3 col-form-label">
-                            Name
-                          </label>
-                          <input
-                            type="text"
-                            name="name"
-                            value={formData?.name}
-                            className="form-control"
-                            placeholder="New Sub Category"
-                            onChange={handleInputChange}
-                          />
-                          {error?.name && (
-                            <span className="text-danger fs-12">
-                              {error?.name}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </Modal.Body>
-            <Modal.Footer>
-              <Button
-                onClick={() => {
-                  setModalCentered(false);
-                  resetForm();
-                  setIsEdit(false);
-                }}
-                variant="danger light">
-                Close
-              </Button>
-              <Button
-                onClick={() => {
-                  handleSubmit();
-                }}
-                variant="primary">
-                Save changes
-              </Button>
-            </Modal.Footer>
-          </Modal>
         </Col>
       </Row>
     </>
   );
 };
 
-export default Materials;
+export default AllSupplierList;

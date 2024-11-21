@@ -56,6 +56,7 @@ import {
 import moment from "moment";
 import Select from "react-select";
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
+import useDebounce from "../../components/common/Debounce";
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
@@ -95,6 +96,7 @@ const SubSubCategories = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [showDeleteMdl,setShowDeleteMdl]=useState(false);
   const [deleteTableDataId,setDeleteTableDataId] = useState("");
+  const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
   const resetForm = () => {
     setFormData({
@@ -207,7 +209,7 @@ const SubSubCategories = () => {
 
   useEffect(() => {
     fetchSubSubCategories();
-  }, [UpdateCategory, currentPage, sort, searchInputValue]);
+  }, [UpdateCategory, currentPage, sort, debouncedSearchValue]);
 
   const handleUpdateSubmit = async () => {
     try {

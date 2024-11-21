@@ -22,10 +22,14 @@ module.exports.fittingSizeService = require("./fittingSize.service");
 module.exports.threadService = require("./threads.service");
 module.exports.materialService = require("./material.service");
 module.exports.supplierService = require("./supplier.service");
+module.exports.purchaseOrderService = require("./purchaseOrders.service");
 
 // module.exports. = require("./");
 // module.exports. = require("./");
 // module.exports. = require("./");
+// module.exports. = require("./");
+// module.exports. = require("./");
+
 
 
 

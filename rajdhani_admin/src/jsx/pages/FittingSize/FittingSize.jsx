@@ -52,6 +52,7 @@ import moment from "moment";
 import Select from "react-select";
 import { addFittingSizeApi, deleteFittingSizeApi, GetEditFittingSizeData, getFittingSizeApi, UpdateFittingSize, UpdateFittingSizeStatus } from "../../../services/apis/FittingSize";
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
+import useDebounce from "../../components/common/Debounce";
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
@@ -59,6 +60,7 @@ const theadData = [
   { heading: "Size", sortingVale: "size" },
   { heading: "MeasurementUnit", sortingVale: "measurementUnit" },
   { heading: "Created At", sortingVale: "created_at" },
+  { heading: "Status", sortingVale: "status" },
   { heading: "Action", sortingVale: "action" },
 ];
 
@@ -87,6 +89,7 @@ const FittingSize = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [showDeleteMdl,setShowDeleteMdl]=useState(false);
   const [deleteTableDataId,setDeleteTableDataId] = useState("");
+  const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
   const resetForm = () => {
     setFormData({
@@ -143,7 +146,7 @@ const FittingSize = () => {
 
   useEffect(() => {
     fetchFittingSize();
-  }, [UpdateCategory, currentPage, sort, searchInputValue]);
+  }, [UpdateCategory, currentPage, sort, debouncedSearchValue]);
 
   const handleUpdateSubmit = async () => {
     try {

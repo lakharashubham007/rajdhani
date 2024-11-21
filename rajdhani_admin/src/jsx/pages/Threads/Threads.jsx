@@ -29,6 +29,7 @@ import { addFittingSizeApi, deleteFittingSizeApi, GetEditFittingSizeData, getFit
    UpdateFittingSizeStatus } from "../../../services/apis/FittingSize";
 import { addThreadApi, deleteThreadApi, GetEditThreadData, getThreadApi, UpdateThread, UpdateThreadStatus } from "../../../services/apis/Thread";
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
+import useDebounce from "../../components/common/Debounce";
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
@@ -36,6 +37,7 @@ const theadData = [
   { heading: "ThreadSize", sortingVale: "threadSize" },
   { heading: "MeasurementUnit", sortingVale: "measurementUnit" },
   { heading: "Created At", sortingVale: "created_at" },
+  { heading: "Status", sortingVale: "status" },
   { heading: "Action", sortingVale: "action" },
 ];
 
@@ -49,7 +51,7 @@ const Threads = () => {
   );
   const [formData, setFormData] = useState({
     threadSize:"",
-    threadType:"",
+    thread_type:"",
     measurementUnit:""
   });
   const [UpdateCategory, setUpdateCategory] = useState(false);
@@ -65,11 +67,12 @@ const Threads = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [showDeleteMdl,setShowDeleteMdl]=useState(false);
   const [deleteTableDataId,setDeleteTableDataId] = useState("");
+  const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
   const resetForm = () => {
     setFormData({
       threadSize:"",
-      threadType:"",
+      thread_type:"",
       measurementUnit:""
     });
     setLogo(null); // Reset the displayed image
@@ -79,7 +82,7 @@ const Threads = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.threadSize) newErrors.threadSize = "ThreadSize is required.";
-    // if (!formData.threadType) newErrors.threadType = "ThreadType is required.";
+    if (!formData.thread_type) newErrors.thread_type = "Thread_type is required.";
     if (!formData.measurementUnit) newErrors.measurementUnit = "MeasurementUnit is required.";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -123,7 +126,7 @@ const Threads = () => {
 
   useEffect(() => {
     fetchThreadList();
-  }, [UpdateCategory, currentPage, sort, searchInputValue]);
+  }, [UpdateCategory, currentPage, sort, debouncedSearchValue]);
 
   const handleUpdateSubmit = async () => {
     try {
@@ -232,7 +235,7 @@ const Threads = () => {
         setEditCategoryId(data?._id);
         setFormData({
           threadSize:data?.threadSize,
-          threadType:data?.threadType,
+          thread_type:data?.thread_type,
           measurementUnit:data?.measurementUnit,
         }); 
         // setModalCentered(true);
@@ -341,24 +344,24 @@ const Threads = () => {
                           )}
                         </div>
 
-                        {/* <div className="col-sm-4">
+                        <div className="col-sm-4">
                           <label className="col-sm-3 col-form-label">
-                          ThreadType
+                          Thread Type
                           </label>
                           <input
                             type="text"
-                            name="threadType"
-                            value={formData?.threadType}
+                            name="thread_type"
+                            value={formData?.thread_type}
                             className="form-control"
-                            placeholder="ThreadType"
+                            placeholder="Thread_type"
                             onChange={handleInputChange}
                           />
-                          {error?.threadType && (
+                          {error?.thread_type && (
                             <span className="text-danger fs-12">
-                              {error?.threadType}
+                              {error?.thread_type}
                             </span>
                           )}
-                        </div> */}
+                        </div>
 
                         <div className="col-sm-4">
                           <label className=" col-form-label">

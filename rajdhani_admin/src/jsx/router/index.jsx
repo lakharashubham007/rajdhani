@@ -186,7 +186,12 @@ import Materials from "../pages/Materials/Materials";
 import Variants from "../pages/Variants/Variants";
 import AddProduct from "../pages/Products/AddNewProduct";
 import AllProductList from "../pages/Products/ProductList";
+
+import EditProductData from "../pages/Products/EditProductData";
+
 import Parts from "../pages/Parts/Parts";
+import AllSupplierList from "../pages/Supplier/SupplierList";
+import AddNewSupplier from "../pages/Supplier/AddNewSupplier";
 
 
 // import Todo from './pages/Todo';
@@ -224,10 +229,16 @@ const Markup = () => {
     { url: 'variants', component: <Variants /> },
     { url: 'parts', component: <Parts /> },
     
-  
     // Products
     { url: 'addnewproduct', component: <AddProduct /> },
     { url: 'productlist', component: <AllProductList /> },
+    { url: 'editproductdata/:id', component: <EditProductData /> },
+
+    // Supplier
+    { url: 'addnewsupplier', component: <AddNewSupplier /> },
+    { url: 'supplierlist', component: <AllSupplierList /> },
+    { url: 'editsupplierdata/:id', component: <EditProductData /> },
+        
 
     //Food Mangment
     { url: 'category', component: <OldCategories /> },

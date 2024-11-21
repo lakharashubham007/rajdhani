@@ -21,8 +21,8 @@ import { GetAllBrandList } from "../../../services/apis/BrandApi";
 import { getAllMaterialsApi } from "../../../services/apis/Materials";
 import { getAllVariantListApi } from "../../../services/apis/Variants";
 import { getAllPartsApi } from "../../../services/apis/Parts";
-import { addProductApi } from "../../../services/apis/Product";
-import { useNavigate } from "react-router-dom";
+import { addProductApi, GetEditProductData, UpdateProduct } from "../../../services/apis/Product";
+import { useNavigate, useParams } from "react-router-dom";
 
 const options = [
   { value: "veg", label: "Veg" },
@@ -35,11 +35,19 @@ const discountOptions = [
 ];
 
 const AddProduct = () => {
+  const params = useParams()?.id;
   const navigate = useNavigate();
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
+
   const [errors, setErrors] = useState({});
   const [galleryImages, setGalleryImages] = useState([]);
+  const [selectedGalleryImages, setSelectedGalleryImages] = useState([]);
+  
+  // Edit 
+  const [isEdit,setIsEdit]=useState(false);
+  const [imageChanged,setImageChanged]=useState(false);
+  const [editId,setEditId]=useState(false);
 
   //drop option list
   const [categoryOption, setCategoryOption] = useState(null);
@@ -61,13 +69,13 @@ const AddProduct = () => {
   const [selectedmaterialOption, setSelectedmaterialOption] = useState(null);
   const [selectedvariantOption, setSelectedvariantOption] = useState(null);
   const [selectedThreadtypeOption, setSelectedThreadtypeOption] = useState(null);
-  const [selectedPartOption, setSelectedPartOption]= useState(null);
+  const [selectedPartOption,setSelectedPartOption]= useState(null);
 
   const [formData, setFormData] = useState({
     name :"",
     description:"",
     image:"",
-    gallery:[],
+    gallery:"",
     category_id:"",
     subcategory_id:"",
     subsubcategory_id:"",
@@ -90,60 +98,84 @@ const AddProduct = () => {
     { id: 1, variation: "", price: "", sku: "", stock: "" },
   ]);
 
-  // Function to add a new row
-  const addRow = () => {
-    setRows([
-      ...rows,
-      { id: rows.length + 1, variation: "", price: "", sku: "", stock: "" },
-    ]);
-  };
+  const getEditData = async ()=>{
+   try {
+      const res = await GetEditProductData(params);
+      if (res?.data?.success) {
+        const data = res?.data?.product;
+        setEditId(data?._id);
+        setIsEdit(true);
 
-  const handleDeleteTableRow = (id) => {
-    // Filter out the row with the matching id
-    setRows(rows.filter((row) => row.id !== id));
-  };
+        setSelectedCategoryOption({
+          value:data?.category_id?._id,
+          label:data?.category_id?.name 
+        });
+        setSelectedSubCategoryOption({
+          value:data?.subcategory_id?._id,
+          label:data?.subcategory_id?.name  
+        });
+        setSelectedSubSubCategoryOption({
+          value:data?.subsubcategory_id?._id,
+          label:data?.subsubcategory_id?.name   
+        });
+        setSelectedBrandOption({
+          value:data?.brand?._id,
+          label:data?.brand?.name    
+        });
+        setSelectedfittingSizeOption({
+          value:data?.fittingSize?._id,
+          label:data?.fittingSize?.size  
+        });
+        setSelectedmaterialOption({
+          value:data?.material?._id,
+          label:data?.material?.name  
+               });
+        setSelectedvariantOption({
+          value:data?.variant?._id,
+          label:`${data?.variant?.variantType} ${data?.variant?.name}`  
+        });
+        setSelectedThreadtypeOption({
+          value:data?.thread_type?.id,
+          label:`${data?.thread_type?.thread_type} ${data?.thread_type?.threadSize}`  
+        });
 
-  // Function to handle input changes
-  const handleChangeRow = (index, field, value) => {
-    const updatedRows = [...rows];
-    updatedRows[index][field] = value;
-    setRows(updatedRows);
-  };
+        const formattedPartOptions =  data?.parts?.map(item => ({
+            value: item?._id,   // 'id' is the unique identifier
+            label: item?.name  // 'name' is what will be displayed
+          }));
+     
+        setSelectedPartOption(formattedPartOptions);
+        setLogo(data?.image);
+        setSelectedGalleryImages(data?.gallery)
+        setFormData({
+          ...data,
+          category_id:data?.category_id?._id,
+          subcategory_id:data?.subcategory_id?._id,
+          subsubcategory_id:data?.subsubcategory_id?._id,
+          brand:data?.brand?._id,
+          // connection_type:"",
+          fittingSize:data?.fittingSize?._id,
+          material:data?.material?._id,
+          variant:data?.variant?._id,
+          // thread_id:"",
+          parts:data?.parts?.map((val)=> val?._id)          ,
+          thread_type:data?.thread_type?._id,
+        });
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  }
 
-  // Handles image selection and adds selected images to the state
-  // const handleImageChange = (event) => {
-  //   console.log("imageChange");
-    
-  //   // Convert the FileList to an array of files
-  //   const files = Array.from(event.target.files);
-    
-  //   // Create an array of objects for each file with 'file' and 'url'
-  //   const newImages = files.map((file) => ({
-  //     file, // Store the entire File object
-  //     url: URL.createObjectURL(file), // Generate a preview URL for the file
-  //     name: file.name, // Store the file name
-  //     size: file.size, // Store the file size
-  //     type: file.type, // Store the file type (image/jpeg, image/png, etc.)
-  //     lastModified: file.lastModified, // Store last modified timestamp
-  //     lastModifiedDate: file.lastModifiedDate, // Store last modified date
-  //     webkitRelativePath: file.webkitRelativePath, // If needed, store the relative path
-  //   }));
-  
-  //   // Update the gallery images state with the new images
-  //   setGalleryImages((prevImages) => [...prevImages, ...newImages]);
-  
-  //   // Optionally handle any error handling or other state updates
-  // };
+  useEffect(()=>{
+    getEditData()
+  },[]);
 
-  // const handleImageChange = (e) => {
-  //   const selectedFiles = Array.from(e.target.files);
-  //   setGalleryImages(selectedFiles); 
-  // };
 
   const handleGalleryChange = (e) => {
     const files = Array.from(e.target.files); // Convert FileList to an array
     // Map through the selected files and create an array of objects containing the file and preview URL
-    const newImages = files?.map((file) => ({
+    const newImages = files.map((file) => ({
       file, // The actual File object
       url: URL.createObjectURL(file), // Preview URL (optional, for showing previews)
     }));
@@ -162,7 +194,7 @@ const AddProduct = () => {
 
     setFormData((prevData) => ({
       ...prevData,
-      gallery: prevData?.gallery?.filter((_, i) => i !== index), // Remove the image from gallery array
+      gallery: prevData.gallery.filter((_, i) => i !== index), // Remove the image from gallery array
     }));
   };
 
@@ -320,12 +352,12 @@ const AddProduct = () => {
       fData.append("parts", JSON.stringify(formData.parts));
     }
 
-  formData?.gallery?.forEach((file) => {
-    fData.append("gallery", file);
-  });
+    formData?.gallery?.forEach((file) => {
+      fData.append("gallery", file);
+    });
 
     try {
-      const res = await addProductApi(fData);
+      const res = await UpdateProduct(editId,fData);
       // console.log(res, "response is here");
       if (res.data?.success) {
         setLoading(false);
@@ -334,21 +366,23 @@ const AddProduct = () => {
         Swal.fire({
           icon: "success",
           title: "Product",
-          text: res.data?.message || "Product created successfully",
+          text: res.data?.message || "Product update successfully",
           showConfirmButton: false,
           timer: 1500,
         });
         resetForm(); // Reset form after success
         navigate('/productlist');
       } else {
+        // Show error message from backend if creation failed
         setLoading(false);
-        Toaster.error(res.data?.message || "Failed to create product");
-        console.error("Product creation error:", res);
+        Toaster.error(res.data?.message || "Failed to update product");
+        console.error("Product update error:", res);
       }
     } catch (error) {
       setLoading(false);
       // Handle any errors during API request
-      Toaster.error(error.response?.data?.message ||
+      Toaster.error(
+        error.response?.data?.message ||
           "An error occurred while processing your request"
       );
       console.error("Error creating product:", error);
@@ -371,7 +405,7 @@ const AddProduct = () => {
           label: fittingSize.size,
         })
       );
-      setfittingSizeOption(dropdownFittingSize)
+      setfittingSizeOption(dropdownFittingSize);
     } catch (error) {
       console.error("Error fetching cuisines:", error);
       Toaster.error("Failed to load cuisines. Please try again.");
@@ -390,7 +424,7 @@ const fetchAllThreadListApi=async()=>{
           label: `${thread?.thread_type} ${thread?.threadSize}`,
         })
       );
-      setThreadtypeOption(dropdownThreads)
+      setThreadtypeOption(dropdownThreads);
     } catch (error) {
       console.error("Error fetching cuisines:", error);
       Toaster.error("Failed to load cuisines. Please try again.");
@@ -643,7 +677,7 @@ const fetchAllPartList=async()=>{
     <>
       <ToastContainer />
       <Loader visible={loading} />
-      <PageTitle activeMenu={"Add New Product"} motherMenu={"Home"} motherMenuLink={'/dashboard'}/>
+      <PageTitle activeMenu={"Edit Product"} motherMenu={"Home"} motherMenuLink={'/dashboard'}/>
       <div className="row">
         {/* SECTION 1ST */}
         <div className="col-xl-12 col-lg-12">
@@ -788,11 +822,20 @@ const fetchAllPartList=async()=>{
                 />
                 {logo ? (
                   <>
-                    {/* Simple 'X' button as the delete icon */}
-                    <div style={styles.deleteIcon} onClick={handleDeleteLogo}>
-                      ⛌
-                    </div>
-                    <img src={logo} alt="Logo" style={styles.img} />
+                   {
+                    isEdit && !imageChanged ?
+                      <>
+                      {/* Simple 'X' button as the delete icon */}
+                       <div className="deleteIcon" onClick={handleDeleteLogo}> ⛌ </div>
+                       <img className='img' src={`https://api.i2rtest.in/v1/images/image/${logo}`} alt="Logo" />
+                      </>
+                       :
+                      <>
+                       <div className='deleteIcon' onClick={handleDeleteLogo}> ⛌ </div>
+                       <img className='img' src={logo} alt="Logo" />
+                      </>   
+                    }
+               
                   </>
                 ) : (
                   <label htmlFor="logoUpload" style={styles.placeholder}>
@@ -826,10 +869,47 @@ const fetchAllPartList=async()=>{
             </div>
             <div className="card-body d-flex gap-3" >
              
+              <div className="row" style={{ gap: "10px", display: "flex", flexWrap: "wrap" }}>
+                {selectedGalleryImages?.map((image, index) => (
+                  <div
+                    key={index}
+                    style={{
+                      position: "relative",
+                      width: "150px",
+                      height: "150px",
+                      padding: "6px",
+                      border: "solid #cbcbcb 1px",
+                      borderStyle: "dashed",
+                      borderRadius:'10px'
+                    }}>
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "5px",
+                        right: "5px",
+                        backgroundColor: "rgba(255, 0, 0, 0.6)",
+                        borderRadius: "50%",
+                        cursor: "pointer",
+                        padding: "3px 6px",
+                        color: "white",
+                        fontSize: "12px",
+                      }}
+                      onClick={() => handleDeleteImage(index)}>
+                      ⛌
+                    </div>
+                    <img
+                      src={`https://api.i2rtest.in/v1/images/image/${image}`}
+                      alt={`Product ${index}`}
+                      style={{
+                        width: "100%",
+                        height: "100%",
+                        objectFit: "cover",
+                        borderRadius: "5px",
+                      }}
+                    />
+                  </div>
+                ))}
 
-              <div
-                className="row"
-                style={{ gap: "10px", display: "flex", flexWrap: "wrap" }}>
                 {galleryImages?.map((image, index) => (
                   <div
                     key={index}
@@ -858,7 +938,7 @@ const fetchAllPartList=async()=>{
                       ⛌
                     </div>
                     <img
-                      src={image.url}
+                      src={image?.url}
                       alt={`Product ${index}`}
                       style={{
                         width: "100%",
@@ -1516,8 +1596,7 @@ const fetchAllPartList=async()=>{
           <button
             type="submit"
             onClick={handleSubmit}
-            className="btn btn-primary rounded-sm"
-          >
+            className="btn btn-primary rounded-sm">
             Save Information
           </button>
         </div>

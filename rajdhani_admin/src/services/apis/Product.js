@@ -100,15 +100,15 @@ export const GetEditProductData = async (id) => {
   };
 
 
-  export const UpdateProductSize = async (id,formData) => {
+  export const UpdateProduct = async (id,formData) => {
     const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
     try {
         const response = await axios.patch(`${apis.product.updateProduct}/${id}`,
             formData,
       {
         headers: {
-          'Content-Type': 'application/json',
-        //   "Content-Type": "multipart/form-data",
+          // 'Content-Type': 'application/json',
+          "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },
       }

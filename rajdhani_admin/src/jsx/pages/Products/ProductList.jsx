@@ -9,7 +9,7 @@ import {
   Card,
   Form,
 } from "react-bootstrap";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../layouts/PageTitle";
 import {
   addCuisinesApi,
@@ -30,13 +30,20 @@ import { addFittingSizeApi, deleteFittingSizeApi, GetEditFittingSizeData, getFit
 import { addThreadApi, deleteThreadApi, GetEditThreadData, getThreadApi, UpdateThread, UpdateThreadStatus } from "../../../services/apis/Thread";
 import { deleteProductApi, getProductApi, UpdateProductStatus } from "../../../services/apis/Product";
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
+import useDebounce from "../../components/common/Debounce";
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
   { heading: "Id", sortingVale: "_id" },
-  { heading: "Name", sortingVale: "name" },
+  { heading: "Name", sortingVale: "name"},
   { heading: "Type", sortingVale: "product_Type" },
+  { heading: "Product Id", sortingVale: "product_id" },
+
+  { heading: "Pressure Rating", sortingVale: "pressure_rating" },
+  { heading: "Price", sortingVale: "price" },
+
   { heading: "Created At", sortingVale: "created_at" },
+  { heading: "Status", sortingVale: "status" },
   { heading: "Action", sortingVale: "action" },
 ];
 
@@ -66,7 +73,9 @@ const AllProductList = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [showDeleteMdl,setShowDeleteMdl]=useState(false);
   const [deleteTableDataId,setDeleteTableDataId] = useState("");
+  const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
+const navigate= useNavigate()
   const resetForm = () => {
     setFormData({
       threadSize:"",
@@ -124,7 +133,7 @@ const AllProductList = () => {
 
   useEffect(() => {
     fetchProductList();
-  }, [UpdateCategory, currentPage, sort, searchInputValue]);
+  }, [UpdateCategory, currentPage, sort, debouncedSearchValue]);
 
   const handleUpdateSubmit = async () => {
     try {
@@ -153,40 +162,6 @@ const AllProductList = () => {
     }
   };
 
-  const handleSubmit = async () => {
-    if (!validateForm()) {
-      return; // If validation fails, do not proceed further
-    }
-    if (isEdit) {
-      handleUpdateSubmit();
-    } else {
-      setLoading(true); // Start the loader
-      try {
-        const res = await addThreadApi(formData);
-        if (res.status === 200) {
-          setUpdateCategory(true);
-          Toaster.success(res?.data?.message); // Display success message
-          resetForm();
-          setModalCentered(false); // Close modal if necessary
-          setSelectedOption(null)
-        } else {
-          // Handle any non-200 response cases
-          Toaster.error(
-            res?.data?.message || "Something went wrong. Please try again."
-          );
-        }
-      } catch (error) {
-        // If there's an error in the request itself (network error, timeout, etc.)
-        Toaster.error(
-          error.response?.data?.message ||
-            "An error occurred. Please try again."
-        );
-        console.error("Error:", error.message);
-      } finally {
-        setLoading(false); // Stop the loader
-      }
-    }
-  };
 
   const chageData = (frist, sec) => {
     for (var i = 0; i < data.length; ++i) {
@@ -226,23 +201,8 @@ const AllProductList = () => {
   }
 
   const handleEditThread = async (id) => {
-    try {
-      const res = await GetEditThreadData(id);
-      if (res?.data?.success) {
-        const data = res?.data?.thread;
-        setEditCategoryId(data?._id);
-        setFormData({
-          threadSize:data?.threadSize,
-          threadType:data?.threadType,
-          measurementUnit:data?.measurementUnit,
-        }); 
-        // setModalCentered(true);
-        setIsEdit(true);
-  
-      }
-    } catch (err) {
-      console.log(err);
-    }
+    navigate(`/editproductdata/${id}`)
+   
   };
 
   const handleDeleteProduct=(id)=>{
@@ -421,13 +381,30 @@ const AllProductList = () => {
                           <td>{data?._id}</td>
                           
                           <td className="d-flex align-items-center gap-2">
-                            {data?.name}
+                          {data?.image ? (
+                            <img className='select-file-img' src={`https://api.i2rtest.in/v1/images/image/${data?.image}`} alt={data?.name}/>
+                            ) : (
+                             ""
+                                // <span>No Image Available</span>
+                            )} {data?.name}
                           </td>
                           
                           <td className="">
                             {data?.product_Type}
                           </td>
-                      
+
+                          <td className="">
+                            {data?.product_id}
+                          </td>
+
+                          <td className="">
+                            {data?.pressure_rating}
+                          </td>
+
+                          <td className="">
+                            {data?.price}
+                          </td>
+                                                    
                           <td>
                             {moment(data?.created_at).format(
                               "DD MMM YYYY, h:mm:ss a"

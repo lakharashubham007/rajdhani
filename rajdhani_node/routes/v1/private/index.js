@@ -10,7 +10,7 @@ const thread = require('./threads.route')
 const fittingsize = require('./fittingSize.route')
 const material = require('./material.route')
 const supplier = require('./supplier.route')
-
+const purchaseorders = require('./purchaseOrder.route')
 
 const router = express.Router();
 
@@ -25,6 +25,8 @@ router.use("/threads",thread)
 router.use("/fittingsizes",fittingsize)
 router.use("/materials",material)
 router.use("/suppliers",supplier)
+router.use("/purchaseorders",purchaseorders)
+
 
 
 

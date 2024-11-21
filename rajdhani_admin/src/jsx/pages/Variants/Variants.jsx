@@ -58,6 +58,7 @@ import { addMaterialApi, deleteMaterialApi, GetEditMaterialData, getMaterialsApi
 import { getAllThreadListApi } from "../../../services/apis/Thread";
 import { addVariantApi, deleteVariantApi, GetEditVariantData, getVariantApi, UpdateVariant, UpdateVariantStatus } from "../../../services/apis/Variants";
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
+import useDebounce from "../../components/common/Debounce";
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
@@ -66,6 +67,7 @@ const theadData = [
   // { heading: "VariantCode", sortingVale: "variantCode" },
   // { heading: "Description", sortingVale: "description" },
   { heading: "Created At", sortingVale: "created_at" },
+  { heading: "Status", sortingVale: "status" },
   { heading: "Action", sortingVale: "action" },
 ];
 
@@ -102,6 +104,7 @@ const Variants = () => {
   const [allCategoryList,setAllCategoryList]=useState([]);
   const [allSubCategoryList,setAllSubCategoryList]=useState([]);
   const [allSubSubCategoryList,setAllSubSubCategoryList]=useState([]);
+  const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
   const resetForm = () => {
     setFormData({
@@ -243,7 +246,7 @@ const fetchAllSubSubCategoryList=async()=>{
 
   useEffect(() => {
     fetchVariants();
-  }, [UpdateCategory, currentPage, sort, searchInputValue]);
+  }, [UpdateCategory, currentPage, sort, debouncedSearchValue]);
 
   const handleUpdateSubmit = async () => {
     try {
