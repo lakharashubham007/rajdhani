@@ -24,8 +24,12 @@ module.exports.Thread = require('./threads.model').Thread
 module.exports.Materials = require('./materials.model').Materials
 module.exports.Supplier = require('./supplier.model').Supplier
 module.exports.PurchaseOrder = require('./purchaseOrders.model').PurchaseOrder
+module.exports.State = require('./states.model').State
 // module.exports. = require('./').
 // module.exports. = require('./').
+// module.exports. = require('./').
+// module.exports. = require('./').
+
 
 // module.exports.FittingSize = require('./').FittingSize
 

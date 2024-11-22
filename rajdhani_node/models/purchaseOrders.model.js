@@ -12,14 +12,15 @@ const productSchema = new mongoose.Schema({
   price_per_unit: { type: Number, required: true },
   discount_per_unit: { type: Number, default: 0 },
   total_discount: { type: Number, default: 0 },
-  cgst: { type: Number, required: true },
-  sgst: { type: Number, required: true },
+  cgst: { type: Number, },
+  sgst: { type: Number, },
   igst: { type: Number, default: 0 },
   cess: { type: Number, default: 0 },
-  amount: { type: Number, required: true },
+  amount: { type: Number,  },
 });
 
 const purchaseOrderSchema = new mongoose.Schema({
+  purchase_order_id: { type: String, unique: true }, 
   supplier_id: { type: mongoose.Schema.Types.ObjectId, ref: "Supplier", required: true },
   order_details: {
     date: { type: String, required: true },
@@ -36,6 +37,23 @@ const purchaseOrderSchema = new mongoose.Schema({
     grand_total: { type: Number, required: true },
      
   },
+  billing_details: {
+    name: { type: String },
+    address: { type: String },
+    gstin: { type: String },
+    state_name: { type: String },
+    state_code: { type: String },
+    email: { type: String },
+  },
+  shipping_details: {
+    name: { type: String },
+    address: { type: String },
+    gstin: { type: String },
+    state_name: { type: String },
+    state_code: { type: String },
+    email: { type: String },
+  },
+  
 }  ,{
   timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, // Adds createdAt and updatedAt fields
 }

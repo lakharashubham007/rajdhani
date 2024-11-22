@@ -10,6 +10,7 @@ const restaurants = require('./restaurants.route')
 const addons = require('./addon.route')
 const food = require('./food.route')
 const imageRoute = require('./images.route')
+const states = require('./state.route')
 
 const router = express.Router();
 
@@ -24,6 +25,8 @@ router.use("/restaurant",restaurants);
 router.use("/addons", addons)
 router.use("/food",food)
 router.use("/images", imageRoute);
+router.use("/states", states);
+
 
 
 

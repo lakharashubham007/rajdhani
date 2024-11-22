@@ -1,9 +1,31 @@
 const { PurchaseOrder } = require("../models");
 
+// Generate a unique purchase_order_id
+const generatePurchaseOrderId = async () => {
+  const currentYear = new Date().getFullYear();
+  const nextYear = currentYear + 1;
+  const fiscalYear = `${currentYear % 100}-${nextYear % 100}`;
+
+  const lastOrder = await PurchaseOrder.findOne({})
+    .sort({ created_at: -1 }) // Get the most recent order
+    .select("purchase_order_id");
+
+  let orderNumber = 1;
+  if (lastOrder) {
+    const lastOrderId = lastOrder.purchase_order_id;
+    const lastOrderNumber = parseInt(lastOrderId.split("/").pop(), 10); // Extract the last number
+    orderNumber = lastOrderNumber + 1;
+  }
+
+  const formattedOrderNumber = orderNumber.toString().padStart(2, "0");
+  return `SB/PO/${fiscalYear}/${formattedOrderNumber}`;
+};
+
 // Create a new Purchase Order
 const createPurchaseOrder = async (data) => {
   try {
-    const newPurchaseOrder = await PurchaseOrder.create(data);
+    const purchaseOrderId = await generatePurchaseOrderId();
+    const newPurchaseOrder = await PurchaseOrder.create({...data , purchase_order_id: purchaseOrderId });
     return newPurchaseOrder;
   } catch (error) {
     console.error("Error creating purchase order:", error);

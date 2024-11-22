@@ -21,7 +21,13 @@ module.exports.threadController = require('./threads.controller')
 module.exports.materialController = require('./material.controller')
 module.exports.supplierController = require('./supplier.controller')
 module.exports.purchaseOrderController = require('./purchaseOrdes.controller')
+module.exports.statesController = require('./states.controller')
 // module.exports. = require('./')
+
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+
 // module.exports.variantSubSubCategoriesController = require('./')
 // module.exports.variantSubSubCategoriesController = require('./')
 // module.exports.variantSubSubCategoriesController = require('./')
