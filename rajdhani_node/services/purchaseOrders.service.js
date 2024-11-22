@@ -68,7 +68,7 @@ const getPurchaseOrders = async (page, limit, sort, search) => {
 // Get a single Purchase Order by ID
 const getPurchaseOrderById = async (id) => {
   try {
-    const purchaseOrder = await PurchaseOrder.findById(id);
+    const purchaseOrder = await PurchaseOrder.findById(id).populate('supplier_id');
     return purchaseOrder;
   } catch (error) {
     console.error("Error fetching purchase order by ID:", error);
