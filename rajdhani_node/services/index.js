@@ -24,8 +24,8 @@ module.exports.materialService = require("./material.service");
 module.exports.supplierService = require("./supplier.service");
 module.exports.purchaseOrderService = require("./purchaseOrders.service");
 module.exports.statesService = require("./states.service");
+module.exports.purchaseOrderItemService = require("./purchaseOrderItems.service");
 
-// module.exports. = require("./");
 // module.exports. = require("./");
 // module.exports. = require("./");
 // module.exports. = require("./");

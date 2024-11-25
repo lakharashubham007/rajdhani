@@ -1,6 +1,6 @@
 const express = require("express");
 const router = express.Router();
-const { purchaseOrderController } = require("../../../controllers");
+const { purchaseOrderController, purchaseOrderItemController } = require("../../../controllers");
 const multer = require("multer");
 const { Authentication, Authorization } = require("../../../middleware");
 
@@ -22,5 +22,8 @@ router.get("/purchase-orders", Authentication, purchaseOrderController.getAllPur
 router.get("/purchase-order-list/:id", Authentication, Authorization, purchaseOrderController.getPurchaseOrderById);
 router.patch("/edit-purchase-order/:id", Authentication, Authorization, purchaseOrderController.updatePurchaseOrder);
 router.delete("/delete-purchase-order/:id", Authentication, Authorization, purchaseOrderController.deletePurchaseOrder);
+
+//PO Items
+router.post("/create-po-item", Authentication,  purchaseOrderItemController.createPurchaseOrderItem);
 
 module.exports = router;

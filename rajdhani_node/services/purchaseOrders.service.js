@@ -1,31 +1,40 @@
 const { PurchaseOrder } = require("../models");
 
-// Generate a unique purchase_order_id
+
+// Generate a new Purchase Order ID
 const generatePurchaseOrderId = async () => {
-  const currentYear = new Date().getFullYear();
-  const nextYear = currentYear + 1;
-  const fiscalYear = `${currentYear % 100}-${nextYear % 100}`;
+  try {
+    // Get the current fiscal year
+    const now = new Date();
+    const fiscalYearStart = now.getMonth() < 3 ? now.getFullYear() - 1 : now.getFullYear();
+    const fiscalYearEnd = fiscalYearStart + 1;
+    const fiscalYear = `${fiscalYearStart.toString().slice(-2)}-${fiscalYearEnd.toString().slice(-2)}`;
 
-  const lastOrder = await PurchaseOrder.findOne({})
-    .sort({ created_at: -1 }) // Get the most recent order
-    .select("purchase_order_id");
+    // Find the latest purchase order
+    const lastOrder = await PurchaseOrder.findOne().sort({ voucher_no: -1 });
 
-  let orderNumber = 1;
-  if (lastOrder) {
-    const lastOrderId = lastOrder.purchase_order_id;
-    const lastOrderNumber = parseInt(lastOrderId.split("/").pop(), 10); // Extract the last number
-    orderNumber = lastOrderNumber + 1;
+    console.log("last po ", lastOrder)
+
+    let newCount = 1;
+    if (lastOrder) {
+      const lastPoId = lastOrder.voucher_no;
+      const lastCount = parseInt(lastPoId.split('/').pop(), 10);
+      newCount = lastCount + 1;
+    }
+
+    // Generate the new PO ID
+    return `SB/PO/${fiscalYear}/${String(newCount)}`;
+  } catch (error) {
+    console.error("Error generating purchase order ID:", error);
+    throw error;
   }
-
-  const formattedOrderNumber = orderNumber.toString().padStart(2, "0");
-  return `SB/PO/${fiscalYear}/${formattedOrderNumber}`;
 };
 
 // Create a new Purchase Order
 const createPurchaseOrder = async (data) => {
   try {
     const purchaseOrderId = await generatePurchaseOrderId();
-    const newPurchaseOrder = await PurchaseOrder.create({...data , purchase_order_id: purchaseOrderId });
+    const newPurchaseOrder = await PurchaseOrder.create({...data , voucher_no: purchaseOrderId });
     return newPurchaseOrder;
   } catch (error) {
     console.error("Error creating purchase order:", error);

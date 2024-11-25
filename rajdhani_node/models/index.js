@@ -23,16 +23,17 @@ module.exports.FittingSize = require('./fittingSizes.model').FittingSize
 module.exports.Thread = require('./threads.model').Thread
 module.exports.Materials = require('./materials.model').Materials
 module.exports.Supplier = require('./supplier.model').Supplier
-module.exports.PurchaseOrder = require('./purchaseOrders.model').PurchaseOrder
 module.exports.State = require('./states.model').State
+module.exports.PurchaseOrder = require('./purchaseOrders.model').PurchaseOrder
+module.exports.PurchaseOrderItem = require('./purchaseOrderItem.model').PurchaseOrderItem
+module.exports.PurchaseOrderBill = require('./purchaseOrderBill.model').PurchaseOrderBill
+module.exports.PurchaseOrderBillItem = require('./purchaseOrderBillItem.model').PurchaseOrderBillItem
+
 // module.exports. = require('./').
 // module.exports. = require('./').
 // module.exports. = require('./').
 // module.exports. = require('./').
 
-
-// module.exports.FittingSize = require('./').FittingSize
-
-module.exports.Clients = require('./clients.model').Clients
+// module.exports.Clients = require('./clients.model').Clients
 
 
