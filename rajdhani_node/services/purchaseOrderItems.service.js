@@ -22,8 +22,9 @@ const getPurchaseOrderItems = async () => {
 
 const getPurchaseOrderItemById = async (id) => {
   try {
-    const item = await PurchaseOrderItem.findById(id);
-    return item;
+    const items = await PurchaseOrderItem.find({ po_id: id });
+    
+    return items;
   } catch (error) {
     console.error("Error getting purchase order item by ID:", error);
     throw error;

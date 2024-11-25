@@ -23,8 +23,8 @@ module.exports.supplierController = require('./supplier.controller')
 module.exports.purchaseOrderController = require('./purchaseOrders.controller')
 module.exports.statesController = require('./states.controller')
 module.exports.purchaseOrderItemController = require('./purchaseOrderItems.controller')
+module.exports.purchaseOrderBillController = require('./purchaseOrderBill.controller')
 
-// module.exports. = require('./')
 // module.exports. = require('./')
 // module.exports. = require('./')
 

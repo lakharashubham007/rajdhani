@@ -25,5 +25,8 @@ router.delete("/delete-purchase-order/:id", Authentication, Authorization, purch
 
 //PO Items
 router.post("/create-po-item", Authentication,  purchaseOrderItemController.createPurchaseOrderItem);
+router.get("/po-items/:id", Authentication,  purchaseOrderItemController.getPurchaseOrderItemById);
+router.get("/po-items", Authentication,  purchaseOrderItemController.getPurchaseOrderItems);
+
 
 module.exports = router;
