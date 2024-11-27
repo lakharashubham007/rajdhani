@@ -1,0 +1,128 @@
+.row-input{
+    width: 60px;
+}
+
+.supplier-detail-text{
+  font-weight:400;
+  color:'#000000';
+}
+
+.table-head{
+  background-color: #e5e5e5;
+}
+
+.summary-section{
+  display: flex;
+  justify-content: end;
+  background-color: white;
+  padding: 10px;
+  border-radius: 10px;
+}
+
+.po-view-h5{
+  color: #000000;
+  font-size: .875rem;
+}
+
+.po-view-p{
+  color: #4b4b4b;
+  font-weight: 500;
+  margin: 0px;
+}
+
+.address-block{
+  border-right: solid 1px rgb(224, 224, 224);
+}
+
+
+/* Bill Card Styling */
+.bill-card {
+  width: 350px;
+  background: white;
+  /* linear-gradient(135deg, #b1b9ff, #6879e2);  */
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
+  padding: 20px;
+  font-size: 14px;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hover effect for card */
+.bill-card:hover {
+  transform: translateY(-10px);
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Header Styling */
+.bill-header {
+  /* text-align: center; */
+  margin-bottom: 20px;
+  color: #292929;
+}
+
+.bill-header h2 {
+  font-size: 20px;
+  font-weight: bold;
+  margin: 0;
+}
+
+.bill-header p {
+  font-size: 12px;
+  font-weight: 300;
+  margin-top: 0px;
+}
+
+/* Item Details */
+.bill-details .item {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 15px;
+  color: #000000;
+}
+
+.bill-details .item span {
+  font-size: 14px;
+  color: rgba(0, 0, 0, 0.85);
+}
+
+.bill-details .item span:last-child {
+  font-weight: bold;
+}
+
+/* Total Section */
+.bill-total {
+  margin-top: 18px;
+  font-weight: bold;
+  font-size: 18px;
+  /* text-align: center; */
+  color: #000000;
+}
+
+.bill-total span {
+  font-size: 20px;
+  color: #ffd700; /* Gold color */
+}
+
+/* Footer Styling */
+.bill-footer {
+  margin-top: 20px;
+  text-align: center;
+  font-size: 13px;
+  color: rgba(31, 31, 31, 0.7);
+}
+
+.bill-footer p {
+  margin: 0;
+  font-weight: 300;
+}
+
+.bill-card-btn{
+  border: none;
+  background-color: transparent;
+}
+
+.table-close-btn{
+  background-color: transparent;
+  border: none;
+}

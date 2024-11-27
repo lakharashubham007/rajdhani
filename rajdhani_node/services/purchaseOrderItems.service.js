@@ -1,4 +1,6 @@
 const { PurchaseOrderItem } = require("../models");
+const mongoose = require('mongoose');
+
 
 const createPurchaseOrderItem = async (data) => {
   try {
@@ -51,10 +53,49 @@ const deletePurchaseOrderItem = async (id) => {
   }
 };
 
+
+const updateSpecificItems = async (id, itemsToUpdate) => {
+
+  console.log("id is here", id)
+  try {
+    let updatedItems = [];
+   
+    for (const item of itemsToUpdate) {
+      console.log("all is here",
+
+        { _id: item._id, po_id: id },  // Match document
+        { $set: item }, // Update only provided fields
+        { new: true }
+
+      )
+      const updatedItem = await PurchaseOrderItem.findOneAndUpdate(
+        { _id: item._id, po_id: id },  // Match document
+        { $set: item }, // Update only provided fields
+        { new: true } // Return the updated document
+      );
+
+  
+  console.log(updatedItem,"updatedItem is her")
+
+      if (updatedItem) {
+        updatedItems.push(updatedItem); // Add updated document to the result list
+      }
+    }
+   console.log("updated Successfully")
+    return updatedItems; // Return all updated items
+  } catch (error) {
+    console.error("Error updating specific items:", error);
+    throw error;
+  }
+};
+
+
 module.exports = {
   createPurchaseOrderItem,
   getPurchaseOrderItems,
   getPurchaseOrderItemById,
   updatePurchaseOrderItem,
   deletePurchaseOrderItem,
+  updateSpecificItems
+  
 };

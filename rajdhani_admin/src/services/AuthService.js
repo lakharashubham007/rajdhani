@@ -86,25 +86,33 @@ export function runLogoutTimer(dispatch, timer, navigate) {
 
 export function checkAutoLogin(dispatch, navigate) {
     const tokenDetailsString = localStorage.getItem('tokens');
-    console.log("tokenDetailsString",tokenDetailsString)
+    console.log("tokenDetailsString", tokenDetailsString);
 
-    let tokenDetails = '';
     if (!tokenDetailsString) {
         dispatch(Logout(navigate));
-		return;
+        return;
     }
 
-    // tokenDetails = JSON.parse(tokenDetailsString);
-    let expireDate = new Date(tokenDetails.expires);
-    let todaysDate = new Date();
+    let tokenDetails;
+    try {
+        tokenDetails = JSON.parse(tokenDetailsString); // Parse token details
+    } catch (error) {
+        console.error("Failed to parse token details:", error);
+        dispatch(Logout(navigate));
+        return;
+    }
+
+    const expireDate = new Date(tokenDetails.expires);
+    const todaysDate = new Date();
 
     if (todaysDate > expireDate) {
         dispatch(Logout(navigate));
         return;
     }
-		
+
     dispatch(loginConfirmedAction(tokenDetails));
-	
+
     const timer = expireDate.getTime() - todaysDate.getTime();
     runLogoutTimer(dispatch, timer, navigate);
 }
+

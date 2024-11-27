@@ -23,10 +23,14 @@ router.get("/purchase-order-list/:id", Authentication, Authorization, purchaseOr
 router.patch("/edit-purchase-order/:id", Authentication, Authorization, purchaseOrderController.updatePurchaseOrder);
 router.delete("/delete-purchase-order/:id", Authentication, Authorization, purchaseOrderController.deletePurchaseOrder);
 
+router.patch("/update-po-status/:id", Authentication, Authorization, purchaseOrderController.updatePurchaseOrderStatus);
+
+
 //PO Items
 router.post("/create-po-item", Authentication,  purchaseOrderItemController.createPurchaseOrderItem);
 router.get("/po-items/:id", Authentication,  purchaseOrderItemController.getPurchaseOrderItemById);
 router.get("/po-items", Authentication,  purchaseOrderItemController.getPurchaseOrderItems);
+router.put('/update-po-items/:id',Authentication,purchaseOrderItemController.updateSpecificPOItems);
 
 
 module.exports = router;

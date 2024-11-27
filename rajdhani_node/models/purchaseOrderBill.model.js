@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 
 const purchaseOrderBillSchema = new mongoose.Schema({
-    bill_id: { type: String, required: true, unique: true },
+    bill_no: { type: String, required: true, unique: true },
     purchase_order_id: { type: mongoose.Schema.Types.ObjectId, ref: 'PurchaseOrder', required: true },
     bill_date: { type: String, },
     bill_doc: { type: String, }, // Image file name

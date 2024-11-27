@@ -1,11 +1,14 @@
 import React, { useReducer, useContext, useEffect, useState } from "react";
 import { Collapse } from 'react-bootstrap';
+/// Link
 import { Link } from "react-router-dom";
 import { MenuList } from './Menu';
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { getSidebarMenusApi } from "../../../services/apis/SidebarMenuApi";
-
+// import LogoutPage from './Logout';
+/// Image
+// import profile from "../../../assets/images/profile/pic1.jpg";
 
 const reducer = (previousState, updatedState) => ({
   ...previousState,
@@ -106,9 +109,16 @@ const SideBar = () => {
 
         setSidebarMenus(updatedMenus);
 
+        // // Replace this URL with your actual API endpoint
+        // const response = await getSidebarMenusApi(); // Set the fetched sidebar menus to state
+        // console.log(response, 'response is hereeeeeee');
 
+        // // setSidebarMenus(response?.data?.MenuList);
+        // setLoading(false);
       } catch (err) {
-
+        // Handle any errors
+        // setError(err.message);
+        // setLoading(false);
       }
     };
 
@@ -116,8 +126,9 @@ const SideBar = () => {
     fetchSidebarMenus();
   }, []);
 
-
-  // Function to determine badge color class based on status
+  // Function to determine badge color class based on data.update
+   // Function to determine badge color class based on data.update
+   // Function to determine badge color class based on status
   const getBadgeColorClass = (status) => {
     switch (status) {
       case "All":
@@ -215,7 +226,7 @@ const SideBar = () => {
                                     className={`${data.to === path ? 'mm-active' : ''}`}
                                   >
                                     {data.title}
-                                    <span className={`badge badge-xs style-1 ${getBadgeColorClass(data.title)}`}>
+                                    <span  className={`badge badge-xs style-1 ${getBadgeColorClass(data.title)}`}>
                                       {data.update}
                                     </span>
                                   </Link>

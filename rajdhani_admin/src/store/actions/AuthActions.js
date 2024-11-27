@@ -54,6 +54,7 @@ export function loginAction(email, password, navigate) {
     return (dispatch) => {
          login(email, password)
             .then((response) => {
+                console.log(response?.data, " data is hrer in login method.");
                 saveTokenInLocalStorage(response.data);
                 // runLogoutTimer(
                 //     dispatch,
@@ -99,6 +100,7 @@ export function loginFailedAction(data) {
 }
 
 export function loginConfirmedAction(data) {
+    console.log(data, "data is hrer in acrion file");
     return {
         type: LOGIN_CONFIRMED_ACTION,
         payload: data,

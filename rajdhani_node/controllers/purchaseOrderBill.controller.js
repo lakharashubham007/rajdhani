@@ -1,18 +1,14 @@
 const {purchaseOrderBillService} = require('../services');
 const fs = require('fs');
+const path = require('path');
 
 
 // Create a new Purchase Order Bill
 const createPurchaseOrderBill = async (req, res) => {
   try {
     const billData = req.body;
-
-    const file = bill_doc = req.files.bill_doc[0].originalname
-
-    console.log("file is here", file)
-    // if (req.files && req.files.image) {
-    //   billData.bill_doc = req.files.bill_doc[0].originalname;
-    // }
+    
+    const file = req.files?.bill_doc[0]?.originalname;
 
     const newBill = await purchaseOrderBillService.createPurchaseOrderBill(billData,file);
     res.json({ success: true, bill: newBill, message: "Purchase order bill created successfully!" });
@@ -100,12 +96,12 @@ const checkBill = async (req, res) => {
 
 // Controller function to handle file download
 const downloadBillFileController = async (req, res) => {
-  const { bill_id } = req.params;
+  const { bill_id } = req.params.id;
 
   try {
     // Call the service to get the file path
-    const filePath = await purchaseOrderBillService.downloadBillFile(bill_id);
-
+    const filePath = await purchaseOrderBillService.downloadBillFile(req.params.id);
+   console.log("in conntroller ",filePath)
     // Get the file name from the file path
     const fileName = path.basename(filePath);
 
@@ -122,6 +118,22 @@ const downloadBillFileController = async (req, res) => {
   }
 };
 
+// Get PurchaseOrderBillItems by Bill ID and PO ID
+const getPurchaseOrderBillItemsByBillAndPoId = async (req, res) => {
+  try {
+    const { billId, poId } = req.query;
+    const filter = {};
+    if (billId) filter.bill_id = billId;
+    if (poId) filter.po_id = poId;
+
+    const items = await purchaseOrderBillService.getPurchaseOrderBillItemsByFilter(filter);
+    res.status(200).json({ success: true, data: items });
+  } catch (error) {
+    console.error("Error fetching PurchaseOrderBillItems:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   createPurchaseOrderBill,
   getAllPurchaseOrderBills,
@@ -129,5 +141,6 @@ module.exports = {
   updatePurchaseOrderBill,
   deletePurchaseOrderBill,
   checkBill,
-  downloadBillFileController
+  downloadBillFileController,
+  getPurchaseOrderBillItemsByBillAndPoId
 };

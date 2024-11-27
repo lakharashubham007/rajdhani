@@ -32,18 +32,22 @@ import { deleteProductApi, getProductApi, UpdateProductStatus } from "../../../s
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
 import useDebounce from "../../components/common/Debounce";
 import { deleteSupplierApi, getSupplierApi, UpdateSupplierStatus } from "../../../services/apis/Supplier";
+import { getSupplierPurchaseOrderApi } from "../../../services/apis/PurchaseOrder";
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
-  { heading: "Id", sortingVale: "_id" },
-  { heading: "Name", sortingVale: "name"},
+  { heading: "Order Id", sortingVale: "_id" },
+  { heading: "Supplier Name", sortingVale: "name"},
+  { heading: "Supplier Address", sortingVale: "address"},
+  { heading: "Due Date", sortingVale: "due_date"},
+  { heading: "Do Amount", sortingVale: "grand_total"},
 
   { heading: "Created At", sortingVale: "created_at" },
   { heading: "Status", sortingVale: "status" },
   { heading: "Action", sortingVale: "action" },
 ];
 
-const AllSupplierList = () => {
+const SupplierPurchaseOrderList = () => {
   const [sort, setSortata] = useState(10);
   const [loading, setLoading] = useState(false);
   const [modalCentered, setModalCentered] = useState(false);
@@ -57,7 +61,7 @@ const AllSupplierList = () => {
     measurementUnit:""
   });
   const [UpdateCategory, setUpdateCategory] = useState(false);
-  const [supplierList, setSupplierList] = useState([]);
+  const [purchaseOrderList, setPurchaseOrderList] = useState([]);
   const [isEdit, setIsEdit] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -103,18 +107,18 @@ const navigate= useNavigate()
   };
 
 //   getSubCategoriesApi
-  const fetchSupplierList=async(sortValue)=>{
+  const fetchPurchaseOrderList=async(sortValue)=>{
         // Set loading to true when the API call starts
         setLoading(true);
         try {
-          const res = await getSupplierApi(
+          const res = await getSupplierPurchaseOrderApi(
             currentPage,
             sort,
             sortValue,
             searchInputValue
           );
     
-          setSupplierList(res?.data);
+          setPurchaseOrderList(res?.data);
 
           setUpdateCategory(false);
         } catch (error) {
@@ -128,7 +132,7 @@ const navigate= useNavigate()
   }
 
   useEffect(() => {
-    fetchSupplierList();
+    fetchPurchaseOrderList();
   }, [UpdateCategory, currentPage, sort, debouncedSearchValue]);
 
   const handleUpdateSubmit = async () => {
@@ -141,7 +145,7 @@ const navigate= useNavigate()
         setModalCentered(false);
         setIsEdit(false);
   
-        fetchSupplierList();
+        fetchPurchaseOrderList();
         setSelectedOption(null)
       } else {
         Toaster.error(
@@ -189,10 +193,10 @@ const navigate= useNavigate()
 
     if (iconData.complete) {
       const sortValue = { value: name, type: "asc" };
-      fetchSupplierList(sortValue);
+      fetchPurchaseOrderList(sortValue);
     } else {
       const sortValue = { value: name, type: "dsc" };
-      fetchSupplierList(sortValue);
+      fetchPurchaseOrderList(sortValue);
     }
   }
 
@@ -212,7 +216,7 @@ const navigate= useNavigate()
       //   console.log("response",res);
       if (res.status === 200) {
         Toaster.success(res?.data?.message); // Display success message
-        fetchSupplierList();
+        fetchPurchaseOrderList();
         setDeleteTableDataId("");
         setShowDeleteMdl(false);
       } else {
@@ -233,7 +237,7 @@ const navigate= useNavigate()
         const res =await UpdateSupplierStatus(id,fdata);
         if (res.status === 200) {
          Toaster.success(res?.data?.message); // Display success message
-         fetchSupplierList()
+         fetchPurchaseOrderList()
       } else {
         Toaster.error(res?.data?.message || "Something went wrong. Please try again.");
       }
@@ -264,7 +268,7 @@ const navigate= useNavigate()
       <ToastContainer />
       <Loader visible={loading} />
       <PageTitle
-        activeMenu={"Suppliers"}
+        activeMenu={"Purchase Order"}
         motherMenu={"Home"}
         motherMenuLink={"/dashboard"}
       />
@@ -273,14 +277,13 @@ const navigate= useNavigate()
         <Col lg={12}>
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Supplier List</h4>
+              <h4 className="card-title">Purchase Order List</h4>
               {/* <Link to={"/add-staff"} className="btn btn-primary">+ Add New</Link> */}
               {/* <Button
                 variant="primary"
                 type="button"
                 className="mb-2 me-2"
-                onClick={handleAddNewBrand}
-              >
+                onClick={handleAddNewBrand}>
                 + Add New Sub Category
               </Button> */}
             </div>
@@ -369,31 +372,34 @@ const navigate= useNavigate()
                       </tr>
                     </thead>
                     <tbody>
-                      {supplierList?.suppliers?.map((data, ind) => (
+                      {purchaseOrderList?.purchaseOrders?.map((data, ind) => (
                         <tr key={ind}>
-                          <td>
-                            <strong>{ind + 1}</strong>
-                          </td>
+                          <td><strong>{ind + 1}</strong> </td>
+                          
                           <td>{data?._id}</td>
                           
-                          <td className="d-flex align-items-center gap-2">
-                          {data?.image ? (
-                            <img className='select-file-img' src={`https://api.i2rtest.in/v1/images/image/${data?.image}`} alt={data?.name}/>
-                            ) : (
-                             ""
-                                // <span>No Image Available</span>
-                            )} {data?.name}
+                          <td className="">
+                           {data?.supplier_id?.name}
                           </td>
-                          
-                       
-                                                    
+
+                          <td className="">
+                            {data?.supplier_id?.city} {data?.supplier_id?.state}
+                          </td>
+
+                          <td className="">
+                            {moment(data?.order_details?.due_date).format("DD MMM YYYY")}
+                          </td>
+
+                          <td className="">
+                            {data?.summary?.grand_total}
+                          </td>
+
                           <td>
-                            {moment(data?.created_at).format(
-                              "DD MMM YYYY, h:mm:ss a"
-                            )}
+                            {moment(data?.created_at).format("DD MMM YYYY, h:mm:ss a")}
                           </td>
+
                           <td> 
-                           <Switch
+                          <Switch
                             checked={data?.status} 
                             onChange={() => handleStatusChange(data?._id, data?.status)} 
                             offColor="#f0f1ff" 
@@ -404,18 +410,25 @@ const navigate= useNavigate()
                             checkedIcon={false}
                             width={40}  // Adjust width of the switch
                             height={20} // Adjust height of the switch
-                           />
+                          />
                           </td>
                           <td>
                             <button className="btn btn-xs sharp btn-primary me-1"
-                              onClick={() => handleEditThread(data?._id)}>
-                              <i className="fa fa-pencil" />
+                              onClick={() => navigate(`/purchaseorderview/${data?._id}`)}>
+                              <i class="fa-solid fa-eye"></i>
                             </button>
-
+                           
+                            <button className="btn btn-xs sharp btn-light me-1"
+                              onClick={() => navigate(`/verifyPurchaseOrder/${data?._id}`)}
+                             >
+                            <i class="fa-solid fa-check"></i>
+                            </button>
+                         
                             <button className="btn btn-xs sharp btn-danger"
                               onClick={() => handleDeleteSupplier(data?._id)}>
                               <i className="fa fa-trash" />
                             </button>
+
                           </td>
                         </tr>
                       ))}
@@ -427,8 +440,8 @@ const navigate= useNavigate()
                       <div className="pagination-container">
                         <ReactPaginate
                           pageCount={Math.ceil(
-                            supplierList?.totalSuppliers /
-                              supplierList?.rowsPerPage
+                            purchaseOrderList?.totalRecords /
+                              purchaseOrderList?.rowsPerPage
                           )}
                           pageRangeDisplayed={1}
                           marginPagesDisplayed={2}
@@ -451,4 +464,4 @@ const navigate= useNavigate()
   );
 };
 
-export default AllSupplierList;
+export default SupplierPurchaseOrderList;

@@ -81,6 +81,29 @@ const deletePurchaseOrder = async (req, res) => {
   }
 };
 
+const updatePurchaseOrderStatus = async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { status } = req.body;
+
+    // const allowedStatuses = ["Pending", "In Progress", "Completed"];
+    // if (!allowedStatuses.includes(status)) {
+    //   return res.status(400).json({ success: false, message: "Invalid status" });
+    // }
+
+    const updatedOrder = await purchaseOrderService.updatePurchaseOrderStatus(id, status);
+
+    if (!updatedOrder) {
+      return res.status(404).json({ success: false, message: "Purchase order not found" });
+    }
+
+    res.json({ success: true, updatedOrder, message: "Status updated successfully" });
+  } catch (error) {
+    console.error("Error updating purchase order status:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
 module.exports = {
   createPurchaseOrder,
   getAllPurchaseOrders,
@@ -88,4 +111,5 @@ module.exports = {
   getPurchaseOrderById,
   updatePurchaseOrder,
   deletePurchaseOrder,
+  updatePurchaseOrderStatus
 };

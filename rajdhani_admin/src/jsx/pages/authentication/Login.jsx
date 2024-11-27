@@ -16,8 +16,6 @@ function Login(props) {
 	const [submitted, setSubmitted] = useState(false);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	const isAuthenticated = useSelector((state) => state);
-	console.log(isAuthenticated.auth.auth.isAuthenticated);
 	
 	// Validation logic
 	const validateFields = () => {

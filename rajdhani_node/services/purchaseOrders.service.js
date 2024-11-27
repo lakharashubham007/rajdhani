@@ -129,6 +129,20 @@ const deletePurchaseOrder = async (id) => {
   }
 };
 
+const updatePurchaseOrderStatus = async (id, status) => {
+  try {
+    const updatedOrder = await PurchaseOrder.findByIdAndUpdate(
+      id,
+      { status },
+      { new: true }
+    );
+    return updatedOrder;
+  } catch (error) {
+    console.error("Error updating purchase order status:", error);
+    throw error;
+  }
+};
+
 module.exports = {
   createPurchaseOrder,
   getAllPurchaseOrders,
@@ -136,4 +150,5 @@ module.exports = {
   getPurchaseOrderById,
   updatePurchaseOrder,
   deletePurchaseOrder,
+  updatePurchaseOrderStatus
 };

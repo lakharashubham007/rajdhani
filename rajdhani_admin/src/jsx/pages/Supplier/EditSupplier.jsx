@@ -35,9 +35,9 @@ import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
 import useDebounce from "../../components/common/Debounce";
 import PhoneInput from "react-phone-input-2";
 import 'react-phone-input-2/lib/style.css';
-import { addSupplier } from "../../../services/apis/Supplier";
+import { addSupplier, GetEditSupplierData, UpdateSupplier } from "../../../services/apis/Supplier";
 import { getCountryStateCityApi } from "../../../services/apis/CountryStateCity";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 const options = [
   { value: "veg", label: "Veg" },
@@ -59,8 +59,9 @@ const theadData = [
     { heading: "Action", sortingVale: "action" },
   ];
 
-const AddNewSupplier = () => {
-    const navigate = useNavigate();
+const EditSupplier = () => {
+  const params = useParams()?.id;
+  const navigate = useNavigate();
   const [logo, setLogo] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -69,8 +70,6 @@ const AddNewSupplier = () => {
   const [galleryImages, setGalleryImages] = useState([]);
 
   const [allFittingSizeList,setAllFittingSizeList]=useState([]);
-
-
   const [sort, setSortata] = useState(10);
   const [modalCentered, setModalCentered] = useState(false);
   const [data, setData] = useState(
@@ -90,20 +89,20 @@ const AddNewSupplier = () => {
   const [deleteTableDataId,setDeleteTableDataId] = useState("");
   const [selectedStatusOption,setSelectedStatusOption]=useState(null);
   const [statusOption,setStatusOption]=useState([{
-    value: "true",
+    value: true,
     label: "Active"},
    {
-    value: "false",
+    value: false,
     label: "Inactive",
   }]);
 
   const [states,setStates]=useState([]);
   const [selectedStateOption,setSelectedStateOption]=useState(null);
   const [stateOption,setStateOption]=useState(null);
-  
   const [selectedCityOption,setSelectedCityOption]=useState(null);
   const [cityOption,setCityOption]=useState(null);
-
+  const [imageChanged,setImageChanged]=useState(false);
+  const [editId,setEditId]=useState("");
   const [formData, setFormData] = useState({
     name: "",
     firstName:"",
@@ -120,9 +119,6 @@ const AddNewSupplier = () => {
     status:null,
     image:null
   });
-
-  
-
   const debouncedSearchValue = useDebounce(searchInputValue, 500);
   
   const handleInputChange = (e) => {
@@ -135,8 +131,7 @@ const AddNewSupplier = () => {
       name: "",
     });
   };
-
-
+  
 const fetchCountryStateCity=async()=>{
     try {
         const res = await getCountryStateCityApi();
@@ -156,10 +151,47 @@ const fetchCountryStateCity=async()=>{
       } 
 }
 
-  useEffect(()=>{
-    fetchCountryStateCity()
-  },[]);
+const fetchSupplierData=async()=>{
+    try {
+        const res = await GetEditSupplierData(params);
+         const data = res?.data?.supplier;
+         setEditId(data?._id);
+         setIsEdit(true);
+         setFormData(data);
+         setLogo(data?.image);
+         setSelectedStatusOption({
+            value: data?.status,
+            label: data?.status ? "Active" : "Inactive",
+         }); 
 
+         setSelectedStateOption({
+            value: data?.state,
+            label: data?.state,
+         });
+        
+         if(data?.city){
+         const state = states? states?.find((state) => state?.state_name == data?.state) : null;
+         const drpCityValue= state?.cities?.map((city) => ({
+             value: city?.city_name,
+             label: city?.city_name,
+           }));
+          setCityOption(drpCityValue);
+          setSelectedCityOption({
+            value: data?.city,
+            label: data?.city,
+         }); 
+        }
+      } catch (error) {
+        // Catch and handle errors
+        console.error("Error fetching cuisines:", error);
+        Toaster.error("Failed to load cuisines. Please try again.");
+      } 
+}
+
+  useEffect(()=>{
+    fetchSupplierData();
+    fetchCountryStateCity();
+  },[]);
 
 
   const chageData = (frist, sec) => {
@@ -189,22 +221,6 @@ const fetchCountryStateCity=async()=>{
   };
 
 
-
-  // Handles image selection and adds selected images to the state
-  const handleImageChange = (event) => {
-    console.log("imageChange");
-    const files = Array.from(event.target.files);
-    const newImages = files?.map((file) => ({
-      file,
-      url: URL.createObjectURL(file),
-    }));
-    setGalleryImages((prevImages) => [...prevImages, ...newImages]);
-  };
-
-  // Deletes an image from the array
-  const handleDeleteImage = (index) => {
-    setGalleryImages((prevImages) => prevImages.filter((_, i) => i !== index));
-  };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -241,7 +257,6 @@ const fetchCountryStateCity=async()=>{
     setSelectedCityOption(null)
   };
 
-
   const validateForm = () => {
     const newErrors = {};
     // Required field validation
@@ -277,32 +292,6 @@ const fetchCountryStateCity=async()=>{
   };
 
 
-  const handleUpdateSubmit = async () => {
-    try {
-      const res = await UpdatePart(editPartId, formData);
-      if (res.status === 200) {
-        setUpdateCategory(true);
-        Toaster.success(res?.data?.message);
-        resetForm();
-        setModalCentered(false);
-        setIsEdit(false);
-        setSelectedOption(null)
-      } else {
-        Toaster.error(
-          res?.data?.message || "Something went wrong. Please try again."
-        );
-      }
-    } catch (error) {
-      Toaster.error(
-        error.response?.data?.message || "An error occurred. Please try again."
-      );
-      console.error("Error:", error.message);
-    } finally {
-      setLoading(false); // Stop the loader
-    }
-  };
-
-
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -310,24 +299,21 @@ const fetchCountryStateCity=async()=>{
       return;
     }
     
-    if(isEdit){
-      handleUpdateSubmit();
-    }else{
     setLoading(true); 
     try {
-      const res = await addSupplier(formData);
+      const res = await UpdateSupplier(editId,formData);
       if (res.data?.success) {
         setLoading(false);
-        // Toaster.success(res?.data?.message);
+        Toaster.success(res?.data?.message);
         Swal.fire({
             icon: "success",
             title: "Supplier",
-            text: res.data?.message || "Add New Supplier successfully",
+            text: res.data?.message || "Supplier update successfully",
             showConfirmButton: false,
             timer: 1500,
           });
         resetForm(); // Reset form after success
-        navigate("/supplierlist");
+        navigate("/supplierlist")
       } else {
         setLoading(false);
         Toaster.error(res.data?.message || "Failed to create food item");
@@ -340,7 +326,6 @@ const fetchCountryStateCity=async()=>{
           "An error occurred while processing your request"
       );
     }
-   }
   };
 
   const handleDeleteLogo = () => {
@@ -375,6 +360,7 @@ const fetchCountryStateCity=async()=>{
 
   // Handle the logo image change
   const handleLogoChange = (e) => {
+    setImageChanged(true)
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -397,6 +383,7 @@ const fetchCountryStateCity=async()=>{
     const phoneNum = value?.slice(2);
     const country_code = `${country.format.charAt(0)}${country?.dialCode}`;
     const phone = `${country_code}${phoneNum}`;
+    console.log("country_code",country_code)
     setFormData({
       ...formData,
       phone:phone
@@ -406,14 +393,13 @@ const fetchCountryStateCity=async()=>{
 
   const handleStateChange=(option)=>{
     if (option?.value) {
-        const state = states? states?.find((state) => state?.state_name == option?.value)
-          : null;
+        const state = states? states?.find((state) => state?.state_name == option?.value) : null;
           const drpCityValue= state?.cities?.map((city) => ({
               value: city?.city_name,
               label: city?.city_name,
             })
           );
-         setCityOption(drpCityValue)
+         setCityOption(drpCityValue);
       } else {
         setCityOption([]);
       }
@@ -425,7 +411,7 @@ const fetchCountryStateCity=async()=>{
     });
   }
 
-
+console.log("steeee",selectedStatusOption)
   return (
     <>
       
@@ -719,7 +705,7 @@ const fetchCountryStateCity=async()=>{
                     {logo ? (
                         <>
                             {
-                             isEdit ?
+                             isEdit && !imageChanged ?
                             <>
                             {/* Simple 'X' button as the delete icon */}
                              <div className="deleteIcon" onClick={handleDeleteLogo}> ⛌ </div>
@@ -788,4 +774,4 @@ const fetchCountryStateCity=async()=>{
   );
 };
 
-export default AddNewSupplier;
+export default EditSupplier;

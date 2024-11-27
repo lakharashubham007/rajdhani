@@ -72,15 +72,20 @@ const checkBillsByPurchaseOrderId = async (id) => {
 
 const downloadBillFile = async (bill_id) => {
   try {
+    
     // Find the bill document using the bill_id
-    const bill = await PurchaseOrderBill.findOne({ bill_id });
+    const bill = await PurchaseOrderBill.findOne({ bill_id: bill_id });
 
+    
     if (!bill) {
       throw new Error('Bill not found');
     }
 
     // Get the file path from the bill document (assuming the file is stored in 'images' directory)
-    const filePath = path.join(__dirname, '../../images', bill.bill_doc);
+    const filePath = path.join(__dirname, '../images', bill.bill_doc);
+    
+
+   
 
     // Check if the file exists
     if (!fs.existsSync(filePath)) {
@@ -93,6 +98,16 @@ const downloadBillFile = async (bill_id) => {
   }
 };
 
+const getPurchaseOrderBillItemsByFilter = async (filter) => {
+  try {
+    return await PurchaseOrderBillItem.find(filter);
+  } catch (error) {
+    console.error("Error fetching PurchaseOrderBillItems by filter:", error);
+    throw error;
+  }
+};
+
+
 
 module.exports = {
   createPurchaseOrderBill,
@@ -101,5 +116,6 @@ module.exports = {
   updatePurchaseOrderBill,
   deletePurchaseOrderBill,
   checkBillsByPurchaseOrderId,
-  downloadBillFile
+  downloadBillFile,
+  getPurchaseOrderBillItemsByFilter
 };

@@ -136,7 +136,7 @@ const apis = {
     updateProduct: `${BASE_URL}/private/products/edit-product`,
     updateProductStatus:`${BASE_URL}/private/products/update-product-status`,
 
-    // getAllThreadList: `${BASE_URL}/private/products/get-all-products`,
+    getAllProductList: `${BASE_URL}/private/products/get-all-products`,
    },
 
    variant:{
@@ -159,8 +159,38 @@ const apis = {
     updatePartStatus:`${BASE_URL}/private/parts/update-part-status`,
     
     getAllPartList: `${BASE_URL}/private/parts/parts-list`,
+   },
+
+   supplier:{
+    addSupplier: `${BASE_URL}/private/suppliers/create-supplier`,
+    supplierList: `${BASE_URL}/private/suppliers/supplier-list`,
+    deleteSupplier:`${BASE_URL}/private/suppliers/delete-supplier`,
+    getEditSupplierData: `${BASE_URL}/private/suppliers/supplier-list`,
+    updateSupplier: `${BASE_URL}/private/suppliers/edit-supplier`,
+    updateSupplierStatus:`${BASE_URL}/private/suppliers/update-supplier-status`,
+    
+    getAllSupplierList: `${BASE_URL}/private/suppliers/all-suppliers`,
+   },
+
+   purchaseorder:{
+    addPurchaseOrder: `${BASE_URL}/private/purchaseorders/create-purchase-order`,
+    createPoItem: `${BASE_URL}/private/purchaseorders/create-po-item`,
+    purchase_OrderList: `${BASE_URL}/private/purchaseorders/purchase-order-list`,
+    deletePurchaseOrder:`${BASE_URL}/private/suppliers/delete-supplier`,
+    getEditPurchaseOrderData: `${BASE_URL}/private/suppliers/supplier-list`,
+    updatePurchaseOrder: `${BASE_URL}/private/suppliers/edit-supplier`,
+    updatePurchaseOrderStatus:`${BASE_URL}/private/suppliers/update-supplier-status`,
+    getPurchaseOrderViewData:`${BASE_URL}/private/purchaseorders/purchase-order-list`,
+
+    getPurchaseOrderItemsData:`${BASE_URL}/private/purchaseorders/po-items`,
+    getPurchaseOrderCheckBill:`${BASE_URL}/private/pobills/check-bill`,
+    
+    getAllPurchaseOrderList: `${BASE_URL}/private/suppliers/all-suppliers`,
+   },
+  
+   common:{
+    getStateList:`${BASE_URL}/public/states/states-list`
    }
-   
 };
 
 export default apis;

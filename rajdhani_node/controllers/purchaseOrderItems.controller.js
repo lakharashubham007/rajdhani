@@ -64,10 +64,30 @@ const deletePurchaseOrderItem = async (req, res) => {
   }
 };
 
+const updateSpecificPOItems = async (req, res) => {
+  try {
+    const { po_id } = req.params.id; // Extract PO ID from URL
+    // const { items } = req.body; // Extract array of items with specific updates
+    
+    const updatedItems = await purchaseOrderItemService.updateSpecificItems(req.params.id, req.body);
+
+    res.json({
+      success: true,
+      items: updatedItems,
+      message: `Specific items for PO ID ${req.params.id} updated successfully!`,
+    });
+  } catch (error) {
+    console.error("Error updating specific PO items:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
 module.exports = {
   createPurchaseOrderItem,
   getPurchaseOrderItems,
   getPurchaseOrderItemById,
   updatePurchaseOrderItem,
   deletePurchaseOrderItem,
+  updateSpecificPOItems
 };

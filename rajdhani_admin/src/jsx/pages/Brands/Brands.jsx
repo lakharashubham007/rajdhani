@@ -597,7 +597,6 @@ const Brands = () => {
                                                 </div>
                                                 <p className='mt-2'>Image format - jpg png jpeg gif<br />Image Size - maximum size 2 MB<br />Image Ratio - 1:1</p>
                                                 {error?.image && <span className="text-danger fs-12">{error?.image}</span>}
-
                                             </div>
                                         </div>
                                     </div>

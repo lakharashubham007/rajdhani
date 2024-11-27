@@ -192,6 +192,11 @@ import EditProductData from "../pages/Products/EditProductData";
 import Parts from "../pages/Parts/Parts";
 import AllSupplierList from "../pages/Supplier/SupplierList";
 import AddNewSupplier from "../pages/Supplier/AddNewSupplier";
+import EditSupplier from "../pages/Supplier/EditSupplier";
+import AddSupplierPurchaseOrder from "../pages/SupplierPurchaseOrder/AddSupplierPurchaseOrder";
+import SupplierPurchaseOrderList from "../pages/SupplierPurchaseOrder/SupplierPurchaseOrderList";
+import PurchaseOrderView from "../pages/SupplierPurchaseOrder/PurchaseOrderView";
+import VerifyPurchaseOrder from "../pages/SupplierPurchaseOrder/VerifyPurchaseOrder";
 
 
 // import Todo from './pages/Todo';
@@ -237,8 +242,13 @@ const Markup = () => {
     // Supplier
     { url: 'addnewsupplier', component: <AddNewSupplier /> },
     { url: 'supplierlist', component: <AllSupplierList /> },
-    { url: 'editsupplierdata/:id', component: <EditProductData /> },
+    { url: 'editsupplierdata/:id', component: <EditSupplier /> },
         
+    // SupplierPurchaseOrder
+    { url: 'addnewpurchaseorder', component: <AddSupplierPurchaseOrder /> },
+    { url: 'purchaseorderlist', component: <SupplierPurchaseOrderList /> },
+    { url: 'purchaseorderview/:id', component: <PurchaseOrderView /> },
+    { url: 'verifyPurchaseOrder/:id', component: <VerifyPurchaseOrder/> },
 
     //Food Mangment
     { url: 'category', component: <OldCategories /> },

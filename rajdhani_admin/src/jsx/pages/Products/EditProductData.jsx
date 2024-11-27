@@ -47,7 +47,7 @@ const AddProduct = () => {
   // Edit 
   const [isEdit,setIsEdit]=useState(false);
   const [imageChanged,setImageChanged]=useState(false);
-  const [editId,setEditId]=useState(false);
+  const [editId,setEditId]=useState("");
 
   //drop option list
   const [categoryOption, setCategoryOption] = useState(null);

@@ -1,6 +1,6 @@
 const express = require('express');
 const router = express.Router();
-const {purchaseOrderBillController} = require('../../../controllers');
+const {purchaseOrderBillController, purchaseOrderBillItemController} = require('../../../controllers');
 const multer = require('multer');
 const { Authentication, Authorization } = require('../../../middleware');
 
@@ -14,7 +14,7 @@ const upload = multer({
     },
     filename: function (req, file, cb) {
       // Store original file name
-      cb(null, Date.now() + '-' + file.originalname); // Prefix with timestamp to avoid filename conflicts
+      cb(null,file.originalname); // Prefix with timestamp to avoid filename conflicts
     },
   }),
   fileFilter: function (req, file, cb) {
@@ -35,7 +35,12 @@ router.post('/create-po-bill', Authentication, upload, purchaseOrderBillControll
 //check bills
 router.get('/check-bill/:id', Authentication, purchaseOrderBillController.checkBill);
 //download bill pdf or image
-router.get('/download-bill/:id', Authentication, Authorization, purchaseOrderBillController.downloadBillFileController);
+router.get('/download-bill/:id', purchaseOrderBillController.downloadBillFileController);
+//pob items
+
+//Create
+router.post('/create-pob-item', Authentication, purchaseOrderBillItemController.createPurchaseOrderBillItem);
+
 
 
 
@@ -50,5 +55,16 @@ router.patch('/edit-purchase-order-bill/:id', Authentication, Authorization, upl
 
 // Delete a Purchase Order Bill
 router.delete('/delete-purchase-order-bill/:id', Authentication, Authorization, purchaseOrderBillController.deletePurchaseOrderBill);
+
+
+
+
+//PO bill items
+router.get('/po-bill-items/:id', Authentication,  purchaseOrderBillItemController.getPurchaseOrderBillItemsByBillId);
+router.get('/po-bill-items', Authentication,  purchaseOrderBillItemController.getPurchaseOrderBillItems);
+// Define the route to get return items by bill_id
+router.get('/return-orders/:id',Authentication, purchaseOrderBillItemController.getReturnItemsByBillId);
+router.get("/return-order-bills", purchaseOrderBillItemController.getDistinctBillsAndPOsWithDetails);
+
 
 module.exports = router;
