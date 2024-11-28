@@ -197,6 +197,8 @@ import AddSupplierPurchaseOrder from "../pages/SupplierPurchaseOrder/AddSupplier
 import SupplierPurchaseOrderList from "../pages/SupplierPurchaseOrder/SupplierPurchaseOrderList";
 import PurchaseOrderView from "../pages/SupplierPurchaseOrder/PurchaseOrderView";
 import VerifyPurchaseOrder from "../pages/SupplierPurchaseOrder/VerifyPurchaseOrder";
+import ReturnOrdersLits from "../pages/SupplierPurchaseOrder/ReturnOrdersLits";
+import ReturnOrderView from "../pages/SupplierPurchaseOrder/ReturnOrderView";
 
 
 // import Todo from './pages/Todo';
@@ -244,11 +246,15 @@ const Markup = () => {
     { url: 'supplierlist', component: <AllSupplierList /> },
     { url: 'editsupplierdata/:id', component: <EditSupplier /> },
         
-    // SupplierPurchaseOrder
+    // Supplier Purchase Order
     { url: 'addnewpurchaseorder', component: <AddSupplierPurchaseOrder /> },
     { url: 'purchaseorderlist', component: <SupplierPurchaseOrderList /> },
     { url: 'purchaseorderview/:id', component: <PurchaseOrderView /> },
     { url: 'verifyPurchaseOrder/:id', component: <VerifyPurchaseOrder/> },
+
+    // Returns Order View
+    { url: 'returnorderview/:id', component: <ReturnOrderView /> },
+    { url: 'returnorders', component: <ReturnOrdersLits/> },
 
     //Food Mangment
     { url: 'category', component: <OldCategories /> },

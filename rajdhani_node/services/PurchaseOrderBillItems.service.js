@@ -74,6 +74,11 @@ const getDistinctBillsAndPOsWithDetails = async () => {
     // Fetch unique combinations of bill_id and po_id with details populated
     const distinctEntries = await PurchaseOrderBillItem.aggregate([
       {
+        $match: {
+          return_item: true, // Include only rows with "return_item: true"
+        },
+      },
+      {
         $group: {
           _id: { bill_id: "$bill_id", po_id: "$po_id" },
         },

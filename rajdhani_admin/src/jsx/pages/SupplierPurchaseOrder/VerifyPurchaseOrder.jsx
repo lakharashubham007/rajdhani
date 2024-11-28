@@ -16,7 +16,7 @@ import rajdhanilogo from "../../../assets/images/cropped-Rparts-logo.png";
 import "../../../assets/css/AddSupplierPurchaseOrder.css";
 import BillCard from "../../components/PurchaseOrder/BillCard";
 import { GetAllProductList } from "../../../services/apis/Product";
-import { addBillDetailsApi } from "../../../services/apis/purchaseOrderBillApi";
+import { addBillDetailsApi, createBillItemsApi, updatePoItemForBillsApi } from "../../../services/apis/purchaseOrderBillApi";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Toaster } from "../../components/Toaster/Toster";
@@ -75,6 +75,7 @@ const VerifyPurchaseOrder = () => {
   const [rows, setRows] = useState([
     {
       id: 1,
+      _id: "",
       product_name: "",
       sku: "",
       unit: "",
@@ -93,17 +94,21 @@ const VerifyPurchaseOrder = () => {
       amount: "",
       received_quantity: "",
       verified_quantity: "",
-      ordered_quantity: ""
-
+      ordered_quantity: "",
+      is_short_close: ""
     },
   ]);
+
+  useEffect(() => {
+    console.log(rows, "here is my table data");
+  }, [rows]);
 
   const handleBillingDetailChange = (e) => {
     const { name, value } = e.target;
     setFormBillingData((prevData) => ({
       ...prevData,
       [name]: value,
-      purchase_order_id: params, 
+      purchase_order_id: params,
     }));
   };
 
@@ -179,40 +184,94 @@ const VerifyPurchaseOrder = () => {
   // };
 
   // Prefill rows function
-  const prefillRows = (data) => {
-    return data.map((item, index) => {
-      // Find the selected option based on product_name
-      const selectedOption = productOption?.find(option => option?.value === item?.product_name);
+  // const prefillRows = (data) => {
+  //   return data.map((item, index) => {
+  //     // Find the selected option based on product_name
+  //     const selectedOption = productOption?.find(option => option?.value === item?.product_name);
+  //     return {
+  //       id: index + 1, // Use index for SL
+  //       _id: item._id,
+  //       product_name: item.product_name,
+  //       selectedOption: selectedOption || null, // Set the selected option to the one found or null
+  //       sku: item.sku,
+  //       unit: item.unit,
+  //       variant: item.variant,
+  //       variant_type: item.variant_type,
+  //       uom: item.uom,
+  //       uom_qty: item.uom_qty,
+  //       quantity: item.quantity,
+  //       price_per_unit: item.price_per_unit,
+  //       discount_per_unit: item.discount_per_unit,
+  //       total_discount: item.total_discount,
+  //       cgst: item.cgst,
+  //       sgst: item.sgst,
+  //       igst: item.igst,
+  //       cess: item.cess,
+  //       amount: item.amount,
+  //       received_quantity: item.received_quantity,
+  //       verified_quantity: item.verified_quantity,
+  //       ordered_quantity: item.ordered_quantity
+  //     };
+  //   });
+  // };
 
-      return {
-        id: index + 1, // Use index for SL
-        product_name: item.product_name,
-        selectedOption: selectedOption || null, // Set the selected option to the one found or null
-        sku: item.sku,
-        unit: item.unit,
-        variant: item.variant,
-        variant_type: item.variant_type,
-        uom: item.uom,
-        uom_qty: item.uom_qty,
-        quantity: item.quantity,
-        price_per_unit: item.price_per_unit,
-        discount_per_unit: item.discount_per_unit,
-        total_discount: item.total_discount,
-        cgst: item.cgst,
-        sgst: item.sgst,
-        igst: item.igst,
-        cess: item.cess,
-        amount: item.amount,
-        received_quantity: item.received_quantity,
-        verified_quantity: item.verified_quantity,
-        ordered_quantity: item.ordered_quantity
-      };
-    });
+  const prefillRows = (data) => {
+    return data
+      .map((item, index) => {
+        // Check the first condition: Exclude if ordered_quantity, received_quantity, and verified_quantity are equal
+        const isQuantityMatched = item.ordered_quantity === item.received_quantity &&
+          item.received_quantity === item.verified_quantity;
+
+        // Check the second condition: Exclude if is_short_close is true
+        const isShortClose = item.is_short_close;
+
+        // Exclude row if any of the two conditions match
+        if (isQuantityMatched || isShortClose) {
+          return null; // Exclude this row (return null)
+        }
+
+        // Process the remaining rows
+        const selectedOption = productOption?.find(option => option?.value === item?.product_name);
+        return {
+          id: index + 1,
+          _id: item._id,
+          product_name: item.product_name,
+          selectedOption: selectedOption || null,
+          sku: item.sku,
+          unit: item.unit,
+          variant: item.variant,
+          variant_type: item.variant_type,
+          uom: item.uom,
+          uom_qty: item.uom_qty,
+          quantity: item.quantity,
+          price_per_unit: item.price_per_unit,
+          discount_per_unit: item.discount_per_unit,
+          total_discount: item.total_discount,
+          cgst: item.cgst,
+          sgst: item.sgst,
+          igst: item.igst,
+          cess: item.cess,
+          amount: item.amount,
+          received_quantity: item.received_quantity,
+          verified_quantity: item.verified_quantity,
+          ordered_quantity: item.ordered_quantity,
+        };
+      })
+      .filter(item => item !== null); // Remove the excluded rows (null values)
   };
+
+
+  // useEffect(() => {
+  //   if (purchaseOrderProdcutList.length > 0) {
+  //     const formattedRows = prefillRows(purchaseOrderProdcutList); // Use the prefill function
+  //     setRows(formattedRows); // Update the table rows
+  //   }
+  // }, [purchaseOrderProdcutList, contentModal]);
+
   useEffect(() => {
-    if (purchaseOrderProdcutList.length > 0) {
-      const formattedRows = prefillRows(purchaseOrderProdcutList); // Use the prefill function
-      setRows(formattedRows); // Update the table rows
+    if (purchaseOrderProdcutList.length > 0 && rows.length === 1) {
+      const formattedRows = prefillRows(purchaseOrderProdcutList);
+      setRows(formattedRows);
     }
   }, [purchaseOrderProdcutList, contentModal]);
 
@@ -282,6 +341,7 @@ const VerifyPurchaseOrder = () => {
   const handleChangeRow = (index, field, value) => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
+    console.log(updatedRows[index][field] = value)
     setRows(updatedRows);
 
     // Calculate total discount if quantity or discount_per_unit changes
@@ -361,6 +421,13 @@ const VerifyPurchaseOrder = () => {
     fetchPurchaseOrderItemsData();
     fetchPurchaseOrderCheckBill();
     fetchProductAllList();
+  }, []);
+
+  //For update bills on screen
+  useEffect(() => {
+    if (billData) {
+      fetchPurchaseOrderCheckBill(); // Called only when `billData` changes
+    }
   }, []);
 
   const orderDetails = {
@@ -552,54 +619,237 @@ const VerifyPurchaseOrder = () => {
     document.getElementById("logoUpload").value = "";
   };
 
-  
 
+  //    //update purchase order item
+  //   const UpdatePoItems = async(Bill_id,PO_ID)=>{
+
+  //     const po_items_updated = rows?.map(({ id, selectedOption, ...rest }) => {
+  //     return {
+  //       ...rest,
+  //       po_id: PO_ID,
+  //       cess: parseFloat(rest.cess || 0),
+  //       cgst: parseFloat(rest.cgst || 0),
+  //       discount_per_unit: parseFloat(rest.discount_per_unit || 0),
+  //       igst: parseFloat(rest.igst || 0),
+  //       price_per_unit: parseFloat(rest.price_per_unit || 0),
+  //       uom_qty: parseFloat(rest.uom_qty || 0),
+  //       quantity: parseFloat(rest.quantity || 0),
+  //       total_discount: parseFloat(rest.total_discount || 0),
+  //       amount: parseFloat(rest.amount || 0),
+  //       sgst: parseFloat(rest.sgst || 0),
+  //     };
+  //    });
+  //      console.log("fDataProducts item for poi nd pobi" ,po_items_updated)
+  //     try {
+  //       const res = await updatePoItemForBillsApi(params, po_items_updated);
+  //       console.log(res, "response is here");
+  //       if (res.data?.success) {
+  //         setLoading(false);
+  //         // Show success message from backend
+  //         // Toaster.success(res?.data?.message);
+  //         Swal.fire({
+  //           icon: "success",
+  //           title: "Updated PO Items",
+  //           text: res.data?.message,
+  //           showConfirmButton: false,
+  //           timer: 1500,
+  //         });
+  //         // resetForm(); 
+  //         // Reset form after success
+  //         // navigate('/productlist');
+  //       } else {
+  //         setLoading(false);
+  //         Toaster.error(res.data?.message || "Failed to create PO Items");
+  //         console.error("PO items creation error:", res);
+  //       }
+  //     } catch (error) {
+  //       // setLoading(false);
+  //       // // Handle any errors during API request
+  //       // Toaster.error(
+  //       //   error.response?.data?.message ||
+  //       //     "An error occurred while processing your request"
+  //       // );
+  //       // console.error("Error creating product:", error);
+  //     }
+  //   }
+
+  //   //CreateBillItems
+  // const CreateBillItems = async(Bill_id,PO_ID)=>{
+
+  //     const bill_items_updated = rows?.map(({ id, selectedOption, ...rest }) => {
+  //     return {
+  //       ...rest,
+  //       bill_id: Bill_id,
+  //       po_id: PO_ID,
+  //       cess: parseFloat(rest.cess || 0),
+  //       cgst: parseFloat(rest.cgst || 0),
+  //       discount_per_unit: parseFloat(rest.discount_per_unit || 0),
+  //       igst: parseFloat(rest.igst || 0),
+  //       price_per_unit: parseFloat(rest.price_per_unit || 0),
+  //       uom_qty: parseFloat(rest.uom_qty || 0),
+  //       quantity: parseFloat(rest.quantity || 0),
+  //       total_discount: parseFloat(rest.total_discount || 0),
+  //       amount: parseFloat(rest.amount || 0),
+  //       sgst: parseFloat(rest.sgst || 0),
+  //     };
+  //    });
+  //     //  console.log("fDataProducts item for poi nd pobi" ,bill_items_updated)
+  //     try {
+  //       const res = await createBillItemsApi(bill_items_updated);
+  //       console.log(res, "response is here");
+  //       if (res.data?.success) {
+  //         setLoading(false);
+  //         // Show success message from backend
+  //         // Toaster.success(res?.data?.message);
+  //         Swal.fire({
+  //           icon: "success",
+  //           title: "Bill Items Added Successflly!!!",
+  //           text: res.data?.message,
+  //           showConfirmButton: false,
+  //           timer: 1500,
+  //         });
+  //         // resetForm(); 
+  //         // Reset form after success
+  //         // navigate('/productlist');
+  //       } else {
+  //         setLoading(false);
+  //         Toaster.error(res.data?.message);
+  //       }
+  //     } catch (error) {
+  //       // setLoading(false);
+  //       // // Handle any errors during API request
+  //       // Toaster.error(
+  //       //   error.response?.data?.message ||
+  //       //     "An error occurred while processing your request"
+  //       // );
+  //       // console.error("Error creating product:", error);
+  //     }
+  //   }
+  //   const handleSubmit = async (e) => {
+  //     e.preventDefault();
+
+  //     // if (!validateForm()) {
+  //     //   return;
+  //     // }
+  //     // setLoading(true);
+  //     try {
+  //       const res = await addBillDetailsApi(formBillingData);
+  //       if (res.data?.success) {
+  //         setLoading(false);
+  //         console.log("ress?.data",res?.data?.bill?._id);
+
+  //         UpdatePoItems(res?.data?.bill?._id,params)
+  //         CreateBillItems(res?.data?.bill)
+
+  //         Swal.fire({
+  //           icon: "success",
+  //           title: "Bill",
+  //           text: res.data?.message,
+  //           showConfirmButton: false,
+  //           timer: 1500,
+  //         });
+  //         // resetForm(); // Reset form after success
+  //         // navigate('/productlist');
+  //       } else {
+  //         setLoading(false);
+  //         // Toaster.error(res.data?.message || "Failed to create product");
+  //         console.error("Product creation error:", res);
+  //       }
+  //     } catch (error) {
+  //       setLoading(false);
+  //       // Handle any errors during API request
+  //       // Toaster.error(
+  //       //   error.response?.data?.message ||
+  //       //     "An error occurred while processing your request"
+  //       // );
+  //       console.error("Error creating product:", error);
+  //     }
+  //   };
+
+
+
+  // Helper function to parse numeric fields
+  const parseFields = (item, additionalFields = {}) => ({
+    ...item,
+    ...additionalFields,
+    cess: parseFloat(item.cess || 0),
+    cgst: parseFloat(item.cgst || 0),
+    discount_per_unit: parseFloat(item.discount_per_unit || 0),
+    igst: parseFloat(item.igst || 0),
+    price_per_unit: parseFloat(item.price_per_unit || 0),
+    uom_qty: parseFloat(item.uom_qty || 0),
+    quantity: parseFloat(item.quantity || 0),
+    total_discount: parseFloat(item.total_discount || 0),
+    amount: parseFloat(item.amount || 0),
+    sgst: parseFloat(item.sgst || 0),
+  });
+
+  // Update Purchase Order Items
+  const updatePoItems = async (billId, poId) => {
+    const updatedPoItems = rows?.map(({ id, selectedOption, ...rest }) =>
+      parseFields(rest, { po_id: poId })
+    );
+    try {
+      const res = await updatePoItemForBillsApi(poId, updatedPoItems);
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Failed to update PO Items");
+      }
+    } catch (error) {
+      console.error("Error updating PO items:", error);
+      throw error; // Propagate the error
+    }
+  };
+
+  // Create Bill Items
+  const createBillItems = async (billId, poId) => {
+    const updatedBillItems = rows?.map(({ id, selectedOption, _id, ...rest }) =>
+      parseFields(rest, { bill_id: billId, po_id: poId })
+    );
+
+    try {
+      const res = await createBillItemsApi(updatedBillItems);
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Failed to create Bill Items");
+      }
+    } catch (error) {
+      console.error("Error creating Bill items:", error);
+      throw error; // Propagate the error
+    }
+  };
+
+  // Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // if (!validateForm()) {
-    //   return;
-    // }
-    // setLoading(true);
-
-    // const fData = {
-    //   supplier_id: formData?.supplier_id,
-    //   order_details: {
-    //     date: formData?.date,
-    //     due_date: formData?.due_date,
-    //     note: formData?.note,
-    //   },
-    //   summary: summary,
-    // };
     try {
       const res = await addBillDetailsApi(formBillingData);
-      if (res.data?.success) {
-        setLoading(false);
-        console.log("ress?.data",res?.data?.purchaseOrder?._id);
 
-        // CreatePoItem(res?.data?.purchaseOrder?._id)
+      if (res.data?.success) {
+        const billId = res?.data?.bill?._id;
+        const poId = params;
+
+        // Update PO Items and Create Bill Items
+        await updatePoItems(billId, poId);
+        await createBillItems(billId, poId);
+
+        // Show success alert only for Bill creation
         Swal.fire({
           icon: "success",
-          title: "Purchase Order",
-          text: res.data?.message || "PurchaseOrder created successfully",
+          title: "Bill Created Successfully",
+          text: res.data?.message,
           showConfirmButton: false,
           timer: 1500,
         });
-        // resetForm(); // Reset form after success
-        // navigate('/productlist');
       } else {
-        setLoading(false);
-        // Toaster.error(res.data?.message || "Failed to create product");
-        console.error("Product creation error:", res);
+        throw new Error(res.data?.message || "Failed to create Bill");
       }
     } catch (error) {
-      setLoading(false);
-      // Handle any errors during API request
-      // Toaster.error(
-      //   error.response?.data?.message ||
-      //     "An error occurred while processing your request"
-      // );
-      console.error("Error creating product:", error);
+      console.error("Error during form submission:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "An error occurred while processing your request.",
+      });
     }
   };
 
@@ -607,8 +857,8 @@ const VerifyPurchaseOrder = () => {
 
   return (
     <>
-    <ToastContainer />
-    <Loader visible={loading} />
+      <ToastContainer />
+      <Loader visible={loading} />
       <div className="card">
         <div className="card-body">
           <div className="purchase-order-container ">
@@ -701,7 +951,7 @@ const VerifyPurchaseOrder = () => {
                         <>
                           {billData.map((val, ind) => (
                             <div className="col-md-2" key={ind}
-                              style={{ marginTop: "-25px" }}
+                              style={{ marginTop: "-25px", marginRight: "1px", marginBottom: '20px' }}
                             >
                               <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
                             </div>
@@ -735,6 +985,8 @@ const VerifyPurchaseOrder = () => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
+                                marginTop: "2px",
+                                marginLeft: "10px"
                               }}
                             >
                               <div className="bill-cards" style={{ textAlign: "center" }}>
@@ -1338,7 +1590,6 @@ const VerifyPurchaseOrder = () => {
 
           </div> */}
 
-
           <div className="card">
             <div className="card-body p-3">
               <div className="row">
@@ -1397,7 +1648,7 @@ const VerifyPurchaseOrder = () => {
                     />
                     {errors.billing_bill_date && <span className="text-danger fs-12">{errors.billing_bill_date}</span>}
                   </div>
-{/* 
+                  {/* 
                   <div className="mb-2">
                     <label className="form-label fs-6">Note</label>
                     <textarea
@@ -1450,7 +1701,6 @@ const VerifyPurchaseOrder = () => {
               </div>
             </div>
           </div>
-
 
           {/* Purchase Order Item Table  */}
           <div className="col-xl-12 col-lg-12 mt-5">
@@ -1777,7 +2027,7 @@ const VerifyPurchaseOrder = () => {
                                 type="number"
                                 placeholder="Verify Quantity"
                                 value={row.verified_quantity || ""}
-                                onChange={(e) => handleChangeRow(index, "verify_quantity", e.target.value)}
+                                onChange={(e) => handleChangeRow(index, "verified_quantity", e.target.value)}
                                 className="form-control row-input"
                               />
                             </td>
@@ -1821,10 +2071,7 @@ const VerifyPurchaseOrder = () => {
             </div>
           </div>
 
-
-
           {/* Summary Section */}
-          {/* summary */}
           <div className="row justify-content-end ">
             <div className="summary-section col-md-5">
               <table className="table table-bordered ">

@@ -476,7 +476,7 @@ const AddSupplierPurchaseOrder = () => {
   
   const CreatePoItem=async(PO_id)=>{
 
-  const fDataProducts = rows?.map(({ id, selectedOption, ...rest }) => {
+    const fDataProducts = rows?.map(({ id, selectedOption, ...rest }) => {
     return {
       ...rest,
       po_id:PO_id,
@@ -491,7 +491,7 @@ const AddSupplierPurchaseOrder = () => {
       amount: parseFloat(rest.amount || 0),
       sgst: parseFloat(rest.sgst || 0),
     };
-  });
+   });
 
     try {
       const res = await createPoItemApi(fDataProducts);
@@ -540,6 +540,23 @@ const AddSupplierPurchaseOrder = () => {
         date: formData?.date,
         due_date: formData?.due_date,
         note: formData?.note,
+      },
+      billing_details: {
+        name: formBillingData.name,
+        address: formBillingData.address,
+        gstin: formBillingData.gstin,
+        state_name: formBillingData.state_name,
+        state_code: formBillingData.state_code,
+        email: formBillingData.email
+        
+      },
+      shipping_details: {
+        name: formShippingData.name,
+        address: formShippingData.address,
+        gstin: formShippingData.gstin,
+        state_name: formShippingData.state_name,
+        state_code: formShippingData.state_code,
+        email: formShippingData.email
       },
       summary: summary,
     };

@@ -188,7 +188,12 @@ const apis = {
     getAllPurchaseOrderList: `${BASE_URL}/private/suppliers/all-suppliers`,
 
     //Bill apis
-    addBillDetails: `${BASE_URL}/private/pobills/create-po-bill`
+    addBillDetails: `${BASE_URL}/private/pobills/create-po-bill`,
+    updatePOItems: `${BASE_URL}/private/purchaseorders/update-po-items`,
+    createBillItems: `${BASE_URL}/private/pobills/create-pob-item`,
+    returnOrderList: `${BASE_URL}/private/pobills/return-order-bills`,
+    getReturnOrderViewData: `${BASE_URL}/private/pobills/return-orders`,
+
    },
   
    common:{

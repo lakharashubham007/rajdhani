@@ -27,7 +27,7 @@ const BillCard = ({ ind, val, handleGetBillData }) => {
           Bill {ind + 1}
         </h5>
         <p style={{ margin: "5px 0 0", fontSize: "12px", color: "#555" }}>
-          {val?.bill_doc || "No Document"}
+        {val?.bill_doc ? val.bill_doc.slice(0, 20) : "No Document"}
         </p>
       </div>
 
@@ -40,7 +40,7 @@ const BillCard = ({ ind, val, handleGetBillData }) => {
             color: "#333",
           }}
         >
-          <strong>Amount:</strong> ₹{val?.bill_amount || "N/A"}
+          <strong>Bill No.:</strong> {val?.bill_no || "N/A"}
         </p>
         <p
           style={{
