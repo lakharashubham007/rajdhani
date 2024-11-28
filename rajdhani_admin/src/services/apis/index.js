@@ -186,6 +186,9 @@ const apis = {
     getPurchaseOrderCheckBill:`${BASE_URL}/private/pobills/check-bill`,
     
     getAllPurchaseOrderList: `${BASE_URL}/private/suppliers/all-suppliers`,
+
+    //Bill apis
+    addBillDetails: `${BASE_URL}/private/pobills/create-po-bill`
    },
   
    common:{

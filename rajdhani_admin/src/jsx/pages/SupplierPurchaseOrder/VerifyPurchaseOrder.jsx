@@ -15,8 +15,14 @@ import {
 import rajdhanilogo from "../../../assets/images/cropped-Rparts-logo.png";
 import "../../../assets/css/AddSupplierPurchaseOrder.css";
 import BillCard from "../../components/PurchaseOrder/BillCard";
-import { Toaster } from "../../components/Toaster/Toster";
 import { GetAllProductList } from "../../../services/apis/Product";
+import { addBillDetailsApi } from "../../../services/apis/purchaseOrderBillApi";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "../../components/Toaster/Toster";
+import Loader from "../../components/Loader/Loader";
+
+
 
 const billtheadData = [
   { heading: "PO Id", sortingVale: "purchase_order_id" },
@@ -97,6 +103,7 @@ const VerifyPurchaseOrder = () => {
     setFormBillingData((prevData) => ({
       ...prevData,
       [name]: value,
+      purchase_order_id: params, 
     }));
   };
 
@@ -529,9 +536,9 @@ const VerifyPurchaseOrder = () => {
         setLogo(reader.result);
       };
       reader.readAsDataURL(file);
-      setFormData({
-        ...formData,
-        image: file, // Update the image field with the selected file
+      setFormBillingData({
+        ...formBillingData,
+        bill_doc: file, // Update the image field with the selected file
       });
       setErrors({
         ...errors,
@@ -545,9 +552,63 @@ const VerifyPurchaseOrder = () => {
     document.getElementById("logoUpload").value = "";
   };
 
+  
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    // if (!validateForm()) {
+    //   return;
+    // }
+    // setLoading(true);
+
+    // const fData = {
+    //   supplier_id: formData?.supplier_id,
+    //   order_details: {
+    //     date: formData?.date,
+    //     due_date: formData?.due_date,
+    //     note: formData?.note,
+    //   },
+    //   summary: summary,
+    // };
+    try {
+      const res = await addBillDetailsApi(formBillingData);
+      if (res.data?.success) {
+        setLoading(false);
+        console.log("ress?.data",res?.data?.purchaseOrder?._id);
+
+        // CreatePoItem(res?.data?.purchaseOrder?._id)
+        Swal.fire({
+          icon: "success",
+          title: "Purchase Order",
+          text: res.data?.message || "PurchaseOrder created successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        // resetForm(); // Reset form after success
+        // navigate('/productlist');
+      } else {
+        setLoading(false);
+        // Toaster.error(res.data?.message || "Failed to create product");
+        console.error("Product creation error:", res);
+      }
+    } catch (error) {
+      setLoading(false);
+      // Handle any errors during API request
+      // Toaster.error(
+      //   error.response?.data?.message ||
+      //     "An error occurred while processing your request"
+      // );
+      console.error("Error creating product:", error);
+    }
+  };
+
+
 
   return (
     <>
+    <ToastContainer />
+    <Loader visible={loading} />
       <div className="card">
         <div className="card-body">
           <div className="purchase-order-container ">
@@ -1893,7 +1954,7 @@ const VerifyPurchaseOrder = () => {
           >
             Close
           </Button>
-          <Button variant="primary">Save</Button>
+          <Button variant="primary" onClick={handleSubmit}>Save</Button>
         </Modal.Footer>
       </Modal>
     </>
