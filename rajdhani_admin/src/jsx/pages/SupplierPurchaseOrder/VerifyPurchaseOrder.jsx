@@ -11,6 +11,7 @@ import {
   GetPurchaseOrderCheckBill,
   GetPurchaseOrderItemsData,
   GetPurchaseOrderViewData,
+  updatePurchaseOrderStatusApi,
 } from "../../../services/apis/PurchaseOrder";
 import rajdhanilogo from "../../../assets/images/cropped-Rparts-logo.png";
 import "../../../assets/css/AddSupplierPurchaseOrder.css";
@@ -72,6 +73,7 @@ const VerifyPurchaseOrder = () => {
   const [isPressed, setIsPressed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [logo, setLogo] = useState(null);
+  const [apiSuccess, setApiSuccess] = useState(false);
   const [rows, setRows] = useState([
     {
       id: 1,
@@ -98,10 +100,6 @@ const VerifyPurchaseOrder = () => {
       is_short_close: ""
     },
   ]);
-
-  useEffect(() => {
-    console.log(rows, "here is my table data");
-  }, [rows]);
 
   const handleBillingDetailChange = (e) => {
     const { name, value } = e.target;
@@ -273,7 +271,7 @@ const VerifyPurchaseOrder = () => {
       const formattedRows = prefillRows(purchaseOrderProdcutList);
       setRows(formattedRows);
     }
-  }, [purchaseOrderProdcutList, contentModal]);
+  }, [purchaseOrderProdcutList, contentModal,rows]);
 
 
 
@@ -295,6 +293,7 @@ const VerifyPurchaseOrder = () => {
   // };
 
   // Handle product change
+  
   const handleProductChange = (selectedOption, index) => {
     const updatedRows = [...rows];
     updatedRows[index].selectedOption = selectedOption; // Update only the specific row's selectedOption
@@ -425,10 +424,11 @@ const VerifyPurchaseOrder = () => {
 
   //For update bills on screen
   useEffect(() => {
-    if (billData) {
+    if (apiSuccess) {
       fetchPurchaseOrderCheckBill(); // Called only when `billData` changes
+      setApiSuccess(false);
     }
-  }, []);
+  }, [apiSuccess]);
 
   const orderDetails = {
     warehouse: {
@@ -811,6 +811,7 @@ const VerifyPurchaseOrder = () => {
       if (!res.data?.success) {
         throw new Error(res.data?.message || "Failed to create Bill Items");
       }
+      setApiSuccess(true);
     } catch (error) {
       console.error("Error creating Bill items:", error);
       throw error; // Propagate the error
@@ -840,6 +841,7 @@ const VerifyPurchaseOrder = () => {
           showConfirmButton: false,
           timer: 1500,
         });
+        setContentModal(false);
       } else {
         throw new Error(res.data?.message || "Failed to create Bill");
       }
@@ -852,6 +854,90 @@ const VerifyPurchaseOrder = () => {
       });
     }
   };
+
+  const handleSubmitDraft = async (e) => {
+    e.preventDefault();
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to save this as a draft.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, save as draft",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      const payload = { status: "In Pending" };
+
+      try {
+        const poId = params; // Replace `params` with the actual PO ID
+        const response = await updatePurchaseOrderStatusApi(poId, payload);
+
+        if (response.data?.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Saved as Draft",
+            text: response.data?.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } else {
+          throw new Error(response.data?.message || "Failed to save as draft");
+        }
+      } catch (error) {
+        console.error("Error saving as draft:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.message || "An error occurred while saving as draft.",
+        });
+      }
+    }
+  };
+
+
+  const handleSubmitFinal = async (e) => {
+    e.preventDefault();
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to finalize the submission.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, submit",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      const payload = { status: "Completed" };
+
+      try {
+        const poId = params; // Replace `params` with the actual PO ID
+        const response = await updatePurchaseOrderStatusApi(poId, payload);
+
+        if (response.data?.success) {
+          Swal.fire({
+            icon: "success",
+            title: "Final Submission Completed",
+            text: response.data?.message,
+            showConfirmButton: false,
+            timer: 1500,
+          });
+        } else {
+          throw new Error(response.data?.message || "Failed to finalize submission");
+        }
+      } catch (error) {
+        console.error("Error during final submission:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.message || "An error occurred during final submission.",
+        });
+      }
+    }
+  };
+
 
 
 
@@ -1415,16 +1501,16 @@ const VerifyPurchaseOrder = () => {
             <div className="d-flex gap-3 justify-content-end text-end">
               <button
                 type="submit"
-                // onClick={handleSubmit}
-                className="btn btn-primary rounded-sm">
+                onClick={handleSubmitDraft}
+                className="btn btn-danger rounded-sm">
                 Save as draft
               </button>
 
               <button
                 type="submit"
-                // onClick={handleSubmit}
+                onClick={handleSubmitFinal}
                 className="btn btn-primary rounded-sm">
-                Final
+                Final Submission
               </button>
             </div>
           </div>

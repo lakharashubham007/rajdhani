@@ -1,3 +1,7 @@
+
+
+
+
 import React, { useReducer, useContext, useEffect, useState } from "react";
 import { Collapse } from 'react-bootstrap';
 /// Link
@@ -77,7 +81,7 @@ const SideBar = () => {
 
   const [sidebarMenus, setSidebarMenus] = useState([]);
 
-  // console.log(sidebarMenus, "sidebarmenus are here")
+  console.log(sidebarMenus, "sidebarmenus are here")
 
   useEffect(() => {
     // Define the function to fetch sidebar menus
@@ -107,14 +111,19 @@ const SideBar = () => {
           return menu;
         });
 
+        // Organize menus by module_id and children
+        // const formattedMenus = updatedMenus
+        //   .filter(menu => menu.module_id) // Get parent modules
+        //   .map(parent => ({
+        //     ...parent,
+        //     children: updatedMenus
+        //       .filter(child => child.parent_module_id === parent.module_id) // Match children
+        //       .sort((a, b) => a.module_menu_priority - b.module_menu_priority), // Sort by child priority
+        //   }))
+        //   .sort((a, b) => a.module_priority - b.module_priority);
         setSidebarMenus(updatedMenus);
 
-        // // Replace this URL with your actual API endpoint
-        // const response = await getSidebarMenusApi(); // Set the fetched sidebar menus to state
-        // console.log(response, 'response is hereeeeeee');
 
-        // // setSidebarMenus(response?.data?.MenuList);
-        // setLoading(false);
       } catch (err) {
         // Handle any errors
         // setError(err.message);
@@ -126,9 +135,6 @@ const SideBar = () => {
     fetchSidebarMenus();
   }, []);
 
-  // Function to determine badge color class based on data.update
-   // Function to determine badge color class based on data.update
-   // Function to determine badge color class based on status
   const getBadgeColorClass = (status) => {
     switch (status) {
       case "All":
@@ -167,12 +173,15 @@ const SideBar = () => {
         <ul className="metismenu" id="menu">
           {/* sidebarMenus */}
           {sidebarMenus?.map((data, index) => {
-            let menuClass = data.classsChange;
+            console.log(data,"data is here")
+            let menuClass = data.classChange;
             if (menuClass === "menu-title") {
               return (
                 <li className={`nav-label ${menuClass} ${data.extraclass}`} key={index} >{data.title}</li>
               )
-            } else {
+            }
+            else {
+              // console.log("inside -=-=-=-",data.title)
               return (
                 <li className={` ${state.active === data.title ? 'mm-active' : ''}${data.to === path ? 'mm-active' : ''}`}
                   key={index}
@@ -226,7 +235,7 @@ const SideBar = () => {
                                     className={`${data.to === path ? 'mm-active' : ''}`}
                                   >
                                     {data.title}
-                                    <span  className={`badge badge-xs style-1 ${getBadgeColorClass(data.title)}`}>
+                                    <span className={`badge badge-xs style-1 ${getBadgeColorClass(data.title)}`}>
                                       {data.update}
                                     </span>
                                   </Link>
@@ -249,7 +258,7 @@ const SideBar = () => {
           })}
         </ul>
         <div className="copyright">
-          <p>Bhookhe Admin © {dat.getFullYear()} All Rights Reserved</p>
+          <p>Idea2Reality Admin © {dat.getFullYear()} All Rights Reserved</p>
           <p className="fs-12">Made with <span className="heart"
             onClick={(e) => e.target.classList.toggle('heart-blast')}
           ></span> by Idea2Reality.tech</p>

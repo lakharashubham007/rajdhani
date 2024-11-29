@@ -25,8 +25,10 @@ import ReactPaginate from "react-paginate";
 
 import moment from "moment";
 import Select from "react-select";
-import { addFittingSizeApi, deleteFittingSizeApi, GetEditFittingSizeData, getFittingSizeApi, UpdateFittingSize,
-   UpdateFittingSizeStatus } from "../../../services/apis/FittingSize";
+import {
+  addFittingSizeApi, deleteFittingSizeApi, GetEditFittingSizeData, getFittingSizeApi, UpdateFittingSize,
+  UpdateFittingSizeStatus
+} from "../../../services/apis/FittingSize";
 import { addThreadApi, deleteThreadApi, GetEditThreadData, getThreadApi, UpdateThread, UpdateThreadStatus } from "../../../services/apis/Thread";
 import { deleteProductApi, getProductApi, UpdateProductStatus } from "../../../services/apis/Product";
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
@@ -37,12 +39,14 @@ import { getSupplierPurchaseOrderApi } from "../../../services/apis/PurchaseOrde
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
   { heading: "Order Id", sortingVale: "_id" },
-  { heading: "Supplier Name", sortingVale: "name"},
-  { heading: "Supplier Address", sortingVale: "address"},
-  { heading: "Due Date", sortingVale: "due_date"},
-  { heading: "Do Amount", sortingVale: "grand_total"},
+  { heading: "Voucher No.", sortingVale: "voucher_no" },
+  { heading: "Supplier Name", sortingVale: "name" },
+  { heading: "Supplier Address", sortingVale: "address" },
+  { heading: "Orderd Date", sortingVale: "date" },
+  { heading: "Due Date", sortingVale: "due_date" },
+  { heading: "PO Amount", sortingVale: "grand_total" },
 
-  { heading: "Created At", sortingVale: "created_at" },
+  // { heading: "Created At", sortingVale: "created_at" },
   { heading: "Status", sortingVale: "status" },
   { heading: "Action", sortingVale: "action" },
 ];
@@ -56,9 +60,9 @@ const SupplierPurchaseOrderList = () => {
     document.querySelectorAll("#holidayList tbody tr")
   );
   const [formData, setFormData] = useState({
-    threadSize:"",
-    threadType:"",
-    measurementUnit:""
+    threadSize: "",
+    threadType: "",
+    measurementUnit: ""
   });
   const [UpdateCategory, setUpdateCategory] = useState(false);
   const [purchaseOrderList, setPurchaseOrderList] = useState([]);
@@ -71,16 +75,16 @@ const SupplierPurchaseOrderList = () => {
   const activePag = useRef(0);
   const [test, settest] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
-  const [showDeleteMdl,setShowDeleteMdl]=useState(false);
-  const [deleteTableDataId,setDeleteTableDataId] = useState("");
+  const [showDeleteMdl, setShowDeleteMdl] = useState(false);
+  const [deleteTableDataId, setDeleteTableDataId] = useState("");
   const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
-const navigate= useNavigate()
+  const navigate = useNavigate()
   const resetForm = () => {
     setFormData({
-      threadSize:"",
-      threadType:"",
-      measurementUnit:""
+      threadSize: "",
+      threadType: "",
+      measurementUnit: ""
     });
     setLogo(null); // Reset the displayed image
     setErrors({}); // Clear errors
@@ -102,33 +106,33 @@ const navigate= useNavigate()
     });
     setErrors({
       ...error,
-      name:"",
+      name: "",
     });
   };
 
-//   getSubCategoriesApi
-  const fetchPurchaseOrderList=async(sortValue)=>{
-        // Set loading to true when the API call starts
-        setLoading(true);
-        try {
-          const res = await getSupplierPurchaseOrderApi(
-            currentPage,
-            sort,
-            sortValue,
-            searchInputValue
-          );
-    
-          setPurchaseOrderList(res?.data);
+  //   getSubCategoriesApi
+  const fetchPurchaseOrderList = async (sortValue) => {
+    // Set loading to true when the API call starts
+    setLoading(true);
+    try {
+      const res = await getSupplierPurchaseOrderApi(
+        currentPage,
+        sort,
+        sortValue,
+        searchInputValue
+      );
 
-          setUpdateCategory(false);
-        } catch (error) {
-          // Catch and handle errors
-          console.error("Error fetching cuisines:", error);
-          Toaster.error("Failed to load cuisines. Please try again.");
-        } finally {
-          // Always set loading to false when the API call is done (whether successful or failed)
-          setLoading(false);
-        }
+      setPurchaseOrderList(res?.data);
+
+      setUpdateCategory(false);
+    } catch (error) {
+      // Catch and handle errors
+      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      // Always set loading to false when the API call is done (whether successful or failed)
+      setLoading(false);
+    }
   }
 
   useEffect(() => {
@@ -144,7 +148,7 @@ const navigate= useNavigate()
         resetForm();
         setModalCentered(false);
         setIsEdit(false);
-  
+
         fetchPurchaseOrderList();
         setSelectedOption(null)
       } else {
@@ -202,10 +206,10 @@ const navigate= useNavigate()
 
   const handleEditThread = async (id) => {
     navigate(`/editsupplierdata/${id}`)
-   
+
   };
 
-  const handleDeleteSupplier=(id)=>{
+  const handleDeleteSupplier = (id) => {
     setDeleteTableDataId(id);
     setShowDeleteMdl(true)
   }
@@ -229,22 +233,22 @@ const navigate= useNavigate()
     }
   };
 
-  const handleStatusChange =async (id, currentStatus) => {
-    const fdata={
-      status:!currentStatus
+  const handleStatusChange = async (id, currentStatus) => {
+    const fdata = {
+      status: !currentStatus
     }
-    try{
-        const res =await UpdateSupplierStatus(id,fdata);
-        if (res.status === 200) {
-         Toaster.success(res?.data?.message); // Display success message
-         fetchPurchaseOrderList()
+    try {
+      const res = await UpdateSupplierStatus(id, fdata);
+      if (res.status === 200) {
+        Toaster.success(res?.data?.message); // Display success message
+        fetchPurchaseOrderList()
       } else {
         Toaster.error(res?.data?.message || "Something went wrong. Please try again.");
       }
-     }catch(err){
-       console.log(err)
-     }
-    
+    } catch (err) {
+      console.log(err)
+    }
+
     // console.log("newStatus",newStatus)
   };
 
@@ -263,8 +267,8 @@ const navigate= useNavigate()
 
   return (
     <>
-      <DeleteWarningMdl title={"table data"} showDeleteMdl={showDeleteMdl} setShowDeleteMdl={setShowDeleteMdl} 
-        setDeleteTableDataId={setDeleteTableDataId} handleDeleteSubmit={handleDeleteSubmit}/>
+      <DeleteWarningMdl title={"table data"} showDeleteMdl={showDeleteMdl} setShowDeleteMdl={setShowDeleteMdl}
+        setDeleteTableDataId={setDeleteTableDataId} handleDeleteSubmit={handleDeleteSubmit} />
       <ToastContainer />
       <Loader visible={loading} />
       <PageTitle
@@ -375,15 +379,24 @@ const navigate= useNavigate()
                       {purchaseOrderList?.purchaseOrders?.map((data, ind) => (
                         <tr key={ind}>
                           <td><strong>{ind + 1}</strong> </td>
-                          
+
                           <td>{data?._id}</td>
-                          
+
+                          <td>{data?.voucher_no}</td>
+
                           <td className="">
-                           {data?.supplier_id?.name}
+                            {data?.supplier_id?.name}
+                            
                           </td>
 
                           <td className="">
                             {data?.supplier_id?.city} {data?.supplier_id?.state}
+                          </td>
+
+                          
+
+                          <td className="">
+                            {moment(data?.order_details?.date).format("DD MMM YYYY")}
                           </td>
 
                           <td className="">
@@ -391,45 +404,50 @@ const navigate= useNavigate()
                           </td>
 
                           <td className="">
-                            {data?.summary?.grand_total}
+                            INR {data?.summary?.grand_total}
                           </td>
 
-                          <td>
+                          {/* <td>
                             {moment(data?.created_at).format("DD MMM YYYY, h:mm:ss a")}
-                          </td>
+                          </td> */}
 
-                          <td> 
-                          <Switch
-                            checked={data?.status} 
-                            onChange={() => handleStatusChange(data?._id, data?.status)} 
-                            offColor="#f0f1ff" 
-                            onColor="#6a73fa"
-                            offHandleColor="#6a73fa"
-                            onHandleColor="#fff"
-                            uncheckedIcon={false}
-                            checkedIcon={false}
-                            width={40}  // Adjust width of the switch
-                            height={20} // Adjust height of the switch
-                          />
-                          </td>
                           <td>
-                            <button className="btn btn-xs sharp btn-primary me-1"
-                              onClick={() => navigate(`/purchaseorderview/${data?._id}`)}>
-                              <i class="fa-solid fa-eye"></i>
-                            </button>
-                           
-                            <button className="btn btn-xs sharp btn-light me-1"
-                              onClick={() => navigate(`/verifyPurchaseOrder/${data?._id}`)}
-                             >
-                            <i class="fa-solid fa-check"></i>
-                            </button>
-                         
-                            <button className="btn btn-xs sharp btn-danger"
-                              onClick={() => handleDeleteSupplier(data?._id)}>
-                              <i className="fa fa-trash" />
+                            <span
+                              className={`badge ${data.status === "In Pending"
+                                ? "bg-warning"
+                                : data.status === "Completed"
+                                  ? "bg-success"
+                                  : "bg-secondary"
+                                }`}
+                            >
+                              {data?.status}
+                            </span>
+                          </td>
+
+                        
+                          <td className="d-flex justify-content-start align-items-center gap-2">
+                            <button
+                              className="btn btn-xs sharp btn-primary"
+                              onClick={() => navigate(`/purchaseorderview/${data?._id}`)}
+                            >
+                              <i className="fa-solid fa-eye"></i>
                             </button>
 
+                            <button
+                              className="btn btn-xs sharp btn-light"
+                              onClick={() => navigate(`/verifyPurchaseOrder/${data?._id}`)}
+                            >
+                              <i className="fa-solid fa-check"></i>
+                            </button>
+
+                            <button
+                              className="btn btn-xs sharp btn-danger"
+                              onClick={() => handleDeleteSupplier(data?._id)}
+                            >
+                              <i className="fa fa-trash"></i>
+                            </button>
                           </td>
+
                         </tr>
                       ))}
                     </tbody>
@@ -441,7 +459,7 @@ const navigate= useNavigate()
                         <ReactPaginate
                           pageCount={Math.ceil(
                             purchaseOrderList?.totalRecords /
-                              purchaseOrderList?.rowsPerPage
+                            purchaseOrderList?.rowsPerPage
                           )}
                           pageRangeDisplayed={1}
                           marginPagesDisplayed={2}

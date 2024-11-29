@@ -34,7 +34,7 @@ const AddSupplierPurchaseOrder = () => {
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [galleryImages, setGalleryImages] = useState([]);
-  const [states,setStates]=useState([]);
+  const [states, setStates] = useState([]);
   //drop option list
   const [supplierOption, setSupplierOption] = useState(null);
   const [allSupplier, setAllSupplier] = useState(null);
@@ -45,7 +45,7 @@ const AddSupplierPurchaseOrder = () => {
   const [selectedSupplierOption, setSelectedSupplierOption] = useState(null);
   const [selectedProductOption, setSelectedProductOption] = useState(null);
 
-  const [selectedBillingStateOption,setSelectedBillingStateOption] = useState(null);
+  const [selectedBillingStateOption, setSelectedBillingStateOption] = useState(null);
   const [selectedShippingStateOption, setSelectedShippingStateOption] = useState(null);
 
 
@@ -66,16 +66,16 @@ const AddSupplierPurchaseOrder = () => {
     state_name: '',
     state_code: '',
     email: ''
- });
+  });
 
- const [formShippingData, setShippingFormData] = useState({
+  const [formShippingData, setShippingFormData] = useState({
     name: '',
     address: '',
     gstin: '',
     state_name: '',
     state_code: '',
     email: ''
-});
+  });
 
   const [rows, setRows] = useState([
     {
@@ -206,23 +206,23 @@ const AddSupplierPurchaseOrder = () => {
   };
 
   const resetForm = () => {
-   setBillingFormData({
+    setBillingFormData({
       name: '',
       address: '',
       gstin: '',
       state_name: '',
       state_code: '',
       email: ''
-   });
-  
-   setShippingFormData({
+    });
+
+    setShippingFormData({
       name: '',
       address: '',
       gstin: '',
       state_name: '',
       state_code: '',
       email: ''
-  });
+    });
 
     setFormData({
       supplier_id: "",
@@ -268,51 +268,51 @@ const AddSupplierPurchaseOrder = () => {
     if (!formData.note) newErrors.note = "Note is required.";
     if (!formData.due_date) newErrors.due_date = "Due Date Id is required.";
 
-  // Validate Billing Details
-  if (!formBillingData.name) {
-    newErrors.billing_name = "Billing name is required.";
-  }
-  if (!formBillingData.email || !/\S+@\S+\.\S+/.test(formBillingData.email)) {
-    newErrors.billing_email = "Valid email is required for billing.";
-  }
-  if (!selectedBillingStateOption) {
-    newErrors.billing_state_name = "Billing state is required.";
-  }
-  if (!formBillingData.state_code || !/^\d{1,2}$/.test(formBillingData.state_code)) {
-    newErrors.billing_state_code = "Valid billing state code is required.";
-  }
-  if (!formBillingData.gstin 
-    // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formBillingData.gstin)
-  ) {
-    newErrors.billing_gstin = "Valid GSTIN is required for billing.";
-  }
+    // Validate Billing Details
+    if (!formBillingData.name) {
+      newErrors.billing_name = "Billing name is required.";
+    }
+    if (!formBillingData.email || !/\S+@\S+\.\S+/.test(formBillingData.email)) {
+      newErrors.billing_email = "Valid email is required for billing.";
+    }
+    if (!selectedBillingStateOption) {
+      newErrors.billing_state_name = "Billing state is required.";
+    }
+    if (!formBillingData.state_code || !/^\d{1,2}$/.test(formBillingData.state_code)) {
+      newErrors.billing_state_code = "Valid billing state code is required.";
+    }
+    if (!formBillingData.gstin
+      // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formBillingData.gstin)
+    ) {
+      newErrors.billing_gstin = "Valid GSTIN is required for billing.";
+    }
 
-  if (!formBillingData.address) {
-    newErrors.billing_address = "Address is required for billing.";
-  }
+    if (!formBillingData.address) {
+      newErrors.billing_address = "Address is required for billing.";
+    }
 
-  // Validate Shipping Details
-  if (!formShippingData.name) {
-    newErrors.shipping_name = "Shipping name is required.";
-  }
-  if (!formShippingData.email || !/\S+@\S+\.\S+/.test(formShippingData.email)) {
-    newErrors.shipping_email = "Valid email is required for shipping.";
-  }
-  if (!selectedShippingStateOption) {
-    newErrors.shipping_state_name = "Shipping state is required.";
-  }
-  if (!formShippingData.state_code || !/^\d{1,2}$/.test(formShippingData.state_code)) {
-    newErrors.shipping_state_code = "Valid shipping state code is required.";
-  }
-  if (!formShippingData.gstin 
-    // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formShippingData.gstin)
-  ) {
-    newErrors.shipping_gstin = "Valid GSTIN is required for shipping.";
-  }
+    // Validate Shipping Details
+    if (!formShippingData.name) {
+      newErrors.shipping_name = "Shipping name is required.";
+    }
+    if (!formShippingData.email || !/\S+@\S+\.\S+/.test(formShippingData.email)) {
+      newErrors.shipping_email = "Valid email is required for shipping.";
+    }
+    if (!selectedShippingStateOption) {
+      newErrors.shipping_state_name = "Shipping state is required.";
+    }
+    if (!formShippingData.state_code || !/^\d{1,2}$/.test(formShippingData.state_code)) {
+      newErrors.shipping_state_code = "Valid shipping state code is required.";
+    }
+    if (!formShippingData.gstin
+      // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formShippingData.gstin)
+    ) {
+      newErrors.shipping_gstin = "Valid GSTIN is required for shipping.";
+    }
 
-  if (!formShippingData.address) {
-    newErrors.shipping_address = "Address required for billing.";
-  }
+    if (!formShippingData.address) {
+      newErrors.shipping_address = "Address required for billing.";
+    }
 
 
     // Set errors to the state
@@ -472,26 +472,26 @@ const AddSupplierPurchaseOrder = () => {
   const summary = calculateSummary();
 
 
-  
-  
-  const CreatePoItem=async(PO_id)=>{
+
+
+  const CreatePoItem = async (PO_id) => {
 
     const fDataProducts = rows?.map(({ id, selectedOption, ...rest }) => {
-    return {
-      ...rest,
-      po_id:PO_id,
-      cess: parseFloat(rest.cess || 0),
-      cgst: parseFloat(rest.cgst || 0),
-      discount_per_unit: parseFloat(rest.discount_per_unit || 0),
-      igst: parseFloat(rest.igst || 0),
-      price_per_unit: parseFloat(rest.price_per_unit || 0),
-      uom_qty: parseFloat(rest.uom_qty || 0),
-      quantity: parseFloat(rest.quantity || 0),
-      total_discount: parseFloat(rest.total_discount || 0),
-      amount: parseFloat(rest.amount || 0),
-      sgst: parseFloat(rest.sgst || 0),
-    };
-   });
+      return {
+        ...rest,
+        po_id: PO_id,
+        cess: parseFloat(rest.cess || 0),
+        cgst: parseFloat(rest.cgst || 0),
+        discount_per_unit: parseFloat(rest.discount_per_unit || 0),
+        igst: parseFloat(rest.igst || 0),
+        price_per_unit: parseFloat(rest.price_per_unit || 0),
+        uom_qty: parseFloat(rest.uom_qty || 0),
+        quantity: parseFloat(rest.quantity || 0),
+        total_discount: parseFloat(rest.total_discount || 0),
+        amount: parseFloat(rest.amount || 0),
+        sgst: parseFloat(rest.sgst || 0),
+      };
+    });
 
     try {
       const res = await createPoItemApi(fDataProducts);
@@ -500,14 +500,14 @@ const AddSupplierPurchaseOrder = () => {
         setLoading(false);
         // Show success message from backend
         // Toaster.success(res?.data?.message);
-        Swal.fire({
-          icon: "success",
-          title: "Purchase Order Items",
-          text: res.data?.message || "PO Items created successfully",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        resetForm(); 
+        // Swal.fire({
+        //   icon: "success",
+        //   title: "Purchase Order Items",
+        //   text: res.data?.message || "PO Items created successfully",
+        //   showConfirmButton: false,
+        //   timer: 1500,
+        // });
+        resetForm();
         // Reset form after success
         // navigate('/productlist');
       } else {
@@ -520,7 +520,7 @@ const AddSupplierPurchaseOrder = () => {
       // Handle any errors during API request
       Toaster.error(
         error.response?.data?.message ||
-          "An error occurred while processing your request"
+        "An error occurred while processing your request"
       );
       console.error("Error creating product:", error);
     }
@@ -548,7 +548,7 @@ const AddSupplierPurchaseOrder = () => {
         state_name: formBillingData.state_name,
         state_code: formBillingData.state_code,
         email: formBillingData.email
-        
+
       },
       shipping_details: {
         name: formShippingData.name,
@@ -564,7 +564,7 @@ const AddSupplierPurchaseOrder = () => {
       const res = await addSupplierPurchaseOrderApi(fData);
       if (res.data?.success) {
         setLoading(false);
-        console.log("ress?.data",res?.data?.purchaseOrder?._id);
+        console.log("ress?.data", res?.data?.purchaseOrder?._id);
 
         CreatePoItem(res?.data?.purchaseOrder?._id)
         Swal.fire({
@@ -586,7 +586,7 @@ const AddSupplierPurchaseOrder = () => {
       // Handle any errors during API request
       Toaster.error(
         error.response?.data?.message ||
-          "An error occurred while processing your request"
+        "An error occurred while processing your request"
       );
       console.error("Error creating product:", error);
     }
@@ -610,24 +610,24 @@ const AddSupplierPurchaseOrder = () => {
     }));
   };
 
-  const handleBillingDetailStateChange=(option)=>{
-      const findState= states?.find((val)=> val?.state_name == option?.value)
-      setSelectedBillingStateOption(option);
-      setBillingFormData({
-       ...formBillingData,
-       state_name:option?.value,
-       state_code:findState?.tin_number
-      })  
+  const handleBillingDetailStateChange = (option) => {
+    const findState = states?.find((val) => val?.state_name == option?.value)
+    setSelectedBillingStateOption(option);
+    setBillingFormData({
+      ...formBillingData,
+      state_name: option?.value,
+      state_code: findState?.tin_number
+    })
   }
 
-  const handleShippingDetailStateChange=(option)=>{
-    const findState= states?.find((val)=> val?.state_name == option?.value)
+  const handleShippingDetailStateChange = (option) => {
+    const findState = states?.find((val) => val?.state_name == option?.value)
     setSelectedShippingStateOption(option);
     setShippingFormData({
-     ...formShippingData,
-     state_name:option?.value,
-     state_code:findState?.tin_number
-    })  
+      ...formShippingData,
+      state_name: option?.value,
+      state_code: findState?.tin_number
+    })
   }
 
 
@@ -649,6 +649,7 @@ const AddSupplierPurchaseOrder = () => {
             </div>
             <div className="card-body">
               <div className="mb-3">
+                <h4 className="card-title">Supplier Detail</h4>
                 <div className="mb-3 row">
                   <div className="col-sm-4">
                     <label className="col-sm-3 col-form-label">Supplier</label>
@@ -724,7 +725,7 @@ const AddSupplierPurchaseOrder = () => {
                       <p className="p-0 m-0"
                         style={{ color: "#000000", fontWeight: "400" }}
                       ></p>
-                      
+
                       {supplierDetail?.phone && (
                         <div className="d-flex gap-1">
                           <p className="p-0 m-0">Phone: </p>
@@ -734,7 +735,7 @@ const AddSupplierPurchaseOrder = () => {
                           </p>
                         </div>
                       )}
-                      
+
                       {supplierDetail?.email && (
                         <div className="d-flex gap-1">
                           <p className="p-0 m-0">Email: </p>
@@ -747,7 +748,7 @@ const AddSupplierPurchaseOrder = () => {
                       {supplierDetail?.gstNumber && (
                         <div className="d-flex gap-1">
                           <p className="p-0 m-0">GST: </p>
-                          <p className="p-0 m-0" style={{ color: "#000000", fontWeight: "400" }}>  
+                          <p className="p-0 m-0" style={{ color: "#000000", fontWeight: "400" }}>
                             {supplierDetail?.gstNumber}
                           </p>
                         </div>
@@ -772,11 +773,12 @@ const AddSupplierPurchaseOrder = () => {
                   </div>
                 </div>
               </div>
-
+              <hr className="w-100" />
+              {/* Billing Details */}
               <div className="mb-3">
-               <h4 className="card-title">Billing Detail</h4>
+                <h4 className="card-title">Billing Detail</h4>
                 <div className="row mb-3">
-                <div className="col-sm-3">
+                  <div className="col-sm-3">
                     <label className="col-sm-3 col-form-label">Name</label>
                     <input
                       name="name"
@@ -793,7 +795,7 @@ const AddSupplierPurchaseOrder = () => {
                       </span>
                     )}
                   </div>
-    
+
                   <div className="col-sm-3">
                     <label className="col-sm-3 col-form-label">Email</label>
                     <input
@@ -813,7 +815,7 @@ const AddSupplierPurchaseOrder = () => {
                   </div>
 
                   <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">State Name</label>
+                    <label className="col-sm-4 col-form-label">State Name</label>
                     <Select
                       value={selectedBillingStateOption}
                       onChange={handleBillingDetailStateChange}
@@ -851,7 +853,7 @@ const AddSupplierPurchaseOrder = () => {
                   </div>
                 </div>
                 <div className="row mb-3">
-                <div className="col-sm-6">
+                  <div className="col-sm-6">
                     <label className="col-sm-3 col-form-label">Address</label>
                     <input
                       name="address"
@@ -867,8 +869,8 @@ const AddSupplierPurchaseOrder = () => {
                         {errors.billing_address}
                       </span>
                     )}
-                </div>
-                <div className="col-sm-3">
+                  </div>
+                  <div className="col-sm-3">
                     <label className="col-sm-3 col-form-label">GSTIN</label>
                     <input
                       name="gstin"
@@ -888,11 +890,12 @@ const AddSupplierPurchaseOrder = () => {
                 </div>
 
               </div>
-              <hr className="w-100"/>
+              <hr className="w-100" />
+              {/* Shipping Details */}
               <div className="">
-               <h4 className="card-title">Shipping Detail</h4>
+                <h4 className="card-title">Shipping Detail</h4>
                 <div className="row mb-3">
-                <div className="col-sm-3">
+                  <div className="col-sm-3">
                     <label className="col-sm-3 col-form-label">Name</label>
                     <input
                       name="name"
@@ -925,9 +928,9 @@ const AddSupplierPurchaseOrder = () => {
                       </span>
                     )}
                   </div>
-                  
+
                   <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">State Name</label>
+                    <label className="col-sm-4 col-form-label">State Name</label>
                     <Select
                       value={selectedShippingStateOption}
                       onChange={handleShippingDetailStateChange}
@@ -945,7 +948,7 @@ const AddSupplierPurchaseOrder = () => {
                       </span>
                     )}
                   </div>
-           
+
                   <div className="col-sm-3">
                     <label className="col-sm-3 col-form-label">State Code</label>
                     <input
@@ -965,8 +968,8 @@ const AddSupplierPurchaseOrder = () => {
                   </div>
                 </div>
 
-              <div className="row mb-3">
-                <div className="col-sm-6">
+                <div className="row mb-3">
+                  <div className="col-sm-6">
                     <label className="col-sm-3 col-form-label">Address</label>
                     <input
                       name="address"
@@ -982,9 +985,9 @@ const AddSupplierPurchaseOrder = () => {
                         {errors.shipping_address}
                       </span>
                     )}
-                </div>
+                  </div>
 
-                <div className="col-sm-3">
+                  <div className="col-sm-3">
                     <label className="col-sm-3 col-form-label">GSTIN</label>
                     <input
                       name="gstin"
@@ -1004,10 +1007,12 @@ const AddSupplierPurchaseOrder = () => {
                 </div>
               </div>
 
+
+
               {/* Table  */}
               <div className="col-xl-12 col-lg-12 mt-5">
                 <div className="">
-                 
+
                   <div>
                     <div className="" style={{ overflow: "auto" }}>
                       {rows?.length > 0 && (
@@ -1038,28 +1043,54 @@ const AddSupplierPurchaseOrder = () => {
                           </thead>
                           <tbody>
                             {rows?.map((row, index) => (
-                              
+
                               <tr key={row.id}>
                                 <td>{row.id}</td>
-                                  <td>
-                                    <Select value={row.selectedOption}
-                                      onChange={(selectedOption) =>
-                                        handleProductChange(selectedOption, index)
-                                      }
-                                      defaultValue={row.selectedOption}
-                                      options={productOption} // Ensure productOption is properly defined
-                                      styles={{
-                                        control: (provided) => ({
-                                          ...provided,
-                                          lineHeight: "20px",
-                                          color: "#7e7e7e",
-                                          paddingLeft: "15px",
-                                        }),
-                                      }}
-                                    />
-                                  </td>
-                                  
-                                  <td>
+                                <td>
+                                  <Select
+                                    value={row.selectedOption} // Prefill selected option
+                                    onChange={(selectedOption) => handleProductChange(selectedOption, index)}
+                                    options={productOption} // Ensure productOption is properly defined
+                                    styles={{
+                                      control: (provided) => ({
+                                        ...provided,
+                                        width: "200px", // Adjust width as needed
+                                        lineHeight: "20px",
+                                        color: "#7e7e7e",
+                                        paddingLeft: "15px",
+                                      }),
+                                      menuPortal: (provided) => ({
+                                        ...provided,
+                                        zIndex: 9999, // Ensures dropdown appears on top
+                                      }),
+                                      menu: (provided) => ({
+                                        ...provided,
+                                        top: "-100%", // Positions the dropdown above
+                                      }),
+                                    }}
+                                    menuPortalTarget={document.body} // Ensures the dropdown is rendered in the body
+                                  />
+                                </td>
+
+                                {/* <td>
+                                  <Select value={row.selectedOption}
+                                    onChange={(selectedOption) =>
+                                      handleProductChange(selectedOption, index)
+                                    }
+                                    defaultValue={row.selectedOption}
+                                    options={productOption} // Ensure productOption is properly defined
+                                    styles={{
+                                      control: (provided) => ({
+                                        ...provided,
+                                        lineHeight: "20px",
+                                        color: "#7e7e7e",
+                                        paddingLeft: "15px",
+                                      }),
+                                    }}
+                                  />
+                                </td> */}
+
+                                <td>
                                   <input
                                     type="text"
                                     placeholder="Sku"

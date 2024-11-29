@@ -193,6 +193,7 @@ const apis = {
     createBillItems: `${BASE_URL}/private/pobills/create-pob-item`,
     returnOrderList: `${BASE_URL}/private/pobills/return-order-bills`,
     getReturnOrderViewData: `${BASE_URL}/private/pobills/return-orders`,
+    updatePurchaseOrderStatus: `${BASE_URL}/private/purchaseorders/update-po-status`,
 
    },
   

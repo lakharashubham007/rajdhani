@@ -364,8 +364,8 @@ const PurchaseOrderView = () => {
                       {
                         billData?.map((val, ind) => {
                           return (<>
-                            <div className="col-md-3"
-                             style={{ marginTop: "-25px"}}
+                            <div className="col-md-2"
+                             style={{ marginTop: "-25px", marginRight: "1px", marginBottom: '20px' }}
                             key={ind}>
                               <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
                             </div>
