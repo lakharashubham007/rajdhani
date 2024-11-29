@@ -1037,7 +1037,7 @@ const VerifyPurchaseOrder = () => {
                         <>
                           {billData.map((val, ind) => (
                             <div className="col-md-2" key={ind}
-                              style={{ marginTop: "-25px", marginRight: "1px", marginBottom: '20px' }}
+                              style={{ marginTop: "-25px", marginRight: "1px", marginBottom: '20px',marginLeft: '20px' }}
                             >
                               <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
                             </div>

@@ -283,11 +283,11 @@ const ReturnOrderView = () => {
                   <div className="col-sm-4">
                     <h2 className="header-title">Rajdhani - Return Order</h2>
                   </div>
-                  <div className="col-sm-4 d-flex justify-content-end mb-3">
-                    <button onClick={exportToPDF} className="btn btn-primary me-2">
+                  <div className="col-sm-4 d-flex justify-content-end mb-3 " style={{height: '40px'}}>
+                    <button onClick={exportToPDF} className="btn btn-primary me-2" >
                       Export to PDF
                     </button>
-                    <button onClick={exportToExcel} className="btn btn-success">
+                    <button onClick={exportToExcel} className="btn btn-success" >
                       Export to Excel
                     </button>
                   </div>

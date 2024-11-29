@@ -280,7 +280,7 @@ const PurchaseOrderView = () => {
                   <div className="col-sm-4">
                     <h2 className="header-title">Rajdhani - Purchase Order</h2>
                   </div>
-                  <div className="col-sm-4 d-flex justify-content-end mb-3">
+                  <div className="col-sm-4 d-flex justify-content-end mb-2" style={{height: '40px'}}>
                     <button onClick={exportToPDF} className="btn btn-primary me-2">
                       Export to PDF
                     </button>
@@ -365,7 +365,7 @@ const PurchaseOrderView = () => {
                         billData?.map((val, ind) => {
                           return (<>
                             <div className="col-md-2"
-                             style={{ marginTop: "-25px", marginRight: "1px", marginBottom: '20px' }}
+                             style={{ marginTop: "-25px", marginRight: "1px", marginBottom: '20px', marginLeft: '20px' }}
                             key={ind}>
                               <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
                             </div>
