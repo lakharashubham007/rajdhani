@@ -955,8 +955,13 @@ const VerifyPurchaseOrder = () => {
                   <div className="col-sm-4">
                     <img src={rajdhanilogo} alt="logo" height={60} />
                   </div>
-                  <div className="col-sm-8">
+                  {/* <div className="col-sm-8">
                     <h2 className="header-title">Rajdhani - Verify Order</h2>
+                  </div> */}
+                  <div className="col-sm-4">
+                    <h2 className="header-title" style={{ display: 'inline', whiteSpace: 'nowrap' }}>
+                      Rajdhani -Verify Purchase Order
+                    </h2>
                   </div>
                 </div>
                 <div className="addresses mt-3">
@@ -1025,43 +1030,28 @@ const VerifyPurchaseOrder = () => {
 
             {/* Bill Cards */}
             <div className="">
-              <div className="card-header px-0" >
-                <h4 className="card-title" style={{ marginBottom: '-15px' }}>Bill Details</h4>
+              <div className="card-header pb-0 px-0" >
+                <h4 className="card-title">Bill Details</h4>
               </div>
 
               <div className="d-flex">
-                <div className="card-body px-0">
+                <div className="mt-0 px-0">
                   <div className="row">
                     {
                       billData?.length > 0 ? (
                         <>
                           {billData.map((val, ind) => (
-                            <div className="col-md-2" key={ind}
-                              style={{ marginTop: "-25px", marginRight: "1px", marginBottom: '20px',marginLeft: '20px' }}
-                            >
+                           
                               <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
-                            </div>
+                             
                           ))}
                           {/* Add New Bill Button after bills */}
-                          {/* <div className="col-md-3">
-                            <button
-                              className="bill-card-btn"
-                              onClick={() => setContentModal(true)}
-                            >
-                              <div className="bill-card">
-                                <div className="bill-header mt-3">
-                                  <i className="fa-solid fa-plus fa-2xl"></i>
-                                  <p className="pt-2 mb-0">Add New Bill</p>
-                                </div>
-                              </div>
-                            </button>
-                          </div> */}
-                          <div className="col-md-3" style={{ marginTop: "-15px" }}>
+                          <div className="col-md-3">
                             <button
                               className="bill-card-btn"
                               onClick={() => setContentModal(true)}
                               style={{
-                                width: "200px",
+                                width: "195px",
                                 height: "130px",
                                 border: "1px dashed #007bff",
                                 borderRadius: "5px",
@@ -1071,8 +1061,8 @@ const VerifyPurchaseOrder = () => {
                                 alignItems: "center",
                                 justifyContent: "center",
                                 boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                                marginTop: "2px",
-                                marginLeft: "10px"
+                                marginTop: "12px",
+                                marginLeft: "0px"
                               }}
                             >
                               <div className="bill-cards" style={{ textAlign: "center" }}>
@@ -1262,7 +1252,7 @@ const VerifyPurchaseOrder = () => {
             <Row>
               <Col lg={12}>
                 <div className="">
-                  <div className="card-header px-0">
+                  <div className="card-header pb-0 px-0">
                     <h4 className="card-title">PO Product Details</h4>
                   </div>
                   <div className="card-body px-0">

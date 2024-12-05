@@ -430,7 +430,7 @@ const EmployeeRole = () => {
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                    {modules?.filter((module) => module.classChange !== "menu-title").map((module) => (
+                                                    {modules?.map((module) => (
                                                         <tr key={module._id}>
                                                             <td>{module.title}</td>
                                                             <td>

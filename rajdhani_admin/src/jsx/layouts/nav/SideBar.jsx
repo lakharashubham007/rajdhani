@@ -1,18 +1,11 @@
-
-
-
-
 import React, { useReducer, useContext, useEffect, useState } from "react";
 import { Collapse } from 'react-bootstrap';
-/// Link
 import { Link } from "react-router-dom";
 import { MenuList } from './Menu';
 import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { getSidebarMenusApi } from "../../../services/apis/SidebarMenuApi";
-// import LogoutPage from './Logout';
-/// Image
-// import profile from "../../../assets/images/profile/pic1.jpg";
+
 
 const reducer = (previousState, updatedState) => ({
   ...previousState,
@@ -35,8 +28,8 @@ const SideBar = () => {
   } = useContext(ThemeContext);
 
   const [state, setState] = useReducer(reducer, initialState);
+  const [hideOnScroll, setHideOnScroll] = useState(true);
 
-  const [hideOnScroll, setHideOnScroll] = useState(true)
   useScrollPosition(
     ({ prevPos, currPos }) => {
       const isShow = currPos.y > prevPos.y
@@ -44,7 +37,6 @@ const SideBar = () => {
     },
     [hideOnScroll]
   )
-
 
   const handleMenuActive = status => {
     setState({ active: status });
@@ -59,7 +51,7 @@ const SideBar = () => {
     }
   }
 
-  /// Path
+  // Path
   let path = window.location.pathname;
   path = path.split("/");
   path = path[path.length - 1];
@@ -81,17 +73,13 @@ const SideBar = () => {
 
   const [sidebarMenus, setSidebarMenus] = useState([]);
 
-  console.log(sidebarMenus, "sidebarmenus are here")
 
   useEffect(() => {
     // Define the function to fetch sidebar menus
     const fetchSidebarMenus = async () => {
       try {
-
         const response = await getSidebarMenusApi();
         const menus = response?.data?.MenuList;
-
-
         // Transform iconStyle strings into React elements
         const updatedMenus = menus.map(menu => {
           if (menu.iconStyle) {
@@ -110,20 +98,40 @@ const SideBar = () => {
           }
           return menu;
         });
-
         // Organize menus by module_id and children
-        // const formattedMenus = updatedMenus
-        //   .filter(menu => menu.module_id) // Get parent modules
-        //   .map(parent => ({
-        //     ...parent,
-        //     children: updatedMenus
-        //       .filter(child => child.parent_module_id === parent.module_id) // Match children
-        //       .sort((a, b) => a.module_menu_priority - b.module_menu_priority), // Sort by child priority
-        //   }))
-        //   .sort((a, b) => a.module_priority - b.module_priority);
-        setSidebarMenus(updatedMenus);
+        const formattedMenus = updatedMenus
+          .filter(menu => menu.module_id) // Get parent modules
+          .map(parent => ({
+            ...parent,
+            children: updatedMenus
+              .filter(child => child.parent_module_id === parent.module_id) // Match children
+              .sort((a, b) => a.module_menu_priority - b.module_menu_priority), // Sort by child priority
+          }))
+          .sort((a, b) => a.module_priority - b.module_priority);
+        // Extract Values individually
+        const extractIndividualEntries = (menus) => {
+          let result = [];
+          menus.forEach(menu => {
+            // Add parent menu
+            result.push({
+              ...menu,
+              children: undefined, // Remove children
+              content: undefined  // Remove content
+            });
 
-
+            // Add children menus
+            if (menu?.children && menu?.children?.length > 0) {
+              menu?.children.forEach(child => {
+                result.push({
+                  ...child,
+                });
+              });
+            }
+          });
+          return result;
+        };
+        const individualEntries = extractIndividualEntries(formattedMenus);
+        setSidebarMenus(individualEntries);
       } catch (err) {
         // Handle any errors
         // setError(err.message);
@@ -173,11 +181,11 @@ const SideBar = () => {
         <ul className="metismenu" id="menu">
           {/* sidebarMenus */}
           {sidebarMenus?.map((data, index) => {
-            console.log(data,"data is here")
+            console.log(data, "data is here")
             let menuClass = data.classChange;
             if (menuClass === "menu-title") {
               return (
-                <li className={`nav-label ${menuClass} ${data.extraclass}`} key={index} >{data.title}</li>
+                <li className={`nav-label ${menuClass} ${data.extraClass}`} key={index} >{data.title}</li>
               )
             }
             else {

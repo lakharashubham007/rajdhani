@@ -6,6 +6,7 @@ import {
     // login,saveTokenInLocalStorage 
 } from '../../services/AuthService';
 import {login,loginRestaurant,saveTokenInLocalStorage } from '../../services/apis/AuthService';
+import Swal from "sweetalert2";
 
 
 export const SIGNUP_CONFIRMED_ACTION = '[signup action] confirmed signup';  
@@ -54,7 +55,6 @@ export function loginAction(email, password, navigate) {
     return (dispatch) => {
          login(email, password)
             .then((response) => {
-                console.log(response?.data, " data is hrer in login method.");
                 saveTokenInLocalStorage(response.data);
                 // runLogoutTimer(
                 //     dispatch,
@@ -100,7 +100,6 @@ export function loginFailedAction(data) {
 }
 
 export function loginConfirmedAction(data) {
-    console.log(data, "data is hrer in acrion file");
     return {
         type: LOGIN_CONFIRMED_ACTION,
         payload: data,
@@ -132,3 +131,36 @@ export const navtoggle = () => {
       type: 'NAVTOGGLE',
     };
 };
+
+// export function formatError(errorResponse) {
+//     switch (errorResponse.message) {
+//         case 'EMAIL_NOT_FOUND':
+//             Swal.fire({
+//                 icon: 'error',
+//                 title: 'Oops',
+//                 text: 'Email not found',
+//             });
+//             break;
+//         case 'INVALID_PASSWORD':
+//             Swal.fire({
+//                 icon: 'error',
+//                 title: 'Oops',
+//                 text: 'Invalid Password',
+//             });
+//             break;
+//         case 'USER_DISABLED':
+//             Swal.fire({
+//                 icon: 'error',
+//                 title: 'Oops',
+//                 text: 'User Disabled',
+//             });
+//             break;
+//         default:
+//             Swal.fire({
+//                 icon: 'error',
+//                 title: 'Oops',
+//                 text: 'An error occurred. Please try again.',
+//             });
+//             break;
+//     }
+// }

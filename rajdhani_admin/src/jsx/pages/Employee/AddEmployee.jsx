@@ -17,14 +17,15 @@ const AddEmployee = () => {
     const [selectedRoleOption, setSelectedRoleOption] = useState(null);
     const [selectedZoneOption, setSelectedZoneOption] = useState(null);
     const [roles, setRoles] = useState();
-    const [zones, setZones] = useState();
+    // const [zones, setZones] = useState();
     const [formData, setFormData] = useState({
         firstName: '',
         lastName: '',
         phone: '',
         email: '',
         password: '',
-        confirmPassword: ''
+        confirmPassword: '',
+       
     });
     let errorsObj = { email: '', password: '', phone: '', firstName: '', lastName: '' };
 
@@ -44,24 +45,11 @@ const AddEmployee = () => {
             //error goes here
         }
     }
-    const fetchZones = async () => {
-        try {
-            const res = await getZonesApi();
-
-            const dropdownZones = res.data?.zones.map(zone => ({
-                value: zone._id,
-                label: zone.name
-            }));
-
-            setZones(dropdownZones);
-        } catch (error) {
-
-        }
-    }
+   
 
     useEffect(() => {
         fetchRoles();
-        fetchZones();
+        
     }, []);
 
     // Handle the logo image change
@@ -210,9 +198,10 @@ const AddEmployee = () => {
             email: formData.email,
             password: formData.password,
             confirmPassword: formData.confirmPassword,
-            zone: selectedZoneOption?.value,
-            role: selectedRoleOption?.value,
-            logo
+            role_id: selectedRoleOption?.value,
+            role: '67512dff137352f05356ff3c',
+            logo,
+            
         };
 
         const res = await employeeCreateApi(employeeData);
@@ -337,22 +326,7 @@ const AddEmployee = () => {
 
                                     </div>
 
-                                    <div className="col-sm-6">
-                                        <label className="col-sm-3 col-form-label">
-                                            Zone
-                                        </label>
-                                        <Select
-                                            defaultValue={selectedZoneOption}
-                                            onChange={setSelectedZoneOption}
-                                            options={zones}
-                                            style={{
-                                                lineHeight: "40px",
-                                                color: "#7e7e7e",
-                                                paddingLeft: " 15px",
-                                            }}
-                                        />
-                                    </div>
-
+                                   
                                     <div className="col-sm-6">
                                         <label className="col-sm-3 col-form-label">
                                             Role

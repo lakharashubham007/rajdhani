@@ -6,7 +6,7 @@ const BillCard = ({ ind, val, handleGetBillData }) => {
       className="bill-card"
       style={{
         width: "200px",
-        margin: "10px",
+        margin: '12px',
         padding: "0",
         border: "1px solid #ddd",
         borderRadius: "5px",

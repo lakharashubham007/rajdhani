@@ -82,19 +82,19 @@ const PurchaseOrderView = () => {
     const pdfHeight = 297; // A4 height in mm
     const margin = 10; // Margin for content
     const pageHeight = pdfHeight - 2 * margin;
-  
+
     html2canvas(input, { scale: 2 }).then((canvas) => {
       const imgData = canvas.toDataURL("image/png");
       const imgWidth = pdfWidth - 2 * margin;
       const imgHeight = (canvas.height * imgWidth) / canvas.width;
-  
+
       let heightLeft = imgHeight;
       let position = margin;
-  
+
       // Add first page
       pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
       heightLeft -= pageHeight;
-  
+
       // Add additional pages if needed
       while (heightLeft > 0) {
         position = heightLeft - imgHeight; // Move position
@@ -102,11 +102,11 @@ const PurchaseOrderView = () => {
         pdf.addImage(imgData, "PNG", margin, position, imgWidth, imgHeight);
         heightLeft -= pageHeight;
       }
-  
+
       pdf.save("PurchaseOrder.pdf");
     });
   };
-  
+
 
   const exportToExcel = () => {
     const table = document.querySelector("table"); // Target your table
@@ -278,9 +278,11 @@ const PurchaseOrderView = () => {
                     <img src={rajdhanilogo} alt="logo" height={60} />
                   </div>
                   <div className="col-sm-4">
-                    <h2 className="header-title">Rajdhani - Purchase Order</h2>
+                    <h2 className="header-title" style={{ display: 'inline', whiteSpace: 'nowrap' }}>
+                      Rajdhani - Purchase Order
+                    </h2>
                   </div>
-                  <div className="col-sm-4 d-flex justify-content-end mb-2" style={{height: '40px'}}>
+                  <div className="col-sm-4 d-flex justify-content-end mb-2" style={{ height: '40px' }}>
                     <button onClick={exportToPDF} className="btn btn-primary me-2">
                       Export to PDF
                     </button>
@@ -353,22 +355,20 @@ const PurchaseOrderView = () => {
 
             {/* Bill Details show */}
             <div className="">
-              <div className="card-header px-0" >
-                <h4 className="card-title" style={{ marginBottom: "-15px"}}>Bills</h4>
+              <div className="card-header pb-0 px-0" >
+                <h4 className="card-title">Bills</h4>
               </div>
 
-              <div className="card-body px-0">
+              <div className="mt-0 px-0">
                 {
                   billData?.length > 0 ?
                     <div className="row">
                       {
                         billData?.map((val, ind) => {
                           return (<>
-                            <div className="col-md-2"
-                             style={{ marginTop: "-25px", marginRight: "1px", marginBottom: '20px', marginLeft: '20px' }}
-                            key={ind}>
-                              <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
-                            </div>
+
+                            <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
+
                           </>)
                         })
                       }

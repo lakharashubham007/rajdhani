@@ -51,22 +51,7 @@ const adminSchema = new mongoose.Schema(
             type: mongoose.Schema.Types.ObjectId,
             ref: 'adminRoles', // Assuming `role_id` references a `Role` schema
             // required: true,
-        },
-        role: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "adminRoles", // Reference to the Role collection
-            required: true,
-          },
-        zone_id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Zone', // Assuming `zone_id` references a `Zone` schema
-            default: null, // Nullable in SQL
-        },
-        zone: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Zone', // Assuming `zone_id` references a `Zone` schema
-            default: null, // Nullable in SQL
-        },
+        }
     },
     {
         timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, // Maps SQL timestamps
