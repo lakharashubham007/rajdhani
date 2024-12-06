@@ -70,11 +70,11 @@ const checkBillsByPurchaseOrderId = async (id) => {
   }
 };
 
-const downloadBillFile = async (bill_id) => {
+const downloadBillFile = async (bill_no) => {
   try {
     
     // Find the bill document using the bill_id
-    const bill = await PurchaseOrderBill.findOne({ bill_id: bill_id });
+    const bill = await PurchaseOrderBill.findOne({ bill_no: bill_no });
 
     
     if (!bill) {

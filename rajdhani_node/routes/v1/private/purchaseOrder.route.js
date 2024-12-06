@@ -27,9 +27,9 @@ router.patch("/update-po-status/:id", Authentication, Authorization, purchaseOrd
 
 
 //PO Items
-router.post("/create-po-item", Authentication,  purchaseOrderItemController.createPurchaseOrderItem);
-router.get("/po-items/:id", Authentication,  purchaseOrderItemController.getPurchaseOrderItemById);
-router.get("/po-items", Authentication,  purchaseOrderItemController.getPurchaseOrderItems);
+router.post("/create-po-item", Authentication, purchaseOrderItemController.createPurchaseOrderItem);
+router.get("/po-items/:id", Authentication, purchaseOrderItemController.getPurchaseOrderItemById);
+router.get("/po-items", Authentication, purchaseOrderItemController.getPurchaseOrderItems);
 router.put('/update-po-items/:id',Authentication,purchaseOrderItemController.updateSpecificPOItems);
 
 
