@@ -23,7 +23,33 @@ const getPurchaseOrderBillItems = async () => {
 // Get PurchaseOrderBillItems by Bill ID
 const getPurchaseOrderBillItemsByBillId = async (billId) => {
   try {
-    return await PurchaseOrderBillItem.find({ bill_id: billId });
+    return await PurchaseOrderBillItem.find({ bill_id: billId }).populate('po_id');
+  } catch (error) {
+    console.error("Error getting PurchaseOrderBillItems by Bill ID:", error);
+    throw error;
+  }
+};
+
+// Get PurchaseOrderBillItems by Bill ID
+const getPOBItemsAndPODetailsByBillId = async (billId) => {
+  try {
+    const items = await PurchaseOrderBillItem.find({ bill_id: billId }).populate('po_id');
+
+    // Extract `po_id` details from the first item
+    const poDetails = items[0].po_id;
+
+    // Map the bill items without the repeated `po_id`
+    const billItems = items.map(item => {
+      const { po_id, ...rest } = item.toObject(); // Destructure to remove `po_id`
+      return rest;
+    });
+
+    // Respond with a structured JSON
+    return ({
+        po_details: poDetails,
+        bill_items: billItems,
+    });
+
   } catch (error) {
     console.error("Error getting PurchaseOrderBillItems by Bill ID:", error);
     throw error;
@@ -123,5 +149,6 @@ module.exports = {
   updatePurchaseOrderBillItem,
   deletePurchaseOrderBillItem,
   getReturnItemsByBillIdWithDetails,
-  getDistinctBillsAndPOsWithDetails
+  getDistinctBillsAndPOsWithDetails,
+  getPOBItemsAndPODetailsByBillId
 };

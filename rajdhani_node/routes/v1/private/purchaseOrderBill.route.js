@@ -62,6 +62,8 @@ router.delete('/delete-purchase-order-bill/:id', Authentication, Authorization, 
 //PO bill items
 router.get('/po-bill-items/:id', Authentication,  purchaseOrderBillItemController.getPurchaseOrderBillItemsByBillId);
 router.get('/po-bill-items', Authentication,  purchaseOrderBillItemController.getPurchaseOrderBillItems);
+router.get('/po-bill-details/:id', Authentication,  purchaseOrderBillItemController.getPOBItemsAndPODetailsByBillId);
+
 // Define the route to get return items by bill_id
 router.get('/return-orders/:id',Authentication, purchaseOrderBillItemController.getReturnItemsByBillId);
 router.get("/return-order-bills", purchaseOrderBillItemController.getDistinctBillsAndPOsWithDetails);

@@ -46,6 +46,18 @@ const getPurchaseOrderBillItemsByBillId = async (req, res) => {
   }
 };
 
+// Get PO_BillItems And PO_Details  by Bill ID
+const getPOBItemsAndPODetailsByBillId = async (req, res) => {
+  try {
+    const items = await purchaseOrderBillItemService.getPOBItemsAndPODetailsByBillId(req.params.id);
+    res.status(200).json({ success: true, billDetails: items });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
 // Update a specific PurchaseOrderBillItem
 const updatePurchaseOrderBillItem = async (req, res) => {
   try {
@@ -132,5 +144,6 @@ module.exports = {
   updatePurchaseOrderBillItem,
   deletePurchaseOrderBillItem,
   getReturnItemsByBillId,
-  getDistinctBillsAndPOsWithDetails
+  getDistinctBillsAndPOsWithDetails,
+  getPOBItemsAndPODetailsByBillId
 };
