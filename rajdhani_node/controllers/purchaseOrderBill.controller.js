@@ -108,10 +108,22 @@ const downloadBillFileController = async (req, res) => {
     // Set the headers to prompt file download
     res.setHeader('Content-Type', 'application/octet-stream');
     res.setHeader('Content-Disposition', `attachment; filename=${fileName}`);
+   
 
     // Create a read stream and pipe it to the response to send the file
     const fileStream = fs.createReadStream(filePath);
     fileStream.pipe(res);
+
+    res.status(200).json({
+      success: true,
+      message: "File ready for download.",
+      data: {
+        fileName,
+        filePath, // Provide this so the client knows where to fetch it
+        // downloadUrl: `${req.protocol}://${req.get('host')}/path/to/files/${fileName}`, // Construct a download URL
+      },
+    });
+
   } catch (error) {
     console.error("Error downloading the file:", error);
     res.status(500).json({ success: false, message: error.message });
