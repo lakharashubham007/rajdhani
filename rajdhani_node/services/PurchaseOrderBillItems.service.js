@@ -33,7 +33,10 @@ const getPurchaseOrderBillItemsByBillId = async (billId) => {
 // Get PurchaseOrderBillItems by Bill ID
 const getPOBItemsAndPODetailsByBillId = async (billId) => {
   try {
-    const items = await PurchaseOrderBillItem.find({ bill_id: billId }).populate('po_id');
+    const items = await PurchaseOrderBillItem.find({ bill_id: billId }).populate({
+      path: 'po_id',
+      populate: { path: 'supplier_id' }, // Populate supplier details
+    });
 
     // Extract `po_id` details from the first item
     const poDetails = items[0].po_id;
