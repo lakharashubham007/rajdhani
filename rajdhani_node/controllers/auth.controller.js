@@ -27,12 +27,40 @@ const getAdmins = async (req, res) => {
   }
 };
 
+// const login = catchAsync(async (req, res) => {
+//   const { email, password } = req.body;
+//   const user = await authService.loginUserWithEmailAndPassword(email, password);
+//   const tokens = await tokenService.generateAuthTokens(user);
+//   res.status(httpStatus.OK).send({ message: 'Login successfully', user, tokens });
+// });
+
 const login = catchAsync(async (req, res) => {
   const { email, password } = req.body;
-  const user = await authService.loginUserWithEmailAndPassword(email, password);
-  const tokens = await tokenService.generateAuthTokens(user);
-  res.status(httpStatus.OK).send({ message: 'Login successfully', user, tokens });
+
+  try {
+    const user = await authService.loginUserWithEmailAndPassword(email, password);
+    const tokens = await tokenService.generateAuthTokens(user);
+
+    res.status(httpStatus.OK).json({ 
+      message: 'Login successful', 
+      user, 
+      tokens 
+    });
+  } catch (error) {
+    console.error("Login error:", error.message);
+
+    if (error.message === "Incorrect email or password") {
+      return res.status(httpStatus.UNAUTHORIZED).json({
+        message: "Email or password is incorrect",
+      });
+    }
+
+    res.status(httpStatus.INTERNAL_SERVER_ERROR).json({
+      message: "An unexpected error occurred",
+    });
+  }
 });
+
 
 //loginClient
 const loginClient = catchAsync(async (req, res) => {
