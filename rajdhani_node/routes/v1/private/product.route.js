@@ -20,7 +20,6 @@ const upload = multer({
 ]);
 
 // Routes for Product Operations
-
 router.post("/create-product", upload, Authentication, Authorization, productsController.createProduct);
 router.get("/get-products", Authentication, Authorization, productsController.getProducts);
 router.get("/get-all-products", Authentication, productsController.getAllProducts);
