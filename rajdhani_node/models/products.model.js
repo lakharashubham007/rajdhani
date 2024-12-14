@@ -6,6 +6,8 @@ const productSchema = new mongoose.Schema(
     name: { type: String, trim: true }, // Optional field for product name
     description: { type: String, trim: true },
     mfc: { type: String, trim: true }, // Manufacturer or supplier code
+    product_type: { type: String, trim: true }, 
+
 
     // End Fitting
     design: { type: String, trim: true },
@@ -85,15 +87,31 @@ const productSchema = new mongoose.Schema(
     // Common optional fields
     part_no: { type: String, trim: true },
     status: { type: Boolean, default: true }, // Active status
+
+    //image 
+    image: {
+        type: String,
+        trim: true,
+        maxlength: 191, // Main product image
+        default: 'default-product-image.png', // Default image if none provided
+    },
+    gallery: [
+        {
+            type: String,
+            trim: true,
+            maxlength: 191, // Additional images in the gallery
+        }
+    ],
   },
+         
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" }, // Automatically adds createdAt and updatedAt fields
   }
 );
 
-const Product = mongoose.model("Product", productSchema);
+const Products = mongoose.model("Products", productSchema);
 
-module.exports = Product;
+module.exports.Products = Products;
 
 
 // const mongoose = require("mongoose");
