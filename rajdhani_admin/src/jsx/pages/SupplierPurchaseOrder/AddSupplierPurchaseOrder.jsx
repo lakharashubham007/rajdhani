@@ -651,8 +651,8 @@ const AddSupplierPurchaseOrder = () => {
               <div className="mb-3">
                 <h4 className="card-title">Supplier Detail</h4>
                 <div className="mb-3 row">
-                  <div className="col-sm-4">
-                    <label className="col-sm-3 col-form-label">Supplier</label>
+                  <div className="col-sm-6 col-xl-4">
+                    <label className="col-form-label">Supplier</label>
                     <Select
                       value={selectedSupplierOption}
                       onChange={handleSupplierChange}
@@ -671,7 +671,7 @@ const AddSupplierPurchaseOrder = () => {
                     )}
                   </div>
 
-                  <div className="col-sm-4">
+                  <div className="col-sm-6 col-xl-4">
                     <label className="col-sm-3 col-form-label">Date</label>
                     <input
                       disabled
@@ -687,8 +687,8 @@ const AddSupplierPurchaseOrder = () => {
                     )}
                   </div>
 
-                  <div className="col-sm-4">
-                    <label className="col-sm-3 col-form-label">Due Date</label>
+                  <div className="col-sm-6 col-xl-4">
+                    <label className="col-form-label">Due Date</label>
                     <input
                       name="due_date"
                       value={formData?.due_date}
@@ -707,8 +707,8 @@ const AddSupplierPurchaseOrder = () => {
                 </div>
 
                 <div className="mb-3 row">
-                  <div className="col-sm-4">
-                    <label className="col-sm-3 col-form-label">
+                  <div className="col-sm-6 col-xl-4">
+                    <label className="col-form-label">
                       Supplier Details
                     </label>
                     <hr className="w-100" />
@@ -756,8 +756,8 @@ const AddSupplierPurchaseOrder = () => {
                     </div>
                   </div>
 
-                  <div className="col-sm-8">
-                    <label className="col-sm-3 col-form-label">Note</label>
+                  <div className="col-sm-12 col-sm-8">
+                    <label className="col-form-label">Note</label>
                     <textarea
                       name="note"
                       className="form-control"
@@ -778,8 +778,8 @@ const AddSupplierPurchaseOrder = () => {
               <div className="mb-3">
                 <h4 className="card-title">Billing Detail</h4>
                 <div className="row mb-3">
-                  <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">Name</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className=" col-form-label">Name</label>
                     <input
                       name="name"
                       value={formBillingData?.name}
@@ -796,8 +796,8 @@ const AddSupplierPurchaseOrder = () => {
                     )}
                   </div>
 
-                  <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">Email</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className=" col-form-label">Email</label>
                     <input
                       name="email"
                       value={formBillingData?.email}
@@ -814,8 +814,8 @@ const AddSupplierPurchaseOrder = () => {
                     )}
                   </div>
 
-                  <div className="col-sm-3">
-                    <label className="col-sm-4 col-form-label">State Name</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-form-label">State Name</label>
                     <Select
                       value={selectedBillingStateOption}
                       onChange={handleBillingDetailStateChange}
@@ -834,8 +834,8 @@ const AddSupplierPurchaseOrder = () => {
                     )}
                   </div>
 
-                  <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">State Code</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-form-label">State Code</label>
                     <input
                       name="state_code"
                       value={formBillingData?.state_code}
@@ -853,7 +853,7 @@ const AddSupplierPurchaseOrder = () => {
                   </div>
                 </div>
                 <div className="row mb-3">
-                  <div className="col-sm-6">
+                  <div className="col-xl-6">
                     <label className="col-sm-3 col-form-label">Address</label>
                     <input
                       name="address"
@@ -870,8 +870,8 @@ const AddSupplierPurchaseOrder = () => {
                       </span>
                     )}
                   </div>
-                  <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">GSTIN</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-form-label">GSTIN</label>
                     <input
                       name="gstin"
                       value={formBillingData?.gstin}
@@ -895,8 +895,8 @@ const AddSupplierPurchaseOrder = () => {
               <div className="">
                 <h4 className="card-title">Shipping Detail</h4>
                 <div className="row mb-3">
-                  <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">Name</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-form-label">Name</label>
                     <input
                       name="name"
                       value={formShippingData?.name}
@@ -912,8 +912,8 @@ const AddSupplierPurchaseOrder = () => {
                     )}
                   </div>
 
-                  <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">Email</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-form-label">Email</label>
                     <input
                       name="email"
                       value={formShippingData?.email}
@@ -929,8 +929,8 @@ const AddSupplierPurchaseOrder = () => {
                     )}
                   </div>
 
-                  <div className="col-sm-3">
-                    <label className="col-sm-4 col-form-label">State Name</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className=" col-form-label">State Name</label>
                     <Select
                       value={selectedShippingStateOption}
                       onChange={handleShippingDetailStateChange}
@@ -949,8 +949,8 @@ const AddSupplierPurchaseOrder = () => {
                     )}
                   </div>
 
-                  <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">State Code</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className=" col-form-label">State Code</label>
                     <input
                       name="state_code"
                       value={formShippingData?.state_code}
@@ -969,8 +969,8 @@ const AddSupplierPurchaseOrder = () => {
                 </div>
 
                 <div className="row mb-3">
-                  <div className="col-sm-6">
-                    <label className="col-sm-3 col-form-label">Address</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className=" col-form-label">Address</label>
                     <input
                       name="address"
                       value={formShippingData?.address}
@@ -987,8 +987,8 @@ const AddSupplierPurchaseOrder = () => {
                     )}
                   </div>
 
-                  <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">GSTIN</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-form-label">GSTIN</label>
                     <input
                       name="gstin"
                       value={formShippingData?.gstin}

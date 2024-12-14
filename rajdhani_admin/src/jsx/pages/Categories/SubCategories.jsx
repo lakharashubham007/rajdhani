@@ -671,7 +671,7 @@ const SubCategories = () => {
                       <div className="pagination-container">
                         <ReactPaginate
                           pageCount={Math.ceil(
-                            categoryList?.totalCategories /
+                            categoryList?.totalSubcategories /
                               categoryList?.rowsPerPage
                           )}
                           pageRangeDisplayed={1}

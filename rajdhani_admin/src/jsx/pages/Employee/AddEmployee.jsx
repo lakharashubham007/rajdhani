@@ -48,8 +48,7 @@ const AddEmployee = () => {
    
 
     useEffect(() => {
-        fetchRoles();
-        
+     fetchRoles();
     }, []);
 
     // Handle the logo image change
@@ -75,7 +74,7 @@ const AddEmployee = () => {
         if (file) {
             const reader = new FileReader();
             reader.onload = () => {
-                setCover(reader.result);
+             setCover(reader.result);
             };
             reader.readAsDataURL(file);
         }
@@ -297,8 +296,7 @@ const AddEmployee = () => {
                         </div>
                         <div className="card-body">
                             <div className="row">
-                                <div className="col-sm-8 row">
-
+                                <div className="col-sm-12 col-md-8  row">
                                     <div className="col-sm-6">
                                         <label className="col-form-label">First Name</label>
                                         <input
@@ -323,13 +321,11 @@ const AddEmployee = () => {
                                             placeholder="Ex: Doe"
                                         />
                                         {errors.lastName && <div className="text-danger fs-12">{errors.lastName}</div>}
-
                                     </div>
 
-                                   
                                     <div className="col-sm-6">
-                                        <label className="col-sm-3 col-form-label">
-                                            Role
+                                        <label className="col-form-label">
+                                         Role
                                         </label>
                                         <Select
                                             defaultValue={selectedRoleOption}
@@ -350,7 +346,6 @@ const AddEmployee = () => {
                                             className="form-control"
                                             name="phone"
                                             value={formData.phone}
-                                            // onChange={handleInputChange}
                                             onChange={(e) => {
                                                 const value = e.target.value;
                                                 // Validate only numbers and enforce maxLength of 10 digits
@@ -362,15 +357,10 @@ const AddEmployee = () => {
                                             maxLength={10}
                                         />
                                         {errors.phone && <div className="text-danger fs-12">{errors.phone}</div>}
-
-                                    </div>
-
+                                    </div> 
                                 </div>
 
-
-
-                                <div className="col-sm-4 flex justify-center items-center">
-                                    
+                                <div className="col-sm-6 col-md-4 flex justify-center items-center">
                                     {/* <div className="col-sm-12">
                                         <label className="col-form-label">Employee image</label>
                                         <div style={{ position: 'relative', ...styles.container }}>
@@ -385,7 +375,6 @@ const AddEmployee = () => {
                                                 {logo ? (
                                                     <div style={{ position: 'relative' }}>
                                                         <img src={logo} alt="Logo" style={styles.img} />
-                                                        
                                                         <button
                                                             onClick={handleDeleteImage}  // Clear the image
                                                             style={{
@@ -399,8 +388,7 @@ const AddEmployee = () => {
                                                                 width: '25px',
                                                                 height: '25px',
                                                                 cursor: 'pointer'
-                                                            }}
-                                                        >
+                                                            }}>
                                                             &times;
                                                         </button>
                                                     </div>
@@ -416,9 +404,6 @@ const AddEmployee = () => {
                                         </p>
                                     </div> */}
 
-
-
-
                                     <div className="col-sm-12" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
                                         <label className="col-form-label">Employee Image</label>
                                         <div style={styles.container}>
@@ -431,29 +416,24 @@ const AddEmployee = () => {
                                             />
                                             {logo ? (
                                                 <>
-                                                    {/* Simple 'X' button as the delete icon */}
-                                                    <div style={styles.deleteIcon} onClick={handleDeleteLogo}>
-                                                        ⛌
-                                                    </div>
-                                                    <img src={logo} alt="Logo" style={styles.img} />
+                                                 {/* Simple 'X' button as the delete icon */}
+                                                 <div style={styles.deleteIcon} onClick={handleDeleteLogo}>
+                                                     ⛌
+                                                 </div>
+                                                 <img src={logo} alt="Logo" style={styles.img} />
                                                 </>
                                             ) : (
                                                 <label htmlFor="logoUpload" style={styles.placeholder}>
-                                                    <div style={styles.uploadIcon} className='flex flex-col cursor-pointer'>
-                                                        <img width="30" src={uplodIcon} alt="Upload Icon"></img>
-                                                        <p>Upload Image</p>
-                                                    </div>
+                                                  <div style={styles.uploadIcon} className='flex flex-col cursor-pointer'>
+                                                    <img width="30" src={uplodIcon} alt="Upload Icon"></img>
+                                                    <p>Upload Image</p>
+                                                  </div>
                                                 </label>
                                             )}
                                         </div>
                                         <p className='mt-2'>Image format - jpg png jpeg gif<br />Image Size - maximum size 2 MB<br />Image Ratio - 1:1</p>
                                     </div>
-
                                 </div>
-
-
-
-
                             </div>
                         </div>
                     </div>
@@ -493,8 +473,7 @@ const AddEmployee = () => {
                                             onChange={handleInputChange}
                                         />
                                         <span className={`input-group-text pass-handle ${showPassword ? "active" : ""}`}
-                                            onClick={() => setShowPassword(!showPassword)}
-                                        >
+                                            onClick={() => setShowPassword(!showPassword)}>
                                             <i className="fa fa-eye-slash" />
                                             <i className="fa fa-eye" />
                                         </span>
@@ -515,8 +494,7 @@ const AddEmployee = () => {
                                         />
 
                                         <span className={`input-group-text pass-handle ${changeText ? "active" : ""}`}
-                                            onClick={() => setChangeText(!changeText)}
-                                        >
+                                            onClick={() => setChangeText(!changeText)}>
                                             <i className="fa fa-eye-slash" />
                                             <i className="fa fa-eye" />
                                         </span>

@@ -6,7 +6,9 @@ import {
 	loginConfirmedAction,
 } from '../../../store/actions/AuthActions';
 import logoFull from "../../../assets/images/rajdhani.png";
-import {login} from '../../../services/apis/AuthService'
+import {login} from '../../../services/apis/AuthService';
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Login(props) {
 	const [email, setEmail] = useState();
@@ -16,7 +18,7 @@ function Login(props) {
 	const [submitted, setSubmitted] = useState(false);
 	const dispatch = useDispatch();
 	const navigate = useNavigate();
-	
+
 	// Validation logic
 	const validateFields = () => {
 		const errorObj = { email: '', password: '' };
@@ -57,7 +59,8 @@ function Login(props) {
 		}
 		dispatch(loadingToggleAction(true));
 		dispatch(loginAction(email, password, navigate));
-
+        
+		
 		// const res = login(email, password, navigate);
 		// console.log("response from login component");
 		// if (res) {
@@ -70,7 +73,8 @@ function Login(props) {
 
 	}
 
-	return (
+	return (<>
+		<ToastContainer/>
 		<div className="fix-wrapper">
 			<div className="container">
 				<div className="row justify-content-center">
@@ -86,17 +90,7 @@ function Login(props) {
 								{/* Tag or intro Line */}
 								<h4 className="text-center mb-4">Sign in your account</h4>
 
-								{props.errorMessage && (
-									<div className='text-danger p-1 my-2'>
-										{props.errorMessage}
-									</div>
-								)}
-
-								{props.successMessage && (
-									<div className='text-danger p-1 my-2'>
-										{props.successMessage}
-									</div>
-								)}
+								
 								{/* Form */}
 								<form onSubmit={onLogin}>
 									<div className="mb-3">
@@ -124,7 +118,18 @@ function Login(props) {
 										/>
 										{errors.password && <div className="text-danger fs-12">{errors.password}</div>}
 									</div>
-									<div className="row d-flex justify-content-between mt-4 mb-2">
+									{/* {props.errorMessage && (
+									<div className='text-danger p-1 my-2'>
+										{props.errorMessage}
+									</div>
+								   )} */}
+   
+								   {props.successMessage && (
+								   	<div className='text-danger p-1 my-2'>
+								   		{props.successMessage}
+								   	</div>
+								   )}
+								   	<div className="row d-flex justify-content-between mt-4 mb-2">
 										<div className="mb-3">
 											<div className="form-check custom-checkbox ms-1">
 												<input type="checkbox" className="form-check-input" id="basic_checkbox_1" />
@@ -147,7 +152,7 @@ function Login(props) {
 				</div>
 			</div>
 		</div>
-	);
+	</>);
 };
 
 const mapStateToProps = (state) => {

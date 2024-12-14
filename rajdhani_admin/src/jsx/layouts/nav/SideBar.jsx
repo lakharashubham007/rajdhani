@@ -175,13 +175,12 @@ const SideBar = () => {
           ? "fixed"
           : ""
         : ""
-        }`}
-    >
+        }`}>
       <div className="dlabnav-scroll">
         <ul className="metismenu" id="menu">
           {/* sidebarMenus */}
           {sidebarMenus?.map((data, index) => {
-            console.log(data, "data is here")
+            // console.log(data, "data is here")
             let menuClass = data.classChange;
             if (menuClass === "menu-title") {
               return (
@@ -192,14 +191,12 @@ const SideBar = () => {
               // console.log("inside -=-=-=-",data.title)
               return (
                 <li className={` ${state.active === data.title ? 'mm-active' : ''}${data.to === path ? 'mm-active' : ''}`}
-                  key={index}
-                >
+                  key={index}>
                   {data.content && data.content.length > 0 ?
                     <>
                       <Link to={"#"}
                         className="has-arrow"
-                        onClick={() => { handleMenuActive(data.title) }}
-                      >
+                        onClick={() => { handleMenuActive(data.title) }}>
                         {data.iconStyle}
                         <span className="nav-text">{data.title}</span>
                         <span className="badge badge-xs style-1 badge-danger">{data.update}</span>
@@ -210,16 +207,13 @@ const SideBar = () => {
 
                             return (
                               <li key={index}
-                                className={`${state.activeSubmenu === data.title ? "mm-active" : ""}${data.to === path ? 'mm-active' : ''}`}
-                              >
+                                className={`${state.activeSubmenu === data.title ? "mm-active" : ""}${data.to === path ? 'mm-active' : ''}`}>
                                 {data.content && data.content.length > 0 ?
 
                                   <>
                                     <Link to={data.to} className={data.hasMenu ? 'has-arrow' : ''}
-                                      onClick={() => { handleSubmenuActive(data.title) }}
-                                    >
+                                      onClick={() => { handleSubmenuActive(data.title) }}>
                                       {data.title}
-
                                     </Link>
 
                                     <Collapse in={state.activeSubmenu === data.title ? true : false}>
@@ -229,8 +223,6 @@ const SideBar = () => {
                                             <li key={index}>
                                               <Link className={`${path === data.to ? "mm-active" : ""}`} to={data.to}>
                                                 {data.title}
-
-
                                               </Link>
                                             </li>
                                           )
@@ -240,8 +232,7 @@ const SideBar = () => {
                                   </>
                                   :
                                   <Link to={data.to}
-                                    className={`${data.to === path ? 'mm-active' : ''}`}
-                                  >
+                                    className={`${data.to === path ? 'mm-active' : ''}`}>
                                     {data.title}
                                     <span className={`badge badge-xs style-1 ${getBadgeColorClass(data.title)}`}>
                                       {data.update}

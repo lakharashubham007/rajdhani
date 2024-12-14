@@ -26,8 +26,8 @@ const University = loadable(() =>
 );
 
 const bgCarddBlog = [
-    {title:"Total Restaurants", number:'3180', icon: <i className="la la-users" />, percent:'80%', color:"primary"},
-    {title:"New Restaurant", number:'360', icon:<i className="la la-user" />, percent:'50%', color:"warning"},
+    {title:"Total", number:'3180', icon: <i className="la la-users" />, percent:'80%', color:"primary"},
+    {title:"New", number:'360', icon:<i className="la la-user" />, percent:'50%', color:"warning"},
     {title:"Total Revenue", number:'28', icon:<i className="la la-graduation-cap" />, percent:'60%', color:"secondary"},
     {title:"Fees Collection", number:'1290$', icon:<i className="la la-dollar" />, percent:'35%', color:"danger"},
 ];
@@ -73,7 +73,7 @@ const Home = () => {
 				<Col xl={'6'} xxl={'6'} lg={'12'} sm={'12'}>
 					<div className="card">
 						<div className="card-header">
-							<h3 className="card-title">University Survey</h3>
+							<h3 className="card-title">Survey</h3>
 						</div>
 						<div className="card-body">
 							<SurveyChart />							
@@ -93,14 +93,14 @@ const Home = () => {
 				<Col xl={"3"} xxl={"3"} sm={"6"}>
 					<div className="card">
 						<div className="card-header">
-							<h3 className="card-title">University Survey</h3>
+							<h3 className="card-title">Survey</h3>
 						</div>
 						<div className="card-body">							
 							<University />
 						</div>
 					</div>
 				</Col>
-				{detailCard.map((item, ind)=>(
+				{/* {detailCard.map((item, ind)=>(
 					<Col xl={"3"} md={"6"} key={ind}>
 						<div className="card">
 							<img className="img-fluid rounded-top" src={item.image} alt="" />
@@ -128,7 +128,7 @@ const Home = () => {
 							</div>
 						</div>
 					</Col>
-				))}
+				))} */}
 				<Col lg={"6"}>
 					<div className="card">
 						<div className="card-body">
@@ -167,14 +167,14 @@ const Home = () => {
 				<Col lg={"6"}>
 					<div className="card">
 						<div className="card-header">
-							<h4 className="card-title">Exam Toppers</h4>
+							<h4 className="card-title">Details</h4>
 						</div>
 						<div className="card-body">
 							<div className="table-responsive">
 								<table className="table verticle-middle text-nowrap">
 									<thead>
 										<tr>
-											<th scope="col">Roll No.</th>
+											<th scope="col">No.</th>
 											<th scope="col">Name</th>
 											<th scope="col">Status</th>
 											<th scope="col">Edit</th>
@@ -212,7 +212,7 @@ const Home = () => {
 				<Col>
 					<div className="card">
 						<div className="card-header">
-							<h4 className="card-title">New Student List</h4>
+							<h4 className="card-title">List</h4>
 						</div>
 						<div className="card-body pt-2">
 							<div className="table-responsive recentOrderTable">
@@ -221,23 +221,19 @@ const Home = () => {
 										<tr>
 											<th scope="col">No.</th>
 											<th scope="col">Name</th>
-											<th scope="col">Assigned Professor</th>
-											<th scope="col">Date of Admit</th>
+											<th scope="col">Date</th>
 											<th scope="col">Status</th>
-											<th scope="col">Subject</th>
-											<th scope="col">Fees</th>
+											<th scope="col">Price</th>
 											<th scope="col">Edit</th>
 										</tr>
 									</thead>
 									<tbody>
-										{tabelData.map((item, index)=>(
+										{tabelData?.map((item, index)=>(
 											<tr key={index}>
 												<td>{item.no}</td>
 												<td>{item.name}</td>
-												<td>{item.proff}</td>
 												<td>{item.date}</td>
 												<td><span className={`badge badge-rounded badge-${item.color}`}>{item.status}</span></td>
-												<td>{item.subject}</td>
 												<td>{item.fees}$</td>
 												<td>
 													<Link to={"/edit-student"} className="btn btn-xs sharp btn-primary me-1"><i className="fa fa-pencil" /></Link>

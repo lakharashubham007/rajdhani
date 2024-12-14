@@ -103,3 +103,41 @@ export const createBillItemsApi = async (formData) => {
   }
   };
   
+  export const GetBillViewById = async (id) => {
+    const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+    try {
+      const response = await axios.get(`${apis.purchaseorder.getBillViewbyId}/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+    } catch (error) {
+      console.error("Error creating facility:", error);
+      throw error;
+    }
+  };
+
+  export const DownloadBill = async (id) => {
+    const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+    try {
+      const response = await axios.get(`${apis.purchaseorder.downloadBill}/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          // Authorization: `Bearer ${token}`,
+        },
+        responseType: 'blob',
+      }
+    );
+    // console.log("ressssss",response)
+    return response;
+    } catch (error) {
+      console.error("Error creating facility:", error);
+      throw error;
+    }
+  };
+  

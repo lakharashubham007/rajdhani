@@ -428,8 +428,7 @@ const SupplierPurchaseOrderList = () => {
                           <td className="d-flex justify-content-start align-items-center gap-2">
                             <button
                               className="btn btn-xs sharp btn-primary"
-                              onClick={() => navigate(`/purchaseorderview/${data?._id}`)}
-                            >
+                              onClick={() => navigate(`/purchaseorderview/${data?._id}`)}>
                               <i className="fa-solid fa-eye"></i>
                             </button>
 

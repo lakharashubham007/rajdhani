@@ -11,10 +11,6 @@ import {
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../layouts/PageTitle";
-import {
-  addCuisinesApi,
-  getCuisinesApi,
-} from "../../../services/apis/cuisinesApi";
 import Loader from "../../components/Loader/Loader";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,12 +18,8 @@ import "../../../assets/css/brand.css";
 import { Toaster } from "../../components/Toaster/Toster";
 import Switch from "react-switch";
 import ReactPaginate from "react-paginate";
-
 import moment from "moment";
-import Select from "react-select";
-import { addFittingSizeApi, deleteFittingSizeApi, GetEditFittingSizeData, getFittingSizeApi, UpdateFittingSize,
-   UpdateFittingSizeStatus } from "../../../services/apis/FittingSize";
-import { addThreadApi, deleteThreadApi, GetEditThreadData, getThreadApi, UpdateThread, UpdateThreadStatus } from "../../../services/apis/Thread";
+import { UpdateThread, UpdateThreadStatus } from "../../../services/apis/Thread";
 import { deleteProductApi, getProductApi, UpdateProductStatus } from "../../../services/apis/Product";
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
 import useDebounce from "../../components/common/Debounce";
@@ -230,9 +222,7 @@ const navigate= useNavigate()
   };
 
   const handleStatusChange =async (ProductId, currentStatus) => {
-    const fdata={
-      status:!currentStatus
-    }
+    const fdata={ status:!currentStatus }
     try{
         const res =await UpdateProductStatus(ProductId,fdata);
         if (res.status === 200) {

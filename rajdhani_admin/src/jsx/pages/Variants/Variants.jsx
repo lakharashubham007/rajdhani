@@ -41,15 +41,7 @@ import {
   getAllCategoriesListApi,
   getAllSubCategoriesListApi,
   getAllSubSubCategoriesListApi,
-  getCategoriesApi,
-  GetCategoryById,
-  getSubCategoriesApi,
-  GetSubCategoryById,
-  UpdateCategory,
-  UpdateCategoryApi,
-  UpdateCategoryStatusApi,
-  UpdateSubCategoryApi,
-  UpdateSubCategoryStatusApi,
+
 } from "../../../services/apis/CategoryApi";
 import moment from "moment";
 import Select from "react-select";
@@ -447,8 +439,8 @@ const fetchAllSubSubCategoryList=async()=>{
                     <div className="card-body">
                     <div>
                       <div className="mb-3 row mt-3">                  
-                        <div className="col-sm-4">
-                          <label className="col-sm-3 col-form-label">
+                        <div className="col-md-6 col-xl-4">
+                          <label className="col-form-label">
                             Name
                           </label>
                           <input
@@ -466,7 +458,7 @@ const fetchAllSubSubCategoryList=async()=>{
                           )}
                         </div>
 
-                        {/* <div className="col-sm-4">
+                        {/* <div className="col-md-6 col-xl-4">
                           <label className="col-sm-3 col-form-label">
                            VariantCode
                           </label>
@@ -484,8 +476,8 @@ const fetchAllSubSubCategoryList=async()=>{
                             </span>
                           )}
                         </div> */}
-                        <div className="col-sm-4">
-                          <label className="col-sm-3 col-form-label">
+                        <div className="col-md-6 col-xl-4">
+                          <label className="col-form-label">
                            VariantType
                           </label>
                           <input

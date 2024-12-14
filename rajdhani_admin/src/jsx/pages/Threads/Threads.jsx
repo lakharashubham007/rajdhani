@@ -325,8 +325,8 @@ const Threads = () => {
                     <div>
                   
                       <div className="mb-3 row mt-3">
-                        <div className="col-sm-4">
-                          <label className="col-sm-3 col-form-label">
+                        <div className="col-sm-6 col-xl-4">
+                          <label className="col-form-label">
                             ThreadSize
                           </label>
                           <input
@@ -344,8 +344,8 @@ const Threads = () => {
                           )}
                         </div>
 
-                        <div className="col-sm-4">
-                          <label className="col-sm-3 col-form-label">
+                        <div className="col-sm-6 col-xl-4">
+                          <label className=" col-form-label">
                           Thread Type
                           </label>
                           <input
@@ -363,7 +363,7 @@ const Threads = () => {
                           )}
                         </div>
 
-                        <div className="col-sm-4">
+                        <div className="col-sm-6 col-xl-4">
                           <label className=" col-form-label">
                            MeasurementUnit
                           </label>

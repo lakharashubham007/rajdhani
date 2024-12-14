@@ -199,6 +199,7 @@ import PurchaseOrderView from "../pages/SupplierPurchaseOrder/PurchaseOrderView"
 import VerifyPurchaseOrder from "../pages/SupplierPurchaseOrder/VerifyPurchaseOrder";
 import ReturnOrdersLits from "../pages/SupplierPurchaseOrder/ReturnOrdersLits";
 import ReturnOrderView from "../pages/SupplierPurchaseOrder/ReturnOrderView";
+import BillView from "../pages/SupplierPurchaseOrder/BillView";
 
 
 // import Todo from './pages/Todo';
@@ -246,11 +247,12 @@ const Markup = () => {
     { url: 'supplierlist', component: <AllSupplierList /> },
     { url: 'editsupplierdata/:id', component: <EditSupplier /> },
         
-    // Supplier Purchase Order
+    // Purchase Order
     { url: 'addnewpurchaseorder', component: <AddSupplierPurchaseOrder /> },
     { url: 'purchaseorderlist', component: <SupplierPurchaseOrderList /> },
     { url: 'purchaseorderview/:id', component: <PurchaseOrderView /> },
     { url: 'verifyPurchaseOrder/:id', component: <VerifyPurchaseOrder/> },
+    { url: 'billview/:id', component: <BillView/> },
 
     // Returns Order View
     { url: 'returnorderview/:id', component: <ReturnOrderView /> },

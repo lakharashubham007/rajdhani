@@ -442,7 +442,7 @@ const fetchCountryStateCity=async()=>{
             <div className="card-body">
               <div>
                 <div className="mb-3 row">
-                  <div className="col-sm-6">
+                  <div className="col-md-6">
                     <label className="col-sm-6 col-form-label">Supplier Name</label>
                     <input
                       name="name"
@@ -459,8 +459,8 @@ const fetchCountryStateCity=async()=>{
                   </div>
       
                 <div className="mb-3 row">
-                  <div className="col-sm-3">
-                    <label className="col-sm-8 col-form-label">Contact Person First Name</label>
+                  <div className="col-md-6 col-xl-3">
+                    <label className="col-form-label">Contact Person First Name</label>
                     <input
                       name="firstName"
                       value={formData.firstName}
@@ -474,8 +474,8 @@ const fetchCountryStateCity=async()=>{
                     )}
                 </div>
 
-                  <div className="col-sm-3">
-                    <label className="col-sm-8 col-form-label">Contact Person Last Name</label>
+                  <div className="col-md-6 col-xl-3">
+                    <label className="col-form-label">Contact Person Last Name</label>
                     <input
                       name="lastName"
                       value={formData.lastName}
@@ -489,8 +489,8 @@ const fetchCountryStateCity=async()=>{
                     )}
                 </div>
 
-                <div className="col-sm-3">
-                <label className="col-sm-8 col-form-label">Phone</label>
+                <div className="col-md-6 col-xl-3">
+                <label className="col-md-8 col-form-label">Phone</label>
                  <PhoneInput
                   className=""
                   inputClass=""
@@ -498,7 +498,6 @@ const fetchCountryStateCity=async()=>{
                   value={formData?.phone}
                   onChange={handleOnChange}
                  />
-
                 {errors.phone && (
                   <span className="text-danger fs-12">
                     {errors.phone}
@@ -506,7 +505,7 @@ const fetchCountryStateCity=async()=>{
                 )}
                 </div>
 
-                <div className="col-sm-3">
+                <div className="col-md-6 col-xl-3">
                 <label className="col-sm-6 col-form-label">Email</label>
                 <input
                     name="email"
@@ -527,8 +526,8 @@ const fetchCountryStateCity=async()=>{
 
     
                 <div className="mb-3 row">
-                  <div className="col-sm-3">
-                  <label className="col-sm-4 col-form-label">State</label>
+                  <div className="col-sm-6 col-xl-3">
+                  <label className=" col-form-label">State</label>
                   <Select
                     value={selectedStateOption}
                     onChange={handleStateChange}
@@ -545,8 +544,8 @@ const fetchCountryStateCity=async()=>{
                   )}
                 </div>
 
-                <div className="col-sm-3">
-                  <label className="col-sm-4 col-form-label">City</label>
+                <div className="col-sm-6 col-xl-3">
+                  <label className=" col-form-label">City</label>
                   <Select
                     value={selectedCityOption}
                     onChange={(option) => {
@@ -569,7 +568,7 @@ const fetchCountryStateCity=async()=>{
                   )}
                 </div>
 
-                  {/* <div className="col-sm-3">
+                  {/* <div className="col-sm-6 col-xl-3">
                     <label className="col-sm-8 col-form-label">Country</label>
                     <input
                       name="type"
@@ -584,8 +583,8 @@ const fetchCountryStateCity=async()=>{
                     )}
                 </div> */}
 
-                <div className="col-sm-3">
-                <label className="col-sm-8 col-form-label">PinCode</label>
+                <div className="col-sm-6 col-xl-3">
+                <label className="col-form-label">PinCode</label>
                 <input
                     name="pincode"
                     value={formData.pincode}
@@ -638,10 +637,9 @@ const fetchCountryStateCity=async()=>{
                     </span>
                   )}
                 </div> */}
-
      
-                <div className="col-sm-3">
-                  <label className="col-sm-6 col-form-label">GST Number</label>
+                <div className="col-sm-6 col-xl-3">
+                  <label className="col-form-label">GST Number</label>
                     <input
                       name="gstNumber"
                       value={formData.gstNumber}
@@ -657,8 +655,8 @@ const fetchCountryStateCity=async()=>{
                   )}
                 </div>
    
-                <div className="col-sm-3">
-                  <label className="col-sm-6 col-form-label">PAN Number</label>
+                <div className="col-sm-6 col-xl-3">
+                  <label className="col-form-label">PAN Number</label>
                     <input
                       name="panNumber"
                       value={formData.panNumber}
@@ -674,8 +672,8 @@ const fetchCountryStateCity=async()=>{
                   )}
                 </div>
 
-                <div className="col-sm-3">
-                  <label className="col-sm-4 col-form-label">Status</label>
+                <div className="col-sm-6 col-xl-3">
+                  <label className="col-form-label">Status</label>
                   <Select
                     value={selectedStatusOption}
                     onChange={(option) => {

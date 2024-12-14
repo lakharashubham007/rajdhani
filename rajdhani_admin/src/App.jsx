@@ -50,7 +50,7 @@ function App(props) {
     }, []);
 
 
-    console.log(props.isAuthenticated,"props.isAuthenticated");
+    // console.log(props.isAuthenticated,"props.isAuthenticated");
 
     let routeblog = (
         <Routes>

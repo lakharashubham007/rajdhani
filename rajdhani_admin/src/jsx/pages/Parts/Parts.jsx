@@ -556,8 +556,8 @@ const fetchAllMaterialList=async()=>{
             <div className="card-body">
               <div>
                 <div className="mb-3 row">
-                  <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">Name</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className=" col-form-label">Name</label>
                     <input
                       name="name"
                       value={formData.name}
@@ -571,8 +571,8 @@ const fetchAllMaterialList=async()=>{
                     )}
                   </div>
                 
-                  <div className="col-sm-3">
-                    <label className="col-sm-3 col-form-label">Type</label>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className=" col-form-label">Type</label>
                     <input
                       name="type"
                       value={formData.type}
@@ -586,9 +586,9 @@ const fetchAllMaterialList=async()=>{
                     )}
                   </div>
 
-                  <div className="col-sm-3">
+                  <div className="col-sm-6 col-xl-3">
                   
-                  <label className="col-sm-6 col-form-label">Material</label>
+                  <label className="col-form-label">Material</label>
                   <Select
                     onChange={(option) => {
                       setSelectedMaterialOption(option);
@@ -612,8 +612,8 @@ const fetchAllMaterialList=async()=>{
                   )}
                 </div>
 
-                <div className="col-sm-3 ">
-                  <label className="col-sm-6 col-form-label">FittingSize</label>
+                <div className="col-sm-6 col-xl-3 ">
+                  <label className="col-form-label">FittingSize</label>
                   
                   <Select
                     value={selectedFittingSizeOption}
@@ -640,9 +640,8 @@ const fetchAllMaterialList=async()=>{
             
                 </div>
                 <div className="mb-3 row">
-                
-                  <div className="col-sm-8">
-                    <label className="col-sm-3 col-form-label">
+                  <div className="col-sm-12 col-xl-8">
+                    <label className="col-form-label">
                       Description
                     </label>
                     <textarea
@@ -669,16 +668,11 @@ const fetchAllMaterialList=async()=>{
             className="btn btn-primary rounded-sm">
             Save Information
           </button>
-        </div>
-            </div>
-          
+          </div>
+          </div>
           </div>
         </div>
-
-
-
         {/* Section Submit button */}
-       
       </div>
 
       <Row>

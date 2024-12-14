@@ -4760,8 +4760,8 @@ textarea.form-control-lg {
   border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
   border-radius: var(--bs-modal-border-radius);
   outline: 0; 
-  margin-left: -300px;
-  width: 250%;
+  /* margin-left: -300px;
+  width: 250%; */
 }
 
 .modal-verify-content {
@@ -4776,8 +4776,8 @@ textarea.form-control-lg {
   border: var(--bs-modal-border-width) solid var(--bs-modal-border-color);
   border-radius: var(--bs-modal-border-radius);
   outline: 0; 
-  margin-left: -300px;
-  width: 250%;
+  /* margin-left: -300px;
+  width: 250%; */
 }
 
 .modal-backdrop {
@@ -23263,6 +23263,16 @@ Pagination CSS
     border-radius: 5px;
     line-height: 25px;
     height: 44px;
-    width: 300px;
+    width: 100%;
     outline: none;
 }
+
+.nav-logo{
+  height: 60px;
+}
+
+@media (max-width: 992px) {
+  .nav-logo{
+    height: 30px;
+  }
+} 

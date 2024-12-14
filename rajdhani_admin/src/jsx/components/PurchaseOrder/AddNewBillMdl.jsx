@@ -10,6 +10,7 @@ const AddNewBillMdl = () => {
         show={modalCentered}
         onHide={setModalCentered}
         centered
+        size='xl'
       >
         <Modal.Header>
           <Modal.Title>

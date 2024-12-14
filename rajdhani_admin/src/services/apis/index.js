@@ -195,6 +195,8 @@ const apis = {
     getReturnOrderViewData: `${BASE_URL}/private/pobills/return-orders`,
     updatePurchaseOrderStatus: `${BASE_URL}/private/purchaseorders/update-po-status`,
 
+    getBillViewbyId:`${BASE_URL}/private/pobills/po-bill-details`,
+    downloadBill:`${BASE_URL}/private/pobills/download-bill`,
    },
   
    common:{

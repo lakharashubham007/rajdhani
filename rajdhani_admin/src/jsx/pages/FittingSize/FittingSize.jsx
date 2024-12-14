@@ -380,7 +380,7 @@ const FittingSize = () => {
                           />
                         </div> */}
                         <div className="col-sm-6">
-                          <label className="col-sm-3 col-form-label">
+                          <label className=" col-form-label">
                             Size
                           </label>
                           <input
@@ -399,7 +399,7 @@ const FittingSize = () => {
                         </div>
 
                         <div className="col-sm-6">
-                          <label className="col-sm-3 col-form-label">
+                          <label className="col-form-label">
                            MeasurementUnit
                           </label>
                           <input
@@ -487,8 +487,7 @@ const FittingSize = () => {
                   </div>
                   <table
                     id="example4"
-                    className="display dataTable no-footer w-100"
-                  >
+                    className="display dataTable no-footer w-100">
                     <thead>
                       <tr>
                         {theadData?.map((item, ind) => {
@@ -501,20 +500,17 @@ const FittingSize = () => {
                                   complete: !prevState.complete,
                                   ind: ind,
                                 }));
-                              }}
-                            >
+                              }}>
                               {item.heading}
                               <span>
                                 {ind !== iconData.ind && (
-                                  <i
-                                    className="fa fa-sort ms-2 fs-12"
+                                  <i className="fa fa-sort ms-2 fs-12"
                                     style={{ opacity: "0.3" }}
                                   />
                                 )}
                                 {ind === iconData.ind &&
                                   (iconData.complete ? (
-                                    <i
-                                      className="fa fa-arrow-down ms-2 fs-12"
+                                    <i className="fa fa-arrow-down ms-2 fs-12"
                                       style={{ opacity: "0.7" }}
                                     />
                                   ) : (

@@ -15,6 +15,7 @@ import BillCard from "../../components/PurchaseOrder/BillCard";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
+import { GetBillViewById } from "../../../services/apis/purchaseOrderBillApi";
 
 const billtheadData = [
   { heading: "PO Id", sortingVale: "purchase_order_id" },
@@ -43,12 +44,12 @@ const theadData = [
 
   { heading: "Created At", sortingVale: "created_at" },
   { heading: "Status", sortingVale: "status" },
-  { heading: "Action", sortingVale: "action" },
+  // { heading: "Action", sortingVale: "action" },
 ];
 
 
 
-const PurchaseOrderView = () => {
+const BillView = () => {
   const params = useParams()?.id;
   const navigate = useNavigate();
   const billTableRef = useRef(null);
@@ -63,6 +64,7 @@ const PurchaseOrderView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [singleBillData, setSingleBillData] = useState({});
   const [visibleCount, setVisibleCount] = useState(5);
+  const [billItems,setBillItems]=useState([]);
   // console.log("purchaseOrderData",purchaseOrderData)
 
   // const exportToPDF = () => {
@@ -167,10 +169,32 @@ const PurchaseOrderView = () => {
     }
   };
 
+  const fetchBillView = async () => {
+    try {
+      const res = await GetBillViewById(params);
+      const data = res?.data?.billDetails;
+      console.log("daaattta",data);
+      setPurchaseOrderData(data?.po_details);
+      // billItems
+      setBillItems(data?.bill_items);
+      // if (data?.success) {
+      //   setBillData(data?.bills)
+      // }
+      //console.log("resss",data)
+      // setPurchaseOrderData(data);
+      // setPurchaseOrderProdcutList(data?.products);
+    } catch (err) {
+      console.log("errror", err);
+    }
+  };
+  
+
   useEffect(() => {
-    fetchPurchaseOrderViewData();
-    fetchPurchaseOrderItemsData();
-    fetchPurchaseOrderCheckBill();
+    fetchBillView();
+
+    // fetchPurchaseOrderViewData();
+    // fetchPurchaseOrderItemsData();
+    // fetchPurchaseOrderCheckBill();
   }, []);
 
   const orderDetails = {
@@ -289,7 +313,7 @@ const PurchaseOrderView = () => {
                   </div>
                   <div className="col-sm-6 col-xl-4">
                     <h2 className="header-title" style={{ display: 'inline', whiteSpace: 'nowrap' }}>
-                      Rajdhani - Purchase Order
+                      Rajdhani - Bill Detail
                     </h2>
                   </div>
                   <div className="col-sm-6 col-xl-4 d-flex justify-content-xl-end mt-3 mt-xl-0 mb-2" style={{ height: '40px' }}>
@@ -301,10 +325,10 @@ const PurchaseOrderView = () => {
                     </button>
                   </div>
                 </div>
+               
                 <div className="addresses mt-3">
                   <div className="row">
-                    <div className="col-sm-6 col-xl-4 d-flex justify-content-center address-block">
-                      <div>
+                    <div className="col-md-6 col-xl-4 address-block">
                       <h5>Invoice To</h5>
                       <p className="po-view-p">
                         {purchaseOrderData?.billing_details?.name}
@@ -313,16 +337,15 @@ const PurchaseOrderView = () => {
                         {purchaseOrderData?.billing_details?.address}
                       </p>
                       <p className="po-view-p">
-                        State: {purchaseOrderData?.billing_details?.state_name}{" "}
+                        State: {purchaseOrderData?.billing_details?.state_name}
                         {purchaseOrderData?.billing_details?.state_code}
                       </p>
                       <p className="po-view-p">
                         Email: {purchaseOrderData?.billing_details?.email}
                       </p>
                     </div>
-                  </div>
 
-                    <div className="col-sm-6 col-xl-4 d-flex justify-content-center mt-3 mt-sm-0 address-block">
+                    <div className="col-md-6 col-xl-4 d-flex justify-content-xl-center mt-3 mt-xl-0 address-block">
                       <div className="divider">
                         {/* Divider */}
                         <h5>Consignee (Ship to)</h5>
@@ -342,7 +365,7 @@ const PurchaseOrderView = () => {
                       </div>
                     </div>
 
-                    <div className="col-sm-6 col-xl-4 d-flex justify-content-center mt-3 mt-xl-0 divider">
+                    <div className="col-md-6 col-xl-4 d-flex justify-content-xl-center mt-3 mt-xl-0 divider">
                       {/* Divider */}
                       <div className="order-info">
                         <h5>Supplier (Bill from)</h5>
@@ -366,7 +389,7 @@ const PurchaseOrderView = () => {
             </div>
 
             {/* Bill Details show */}
-            <div className="">
+            {/* <div className="">
               <div className="card-header pb-0 px-0" >
                 <h4 className="card-title">Bill Details</h4>
               </div>
@@ -375,9 +398,9 @@ const PurchaseOrderView = () => {
                   billData?.length > 0 ?
                     <div className="row card-main-div">
                       {
-                       billData?.slice(0, visibleCount)?.map((val, ind) => {
+                        billData?.slice(0, visibleCount)?.map((val, ind) => {
                           return (<>
-                            <div className="col-sm-6 col-xl-3  pb-4">
+                            <div className="col-md-3  pb-4">
                              <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
                             </div>
                           </>)
@@ -385,7 +408,7 @@ const PurchaseOrderView = () => {
                       }
                       
                       {billData?.length > visibleCount && (
-                       <div className="col-md-6 col-xl-3">
+                       <div className="col-md-4 col-xl-3">
                         <button
                           className="add-new-bill-btn"
                           onClick={handleSeeMore}>
@@ -402,7 +425,7 @@ const PurchaseOrderView = () => {
                     <p>No bills found for this Purchase Order ID</p>
                 }
               </div>
-            </div>
+            </div> */}
 
             {/* Bill Detail */}
             <div ref={billTableRef}>
@@ -462,9 +485,7 @@ const PurchaseOrderView = () => {
                                   type="search"
                                   className=""
                                   placeholder=""
-                                  onChange={(e) =>
-                                    setSearchInputValue(e.target.value)
-                                  }
+                                  onChange={(e)=>setSearchInputValue(e.target.value)}
                                 />
                               </label>
                             </div>
@@ -563,7 +584,7 @@ const PurchaseOrderView = () => {
               <Col lg={12}>
                 <div className="">
                   <div className="card-header px-0">
-                    <h4 className="card-title">PO Product Details</h4>
+                    <h4 className="card-title">Bill Details</h4>
                   </div>
                   <div className="card-body px-0">
                     <div className="table-responsive">
@@ -634,8 +655,7 @@ const PurchaseOrderView = () => {
                                         complete: !prevState.complete,
                                         ind: ind,
                                       }));
-                                    }}
-                                  >
+                                    }}>
                                     {item.heading}
                                     <span>
                                       {ind !== iconData.ind && (
@@ -663,13 +683,11 @@ const PurchaseOrderView = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {purchaseOrderProdcutList?.map((data, ind) => (
+                            {billItems?.map((data, ind) => (
                               <tr key={ind}>
                                 <td>
                                   <strong>{ind + 1}</strong>{" "}
                                 </td>
-
-                                {/* <td>{data?._id}</td> */}
 
                                 <td className="">
                                   {data?.product_name}
@@ -706,20 +724,17 @@ const PurchaseOrderView = () => {
                                 </td>
 
                                 <td>-</td>
-                                <td>
-                                  <button
-                                    className="btn btn-xs sharp btn-primary me-1"
-                                  //   onClick={() => navigate(`/purchaseorderview/${data?._id}`)}
-                                  >
+                                {/* <td>
+                                  <button className="btn btn-xs sharp btn-primary me-1">
                                     <i class="fa-solid fa-eye"></i>
                                   </button>
-                                </td>
+                                </td> */}
                               </tr>
                             ))}
                           </tbody>
                         </table>
                         <div>
-                          {/* {brandList?.data?.length < brandList?.total && ( */}
+
                           <div className="d-sm-flex text-center justify-content-end align-items-center mt-3">
                             <div className="pagination-container">
                               <ReactPaginate
@@ -736,7 +751,6 @@ const PurchaseOrderView = () => {
                               />
                             </div>
                           </div>
-                          {/* )} */}
                         </div>
                       </div>
                     </div>
@@ -803,4 +817,4 @@ const PurchaseOrderView = () => {
   );
 };
 
-export default PurchaseOrderView;
+export default BillView;

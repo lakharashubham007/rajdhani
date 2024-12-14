@@ -683,7 +683,7 @@ const SubSubCategories = () => {
                       <div className="pagination-container">
                         <ReactPaginate
                           pageCount={Math.ceil(
-                            categoryList?.totalCategories /
+                            categoryList?.totalSubSubcategories /
                               categoryList?.rowsPerPage
                           )}
                           pageRangeDisplayed={1}
@@ -788,8 +788,7 @@ const SubSubCategories = () => {
                           flexDirection: "column",
                           alignItems: "center",
                           justifyContent: "center",
-                        }}
-                      >
+                        }}>
                         <label className="col-form-label">Logo</label>
                         <div className=" uploadImageContainer">
                           <input
@@ -805,12 +804,9 @@ const SubSubCategories = () => {
                               {isEdit && !imageChanged ? (
                                 <>
                                   {/* Simple 'X' button as the delete icon */}
-                                  <div
-                                    className="deleteIcon"
-                                    onClick={handleDeleteLogo}
-                                  >
-                                    {" "}
-                                    ⛌{" "}
+                                  <div className="deleteIcon"
+                                    onClick={handleDeleteLogo}>
+                                    ⛌
                                   </div>
                                   <img
                                     className="img"
@@ -820,12 +816,9 @@ const SubSubCategories = () => {
                                 </>
                               ) : (
                                 <>
-                                  <div
-                                    className="deleteIcon"
-                                    onClick={handleDeleteLogo}
-                                  >
-                                    {" "}
-                                    ⛌{" "}
+                                  <div className="deleteIcon"
+                                    onClick={handleDeleteLogo}>
+                                    ⛌
                                   </div>
                                   <img className="img" src={logo} alt="Logo" />
                                 </>
@@ -834,8 +827,7 @@ const SubSubCategories = () => {
                           ) : (
                             <label
                               htmlFor="logoUpload"
-                              className="imgPlaceholder"
-                            >
+                              className="imgPlaceholder">
                               <div className="flex flex-col cursor-pointer imgUploadIcon">
                                 <img
                                   width="30"
@@ -872,16 +864,12 @@ const SubSubCategories = () => {
                   resetForm();
                   setIsEdit(false);
                 }}
-                variant="danger light"
-              >
+                variant="danger light">
                 Close
               </Button>
               <Button
-                onClick={() => {
-                  handleSubmit();
-                }}
-                variant="primary"
-              >
+                onClick={() => {handleSubmit()}}
+                variant="primary">
                 Save changes
               </Button>
             </Modal.Footer>

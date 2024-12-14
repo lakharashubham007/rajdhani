@@ -17,19 +17,19 @@ import rajdhanilogo from "../../../assets/images/cropped-Rparts-logo.png";
 import "../../../assets/css/AddSupplierPurchaseOrder.css";
 import BillCard from "../../components/PurchaseOrder/BillCard";
 import { GetAllProductList } from "../../../services/apis/Product";
-import { addBillDetailsApi, createBillItemsApi, updatePoItemForBillsApi } from "../../../services/apis/purchaseOrderBillApi";
+import { addBillDetailsApi, createBillItemsApi, DownloadBill, updatePoItemForBillsApi } from "../../../services/apis/purchaseOrderBillApi";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { Toaster } from "../../components/Toaster/Toster";
 import Loader from "../../components/Loader/Loader";
-
+import "../../../assets/css/PurchaseOrder.css";
 
 
 const billtheadData = [
   { heading: "PO Id", sortingVale: "purchase_order_id" },
   { heading: "Bill Id", sortingVale: "bill_id" },
   { heading: "Bill Name", sortingVale: "bill_doc" },
-  { heading: "Bill Amount", sortingVale: "bill_amount" },
+  // { heading: "Bill Amount", sortingVale: "bill_amount" },
   { heading: "Bill Date", sortingVale: "bill_date" },
   { heading: "Created At", sortingVale: "created_at" },
 ];
@@ -57,6 +57,7 @@ const theadData = [
 const VerifyPurchaseOrder = () => {
   const params = useParams()?.id;
   const navigate = useNavigate();
+  const billTableRef = useRef(null);
   const [sort, setSortata] = useState(10);
   const [purchaseOrderData, setPurchaseOrderData] = useState([]);
   const [purchaseOrderProdcutList, setPurchaseOrderProdcutList] = useState([]);
@@ -74,6 +75,7 @@ const VerifyPurchaseOrder = () => {
   const [loading, setLoading] = useState(false);
   const [logo, setLogo] = useState(null);
   const [apiSuccess, setApiSuccess] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(5);
   const [rows, setRows] = useState([
     {
       id: 1,
@@ -271,7 +273,7 @@ const VerifyPurchaseOrder = () => {
       const formattedRows = prefillRows(purchaseOrderProdcutList);
       setRows(formattedRows);
     }
-  }, [purchaseOrderProdcutList, contentModal,rows]);
+  }, [purchaseOrderProdcutList, contentModal]);
 
 
 
@@ -300,9 +302,6 @@ const VerifyPurchaseOrder = () => {
     updatedRows[index].product_name = selectedOption ? selectedOption.value : ''; // Update product_name based on selectedOption
     setRows(updatedRows);
   };
-
-
-
 
 
   //to add a new row
@@ -522,6 +521,11 @@ const VerifyPurchaseOrder = () => {
     const getBillData = billData?.find((val) => val?._id == id)
     // singleBillData,
     setSingleBillData(getBillData);
+    console.log("getBillData",getBillData)
+    
+    if (billTableRef.current) {
+      billTableRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
   }
 
   // Inline styles
@@ -539,7 +543,7 @@ const VerifyPurchaseOrder = () => {
       position: "relative",
       textAlign: "center",
       overflow: "hidden",
-      marginLeft: '110px'
+      // marginLeft: '110px'
     },
     coverContainer: {
       border: "2px dashed #ccc",
@@ -939,7 +943,34 @@ const VerifyPurchaseOrder = () => {
   };
 
 
+  const handleSeeMore = () => {
+    setVisibleCount(billData.length); // Show all bills
+  };
 
+  const handleAddNewBill=()=>{
+    if(purchaseOrderData?.status == "Completed"){
+      Swal.fire({
+        text: "No New Bills Can Be Added to a Completed Purchase Order",
+        icon: "warning",
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `
+        }
+      });
+    }else{
+      setContentModal(true)
+    }
+  }
 
   return (
     <>
@@ -966,7 +997,7 @@ const VerifyPurchaseOrder = () => {
                 </div>
                 <div className="addresses mt-3">
                   <div className="row">
-                    <div className="col-md-4  address-block">
+                    <div className="col-md-6 col-xl-4 address-block">
                       <h5>Invoice To</h5>
                       <p className="po-view-p">
                         {purchaseOrderData?.billing_details?.name}
@@ -983,7 +1014,7 @@ const VerifyPurchaseOrder = () => {
                       </p>
                     </div>
 
-                    <div className="col-md-4 d-flex justify-content-center address-block">
+                    <div className="col-md-6 col-xl-4 d-flex justify-content-xl-center mt-3 mt-xl-0 address-block">
                       <div className="divider">
                         {/* Divider */}
                         <h5>Consignee (Ship to)</h5>
@@ -1003,7 +1034,7 @@ const VerifyPurchaseOrder = () => {
                       </div>
                     </div>
 
-                    <div className="col-md-4 d-flex justify-content-center  divider">
+                    <div className="col-md-6 col-xl-4 d-flex justify-content-xl-center mt-3 mt-xl-0  divider">
                       {/* Divider */}
                       <div className="order-info">
                         <h5>Supplier (Bill from)</h5>
@@ -1034,37 +1065,34 @@ const VerifyPurchaseOrder = () => {
                 <h4 className="card-title">Bill Details</h4>
               </div>
 
-              <div className="d-flex">
-                <div className="mt-0 px-0">
-                  <div className="row">
-                    {
-                      billData?.length > 0 ? (
-                        <>
-                          {billData.map((val, ind) => (
-                           
-                              <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
-                             
-                          ))}
-                          {/* Add New Bill Button after bills */}
-                          <div className="col-md-3">
+              <div className="">
+                <div className="mt-3 px-0">
+                  <div className="row card-main-div">
+                    {billData?.length > 0 ? (<>
+                          {billData?.slice(0, visibleCount)?.map((val, ind) => (<>
+                           <div className="col-md-6 col-xl-3 pb-4">
+                            <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
+                           </div>
+                           </>))}
+                           {/* see more btn */}
+                          {billData?.length > visibleCount && (
+                           <div className="col-md-6 col-xl-3">
                             <button
-                              className="bill-card-btn"
-                              onClick={() => setContentModal(true)}
-                              style={{
-                                width: "195px",
-                                height: "130px",
-                                border: "1px dashed #007bff",
-                                borderRadius: "5px",
-                                backgroundColor: "#f8f9fa",
-                                display: "flex",
-                                flexDirection: "column",
-                                alignItems: "center",
-                                justifyContent: "center",
-                                boxShadow: "0 2px 5px rgba(0, 0, 0, 0.1)",
-                                marginTop: "12px",
-                                marginLeft: "0px"
-                              }}
-                            >
+                              className="add-new-bill-btn"
+                              onClick={handleSeeMore}>
+                              <div className="bill-cards" style={{ textAlign: "center" }} >
+                                <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
+                                  See More
+                                </p>
+                              </div>
+                            </button>
+                          </div>
+                          )}
+                          {/* Add New Bill Button after bills */}
+                          <div className="col-md-6 col-xl-3 mt-4 mt-md-0">
+                            <button
+                              className="add-new-bill-btn"
+                              onClick={handleAddNewBill}>
                               <div className="bill-cards" style={{ textAlign: "center" }}>
                                 <i
                                   className="fa-solid fa-plus fa-2xl"
@@ -1079,13 +1107,20 @@ const VerifyPurchaseOrder = () => {
                         </>
                       ) : (
                         // Message and Add Button if no bills found
-                        <div className="col-md-12 text-center">
-                          <p>No bills found for this Purchase Order ID</p>
+                        <div className="col-md-6 col-xl-3 text-center mt-3 mt-md-0">
+                          <p className="pt-2">No bills found for this Purchase Order ID</p>
                           <button
-                            className="btn btn-primary mt-2"
-                            onClick={() => setContentModal(true)}
-                          >
-                            Add New Bill
+                            className="add-new-bill-btn"
+                            onClick={() => setContentModal(true)}>
+                            <div className="bill-cards" style={{ textAlign: "center" }}>
+                              <i
+                                className="fa-solid fa-plus fa-2xl"
+                                style={{ color: "#007bff", marginBottom: "10px" }}
+                              ></i>
+                              <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
+                                Add New Bill
+                              </p>
+                            </div>
                           </button>
                         </div>
                       )
@@ -1097,10 +1132,11 @@ const VerifyPurchaseOrder = () => {
 
 
             {/* Bill Detail */}
+            <div ref={billTableRef}>
             {Object.keys(singleBillData).length == 0 ? "" :
               <Row>
                 <Col lg={12}>
-                  <div className="">
+                  <div className="" >
                     <div className="card-header px-0">
                       <h4 className="card-title">Bill Details</h4>
                       <button className="table-close-btn" onClick={() => setSingleBillData({})}><i class="fa-solid fa-xmark fa-xl"></i></button>
@@ -1161,7 +1197,7 @@ const VerifyPurchaseOrder = () => {
                             </div>
                           </div>
 
-                          <table id="example4" className="display dataTable no-footer w-100">
+                          <table id="example4" className="display dataTable no-footer w-100" >
                             <thead>
                               <tr>
                                 {billtheadData?.map((item, ind) => {
@@ -1178,20 +1214,17 @@ const VerifyPurchaseOrder = () => {
                                       {item.heading}
                                       <span>
                                         {ind !== iconData.ind && (
-                                          <i
-                                            className="fa fa-sort ms-2 fs-12"
+                                          <i className="fa fa-sort ms-2 fs-12"
                                             style={{ opacity: "0.3" }}
                                           />
                                         )}
                                         {ind === iconData.ind &&
                                           (iconData.complete ? (
-                                            <i
-                                              className="fa fa-arrow-down ms-2 fs-12"
+                                            <i className="fa fa-arrow-down ms-2 fs-12"
                                               style={{ opacity: "0.7" }}
                                             />
                                           ) : (
-                                            <i
-                                              className="fa fa-arrow-up ms-2 fs-12"
+                                            <i className="fa fa-arrow-up ms-2 fs-12"
                                               style={{ opacity: "0.7" }}
                                             />
                                           ))}
@@ -1202,22 +1235,13 @@ const VerifyPurchaseOrder = () => {
                               </tr>
                             </thead>
                             <tbody>
-                              <tr >
-
+                              <tr>
                                 <td>{singleBillData?.purchase_order_id}</td>
-                                <td className="">
-                                  {singleBillData?.bill_id}
-                                </td>
+                                <td className="">{singleBillData?.bill_no}</td>
                                 <td className="">{singleBillData?.bill_doc}</td>
-                                <td className="">{singleBillData?.bill_amount}</td>
-                                <td className="">
-                                  {moment(singleBillData?.bill_date).format(
-                                    "DD MMM YYYY")}
-                                </td>
-                                <td>
-                                  {moment(singleBillData?.created_at).format(
-                                    "DD MMM YYYY, h:mm:ss a")}
-                                </td>
+                                {/* <td className="">{singleBillData?.bill_amount}</td> */}
+                                <td className="">{moment(singleBillData?.bill_date).format("DD MMM YYYY")}</td>
+                                <td>{moment(singleBillData?.created_at).format("DD MMM YYYY, h:mm:ss a")}</td>
                               </tr>
                             </tbody>
                           </table>
@@ -1248,6 +1272,7 @@ const VerifyPurchaseOrder = () => {
                 </Col>
               </Row>
             }
+            </div>
             {/* Product Table */}
             <Row>
               <Col lg={12}>
@@ -1488,7 +1513,7 @@ const VerifyPurchaseOrder = () => {
             </div>
 
             {/* Buttons  */}
-            <div className="d-flex gap-3 justify-content-end text-end">
+            <div className="d-flex gap-3 justify-content-end text-end mt-3 mt-md-0">
               <button
                 type="submit"
                 onClick={handleSubmitDraft}
@@ -1508,27 +1533,27 @@ const VerifyPurchaseOrder = () => {
       </div>
 
       {/* <!-- Modal --> */}
-      <Modal className="fade" show={contentModal} onHide={setContentModal}>
+      <Modal className="fade card-body" show={contentModal} onHide={setContentModal} size="xl">
         <Modal.Header>
           <Modal.Title>Add Bill & Verify Bill Items</Modal.Title>
           <Button
             variant=""
             className="btn-close"
-            onClick={() => setContentModal(false)}
-          >
+            onClick={() => setContentModal(false)}>
 
           </Button>
         </Modal.Header>
         <Modal.Body>
-
+          
+         <div className="">
           {/* Header Section */}
           <div className="">
             <div className="header-section mb-3">
-              <div className="row">
-                <div className="col-sm-4">
+              <div className="row ">
+                <div className="col-xl-3 d-flex justify-content-center justify-content-xl-start">
                   <img src={rajdhanilogo} alt="logo" height={60} />
                 </div>
-                <div className="col-sm-8">
+                <div className="col-xl-9 d-flex justify-content-center justify-content-xl-start">
                   <h2 className="header-title">Rajdhani - Add Bill & Verify Bill Items</h2>
                 </div>
               </div>
@@ -1670,7 +1695,7 @@ const VerifyPurchaseOrder = () => {
             <div className="card-body p-3">
               <div className="row">
                 {/* First Column: Bill Info Part 1 */}
-                <div className="col-sm-4">
+                <div className="col-xl-4">
                   <div className="mb-2">
                     <label className="form-label fs-6">Bill No.</label>
                     <input
@@ -1712,7 +1737,7 @@ const VerifyPurchaseOrder = () => {
                 </div>
 
                 {/* Second Column: Bill Info Part 2 */}
-                <div className="col-sm-4">
+                <div className="col-xl-4">
                   <div className="mb-2">
                     <label className="form-label fs-6">Bill Date</label>
                     <input
@@ -1741,13 +1766,13 @@ const VerifyPurchaseOrder = () => {
                 </div>
 
                 {/* Third Column: Bill Image/File in a Card */}
-                <div className="col-sm-4">
-                  <div className="mb-2 text-center">
+                <div className="col-xl-4 mt-2">
+                  <div className="mb-2 ">
                     <label className="form-label fs-6">Bill Image/File</label>
                     <div style={styles.container}>
                       <input
                         type="file"
-                        accept="image/*"
+                        accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx,.csv"
                         onChange={handleLogoChange}
                         style={{ display: 'none' }}
                         id="logoUpload"
@@ -2145,6 +2170,7 @@ const VerifyPurchaseOrder = () => {
                 </button>
               </div>
             </div>
+          </div>
           </div>
 
           {/* Summary Section */}

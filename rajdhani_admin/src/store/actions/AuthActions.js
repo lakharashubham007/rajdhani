@@ -1,3 +1,4 @@
+import { Toaster } from '../../jsx/components/Toaster/Toster';
 import {
     formatError,
     runLogoutTimer,
@@ -7,7 +8,6 @@ import {
 } from '../../services/AuthService';
 import {login,loginRestaurant,saveTokenInLocalStorage } from '../../services/apis/AuthService';
 import Swal from "sweetalert2";
-
 
 export const SIGNUP_CONFIRMED_ACTION = '[signup action] confirmed signup';  
 export const SIGNUP_FAILED_ACTION = '[signup action] failed signup';
@@ -62,11 +62,15 @@ export function loginAction(email, password, navigate) {
                 //     navigate,
                 // );
                dispatch(loginConfirmedAction(response.data));			              
-			   navigate('/dashboard');                
+			   navigate('/dashboard');  
+               dispatch(loginFailedAction(""));              
             })
             .catch((error) => {				
                 const errorMessage = formatError(error);
-                dispatch(loginFailedAction(errorMessage));
+                // console.log("errorMessage",error?.response?.data?.message)
+        		Toaster.error(error?.response?.data?.message);
+
+                dispatch(loginFailedAction(error?.response?.data?.message));
             });
     };
 }

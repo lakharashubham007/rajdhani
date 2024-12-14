@@ -2,11 +2,7 @@ import React, { useEffect, useState } from "react";
 import { DatePicker } from "rsuite";
 import Select from "react-select";
 import PageTitle from "../../layouts/PageTitle";
-import CustomClearIndicator from "../plugins/Select2/MultiSelect";
-import { getRestaurantsApi } from "../../../services/apis/RestaurantsApi";
-import { getAllCategoriesListApi, getAllSubCategoriesListApi, getAllSubSubCategoriesListApi, getCategoriesApi } from "../../../services/apis/CategoryApi";
-import { getAddonsApi } from "../../../services/apis/AddOnServiceApi";
-import { addFoodApi } from "../../../services/apis/FoodApi";
+import { getAllCategoriesListApi, getAllSubCategoriesListApi, getAllSubSubCategoriesListApi } from "../../../services/apis/CategoryApi";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
@@ -23,15 +19,124 @@ import { getAllVariantListApi } from "../../../services/apis/Variants";
 import { getAllPartsApi } from "../../../services/apis/Parts";
 import { addProductApi } from "../../../services/apis/Product";
 import { useNavigate } from "react-router-dom";
+import EndFittingForm from "../../components/ProductTypeForms/EndFitting";
+import HosPipeSection from "../../components/ProductTypeForms/HosPipeSection";
+import HoseAssemblySection from "../../components/ProductTypeForms/HoseAssemblySection";
+import SpringSection from "../../components/ProductTypeForms/SpringSection";
+import O_ringSection from "../../components/ProductTypeForms/O_ringSection";
+import DustCapSection from "../../components/ProductTypeForms/DustCapSection";
+import SleeveSection from "../../components/ProductTypeForms/SleeveSection";
+import VinylCoverSection from "../../components/ProductTypeForms/VinylCoverSection";
+import PackingSection from "../../components/ProductTypeForms/PackingSection";
+import TubeFittingsSection from "../../components/ProductTypeForms/TubeFittingsSection";
+import { validateFormComponent } from "./ValidationComponent";
 
-const options = [
-  { value: "veg", label: "Veg" },
-  { value: "non-veg", label: "Non Veg" },
+
+const ProductOptions = [
+  { value: "End Fittings", label: "End Fittings" },
+  { value: "Hose Pipe", label: "Hose Pipe" },
+  { value: "Hose Assembly", label: "Hose Assembly" },
+  { value: "Spring", label: "Spring" },
+  { value: "O-ring", label: "O-ring" },
+  { value: "Dust Cap", label: "Dust Cap" },
+  { value: "Sleeve", label: "Sleeve" },
+  { value: "Vinyl Cover", label: "Vinyl Cover" },
+  { value: "Packing", label: "Packing" },
+  { value: "Tube Fittings", label: "Tube Fittings" },
 ];
 
-const discountOptions = [
-  { value: "percentage", label: "Percentage ( % ) " },
-  { value: "inr", label: "INR " },
+const WireTypeOptions = [
+  { value: "2W", label: "2W" },
+  { value: "4W", label: "4W" },
+  { value: "6W", label: "6W" },
+];
+
+const CapWithoutCapOptions = [
+  { value: "With Cap", label: "With Cap" },
+  { value: "Without Cap", label: "Without Cap" },
+];
+
+const fittingPieceOptions = [
+  { value: "ONE PIECE", label: "ONE PIECE" },
+  { value: "TWO PIECE", label: "TWO PIECE" },
+  { value: "THREE PIECE", label: "THREE PIECE" },
+];
+
+const skiveTypeOptions = [
+  { value: "SKIVE", label: "SKIVE" },
+  { value: "NON-SKIVE", label: "NON-SKIVE" },
+  { value: "INNER-SKIVE", label: "INNER-SKIVE" },
+];
+
+const hoseDashSizeOptions = [
+  { value: "4", label: "4" },
+  { value: "5", label: "5" },
+  { value: "6", label: "6" },
+  { value: "8", label: "8" },
+  { value: "10", label: "10" },
+  { value: "12", label: "12" },
+  { value: "16", label: "16" },
+  { value: "20", label: "20" },
+  { value: "24", label: "24" },
+  { value: "32", label: "32" },
+];
+
+const fittingDashSizeOptions = [
+  { value: "4", label: "4" },
+  { value: "5", label: "5" },
+  { value: "6", label: "6" },
+  { value: "8", label: "8" },
+  { value: "10", label: "10" },
+  { value: "12", label: "12" },
+  { value: "16", label: "16" },
+  { value: "20", label: "20" },
+  { value: "24", label: "24" },
+  { value: "32", label: "32" },
+];
+
+const fittingThreadOptions = [
+  { value: "BSP", label: "BSP" },
+  { value: "BSP WITH O", label: "BSP WITH O" },
+  { value: "JIC", label: "JIC" },
+  { value: "ORFS", label: "ORFS" },
+  { value: "KOMATSU", label: "KOMATSU" },
+];
+
+const fittingTypeOptions = [
+  { value: "BSP", label: "BSP" },
+  { value: "BSP WITH O", label: "BSP WITH O" },
+  { value: "JIC", label: "JIC" },
+  { value: "ORFS", label: "ORFS" },
+  { value: "KOMATSU", label: "KOMATSU" },
+];
+
+const straightBendangleOptions = [
+  { value: "STRAIGHT", label: "STRAIGHT" },
+  { value: "90 DEGREE", label: "90 DEGREE" },
+  { value: "67.5 DEGREE", label: "67.5 DEGREE" },
+  { value: "45 DEGREE", label: "45 DEGREE" },
+  { value: "30 DEGREE", label: "30 DEGREE" },
+];
+
+const dropLengthOptions = [
+  { value: "30", label: "30" },
+  { value: "36", label: "36" },
+  { value: "50", label: "50" },
+  { value: "65", label: "65" },
+  { value: "90", label: "90" },
+  { value: "120", label: "120" },
+  { value: "150", label: "150" },
+  { value: "180", label: "180" },
+];
+
+const springTypeOptions = [
+  { value: "Compress", label: "Compress" },
+  { value: "Normal", label: "Normal" },
+];
+
+const malefemaleOptions = [
+  { value: "Male", label: "Male" },
+  { value: "Female", label: "Female" },
 ];
 
 const AddProduct = () => {
@@ -42,6 +147,7 @@ const AddProduct = () => {
   const [galleryImages, setGalleryImages] = useState([]);
 
   //drop option list
+  const [productTypeOption, setProductTypeOption] = useState(ProductOptions);
   const [categoryOption, setCategoryOption] = useState(null);
   const [subCategoryOption, setSubCategoryOption] = useState(null);
   const [subSubCategoryOption, setSubSubCategoryOption] = useState(null);
@@ -51,8 +157,9 @@ const AddProduct = () => {
   const [variantOption, setVariantOption] = useState(null);
   const [threadtypeOption, setThreadtypeOption] = useState(null);
   const [partOption,setPartOption]= useState(null);
-
+ 
   // selected
+  const [selectedProductTypeOption, setSelectedProductTypeOption] = useState(null);
   const [selectedCategoryOption, setSelectedCategoryOption] = useState(null);
   const [selectedSubCategoryOption, setSelectedSubCategoryOption] = useState(null);
   const [selectedSubSubCategoryOption, setSelectedSubSubCategoryOption] = useState(null);
@@ -63,32 +170,100 @@ const AddProduct = () => {
   const [selectedThreadtypeOption, setSelectedThreadtypeOption] = useState(null);
   const [selectedPartOption, setSelectedPartOption]= useState(null);
 
-  const [formData, setFormData] = useState({
-    name :"",
-    description:"",
-    image:"",
-    gallery:[],
-    category_id:"",
-    subcategory_id:"",
-    subsubcategory_id:"",
-    brand:"",
-    // connection_type:"",
-    price:"",
-    fittingSize:"",
-    material:"",
-    variant:"",
-    // thread_id:"",
-    parts:[],
-    thread_type:"",
-    pressure_rating:"",
-    temperature_range:"",
-    product_id:"",
-    product_Type:"",
-  });
+  // Child Form
+  const [wireTypeOption, setWireTypeOption] = useState(WireTypeOptions);
+  const [withCapWithoutCapOption, setWithCapWithoutCapOption] = useState(CapWithoutCapOptions);
+  const [fittingPieceOption, setFittingPieceOption] = useState(fittingPieceOptions);
+  const [skiveTypeOption, setSkiveTypeOption] = useState(skiveTypeOptions);
+  const [HoseDashSizeOption, setHoseDashSizeOption] = useState(hoseDashSizeOptions);
+  const [fittingDashSizeOption, setfittingDashSizeOption] = useState(fittingDashSizeOptions);
+  const [fittingThreadOption, setfittingThreadOption] = useState(fittingThreadOptions);
+  const [fittingTypeOption, setfittingTypeOption] = useState(fittingTypeOptions);
+  const [straightBendangleOption, setStraightBendangleOption] = useState(straightBendangleOptions);
+  const [dropLengthOption, setDropLengthOption] = useState(dropLengthOptions);
+  const [neckLengthOption, setNeckLengthOption] = useState(dropLengthOptions);
 
-  const [rows, setRows] = useState([
-    { id: 1, variation: "", price: "", sku: "", stock: "" },
-  ]);
+  // selected
+  const [selectedWireTypeOption, setSelectedWireTypeOption] = useState(null);
+  const [selectedWithCapWithoutCapOption, setSelectedWithCapWithoutCapOption] = useState(null);
+  const [selectedFittingPieceOption, setSelectedFittingPieceOption] = useState(null);
+  const [selectedSkiveTypeOption, setSelectedSkiveTypeOption] = useState(null);
+  const [selectedhoseDashSizeOption, setSelectedHoseDashSizeOption] = useState(null);
+  const [selectedFittingDashSizeOption, setSelectedfittingDashSizeOption] = useState(null);
+  const [selectedFittingTypeOption, setSelectedFittingTypeOption] = useState(null);
+  const [selectedFittingThreadOption, setSelectedFittingThreadOption] = useState(null);
+  const [selectedStraightBendangleOption, setSelectedStraightBendangleOption] = useState(null);
+  const [selectedDropLengthOption, setSelectedDropLengthOption] = useState(null);
+  const [selectedNeckLengthOption, setselectedNeckLengthOption] = useState(null);  
+
+  const [springTypeOption, setSpringTypeOption] = useState(springTypeOptions);
+  const [selectedSpringTypeOption, setSelectedSpringTypeOption] = useState(null);
+
+  const [maleFemaleOption, setmaleFemaleOption] = useState(malefemaleOptions);
+  const [selectedMaleFemaleOption, setSelectedMaleFemaleOption] = useState(null);
+  const [formData, setFormData] = useState({
+    product_type:"",
+    // with_cap:[]
+  });
+  
+  // console.log("formData",formData)
+  // const [formData, setFormData] = useState({
+  //   product_type:"",
+  //   name :"",
+  //   description:"",
+  //   image:"",
+  //   gallery:[],
+  //   category_id:"",
+  //   subcategory_id:"",
+  //   subsubcategory_id:"",
+  //   brand:"",
+  //   //connection_type:"",
+  //   price:"",
+  //   fittingSize:"",
+  //   material:"",
+  //   variant:"",
+  //   //thread_id:"",
+  //   parts:[],
+  //   thread_type:"",
+  //   pressure_rating:"",
+  //   temperature_range:"",
+  //   product_id:"",
+  //   product_Type:"",
+  //   with_cap:[]
+  // });
+
+  const resetEndFittingForm = () => {
+    setFormData({
+      design: "",
+      wire_type: "",
+      with_cap: [],
+      fitting_piece: "",
+      skive_type: "",
+      hose_dash_size: "",
+      fitting_dash_size: "",
+      fitting_thread: "",
+      fitting_type: "",
+      straight_bend_angle: "",
+      drop_length: "",
+      neck_length: "",
+      ferrule_design: "",
+      ferrule_wire_type: "",
+      ferrule_hose_dash_size: "",
+    });
+
+    setSelectedWireTypeOption(null);
+    setSelectedWithCapWithoutCapOption(null);
+    setSelectedFittingPieceOption(null);
+    setSelectedSkiveTypeOption(null);
+    setSelectedHoseDashSizeOption(null);
+    setSelectedFittingThreadOption(null);
+    setSelectedStraightBendangleOption(null);
+    setSelectedDropLengthOption(null);
+  
+    // setErrors({});
+    setLoading(false);
+  };
+
 
   const handleGalleryChange = (e) => {
     const files = Array.from(e.target.files); // Convert FileList to an array
@@ -191,119 +366,142 @@ const AddProduct = () => {
     setLoading(false);
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    // Required field validation
-    if (!formData.name) newErrors.name = "Food name is required.";
-    if (!formData.description) newErrors.description = "Description is required.";
-    if (!formData.product_id) newErrors.product_id = "Product Id is required.";
-    if (!formData.product_Type) newErrors.product_Type = "Product Type is required.";
+  // const validateForm = () => {
+  //   const newErrors = {};
+  //   if (!formData.name) newErrors.name = "Food name is required.";
+  //   if (!formData.description) newErrors.description = "Description is required.";
+  //   if (!formData.product_id) newErrors.product_id = "Product Id is required.";
+  //   if (!formData.product_Type) newErrors.product_Type = "Product Type is required.";
 
-    if (!formData.image) newErrors.image = "Image is required.";
+  //   if (!formData.image) newErrors.image = "Image is required.";
     
-    if (!formData.category_id) newErrors.category_id = "Category is required.";
-    if (!formData.subcategory_id) newErrors.subcategory_id = "Sub Category is required.";
-    if (!formData.subsubcategory_id) newErrors.subsubcategory_id = "Sub Sub Category is required.";
+  //   if (!formData.category_id) newErrors.category_id = "Category is required.";
+  //   if (!formData.subcategory_id) newErrors.subcategory_id = "Sub Category is required.";
+  //   if (!formData.subsubcategory_id) newErrors.subsubcategory_id = "Sub Sub Category is required.";
 
-    if (!formData.brand) newErrors.brand = "Brand is required.";
-    if (!formData.variant) newErrors.variant = "Variant is required.";
-    if (!formData.fittingSize) newErrors.fittingSize = "fittingSize is required.";
-    if (!formData.thread_type) newErrors.thread_type = "Thread Type is required.";
-    if (!formData.material) newErrors.material = "Material is required.";
-    if (!formData.pressure_rating) newErrors.pressure_rating = "Pressure Rating is required.";
-    if (!formData.temperature_range) newErrors.temperature_range = "Temperature Range Rating is required.";
-    // Numeric validation for price and max quantity
-    if (!formData.price) newErrors.price = "Price is required."
-    else if (formData.price && isNaN(formData.price))
-      newErrors.price = "Price must be a numeric value.";
-    // if (formData.maxQuantity && isNaN(formData.maxQuantity))
-    //   newErrors.maxQuantity = "Max quantity must be a numeric value.";
-    // if (formData.discount && isNaN(formData.discount))
-    //   newErrors.discount = "Discount must be a numeric value.";
+  //   if (!formData.brand) newErrors.brand = "Brand is required.";
+  //   if (!formData.variant) newErrors.variant = "Variant is required.";
+  //   if (!formData.fittingSize) newErrors.fittingSize = "fittingSize is required.";
+  //   if (!formData.thread_type) newErrors.thread_type = "Thread Type is required.";
+  //   if (!formData.material) newErrors.material = "Material is required.";
+  //   if (!formData.pressure_rating) newErrors.pressure_rating = "Pressure Rating is required.";
+  //   if (!formData.temperature_range) newErrors.temperature_range = "Temperature Range Rating is required.";
+  //   if (!formData.price) newErrors.price = "Price is required."
+  //   else if (formData.price && isNaN(formData.price))
+  //     newErrors.price = "Price must be a numeric value.";
 
-    // Time validation (optional)
-    // if (formData.startTime && !/^\d{2}:\d{2}$/.test(formData.startTime))
-    //   newErrors.startTime = "Start time must be in HH:MM format.";
-    // if (formData.endTime && !/^\d{2}:\d{2}$/.test(formData.endTime))
-    //   newErrors.endTime = "End time must be in HH:MM format.";
+  //   setErrors(newErrors);
 
-    // Set errors to the state
-    setErrors(newErrors);
-
-    // Return true if there are no errors, false otherwise
-    return Object.keys(newErrors).length === 0;
-  };
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
 
-  const handleSubmit = async (e) => {
+  const handleSubmit=async(e)=>{
     e.preventDefault();
+    const validationErrors = validateFormComponent(formData);
+    setErrors(validationErrors);
 
-    if (!validateForm()) {
-      return; 
+    const form = new FormData();
+    for (const key in formData) {
+      if (key !== 'image' && key !== 'gallery') {
+        form.append(key, formData[key]);
+      }
     }
-
-    setLoading(true);
-    const fData = new FormData();
-
-    // Append regular form fields to FormData
-    fData.append("name", formData.name);
-    fData.append("description", formData.description);
-    fData.append("category_id", formData.category_id);
-    fData.append("brand", formData.brand);
-    fData.append("fittingSize", formData.fittingSize);
-    fData.append("material", formData.material);
-    fData.append("pressure_rating", formData.pressure_rating);
-    fData.append("price", formData.price);
-    fData.append("product_Type", formData.product_Type);
-    fData.append("product_id", formData.product_id);
-    fData.append("subcategory_id", formData.subcategory_id);
-    fData.append("subsubcategory_id", formData.subsubcategory_id);
-    fData.append("temperature_range", formData.temperature_range);
-    fData.append("thread_type", formData.thread_type);
-    fData.append("variant", formData.variant);
 
     if (formData.image) {
-      fData.append("image", formData.image);
+      form.append("image", formData.image);
     }
+           
+    formData?.gallery?.forEach((file) => {
+      form.append("gallery", file);
+    });
 
-    if (formData.parts && Array.isArray(formData.parts)) {
-      fData.append("parts", JSON.stringify(formData.parts));
+    if (Object.keys(validationErrors).length === 0) {
+      try {
+            const res = await addProductApi(form);
+            if (res.data?.success) {
+              setLoading(false);
+              Swal.fire({
+                icon: "success",
+                title: "Product",
+                text: res.data?.message || "Product created successfully",
+                showConfirmButton: false,
+                timer: 1500,
+              });
+              resetForm(); 
+              navigate('/productlist');
+            } else {
+              setLoading(false);
+              Toaster.error(res.data?.message || "Failed to create product");
+              console.error("Product creation error:", res);
+            }
+          } catch (error) {
+            setLoading(false);
+            Toaster.error(error.response?.data?.message ||
+                "An error occurred while processing your request"
+            );
+            console.error("Error creating product:", error);
+          }
     }
+  }
 
-  formData?.gallery?.forEach((file) => {
-    fData.append("gallery", file);
-  });
-
-    try {
-      const res = await addProductApi(fData);
-      // console.log(res, "response is here");
-      if (res.data?.success) {
-        setLoading(false);
-        // Show success message from backend
-        // Toaster.success(res?.data?.message);
-        Swal.fire({
-          icon: "success",
-          title: "Product",
-          text: res.data?.message || "Product created successfully",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        resetForm(); // Reset form after success
-        navigate('/productlist');
-      } else {
-        setLoading(false);
-        Toaster.error(res.data?.message || "Failed to create product");
-        console.error("Product creation error:", res);
-      }
-    } catch (error) {
-      setLoading(false);
-      // Handle any errors during API request
-      Toaster.error(error.response?.data?.message ||
-          "An error occurred while processing your request"
-      );
-      console.error("Error creating product:", error);
-    }
-  };
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   if (!validateForm()) {
+  //     return; 
+  //   }
+  //   setLoading(true);
+  //   const fData = new FormData();
+  //   fData.append("name", formData.name);
+  //   fData.append("description", formData.description);
+  //   fData.append("category_id", formData.category_id);
+  //   fData.append("brand", formData.brand);
+  //   fData.append("fittingSize", formData.fittingSize);
+  //   fData.append("material", formData.material);
+  //   fData.append("pressure_rating", formData.pressure_rating);
+  //   fData.append("price", formData.price);
+  //   fData.append("product_Type", formData.product_Type);
+  //   fData.append("product_id", formData.product_id);
+  //   fData.append("subcategory_id", formData.subcategory_id);
+  //   fData.append("subsubcategory_id", formData.subsubcategory_id);
+  //   fData.append("temperature_range", formData.temperature_range);
+  //   fData.append("thread_type", formData.thread_type);
+  //   fData.append("variant", formData.variant);
+  //   if (formData.image) {
+  //     fData.append("image", formData.image);
+  //   }
+  //   if (formData.parts && Array.isArray(formData.parts)) {
+  //     fData.append("parts", JSON.stringify(formData.parts));
+  //   }
+  //   formData?.gallery?.forEach((file) => {
+  //     fData.append("gallery", file);
+  //   });
+  //   try {
+  //     const res = await addProductApi(fData);
+  //     if (res.data?.success) {
+  //       setLoading(false);
+  //       Swal.fire({
+  //         icon: "success",
+  //         title: "Product",
+  //         text: res.data?.message || "Product created successfully",
+  //         showConfirmButton: false,
+  //         timer: 1500,
+  //       });
+  //       resetForm(); 
+  //       navigate('/productlist');
+  //     } else {
+  //       setLoading(false);
+  //       Toaster.error(res.data?.message || "Failed to create product");
+  //       console.error("Product creation error:", res);
+  //     }
+  //   } catch (error) {
+  //     setLoading(false);
+  //     Toaster.error(error.response?.data?.message ||
+  //         "An error occurred while processing your request"
+  //     );
+  //     console.error("Error creating product:", error);
+  //   }
+  // };
 
   const handleDeleteLogo = () => {
     setLogo(null);
@@ -348,7 +546,6 @@ const fetchAllThreadListApi=async()=>{
       setLoading(false);
     }
 }
-
 
 const fetchAllCategoryList=async()=>{
     setLoading(true);
@@ -589,14 +786,192 @@ const fetchAllPartList=async()=>{
     },
   };
 
+  const renderComponent = () => {
+    switch (formData.product_type) {
+      case "End Fittings":
+        return <EndFittingForm 
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        wireTypeOption={wireTypeOption}
+        setWireTypeOption={setWireTypeOption}
+        selectedWireTypeOption={selectedWireTypeOption}
+        setSelectedWireTypeOption={setSelectedWireTypeOption}
+        withCapWithoutCapOption={withCapWithoutCapOption}
+        setWithCapWithoutCapOption={setWithCapWithoutCapOption}
+        selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
+        setSelectedWithCapWithoutCapOption={setSelectedWithCapWithoutCapOption}
+        fittingPieceOption={fittingPieceOption}
+        setFittingPieceOption={setFittingPieceOption}
+        selectedFittingPieceOption={selectedFittingPieceOption}
+        setSelectedFittingPieceOption={setSelectedFittingPieceOption}
+        skiveTypeOption={skiveTypeOption}
+        setSkiveTypeOption={setSkiveTypeOption}
+        selectedSkiveTypeOption={selectedSkiveTypeOption}
+        setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
+        HoseDashSizeOption={HoseDashSizeOption}
+        setHoseDashSizeOption={setHoseDashSizeOption}
+        selectedhoseDashSizeOption={selectedhoseDashSizeOption}
+        setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
+        fittingDashSizeOption={fittingDashSizeOption}
+        setfittingDashSizeOption={setfittingDashSizeOption}
+        selectedFittingDashSizeOption={selectedFittingDashSizeOption}
+        setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
+        fittingThreadOption={fittingThreadOption}
+        setfittingThreadOption={setfittingThreadOption}
+        selectedFittingThreadOption={selectedFittingThreadOption}
+        setSelectedFittingThreadOption={setSelectedFittingThreadOption}
+        fittingTypeOption={fittingTypeOption}
+        setfittingTypeOption={setfittingTypeOption}
+        selectedFittingTypeOption={selectedFittingTypeOption}
+        setSelectedFittingTypeOption={setSelectedFittingTypeOption}
+        straightBendangleOption={straightBendangleOption}
+        setStraightBendangleOption={setStraightBendangleOption}
+        selectedStraightBendangleOption={selectedStraightBendangleOption}
+        setSelectedStraightBendangleOption={setSelectedStraightBendangleOption}
+        dropLengthOption={dropLengthOption}
+        setDropLengthOption={setDropLengthOption}
+        selectedDropLengthOption={selectedDropLengthOption}
+        setSelectedDropLengthOption={setSelectedDropLengthOption}
+        neckLengthOption={neckLengthOption}
+        setNeckLengthOption={setNeckLengthOption}
+        selectedNeckLengthOption={selectedNeckLengthOption}
+        setselectedNeckLengthOption={setselectedNeckLengthOption}
+        />;
+
+      case "Hose Pipe":
+        return <HosPipeSection 
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        />;
+
+      case "Hose Assembly":
+        return <HoseAssemblySection 
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        />;
+
+      case "Spring":
+        return <SpringSection 
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        springTypeOption={springTypeOption}
+        setSpringTypeOption={setSpringTypeOption}
+        selectedSpringTypeOption={selectedSpringTypeOption}
+        setSelectedSpringTypeOption={setSelectedSpringTypeOption}
+        />;
+
+      case "O-ring":
+        return <O_ringSection 
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        />;
+
+      case "Dust Cap":
+        return <DustCapSection 
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        maleFemaleOption={maleFemaleOption} 
+        setmaleFemaleOption={setmaleFemaleOption}
+        selectedMaleFemaleOption={selectedMaleFemaleOption} 
+        setSelectedMaleFemaleOption={setSelectedMaleFemaleOption}
+        />;
+
+      case "Sleeve":
+        return <SleeveSection 
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        />;
+
+      case "Vinyl Cover":
+        return <VinylCoverSection 
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}/>;
+
+      case "Packing":
+        return <PackingSection 
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}/>;
+
+      case "Tube Fittings":
+        return <TubeFittingsSection 
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        />;
+      default:
+        return null;
+    }
+  };
+
+  const handleProductDropChange=(option)=>{
+    setSelectedProductTypeOption(option);
+    setFormData({product_type:option.value});
+
+    setSelectedWireTypeOption(null);
+    setSelectedWithCapWithoutCapOption(null);
+    setSelectedFittingPieceOption(null);
+    setSelectedSkiveTypeOption(null);
+    setSelectedHoseDashSizeOption(null);
+    setSelectedfittingDashSizeOption(null);
+    setSelectedFittingTypeOption(null);
+    setSelectedFittingThreadOption(null);
+    setSelectedStraightBendangleOption(null);
+    setSelectedDropLengthOption(null);
+    setselectedNeckLengthOption(null); 
+    setSelectedSpringTypeOption(null);
+    setSelectedMaleFemaleOption(null);
+    
+    setErrors({});
+  }
+
   return (
     <>
       <ToastContainer />
       <Loader visible={loading} />
       <PageTitle activeMenu={"Add New Product"} motherMenu={"Home"} motherMenuLink={'/dashboard'}/>
-      <div className="row">
-        {/* SECTION 1ST */}
-        <div className="col-xl-12 col-lg-12">
+
+            <div className="row">
+      <div className="col-xl-12 col-lg-12">
+          <div className="card">
+            <div className="card-header">
+              <h4 className="card-title">Product</h4>
+            </div>
+            <div className="card-body">
+              <div>
+                <div className="mb-3 row">
+                <div className="col-sm-6">
+                  <label className="col-form-label">Product</label>
+                  <Select
+                    value={selectedProductTypeOption}
+                    onChange={handleProductDropChange}
+                    defaultValue={selectedProductTypeOption}
+                    options={productTypeOption}
+                  />
+                  {errors.product_type && (
+                    <span className="text-danger fs-12">{errors.product_type}</span>
+                  )}
+                </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {
+       renderComponent()
+      }
+           
+      <div className="col-xl-12 col-lg-12">
           <div className="card">
             <div className="card-header">
               <h4 className="card-title">Basic Info</h4>
@@ -604,8 +979,7 @@ const fetchAllPartList=async()=>{
             <div className="card-body">
               <div>
                 <div className="mb-3 row">
-
-                  <div className="col-sm-4">
+                  <div className="col-sm-6 col-xl-4">
                     <label className="col-sm-3 col-form-label">Name</label>
                     <input
                       name="name"
@@ -620,7 +994,22 @@ const fetchAllPartList=async()=>{
                     )}
                   </div>
 
-                  <div className="col-sm-4">
+                  <div className="col-sm-6 col-xl-4">
+                    <label className="col-sm-3 col-form-label">Mfc</label>
+                    <input
+                      name="mfc"
+                      value={formData.mfc}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: ABC"
+                    />
+                    {errors.mfc && (
+                      <span className="text-danger fs-12">{errors.mfc}</span>
+                    )}
+                  </div>
+
+                  {/* <div className="col-sm-6 col-xl-4">
                     <label className="col-sm-3 col-form-label">Product Id</label>
                     <input
                       name="product_id"
@@ -635,8 +1024,8 @@ const fetchAllPartList=async()=>{
                     )}
                   </div>
 
-                  <div className="col-sm-4">
-                    <label className="col-sm-3 col-form-label">Product Type</label>
+                  <div className="col-sm-6 col-xl-4">
+                    <label className="col-form-label">Product Type</label>
                     <input
                       name="product_Type"
                       value={formData.product_Type}
@@ -648,7 +1037,7 @@ const fetchAllPartList=async()=>{
                     {errors.product_Type && (
                       <span className="text-danger fs-12">{errors.product_Type}</span>
                     )}
-                  </div>
+                  </div> */}
                 </div>
                 <div className="mb-3 row">
                   <div className="col-sm-8">
@@ -674,47 +1063,12 @@ const fetchAllPartList=async()=>{
               </div>
             </div>
           </div>
-        </div>
-        {/* SECTION 2ND Restaurant logo and cover*/}
-        {/* <div className="col-xl-6 col-lg-6">
-                    <div className="card">
-                        <div className="card-header">
-                            <h4 className="card-title">Food Image</h4>
-                        </div>
-                        <div className="card-body">
-                            <div className="mb-3 row">
-                                <div className="col-sm-6">
-                                    <label className="col-form-label">Food Image</label>
-                                    <div style={styles.container}>
-                                        <input
-                                            type="file"
-                                            accept="image/*"
-                                            onChange={handleLogoChange}
-                                            style={{ display: 'none' }}
-                                            id="logoUpload"
-                                        />
-                                        <label htmlFor="logoUpload" style={styles.placeholder}>
-                                            {logo ? (
-                                                <img src={logo} alt="Logo" style={styles.img} />
-                                            ) : (
-                                                <div style={styles.uploadIcon}>Upload Image</div>
-                                            )}
-                                        </label>
-
-                                    </div>
-                                    <p>Image format - jpg png jpeg gif<br />Image Size - maximum size 2 MB<br />Image Ratio - 1:1</p>
-                                </div>
+        </div> 
 
 
-                            </div>
-                        </div>
-                    </div>
-                </div> */}
-
-
-
-        {/* SECTION 3RD Restaurants & Category Infoo*/}
-        <div className="row">
+      
+      {/* SECTION 3RD Restaurants & Category Infoo*/}
+      <div className="row">
         <div className="col-xl-3 col-lg-3 flex ">
           <div className="card">
             <div className="card-header mb-4">
@@ -775,10 +1129,7 @@ const fetchAllPartList=async()=>{
               <h4 className="card-title">Gallery</h4>
             </div>
             <div className="card-body d-flex gap-3" >
-             
-
-              <div
-                className="row"
+              <div className="row"
                 style={{ gap: "10px", display: "flex", flexWrap: "wrap" }}>
                 {galleryImages?.map((image, index) => (
                   <div
@@ -833,9 +1184,7 @@ const fetchAllPartList=async()=>{
                       onChange={handleGalleryChange}
                     />
                     <label htmlFor="imageUpload" style={styles.placeholder}>
-                      <div
-                        style={styles.uploadIcon}
-                        className="flex flex-col cursor-pointer">
+                      <div style={styles.uploadIcon} className="flex flex-col cursor-pointer">
                         <img width="30" src={uplodIcon} alt="Upload Icon"></img>
                         <p>Upload Gallery Image</p>
                       </div>
@@ -851,10 +1200,15 @@ const fetchAllPartList=async()=>{
             </div>
           </div>
         </div>
-        
-        </div>
+        </div>  
+       
+      <div className="row">
+        {/* SECTION 1ST */}
+      
+  
 
-        <div className="col-xl-12 col-lg-12">
+        {/* SECTION Category Infoo*/}
+        {/* <div className="col-xl-12 col-lg-12">
           <div className="card">
             <div className="card-header">
               <h4 className="card-title">Category</h4>
@@ -939,15 +1293,13 @@ const fetchAllPartList=async()=>{
                     </span>
                   )}
                 </div>
-
-              
               </div>
               </div>
           </div>
-        </div>
+        </div> */}
 
         {/* SECTION 3RD Restaurants & Category Infoo*/}
-        <div className="col-xl-12 col-lg-12">
+        {/* <div className="col-xl-12 col-lg-12">
           <div className="card">
             <div className="card-header">
               <h4 className="card-title">General Info</h4>
@@ -1121,9 +1473,9 @@ const fetchAllPartList=async()=>{
              </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
-        <div className="col-xl-12 col-lg-12">
+        {/* <div className="col-xl-12 col-lg-12">
           <div className="card">
             <div className="card-header">
               <h4 className="card-title">Part</h4>
@@ -1157,10 +1509,10 @@ const fetchAllPartList=async()=>{
               </div>
           </div>
           </div>
-        </div>
+        </div> */}
 
         {/* SECTION 5th Price Information*/}
-        <div className="col-xl-12 col-lg-12">
+        {/* <div className="col-xl-12 col-lg-12">
           <div className="card">
             <div className="card-header">
               <h4 className="card-title">Price Information</h4>
@@ -1181,64 +1533,10 @@ const fetchAllPartList=async()=>{
                     <span className="text-danger fs-12">{errors.price}</span>
                   )}
                 </div>
-
-                {/* <div className="col-sm-3">
-                  <label className="col-sm-6 col-form-label">
-                    Discount type
-                  </label>
-                  <Select
-                    defaultValue={selectedOption}
-                    onChange={handleSelectChangeLabel("discountType")}
-                    options={discountOptions}
-                    style={{
-                      lineHeight: "40px",
-                      color: "#7e7e7e",
-                      paddingLeft: " 15px",
-                    }}
-                  />
-                  {errors.discountType && (
-                    <span className="text-danger fs-12">
-                      {errors.discountType}
-                    </span>
-                  )}
-                </div>
-
-                <div className="col-sm-3">
-                  <label className="col-sm-6 col-form-label">Discount *</label>
-                  <input
-                    name="discount"
-                    value={formData.discount}
-                    onChange={handleChange}
-                    type="number"
-                    className="form-control"
-                    placeholder="Ex: 100"
-                  />
-                  {errors.discount && (
-                    <span className="text-danger fs-12">{errors.discount}</span>
-                  )}
-                </div>
-
-                <div className="col-sm-3">
-                  <label className="col-sm-12 col-form-label">
-                    Maximum Purchase Quantity Limit
-                  </label>
-                  <input
-                    name="maxQuantity"
-                    value={formData.maxQuantity}
-                    onChange={handleChange}
-                    type="number"
-                    className="form-control"
-                    placeholder="Ex: 100"/>
-                   {errors.maxQuantity && (
-                    <span className="text-danger fs-12">
-                      {errors.maxQuantity}
-                    </span>
-                   )}
-                </div> */}
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
         
 
   
@@ -1248,8 +1546,7 @@ const fetchAllPartList=async()=>{
           <button
             type="submit"
             onClick={handleSubmit}
-            className="btn btn-primary rounded-sm"
-          >
+            className="btn btn-primary rounded-sm">
             Save Information
           </button>
         </div>
