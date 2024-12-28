@@ -1,0 +1,298 @@
+/* Container Styles */
+.bulkcontainer {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    font-family: Arial, sans-serif;
+    background-color: #fff;
+}
+
+/* Title Styles */
+.title {
+    font-size: 24px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    /* text-align: center; */
+}
+
+/* Steps Grid Styles */
+.steps-grid {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 30px;
+}
+
+/* Step Card Styles */
+.step-card {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    width: 30%;
+}
+
+.step-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.step-subtitle {
+    font-size: 14px;
+    font-weight: 600;
+    margin-bottom: 10px;
+}
+
+.step-instructions {
+    font-size: 12px;             /* Set font size for list items */
+    list-style-type: disc;       /* Ensure bullets are dots */
+    padding-left: 20px;          /* Add space for bullets */
+    margin: 0;                   /* Remove any unwanted margins */
+    
+}
+
+
+.step-instructions {
+    list-style-type: disc !important;
+}
+
+ul li::marker {
+    color: #9c9898;
+}
+
+
+
+
+/* Download Buttons Section */
+/* .download-buttons-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.download-title {
+    font-size: 16px;
+    font-weight: bold;
+    margin-bottom: 10px;
+}
+
+.download-buttons {
+    display: inline-flex;
+    gap: 10px;
+}
+
+
+.btn {
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    cursor: pointer;
+}
+
+.btn.primary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+    margin-right: 10px;
+}
+
+.btn.secondary {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+} */
+
+/* Download Buttons Section */
+.download-section {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    margin-bottom: 30px;
+}
+
+.download-buttons-section {
+    text-align: center;
+    margin: 20px 0;
+  }
+  
+  .download-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #333;
+  }
+  
+  /* Buttons Wrapper */
+  .download-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+  }
+  
+  /* First Button: Initially transparent, filled on hover */
+  .btn.primary {
+    background-color: transparent;
+    color: #6173fa; /* Blue text */
+    border: 1px solid #6173fa;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    /* font-weight: bold; */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .btn.primary:hover {
+    background-color: #6173fa;
+    color: white;
+  }
+  
+  /* Second Button: Filled with color, black text */
+  .btn.secondary {
+    background-color: #6173fa; /* Gold */
+    color: white; /* Black text */
+    border: 1px solid transparent;
+    padding: 10px 20px;
+    border-radius: 5px;
+    font-size: 14px;
+    /* font-weight: bold; */
+    cursor: pointer;
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .btn.secondary:hover {
+    background-color: #6173fa; /* Slightly darker gold on hover */
+    color: white;
+  }
+  
+
+/* Upload Section Styles */
+.upload-section {
+    background-color: #ffffff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.upload-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+}
+
+.radio-group {
+    margin-bottom: 20px;
+}
+
+.radio-option {
+    display: block;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+.file-dropzone {
+    border: 2px dashed #ddd;
+    border-radius: 5px;
+    padding: 20px;
+    text-align: center;
+    font-size: 14px;
+    margin-bottom: 20px;
+    color: #777;
+}
+
+.action-buttons {
+    display: flex;
+    justify-content: space-between;
+}
+
+.btn.reset {
+    background-color: #f5f5f5;
+    color: #333;
+    border: 1px solid #ddd;
+}
+
+.btn.import {
+    background-color: #007bff;
+    color: #fff;
+    border: none;
+}
+
+
+
+/* Media Queries for Responsiveness */
+@media (max-width: 768px) {
+    .steps-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+  
+    .step-card {
+      max-width: 300px;
+      margin: 0 auto;
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .steps-grid {
+      flex-wrap: wrap;
+      flex-direction: row;
+      justify-content: center;
+      gap: 15px;
+    }
+  
+    .step-card {
+      flex: 0 0 calc(100% - 30px);
+      max-width: 300px;
+    }
+  
+    .step-title {
+      font-size: 1.1rem;
+    }
+  
+    .step-subtitle {
+      font-size: 0.9rem;
+    }
+  
+    ul {
+      font-size: 0.8rem;
+    }
+  
+    img {
+      width: 40px;
+      height: 40px;
+    }
+  }
+
+  /* iPad-Specific Queries */
+@media (min-width: 668px) and (max-width: 1024px) {
+  .steps-grid {
+    grid-template-columns: repeat(2, 1fr); /* Two cards per row on iPads */
+    gap: 20px;
+  }
+
+  .step-card {
+    max-width: 400px;
+    margin: 0 auto;
+  }
+
+  .step-title {
+    font-size: 1.4rem;
+  }
+
+  .step-subtitle {
+    font-size: 1rem;
+  }
+
+  ul {
+    font-size: 0.9rem;
+  }
+
+  img {
+    width: 50px;
+    height: 50px;
+  }
+}

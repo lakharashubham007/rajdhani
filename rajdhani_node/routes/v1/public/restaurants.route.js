@@ -16,8 +16,8 @@ const upload = multer({
         },
     }),
 }).fields([
-    { name: 'logo', maxCount: 1 },  // Upload for logo
-    { name: 'cover', maxCount: 1 }  // Upload for cover image
+    { name: 'image', maxCount: 1 },  // Upload for logo
+    { name: 'gallery', maxCount: 10 }  // Upload for cover image
 ]);
 
 // Routes for handling restaurants

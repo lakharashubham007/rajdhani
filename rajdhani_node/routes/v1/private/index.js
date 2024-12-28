@@ -12,6 +12,7 @@ const material = require('./material.route')
 const supplier = require('./supplier.route')
 const purchaseorders = require('./purchaseOrder.route')
 const pobills = require('./purchaseOrderBill.route')
+const bulk = require('./bulkimport.route')
 
 const router = express.Router();
 
@@ -29,7 +30,7 @@ router.use("/suppliers",supplier)
 router.use("/purchaseorders",purchaseorders)
 router.use("/pobills",pobills)
 
-
+router.use("/bulk",bulk)
 
 
 

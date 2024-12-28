@@ -1,11 +1,31 @@
 const { Products } = require('../models'); // Assuming the Products model is located here
 
+const generateCodes = (formData, options) => {
+  const {
+    selectedWireTypeOption,
+    selectedFittingThreadOption,
+    selectedHoseDashSizeOption,
+    selectedFittingDashSizeOption,
+    selectedFittingTypeOption,
+    selectedStraightBendAngleOption,
+    selectedSkiveTypeOption,
+    selectedFittingPieceOption,
+  } = options;
+
+  const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code + '-' : ''}${selectedFittingThreadOption?.dsc_code || ''} ${selectedHoseDashSizeOption?.dsc_code ? selectedHoseDashSizeOption?.dsc_code + 'X' : ''}${selectedFittingDashSizeOption?.dsc_code || ''} ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()} ${(selectedStraightBendAngleOption?.dsc_code || '').toUpperCase()} ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()}`.trim();
+
+  const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedHoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendAngleOption?.code || ''}`;
+
+  return { desc_Code, fitting_Code };
+};
+
 // Create a new Product - Service
 const createProduct = async (data, files) => {
 
   try {
-
-    console.log('Gallery files are here:', files.gallery); 
+  // Generate codes based on the data and options
+     const { desc_Code, fitting_Code } = generateCodes(data);
+    console.log('desc_Code, fitting_Code files are here:', desc_Code, fitting_Code); 
 
      // Parse the `parts` field if it's sent as a string
      let parsedParts = [];
@@ -65,8 +85,8 @@ const getProducts = async (page, limit, sort, search) => {
       // Build a dynamic filter for searching
       const filter = search ? { 
         $or: [
-          { name: { $regex: search, $options: 'i' } },
-          { description: { $regex: search, $options: 'i' } }
+          { fitting_thread: { $regex: search, $options: 'i' } },
+          { desc_Code: { $regex: search, $options: 'i' } }
         ] 
       } : {};
   

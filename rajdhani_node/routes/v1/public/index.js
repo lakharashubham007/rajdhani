@@ -11,7 +11,7 @@ const addons = require('./addon.route')
 const food = require('./food.route')
 const imageRoute = require('./images.route')
 const states = require('./state.route')
-
+const options = require('./dropdowns.route')
 const router = express.Router();
 
 router.use("/auth", authRoute);
@@ -26,8 +26,7 @@ router.use("/addons", addons)
 router.use("/food",food)
 router.use("/images", imageRoute);
 router.use("/states", states);
-
-
+router.use("/options", options);
 
 
 module.exports = router;

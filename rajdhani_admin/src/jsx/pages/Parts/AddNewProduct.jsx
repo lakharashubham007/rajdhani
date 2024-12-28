@@ -104,8 +104,130 @@ const AddProduct = () => {
   });
   const [fittingCode, setFittingCode] = useState();
   const [descCode, setDescCode] = useState();
-  console.log(formData, "formData is here")
-  
+
+  console.log(dropdownOptions, "dropdownOptions data")
+
+  useEffect(() => {
+    const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}`;
+
+    setFittingCode(fitting_Code);
+
+
+    // const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code + '-' : ''}${selectedFittingThreadOption?.dsc_code || ''
+    //   } ${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code + 'X' : ''
+    //   }${selectedFittingDashSizeOption?.dsc_code || ''
+    //   } ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()
+    //   } ${(selectedStraightBendangleOption?.dsc_code || '').toUpperCase()
+    //   } ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()
+    //   }`
+    // Build descCode with conditional checks and trim any leading/trailing spaces
+    const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code + '-' : ''}${selectedFittingThreadOption?.dsc_code || ''} ${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code + 'X' : ''}${selectedFittingDashSizeOption?.dsc_code || ''} ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()} ${(selectedStraightBendangleOption?.dsc_code || '').toUpperCase()} ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()}`.trim();
+
+    // Set descCode, ensuring it doesn't have any leading or trailing spaces
+    // setDescCode(desc_Code);
+    // Ensure descCode has a fallback value of empty string if no value is set
+    setDescCode(desc_Code);
+    setFormData((prevData) => ({
+      ...prevData,
+      desc_Code: desc_Code, // Clear variant value in formData
+      fitting_Code: fitting_Code // Clear fitting_dash_size value in formData
+    }));
+
+
+
+  }, [
+    formData?.design,
+    selectedWireTypeOption,
+    selectedFittingPieceOption,
+    selectedSkiveTypeOption,
+    selectedFittingThreadOption,
+    selectedhoseDashSizeOption,
+    selectedvariantOption,
+    selectedFittingDashSizeOption,
+    selectedFittingTypeOption,
+    selectedStraightBendangleOption
+  ])
+
+  useEffect(() => {
+    // Check if required fields are provided
+    if (formData?.fitting_thread && formData?.pipeOD && formData?.metric_type) {
+      // Call the filtering function
+      const filteredOptions = filterFittingDashSizeOptions();
+      if (filteredOptions.length > 0) {
+        // Update the selected fitting dash size option
+        setSelectedfittingDashSizeOption(filteredOptions[0]);
+        // Update formData with the selected option's dash
+        // setFormData({
+        //   ...formData,
+        //   fitting_dash_size: filteredOptions[0].value.split("(")[1]?.replace(")", ""),
+        // });
+      }
+    }
+  }, [formData?.fitting_thread, formData?.pipeOD, formData?.metric_type]);
+
+  useEffect(() => {
+    // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
+    if (selectpipeODOption) {
+      setFormData((prevData) => ({
+        ...prevData,
+        metric_type: "", // Clear variant value in formData
+        fitting_dash_size: "", // Clear fitting_dash_size value in formData
+      }));
+      setSelectedmetricTypeOptions(null); // Clear variant option
+      setSelectedfittingDashSizeOption(null); // Clear fitting_dash size option
+    }
+  }, [selectpipeODOption]);
+
+
+  useEffect(() => {
+    // Check if both values are provided
+    if (formData?.fitting_thread && formData?.variant) {
+      const filteredOptions = filterFittingDashSizeOptions();
+      if (filteredOptions.length > 0) {
+        setSelectedfittingDashSizeOption(filteredOptions[0]);
+        setFormData({
+          ...formData,
+          fitting_dash_size: filteredOptions[0].value,
+        });
+
+      }
+    }
+  }, [formData?.fitting_thread, formData?.variant,]);
+
+  useEffect(() => {
+    // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
+    if (selectedFittingThreadOption) {
+      setFormData((prevData) => ({
+        ...prevData,
+        variant: "", // Clear variant value in formData
+        fitting_dash_size: "", // Clear fitting_dash_size value in formData
+      }));
+      setSelectedvariantOption(null); // Clear variant option
+      setSelectedfittingDashSizeOption(null); // Clear fitting_dash size option
+    }
+  }, [selectedFittingThreadOption]); // Trigger this whenever fitting thread is selected
+
+
+  // useEffect(() => {
+  //   const filteredOptions = filterFittingDashSizeOptions();
+  //   if (filteredOptions.length > 0) {
+  //     setSelectedfittingDashSizeOption(filteredOptions[0]);
+  //     setFormData({
+  //       ...formData,
+  //       fitting_dash_size: filteredOptions[0].dash,
+  //     });
+  //   }
+  // }, [formData?.fitting_thread, formData?.variant]);
+
+
+  // const filterFittingDashSizeOptions = () => {
+  //   return fittingDashSizeOptions.filter(
+  //     (option) =>
+  //       option.thread_type === formData.fitting_thread &&
+  //       (option.variant === formData.variant || option.variant === null)
+  //   );
+  // };
+
   const filterFittingDashSizeOptions = () => {
     // Basic filtering based on fitting_thread
     const filteredOptions = dropdownOptions?.fittingDashSizeOptions?.filter((option) => {
@@ -174,129 +296,69 @@ const AddProduct = () => {
       dsc_code: `${option.dsc_code}`
     }));
   };
-  const filterFittingTypeOptions = () => {
-    console.log(dropdownOptions?.fittingTypeOptions)
-    const fittingTypeOptions = dropdownOptions?.fittingTypeOptions.filter((option) => {
-      return (
-       option?.fitting_thread?.startsWith("SAE") === formData?.fitting_thread?.startsWith("SAE") 
-       );
-
-     });
-     // Map the filtered options to the desired format
-     return fittingTypeOptions.map((option) => ({
-          value: `${option.value}`,
-         label: `${option.label}`,
-         code: `${option.code}`,
-         dsc_code: `${option.dsc_code}`,
-     }));
-  }
-  // Effect to dynamically set fittingTypeOption
-  useEffect(() => {
-    // Check if required fields are provided
-    if (formData.fitting_thread === "SAE 61" || formData.fitting_thread === "SAE 62") {
-
-      // Call the filtering function
-      const filteredOptions = filterFittingTypeOptions();
-      if (filteredOptions.length > 0) {
-
-        setfittingTypeOption(filteredOptions);
-       
-      }
-    }
-  }, [formData?.fitting_thread]);
-
-  useEffect(() => {
-    const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}`;
-
-    setFittingCode(fitting_Code);
-
-    const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code + '-' : ''}${selectedFittingThreadOption?.dsc_code || ''} ${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code + 'X' : ''}${selectedFittingDashSizeOption?.dsc_code || ''} ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()} ${(selectedStraightBendangleOption?.dsc_code || '').toUpperCase()} ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()}`.trim();
-
-    setDescCode(desc_Code);
-    setFormData((prevData) => ({
-      ...prevData,
-      desc_Code: desc_Code, // Clear variant value in formData
-      fitting_Code: fitting_Code // Clear fitting_dash_size value in formData
-    }));
-
-  }, [
-    formData?.design,
-    selectedWireTypeOption,
-    selectedFittingPieceOption,
-    selectedSkiveTypeOption,
-    selectedFittingThreadOption,
-    selectedhoseDashSizeOption,
-    selectedvariantOption,
-    selectedFittingDashSizeOption,
-    selectedFittingTypeOption,
-    selectedStraightBendangleOption
-  ])
-
-  useEffect(() => {
-    // Check if required fields are provided
-    if (formData?.fitting_thread && formData?.pipeOD && formData?.metric_type) {
-      // Call the filtering function
-      const filteredOptions = filterFittingDashSizeOptions();
-      if (filteredOptions.length > 0) {
-        // Update the selected fitting dash size option
-        setSelectedfittingDashSizeOption(filteredOptions[0]);
-        // Update formData with the selected option's dash
-        // setFormData({
-        //   ...formData,
-        //   fitting_dash_size: filteredOptions[0].value.split("(")[1]?.replace(")", ""),
-        // });
-      }
-    }
-  }, [formData?.fitting_thread, formData?.pipeOD, formData?.metric_type]);
-
-  useEffect(() => {
-    // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
-    if (selectpipeODOption) {
-      setFormData((prevData) => ({
-        ...prevData,
-        metric_type: "", // Clear variant value in formData
-        fitting_dash_size: "", // Clear fitting_dash_size value in formData
-      }));
-      setSelectedmetricTypeOptions(null); // Clear variant option
-      setSelectedfittingDashSizeOption(null); // Clear fitting_dash size option
-    }
-  }, [selectpipeODOption]);
 
 
-  useEffect(() => {
-    // Check if both values are provided
-    if (formData?.fitting_thread && formData?.variant) {
-      const filteredOptions = filterFittingDashSizeOptions();
-      if (filteredOptions.length > 0) {
-        setSelectedfittingDashSizeOption(filteredOptions[0]);
-        setFormData({
-          ...formData,
-          fitting_dash_size: filteredOptions[0].value,
-        });
+  // const filterFittingDashSizeOptions = () => {
 
-      }
-    }
-  }, [formData?.fitting_thread, formData?.variant,]);
+  //   const filteredOptions = fittingDashSizeOptions?.filter((option) => {
+  //     // Apply the filtering condition
+  //     return (
+  //       option.thread_type === formData?.fitting_thread &&
+  //       // (option.variant === formData?.variant || option.variant === null) &&
+  //       option.thread !== null // Exclude options with null threads
+  //     );
+  //   });
 
-  useEffect(() => {
-    // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
-    if (selectedFittingThreadOption) {
-      setFormData((prevData) => ({
-        ...prevData,
-        variant: "", // Clear variant value in formData
-        fitting_dash_size: "", // Clear fitting_dash_size value in formData
-        fitting_type: "",
-        OD: "",
-        pipeOD: ""
-      }));
-      setSelectedvariantOption(null); // Clear variant option
-      setSelectedfittingDashSizeOption(null); // Clear fitting_dash size option
-      setSelectedFittingTypeOption(null);
-      setSelectpipeODOption(null)
-      
-    }
-  }, [selectedFittingThreadOption]); // Trigger this whenever fitting thread is selected
+  //   // Special case for "upper join" and "lower join" - just bind values, no join
+  //   if (formData?.variant && ["Standard", "Upper Join", "Lower Join"].includes(formData?.variant)) {
+  //     const variantOptions = fittingDashSizeOptions.filter(
+  //       (option) =>
+  //         option.thread_type === formData?.fitting_thread &&
+  //         option.variant === formData?.variant &&
+  //         option.thread !== null // Exclude options with null threads
+  //     );
+  //     // Return the options for the selected variant
+  //     if (variantOptions.length > 0) {
+  //       return variantOptions?.map((option) => ({
+  //         value: `${option.thread} (${option.dash})`,
+  //         label: `${option.thread} (${option.dash})`,
+  //       }));
+  //     }
+  //   }
 
+  //   // Map filtered options to the desired format
+  //   return filteredOptions.map((option) => ({
+  //     value: `${option.thread} (${option.dash})`,
+  //     label: `${option.thread} (${option.dash})`,
+  //   }));
+  // };
+
+
+  // console.log("formData",formData)
+  // const [formData, setFormData] = useState({
+  //   product_type:"",
+  //   name :"",
+  //   description:"",
+  //   image:"",
+  //   gallery:[],
+  //   category_id:"",
+  //   subcategory_id:"",
+  //   subsubcategory_id:"",
+  //   brand:"",
+  //   //connection_type:"",
+  //   price:"",
+  //   fittingSize:"",
+  //   material:"",
+  //   variant:"",
+  //   //thread_id:"",
+  //   parts:[],
+  //   thread_type:"",
+  //   pressure_rating:"",
+  //   temperature_range:"",
+  //   product_id:"",
+  //   product_Type:"",
+  //   with_cap:[]
+  // });
 
   const resetEndFittingForm = () => {
     setFormData({
@@ -433,34 +495,34 @@ const AddProduct = () => {
     setLoading(false);
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name) newErrors.name = "Food name is required.";
-    if (!formData.description) newErrors.description = "Description is required.";
-    if (!formData.product_id) newErrors.product_id = "Product Id is required.";
-    if (!formData.product_Type) newErrors.product_Type = "Product Type is required.";
+  // const validateForm = () => {
+  //   const newErrors = {};
+  //   if (!formData.name) newErrors.name = "Food name is required.";
+  //   if (!formData.description) newErrors.description = "Description is required.";
+  //   if (!formData.product_id) newErrors.product_id = "Product Id is required.";
+  //   if (!formData.product_Type) newErrors.product_Type = "Product Type is required.";
 
-    if (!formData.image) newErrors.image = "Image is required.";
+  //   if (!formData.image) newErrors.image = "Image is required.";
 
-    if (!formData.category_id) newErrors.category_id = "Category is required.";
-    if (!formData.subcategory_id) newErrors.subcategory_id = "Sub Category is required.";
-    if (!formData.subsubcategory_id) newErrors.subsubcategory_id = "Sub Sub Category is required.";
+  //   if (!formData.category_id) newErrors.category_id = "Category is required.";
+  //   if (!formData.subcategory_id) newErrors.subcategory_id = "Sub Category is required.";
+  //   if (!formData.subsubcategory_id) newErrors.subsubcategory_id = "Sub Sub Category is required.";
 
-    if (!formData.brand) newErrors.brand = "Brand is required.";
-    if (!formData.variant) newErrors.variant = "Variant is required.";
-    if (!formData.fittingSize) newErrors.fittingSize = "fittingSize is required.";
-    if (!formData.thread_type) newErrors.thread_type = "Thread Type is required.";
-    if (!formData.material) newErrors.material = "Material is required.";
-    if (!formData.pressure_rating) newErrors.pressure_rating = "Pressure Rating is required.";
-    if (!formData.temperature_range) newErrors.temperature_range = "Temperature Range Rating is required.";
-    if (!formData.price) newErrors.price = "Price is required."
-    else if (formData.price && isNaN(formData.price))
-      newErrors.price = "Price must be a numeric value.";
+  //   if (!formData.brand) newErrors.brand = "Brand is required.";
+  //   if (!formData.variant) newErrors.variant = "Variant is required.";
+  //   if (!formData.fittingSize) newErrors.fittingSize = "fittingSize is required.";
+  //   if (!formData.thread_type) newErrors.thread_type = "Thread Type is required.";
+  //   if (!formData.material) newErrors.material = "Material is required.";
+  //   if (!formData.pressure_rating) newErrors.pressure_rating = "Pressure Rating is required.";
+  //   if (!formData.temperature_range) newErrors.temperature_range = "Temperature Range Rating is required.";
+  //   if (!formData.price) newErrors.price = "Price is required."
+  //   else if (formData.price && isNaN(formData.price))
+  //     newErrors.price = "Price must be a numeric value.";
 
-    setErrors(newErrors);
+  //   setErrors(newErrors);
 
-    return Object.keys(newErrors).length === 0;
-  };
+  //   return Object.keys(newErrors).length === 0;
+  // };
 
 
   const handleSubmit = async (e) => {
@@ -517,10 +579,191 @@ const AddProduct = () => {
     document.getElementById("logoUpload").value = "";
   };
 
+
+  const fetchFittingSizeList = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllFittingSizeListApi();
+      const dropdownFittingSize = res?.data?.fittingSizes?.map(
+        (fittingSize) => ({
+          value: fittingSize._id,
+          label: fittingSize.size,
+        })
+      );
+      setfittingSizeOption(dropdownFittingSize)
+    } catch (error) {
+      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const fetchAllThreadListApi = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllThreadListApi();
+      const dropdownThreads = res?.data?.threads?.map(
+        (thread) => ({
+          value: thread._id,
+          label: `${thread?.thread_type} ${thread?.threadSize}`,
+        })
+      );
+      setThreadtypeOption(dropdownThreads)
+    } catch (error) {
+      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const fetchAllCategoryList = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllCategoriesListApi();
+      const dropdownCategories = res?.data?.categories?.map(
+        (category) => ({
+          value: category._id,
+          label: category.name,
+        })
+      );
+      setCategoryOption(dropdownCategories);
+    } catch (error) {
+      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  const fetchAllSubCategoryList = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllSubCategoriesListApi();
+
+      const dropdownSubCategories = res?.data?.subcategories?.map(
+        (subCategory) => ({
+          value: subCategory._id,
+          label: subCategory.name,
+        })
+      );
+      setSubCategoryOption(dropdownSubCategories)
+    } catch (error) {
+      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const fetchAllSubSubCategoryList = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllSubSubCategoriesListApi();
+      const dropdownSubSubCategories = res?.data?.subSubcategories?.map(
+        (subSubCategory) => ({
+          value: subSubCategory._id,
+          label: subSubCategory.name,
+        })
+      );
+      setSubSubCategoryOption(dropdownSubSubCategories)
+    } catch (error) {
+      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  const fetchAllBrandList = async () => {
+    setLoading(true);
+    try {
+      const res = await GetAllBrandList();
+      const dropdownSubSubCategories = res?.data?.brands?.map(
+        (brand) => ({
+          value: brand._id,
+          label: brand.name,
+        })
+      );
+      setBrandOption(dropdownSubSubCategories)
+    } catch (error) {
+      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+
+  const fetchAllMaterialList = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllMaterialsApi();
+      const dropdownSubSubCategories = res?.data?.materials?.map(
+        (material) => ({
+          value: material._id,
+          label: material.name,
+        })
+      );
+      setmaterialOption(dropdownSubSubCategories)
+    } catch (error) {
+      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  // const fetchAllVariantList=async()=>{
+  //   setLoading(true);
+  //   try {
+  //     const res = await getAllVariantListApi();
+  //     const dropdownSubSubCategories = res?.data?.variants?.map(
+  //       (variant) => ({
+  //         value: variant._id,
+  //         label: `${variant?.variantType} ${variant.name}` ,
+  //       })
+  //     );
+  //     setVariantOption(dropdownSubSubCategories)
+  //   } catch (error) {
+  //     console.error("Error fetching cuisines:", error);
+  //     Toaster.error("Failed to load cuisines. Please try again.");
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // }
+
+  const fetchAllPartList = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllPartsApi();
+      const dropdownSubSubCategories = res?.data?.parts?.map(
+        (part) => ({
+          value: part._id,
+          label: part.name,
+        })
+      );
+      setPartOption(dropdownSubSubCategories)
+    } catch (error) {
+      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
+
   const fetchAllOptions = async () => {
     setLoading(true);
     try {
       const res = await getAllOptions();
+      // const dropdownSubSubCategories = res?.data?.parts?.map(
+      //   (part) => ({
+      //     value: part._id,
+      //     label: part.name,
+      //   })
+      // );
       setDropwonOptions(res?.data?.data)
     } catch (error) {
       console.error("Error fetching cuisines:", error);
@@ -531,6 +774,15 @@ const AddProduct = () => {
   }
 
   useEffect(() => {
+    // fetchFittingSizeList();
+    // fetchAllThreadListApi();
+    // fetchAllCategoryList();
+    // fetchAllSubCategoryList();
+    // fetchAllSubSubCategoryList();
+    // fetchAllBrandList();
+    // fetchAllMaterialList();
+    // // fetchAllVariantList()
+    // fetchAllPartList()
     fetchAllOptions()
   }, []);
 
@@ -651,7 +903,7 @@ const AddProduct = () => {
           selectedpipeODOption={selectpipeODOption}
           setSelectpipeODOption={setSelectpipeODOption}
           //metricType
-          matricTypeOption={dropdownOptions?.metricTypeOptions}
+          matricTypeOption={dropdownOptions?.matricTypeOption}
           setMatricTypeOption={setMatricTypeOption}
           selectedmetricTypeOptions={selectedmetricTypeOptions}
           setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
@@ -687,7 +939,7 @@ const AddProduct = () => {
           selectedFittingThreadOption={selectedFittingThreadOption}
           setSelectedFittingThreadOption={setSelectedFittingThreadOption}
           //fitting type
-          fittingTypeOption={filterFittingTypeOptions()}
+          fittingTypeOption={dropdownOptions?.fittingTypeOptions}
           setfittingTypeOption={setfittingTypeOption}
           selectedFittingTypeOption={selectedFittingTypeOption}
           setSelectedFittingTypeOption={setSelectedFittingTypeOption}

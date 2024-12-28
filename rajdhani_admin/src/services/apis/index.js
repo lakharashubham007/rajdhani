@@ -2,6 +2,7 @@ import { signUp } from "../AuthService"; // Load environment variables
 
 // Define the base URL for the API from .env
 const BASE_URL = 'https://api.i2rtest.in/v1';
+const LOCAL_BASE_URL = 'http://localhost:8087/v1';
 
 // Define the base URL for the API
 // const BASE_URL = 'http://localhost:8087/v1';
@@ -129,7 +130,7 @@ const apis = {
    },
 
    product:{
-    addProduct: `${BASE_URL}/private/products/create-product`,
+    addProduct: `${LOCAL_BASE_URL}/private/products/create-product`,
     productList: `${BASE_URL}/private/products/get-products`,
     deleteProduct:`${BASE_URL}/private/products/delete-product`,
     getEditProductData: `${BASE_URL}/private/products/get-products`,
@@ -197,6 +198,9 @@ const apis = {
 
     getBillViewbyId:`${BASE_URL}/private/pobills/po-bill-details`,
     downloadBill:`${BASE_URL}/private/pobills/download-bill`,
+   },
+   options: {
+    dropwons: `${LOCAL_BASE_URL}/public/options/all`
    },
   
    common:{

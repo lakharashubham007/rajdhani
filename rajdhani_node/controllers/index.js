@@ -25,6 +25,8 @@ module.exports.statesController = require('./states.controller')
 module.exports.purchaseOrderItemController = require('./purchaseOrderItems.controller')
 module.exports.purchaseOrderBillController = require('./purchaseOrderBill.controller')
 module.exports.purchaseOrderBillItemController = require('./PurchaseOrderBillItems.controller')
+module.exports.dropdownOptiosController = require('./dropdowns.controller')
+module.exports.bulkimportController = require('./bulkimport.controller')
 
 // module.exports. = require('./')
 

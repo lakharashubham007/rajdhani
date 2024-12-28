@@ -3,7 +3,7 @@ const { sidebarMenuService } = require('../services');
 
 const getSidebarMenus = async (req, res) => {
   try {
-    const userId = req.user.sub;
+    const userId = req.user.sub; 
     const sidebarMenus = await sidebarMenuService.getUserSidebarMenus(userId);
     // const formattedSidebarMenus = sidebarMenuService.formatSidebarMenus(sidebarMenus);
     // const filteredSidebarMenus = sidebarMenuService.filterMainMenus(formattedSidebarMenus);

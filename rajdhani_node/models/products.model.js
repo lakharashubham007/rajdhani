@@ -22,6 +22,9 @@ const productSchema = new mongoose.Schema(
     straight_bend_angle: { type: String, trim: true },
     drop_length: { type: String, trim: true },
     neck_length: { type: String, trim: true },
+    desc_Code: { type: String, trim: true },
+    fitting_Code: { type: String, trim: true },
+    
 
     // Ferrule (Part of End Fittings)
     ferrule_design: { type: String, trim: true },

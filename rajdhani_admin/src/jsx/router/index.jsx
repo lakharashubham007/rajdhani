@@ -200,6 +200,7 @@ import VerifyPurchaseOrder from "../pages/SupplierPurchaseOrder/VerifyPurchaseOr
 import ReturnOrdersLits from "../pages/SupplierPurchaseOrder/ReturnOrdersLits";
 import ReturnOrderView from "../pages/SupplierPurchaseOrder/ReturnOrderView";
 import BillView from "../pages/SupplierPurchaseOrder/BillView";
+import BulkImport from "../pages/Products/BulkImport";
 
 
 // import Todo from './pages/Todo';
@@ -241,6 +242,8 @@ const Markup = () => {
     { url: 'addnewproduct', component: <AddProduct /> },
     { url: 'productlist', component: <AllProductList /> },
     { url: 'editproductdata/:id', component: <EditProductData /> },
+    { url: 'bulkimport', component: <BulkImport /> },
+    //BulkImport
 
     // Supplier
     { url: 'addnewsupplier', component: <AddNewSupplier /> },
