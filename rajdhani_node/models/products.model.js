@@ -97,14 +97,12 @@ const productSchema = new mongoose.Schema(
     image: {
         type: String,
         trim: true,
-        maxlength: 191, // Main product image
         default: 'default-product-image.png', // Default image if none provided
     },
     gallery: [
         {
             type: String,
             trim: true,
-            maxlength: 191, // Additional images in the gallery
         }
     ],
   },
