@@ -2,6 +2,7 @@ const { productService } = require("../services");
 
 // Create a new Product - Controller
 const createProduct = async (req, res) => {
+    
     try {
         const productData = req.body;
 
