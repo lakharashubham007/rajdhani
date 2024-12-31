@@ -1,8 +1,8 @@
 const { Products } = require('../models'); // Assuming the Products model is located here
 
 const generateCodes = (formData, options) => {
+  console.log('formData is herer0-=-=-=-=-=-=-',formData); 
   console.log('options',options); 
-
   const {
     selectedWireTypeOption,
     selectedFittingThreadOption,
