@@ -3,7 +3,8 @@ import "./BulkImport.css";
 import Select from "react-select";
 import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
-import axios from "axios";
+// import axios from "axios";
+import { bulkImportApi } from "../../../services/apis/BulkImportApi";
 
 
 const fittingThreadOptions = [
@@ -207,16 +208,12 @@ const handleDownload = (withSampleData) => {
       });
       return;
     }
-
-    const formData = new FormData();
-    formData.append("file", uploadedFile);
-
+console.log("uploadedFile uploadedFile uploadedFile",uploadedFile)
+    // const formData = new FormData();
+    // formData.append("file", uploadedFile);
     try {
-      const response = await axios.post("http://localhost:8087/v1/private/bulk/bulk-import", formData, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-        },
-      });
+        const response = await bulkImportApi(uploadedFile);
+        console.log("Bulk import response:", response);
 
       if (response.status === 200) {
         Swal.fire({

@@ -2,12 +2,31 @@ import axios from "axios";
 import apis from './index'
 
 export const addProductApi = async (formData) => {
-    console.log("formdata in addBrandsApi", formData)
+  console.log("DAta send to api is from here-------------->")
+    console.log("formdata in addProductApi", formData)
+
+    const form = new FormData();
+
+    for (const key in formData) {
+      if (key !== 'image' && key !== 'gallery' && formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+        form.append(key, formData[key]);
+      }
+    }
+
+   
+    if (formData.image) {
+      form.append("image", formData.image);
+    }
+
+    formData?.gallery?.forEach((file) => {
+      form.append("gallery", file);
+    });
+   
     const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
     try {
         const response = await axios.post(
             apis.product.addProduct,
-            formData,
+            form,
       {
         headers: {
           // 'Content-Type': 'application/json',
@@ -18,7 +37,7 @@ export const addProductApi = async (formData) => {
     );
     return response;
   } catch (error) {
-    console.error("Error creating facility:", error);
+    console.error("Error creating PRODUCT:", error);
     throw error;
   }
 };

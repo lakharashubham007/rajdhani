@@ -205,6 +205,9 @@ const apis = {
   
    common:{
     getStateList:`${BASE_URL}/public/states/states-list`
+   },
+   bulkImport: {
+    addData:`${BASE_URL}/private/bulk/bulk-import`
    }
 };
 

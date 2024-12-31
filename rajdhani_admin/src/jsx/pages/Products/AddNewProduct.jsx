@@ -469,21 +469,32 @@ const AddProduct = () => {
     const validationErrors = validateFormComponent(formData);
     setErrors(validationErrors);
 
-    const form = new FormData();
-    for (const key in formData) {
-      if (key !== 'image' && key !== 'gallery') {
-        form.append(key, formData[key]);
-      }
-    }
+    // console.log("formData formData formData formData formData formData",formData)
+    // const form = new FormData();
 
-    if (formData.image) {
-      form.append("image", formData.image);
-    }
+    // for (const key in formData) {
+    //   if (key !== 'image' && key !== 'gallery' && formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+    //     form.append(key, formData[key]);
+    //   }
+    // }
 
-    formData?.gallery?.forEach((file) => {
-      form.append("gallery", file);
-    });
+   
+    // if (formData.image) {
+    //   form.append("image", formData.image);
+    // }
+
+    // formData?.gallery?.forEach((file) => {
+    //   form.append("gallery", file);
+    // });
     // Object.keys(validationErrors).length === 0
+
+//      console.log("form form form form formData formData",form)
+//     // To log all FormData contents
+// console.log("FormData contents:");
+// for (const [key, value] of form.entries()) {
+//   console.log(`${key}: ${value}`);
+// }
+
     if (formData) {
       try {
         const res = await addProductApi(formData);
