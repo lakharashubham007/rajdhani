@@ -26,8 +26,8 @@ const createProduct = async (data, files) => {
 
   try {
   // Generate codes based on the data and options
-     const { desc_Code, fitting_Code } = generateCodes(data);
-    console.log('desc_Code, fitting_Code files are here:', desc_Code, fitting_Code); 
+    //  const { desc_Code, fitting_Code } = generateCodes(data);
+    // console.log('desc_Code, fitting_Code files are here:', desc_Code, fitting_Code); 
 
      // Parse the `parts` field if it's sent as a string
      let parsedParts = [];
@@ -49,7 +49,6 @@ const createProduct = async (data, files) => {
 
     const productData = {
       ...data,
-      parts: parsedParts,
       image: files && files.image ? files.image[0]?.originalname : 'default-product-image.png',
       gallery: files && files.gallery ? files.gallery.map(file => file.originalname) : [], // Process gallery images
     };
