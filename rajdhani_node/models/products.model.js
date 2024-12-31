@@ -24,6 +24,8 @@ const productSchema = new mongoose.Schema(
     neck_length: { type: String, trim: true },
     desc_Code: { type: String, trim: true },
     fitting_Code: { type: String, trim: true },
+    OD: { type: String, trim: true },
+    pipeOD: { type: String, trim: true },
     
 
     // Ferrule (Part of End Fittings)
