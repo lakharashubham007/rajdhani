@@ -130,7 +130,7 @@ const apis = {
    },
 
    product:{
-    addProduct: `${LOCAL_BASE_URL}/private/products/create-product`,
+    addProduct: `${BASE_URL}/private/products/create-product`,
     productList: `${BASE_URL}/private/products/get-products`,
     deleteProduct:`${BASE_URL}/private/products/delete-product`,
     getEditProductData: `${BASE_URL}/private/products/get-products`,
@@ -200,7 +200,7 @@ const apis = {
     downloadBill:`${BASE_URL}/private/pobills/download-bill`,
    },
    options: {
-    dropwons: `${LOCAL_BASE_URL}/public/options/all`
+    dropwons: `${BASE_URL}/public/options/all`
    },
   
    common:{

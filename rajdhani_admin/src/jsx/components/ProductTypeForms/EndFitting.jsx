@@ -67,6 +67,7 @@ const EndFittingForm = (props) => {
     setpipeODOption,
     selectpipeODOption,
     setSelectpipeODOption,
+    selectedpipeODOption,
 
     matricTypeOption,
     setMatricTypeOption,
@@ -81,7 +82,7 @@ const EndFittingForm = (props) => {
   const [loading, setLoading] = useState(false);
 
 
-  console.log("selectedFittingThreadOption?.selectedFittingThreadOption", selectedFittingThreadOption?.value !== "SAE 61" || selectedFittingThreadOption?.value !== "SAE 62")
+  console.log("sselectpipeODOption",selectedpipeODOption)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -973,7 +974,7 @@ const EndFittingForm = (props) => {
                       <div className="col-md-2">
                         <label className="col-form-label">Pipe OD</label>
                         <Select
-                          value={selectpipeODOption}
+                          value={selectedpipeODOption}
                           onChange={(option) => {
                             setSelectpipeODOption(option);
                             setFormData({
@@ -981,7 +982,7 @@ const EndFittingForm = (props) => {
                               pipeOD: option.value,
                             });
                           }}
-                          defaultValue={selectpipeODOption}
+                          defaultValue={selectedpipeODOption}
                           options={pipeODOption}
                           style={{
                             lineHeight: "40px",
@@ -995,6 +996,7 @@ const EndFittingForm = (props) => {
                           </span>
                         )}
                       </div>
+
                       {/* Metric Type */}
                       <div className="col-md-2">
                         <label className="col-form-label">Metric Type</label>

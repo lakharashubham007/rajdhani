@@ -63,11 +63,11 @@ const ProductOptions = [
   // ];
   
   const hoseDashSizeOptions = [
-    { value: "3/16\" (03)", label: "3/16\" (03)", code: "O3", dsc_code: "3/16" },
-    { value: "1/4\" (04)", label: "1/4\" (04)", code: "O4", dsc_code: "1/4" },
-    { value: "5/16\" (05)", label: "5/16\" (05)", code: "O5", dsc_code: "5/16" },
-    { value: "3/8\" (06)", label: "3/8\" (06)", code: "O6", dsc_code: "3/8" },
-    { value: "1/2\" (08)", label: "1/2\" (08)", code: "O8", dsc_code: "1/2" },
+    { value: "3/16\" (03)", label: "3/16\" (03)", code: "03", dsc_code: "3/16" },
+    { value: "1/4\" (04)", label: "1/4\" (04)", code: "04", dsc_code: "1/4" },
+    { value: "5/16\" (05)", label: "5/16\" (05)", code: "05", dsc_code: "5/16" },
+    { value: "3/8\" (06)", label: "3/8\" (06)", code: "06", dsc_code: "3/8" },
+    { value: "1/2\" (08)", label: "1/2\" (08)", code: "08", dsc_code: "1/2" },
     { value: "5/8\" (10)", label: "5/8\" (10)", code: "10", dsc_code: "5/8" },
     { value: "3/4\" (12)", label: "3/4\" (12)", code: "12", dsc_code: "3/4" },
     { value: "1\" (16)", label: "1\" (16)", code: "16", dsc_code: "1" },
@@ -112,10 +112,10 @@ const ProductOptions = [
   
   const fittingDashSizeOptions = [
     // BSP
-    { thread_type: "BSP", dash: "O4", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4", variant: "Standard" },
-    { thread_type: "BSP", dash: "O5", inch: "5/16\"", thread: "5/16\"", dsc_code: "5/16", variant: "Lower Jump" },
-    { thread_type: "BSP", dash: "O6", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8", variant: null },
-    { thread_type: "BSP", dash: "O8", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2", variant: null },
+    { thread_type: "BSP", dash: "04", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4", variant: "Standard" },
+    { thread_type: "BSP", dash: "05", inch: "5/16\"", thread: "5/16\"", dsc_code: "5/16", variant: "Lower Jump" },
+    { thread_type: "BSP", dash: "06", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8", variant: null },
+    { thread_type: "BSP", dash: "08", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2", variant: null },
     { thread_type: "BSP", dash: "10", inch: "5/8\"", thread: "5/8\"", dsc_code: "5/8", variant: null },
     { thread_type: "BSP", dash: "12", inch: "3/4\"", thread: "3/4\"", dsc_code: "3/4", variant: null },
     { thread_type: "BSP", dash: "16", inch: "1\"", thread: "1\"", dsc_code: "1", variant: null },
@@ -124,10 +124,10 @@ const ProductOptions = [
     { thread_type: "BSP", dash: "32", inch: "2\"", thread: "2\"", dsc_code: "2", variant: "Upper Jump" },
   
     // BSP O
-    { thread_type: "BSP O", dash: "O4", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4", variant: "Standard" },
-    { thread_type: "BSP O", dash: "O5", inch: "5/16\"", thread: "5/16\"", dsc_code: "5/16", variant: "Lower Jump" },
-    { thread_type: "BSP O", dash: "O6", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8", variant: null },
-    { thread_type: "BSP O", dash: "O8", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2", variant: null },
+    { thread_type: "BSP O", dash: "04", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4", variant: "Standard" },
+    { thread_type: "BSP O", dash: "05", inch: "5/16\"", thread: "5/16\"", dsc_code: "5/16", variant: "Lower Jump" },
+    { thread_type: "BSP O", dash: "06", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8", variant: null },
+    { thread_type: "BSP O", dash: "08", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2", variant: null },
     { thread_type: "BSP O", dash: "10", inch: "5/8\"", thread: "5/8\"", dsc_code: "5/8", variant: null },
     { thread_type: "BSP O", dash: "12", inch: "3/4\"", thread: "3/4\"", dsc_code: "3/4", variant: null },
     { thread_type: "BSP O", dash: "16", inch: "1\"", thread: "1\"", dsc_code: "1", variant: null },
@@ -136,10 +136,10 @@ const ProductOptions = [
     { thread_type: "BSP O", dash: "32", inch: "2\"", thread: "2\"", dsc_code: "2", variant: "Upper Jump" },
   
     // JIC
-    { thread_type: "JIC", dash: "O4", inch: "1/4\"", thread: "7/16\"", dsc_code: "7/16", variant: "Standard" },
-    { thread_type: "JIC", dash: "O5", inch: "5/16\"", thread: "1/2\"", dsc_code: "1/2", variant: "Lower Jump" },
-    { thread_type: "JIC", dash: "O6", inch: "3/8\"", thread: "9/16\"", dsc_code: "9/16", variant: null },
-    { thread_type: "JIC", dash: "O8", inch: "1/2\"", thread: "3/4\"", dsc_code: "3/4", variant: null },
+    { thread_type: "JIC", dash: "04", inch: "1/4\"", thread: "7/16\"", dsc_code: "7/16", variant: "Standard" },
+    { thread_type: "JIC", dash: "05", inch: "5/16\"", thread: "1/2\"", dsc_code: "1/2", variant: "Lower Jump" },
+    { thread_type: "JIC", dash: "06", inch: "3/8\"", thread: "9/16\"", dsc_code: "9/16", variant: null },
+    { thread_type: "JIC", dash: "08", inch: "1/2\"", thread: "3/4\"", dsc_code: "3/4", variant: null },
     { thread_type: "JIC", dash: "10", inch: "5/8\"", thread: "7/8\"", dsc_code: "7/8", variant: null },
     { thread_type: "JIC", dash: "12", inch: "3/4\"", thread: "1-1/16\"", dsc_code: "1-1/16", variant: null },
     { thread_type: "JIC", dash: "16", inch: "1\"", thread: "1-5/16\"", dsc_code: "1-5/16", variant: null },
@@ -148,10 +148,10 @@ const ProductOptions = [
     { thread_type: "JIC", dash: "32", inch: "2\"", thread: "2-1/2\"", dsc_code: "2-1/2", variant: "Upper Jump" },
   
     // NPT
-    { thread_type: "NPT", dash: "O4", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4", variant: "Standard" },
-    { thread_type: "NPT", dash: "O5", inch: "5/16\"", thread: null, dsc_code: null, variant: "Lower Jump" },
-    { thread_type: "NPT", dash: "O6", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8", variant: null },
-    { thread_type: "NPT", dash: "O8", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2", variant: null },
+    { thread_type: "NPT", dash: "04", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4", variant: "Standard" },
+    { thread_type: "NPT", dash: "05", inch: "5/16\"", thread: null, dsc_code: null, variant: "Lower Jump" },
+    { thread_type: "NPT", dash: "06", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8", variant: null },
+    { thread_type: "NPT", dash: "08", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2", variant: null },
     { thread_type: "NPT", dash: "10", inch: "5/8\"", thread: null, dsc_code: null, variant: null },
     { thread_type: "NPT", dash: "12", inch: "3/4\"", thread: "3/4\"", dsc_code: "3/4", variant: null },
     { thread_type: "NPT", dash: "16", inch: "1\"", thread: "1\"", dsc_code: "1", variant: null },
@@ -162,10 +162,10 @@ const ProductOptions = [
     // Updated dataset with dsc_code added
   
     // JIS
-    { thread_type: "JIS", dash: "O4", inch: "1/4\"", thread: "1/4\"", variant: "Standard", dsc_code: "1/4" },
-    { thread_type: "JIS", dash: "O5", inch: "5/16\"", thread: null, variant: null, dsc_code: "5/16" },
-    { thread_type: "JIS", dash: "O6", inch: "3/8\"", thread: "3/8\"", variant: "Lower Jump", dsc_code: "3/8" },
-    { thread_type: "JIS", dash: "O8", inch: "1/2\"", thread: "1/2\"", variant: null, dsc_code: "1/2" },
+    { thread_type: "JIS", dash: "04", inch: "1/4\"", thread: "1/4\"", variant: "Standard", dsc_code: "1/4" },
+    { thread_type: "JIS", dash: "05", inch: "5/16\"", thread: null, variant: null, dsc_code: "5/16" },
+    { thread_type: "JIS", dash: "06", inch: "3/8\"", thread: "3/8\"", variant: "Lower Jump", dsc_code: "3/8" },
+    { thread_type: "JIS", dash: "08", inch: "1/2\"", thread: "1/2\"", variant: null, dsc_code: "1/2" },
     { thread_type: "JIS", dash: "10", inch: "5/8\"", thread: "5/8\"", variant: null, dsc_code: "5/8" },
     { thread_type: "JIS", dash: "12", inch: "3/4\"", thread: "3/4\"", variant: null, dsc_code: "3/4" },
     { thread_type: "JIS", dash: "16", inch: "1\"", thread: "1\"", variant: null, dsc_code: "1" },
@@ -174,10 +174,10 @@ const ProductOptions = [
     { thread_type: "JIS", dash: "32", inch: "2\"", thread: "2\"", variant: "Upper Jump", dsc_code: "2" },
   
     // ORFS
-    { thread_type: "ORFS", dash: "O4", inch: "1/4\"", thread: "9/16\"", variant: "Standard", dsc_code: "9/16" },
-    { thread_type: "ORFS", dash: "O5", inch: "5/16\"", thread: null, variant: null, dsc_code: "5/16" },
-    { thread_type: "ORFS", dash: "O6", inch: "3/8\"", thread: "11/16\"", variant: "Lower Jump", dsc_code: "11/16" },
-    { thread_type: "ORFS", dash: "O8", inch: "1/2\"", thread: "13/16\"", variant: null, dsc_code: "13/16" },
+    { thread_type: "ORFS", dash: "04", inch: "1/4\"", thread: "9/16\"", variant: "Standard", dsc_code: "9/16" },
+    { thread_type: "ORFS", dash: "05", inch: "5/16\"", thread: null, variant: null, dsc_code: "5/16" },
+    { thread_type: "ORFS", dash: "06", inch: "3/8\"", thread: "11/16\"", variant: "Lower Jump", dsc_code: "11/16" },
+    { thread_type: "ORFS", dash: "08", inch: "1/2\"", thread: "13/16\"", variant: null, dsc_code: "13/16" },
     { thread_type: "ORFS", dash: "10", inch: "5/8\"", thread: "1\"", variant: null, dsc_code: "1" },
     { thread_type: "ORFS", dash: "12", inch: "3/4\"", thread: "1-3/16\"", variant: null, dsc_code: "1-3/16" },
     { thread_type: "ORFS", dash: "16", inch: "1\"", thread: "1-7/16\"", variant: null, dsc_code: "1-7/16" },
@@ -186,10 +186,10 @@ const ProductOptions = [
     { thread_type: "ORFS", dash: "32", inch: "2\"", thread: null, variant: "Upper Jump", dsc_code: "2" },
   
     // KOMATSU
-    { thread_type: "KOMATSU", dash: "O4", inch: "1/4\"", thread: "14X1.5", variant: "Standard", dsc_code: "14X1.5" },
-    { thread_type: "KOMATSU", dash: "O5", inch: "5/16\"", thread: null, variant: null, dsc_code: "5/16" },
-    { thread_type: "KOMATSU", dash: "O6", inch: "3/8\"", thread: "18X1.5", variant: "Lower Jump", dsc_code: "18X1.5" },
-    { thread_type: "KOMATSU", dash: "O8", inch: "1/2\"", thread: "22X1.5", variant: null, dsc_code: "22X1.5" },
+    { thread_type: "KOMATSU", dash: "04", inch: "1/4\"", thread: "14X1.5", variant: "Standard", dsc_code: "14X1.5" },
+    { thread_type: "KOMATSU", dash: "05", inch: "5/16\"", thread: null, variant: null, dsc_code: "5/16" },
+    { thread_type: "KOMATSU", dash: "06", inch: "3/8\"", thread: "18X1.5", variant: "Lower Jump", dsc_code: "18X1.5" },
+    { thread_type: "KOMATSU", dash: "08", inch: "1/2\"", thread: "22X1.5", variant: null, dsc_code: "22X1.5" },
     { thread_type: "KOMATSU", dash: "10", inch: "5/8\"", thread: "24X1.5", variant: null, dsc_code: "24X1.5" },
     { thread_type: "KOMATSU", dash: "12", inch: "3/4\"", thread: "30X1.5", variant: null, dsc_code: "30X1.5" },
     { thread_type: "KOMATSU", dash: "16", inch: "1\"", thread: "33X1.5", variant: null, dsc_code: "33X1.5" },

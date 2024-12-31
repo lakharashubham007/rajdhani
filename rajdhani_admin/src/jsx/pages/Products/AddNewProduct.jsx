@@ -79,7 +79,6 @@ const AddProduct = () => {
   const [dropLengthOption, setDropLengthOption] = useState(dropdownOptions?.dropLengthOptions);
   const [neckLengthOption, setNeckLengthOption] = useState(dropdownOptions?.dropLengthOptions);
   const [pipeODOption, setpipeODOption] = useState(dropdownOptions?.pipeODOptions);
-  console.log(dropdownOptions?.pipeODOptions, "pipeODOption")
   const [matricTypeOption, setMatricTypeOption] = useState(dropdownOptions?.metricTypeOptions);
 
   // selected
@@ -240,6 +239,8 @@ const AddProduct = () => {
       if (filteredOptions.length > 0) {
         // Update the selected fitting dash size option
         setSelectedfittingDashSizeOption(filteredOptions[0]);
+        
+        // selectedpipeODOption
         // Update formData with the selected option's dash
         // setFormData({
         //   ...formData,
@@ -623,6 +624,8 @@ const AddProduct = () => {
       fontWeight: "bold",
     },
   };
+
+  console.log(formData)
 
   const renderComponent = () => {
     switch (formData.product_type) {
