@@ -213,7 +213,24 @@ const ProductOptions = [
     { thread_type: "SAE 62", dash: "20", thread: "54", variant: null, dsc_code: "54" },
     { thread_type: "SAE 62", dash: "24", thread: "63.5", variant: null, dsc_code: "63.5" },
     { thread_type: "SAE 62", dash: "32", thread: "79.6", variant: null, dsc_code: "79.6" },
-  
+
+    // BANJO WITHOUT O 
+    { thread_type: "BANJO WITHOUT O", dash: "10", thread: "10", variant: "Standard", dsc_code: "10" },
+    { thread_type: "BANJO WITHOUT O", dash: "12", thread: "12", variant: "null", dsc_code: "12" },
+    { thread_type: "BANJO WITHOUT O", dash: "14", thread: "14", variant: "null", dsc_code: "14" },
+    { thread_type: "BANJO WITHOUT O", dash: "16", thread: "16", variant: "null", dsc_code: "16" },
+    { thread_type: "BANJO WITHOUT O", dash: "18", thread: "18", variant: "null", dsc_code: "18" },
+    { thread_type: "BANJO WITHOUT O", dash: "22", thread: "22", variant: "null", dsc_code: "22" },
+
+     // BANJO WITH O 
+     { thread_type: "BANJO WITH O", dash: "10", thread: "10", variant: "Standard", dsc_code: "10" },
+     { thread_type: "BANJO WITH O", dash: "12", thread: "12", variant: "null", dsc_code: "12" },
+     { thread_type: "BANJO WITH O", dash: "14", thread: "14", variant: "null", dsc_code: "14" },
+     { thread_type: "BANJO WITH O", dash: "16", thread: "16", variant: "null", dsc_code: "16" },
+     { thread_type: "BANJO WITH O", dash: "18", thread: "18", variant: "null", dsc_code: "18" },
+     { thread_type: "BANJO WITH O", dash: "22", thread: "22", variant: "null", dsc_code: "2" },
+
+   
     // Metric Light
     { metric_type: "Light", dash: "06", pipe_od: "06", thread: "M12X1.5", variant: null, dsc_code: "M12X1.5" },
     { metric_type: "Light", dash: "08", pipe_od: "08", thread: "M14X1.5", variant: null, dsc_code: "M14X1.5" },
