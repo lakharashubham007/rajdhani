@@ -266,7 +266,7 @@ const AddProduct = () => {
 
   useEffect(() => {
     // Check if both values are provided
-    if (formData?.fitting_thread && formData?.variant) {
+    if (formData?.fitting_thread && formData?.variant && formData?.hose_dash_size) {
       const filteredOptions = filterFittingDashSizeOptions();
       if (filteredOptions.length > 0) {
         setSelectedfittingDashSizeOption(filteredOptions[0]);
@@ -277,7 +277,7 @@ const AddProduct = () => {
 
       }
     }
-  }, [formData?.fitting_thread, formData?.variant,]);
+  }, [formData?.fitting_thread, formData?.variant,formData?.hose_dash_size]);
 
   useEffect(() => {
     // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
@@ -298,6 +298,25 @@ const AddProduct = () => {
     }
   }, [selectedFittingThreadOption]); // Trigger this whenever fitting thread is selected
 
+  //when hosedash size selected clear variant and fittingdashsiae option
+  useEffect(() => {
+    // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
+    if (selectedFittingThreadOption) {
+      setFormData((prevData) => ({
+        ...prevData,
+        variant: "", // Clear variant value in formData
+        fitting_dash_size: "", // Clear fitting_dash_size value in formData
+        fitting_type: "",
+        OD: "",
+        pipeOD: ""
+      }));
+      setSelectedvariantOption(null); // Clear variant option
+      setSelectedfittingDashSizeOption(null); // Clear fitting_dash size option
+      setSelectedFittingTypeOption(null);
+      setSelectpipeODOption(null)
+      
+    }
+  }, [selectedhoseDashSizeOption]);
 
   const resetEndFittingForm = () => {
     setFormData({
