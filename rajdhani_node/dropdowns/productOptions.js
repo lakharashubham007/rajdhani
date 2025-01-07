@@ -270,10 +270,10 @@ const ProductOptions = [
 
   const designOption = [
     { value: "R", label: "R" },
-    { value: "G", label: "G" },
-    { value: "T", label: "T" },
-    { value: "H", label: "H" },
     { value: "S", label: "S" },
+    { value: "K", label: "K" },
+    { value: "P", label: "P" },
+    { value: "H", label: "H" },
     { value: "Y", label: "Y" },
   ];
   
