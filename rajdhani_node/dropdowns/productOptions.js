@@ -102,9 +102,9 @@ const ProductOptions = [
     // { value: "METRIC(HEAVY) WITH O", label: "METRIC(HEAVY) WITH O (DHO)", code: "DHO" },
     { value: "NPT", label: "NPT (NPT)", code: "NPT", dsc_code: "NPT" },
     { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "BJ", dsc_code: "JIS" },
-    { value: "SAE 61", label: "FLG CODE 61- 3000 PSI (3)", code: "3", dsc_code: "JIS" },
-    { value: "SAE 62", label: "FLG CODE 62- 6000 PSI (6)", code: "6", dsc_code: "FLG61" },
-    { value: "BANJO WITHOUT O", label: "BANJO WITHOUT O (BJ)", code: "BJ", dsc_code: "FLG62" },
+    { value: "SAE 61", label: "FLG CODE 61- 3000 PSI (3)", code: "3", dsc_code: "FL" },
+    { value: "SAE 62", label: "FLG CODE 62- 6000 PSI (6)", code: "6", dsc_code: "FLH" },
+    { value: "BANJO WITHOUT O", label: "BANJO WITHOUT O (BJ)", code: "BJ", dsc_code: "BANJO-WO" },
     { value: "BANJO WITH O", label: "BANJO WITH O (BJO)", code: "BJO", dsc_code: "BANJO" },
     { value: "METRIC THREAD ORFS", label: "METRIC THREAD ORFS (MO)", code: "MO", dsc_code: "M-ORFS" }
   ];

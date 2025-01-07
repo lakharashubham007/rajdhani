@@ -145,25 +145,72 @@ const AddProduct = () => {
       }));
     }
 
-    // Special case for "upper join" and "lower join" - bind values without join
-    if (formData?.variant && ["Standard", "Upper Jump", "Lower Jump"].includes(formData?.variant)) {
-      const variantOptions = dropdownOptions?.fittingDashSizeOptions.filter(
-        (option) =>
-          option.thread_type === formData?.fitting_thread &&
-          option.variant === formData?.variant &&
-          option.thread !== null // Exclude options with null threads
-      );
+    // // Special case for "upper join" and "lower join" - bind values without join
+    // if (formData?.variant && ["Standard", "Upper Jump", "Lower Jump"].includes(formData?.variant)) {
+    //   const variantOptions = dropdownOptions?.fittingDashSizeOptions.filter(
+    //     (option) =>
+    //       option.thread_type === formData?.fitting_thread &&
+    //       option.variant === formData?.variant &&
+    //       option.thread !== null // Exclude options with null threads
+    //   );
 
-      // Return the options for the selected variant
-      if (variantOptions.length > 0) {
-        return variantOptions?.map((option) => ({
+    //   // Return the options for the selected variant
+    //   if (variantOptions.length > 0) {
+    //     return variantOptions?.map((option) => ({
+    //       value: `${option.thread} (${option.dash})`,
+    //       label: `${option.thread} (${option.dash})`,
+    //       code: `${option.dash}`,
+    //       dsc_code: `${option.dsc_code}`
+    //     }));
+    //   }
+    // }
+
+
+
+    const hoseDash = dropdownOptions?.hoseDashSizeOptions.filter(
+      (option) => 
+        option?.value === formData?.hose_dash_size
+    );
+
+     if ((formData?.variant === "Standard") && (hoseDash[0]?.dash)) {
+     
+      
+     
+
+      const filteredOption = dropdownOptions?.fittingDashSizeOptions.filter(
+        (option)=> 
+          option.thread_type === formData?.fitting_thread && option.dash === hoseDash[0]?.dash &&  option.variant === formData?.variant
+      ) 
+      console.log("filteredOption filteredOption filteredOption ", filteredOption)
+
+      if(filteredOption.length > 0){
+        return filteredOption?.map((option) => ({
           value: `${option.thread} (${option.dash})`,
           label: `${option.thread} (${option.dash})`,
           code: `${option.dash}`,
           dsc_code: `${option.dsc_code}`
-        }));
+        }))
       }
+      // const variantOptions = dropdownOptions?.fittingDashSizeOptions.filter(
+      //   (option) =>
+      //     option.thread_type === formData?.fitting_thread &&
+      //     option.variant === formData?.variant &&
+      //     option.thread !== null // Exclude options with null threads
+      // );
+
+      // // Return the options for the selected variant
+      // if (variantOptions.length > 0) {
+      //   return variantOptions?.map((option) => ({
+      //     value: `${option.thread} (${option.dash})`,
+      //     label: `${option.thread} (${option.dash})`,
+      //     code: `${option.dash}`,
+      //     dsc_code: `${option.dsc_code}`
+      //   }));
+      // }
+    }else{
+
     }
+
 
     // Map the filtered options to the desired format
     return filteredOptions?.map((option) => ({
@@ -277,7 +324,7 @@ const AddProduct = () => {
 
       }
     }
-  }, [formData?.fitting_thread, formData?.variant,formData?.hose_dash_size]);
+  }, [formData?.fitting_thread, formData?.variant, formData?.hose_dash_size]);
 
   useEffect(() => {
     // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
@@ -317,6 +364,14 @@ const AddProduct = () => {
       
     }
   }, [selectedhoseDashSizeOption]);
+
+  useEffect(() => {
+    setFormData((prevData) => ({
+      ...prevData,
+      fitting_dash_size: "",
+    }));
+    setSelectedfittingDashSizeOption(null);
+  },[formData?.variant === "Manual"])
 
   const resetEndFittingForm = () => {
     setFormData({

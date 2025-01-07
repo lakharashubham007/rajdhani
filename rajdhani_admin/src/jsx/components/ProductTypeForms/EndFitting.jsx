@@ -304,7 +304,7 @@ const EndFittingForm = (props) => {
 
 
                   <div className="col-md-2">
-                    <label className="col-form-label">With Cap / Without Cap</label>
+                    <label className="col-form-label">Ferrule</label>
                     {/* <label className="col-form-label" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
                       With Cap / Without Cap
                     </label> */}
@@ -314,7 +314,7 @@ const EndFittingForm = (props) => {
                         setSelectedWithCapWithoutCapOption(option);
                         setFormData({
                           ...formData,
-                          with_cap: option.value,
+                          ferrule: option.value,
                         });
                       }}
                       defaultValue={selectedWithCapWithoutCapOption}

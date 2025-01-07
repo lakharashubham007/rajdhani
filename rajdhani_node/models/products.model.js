@@ -13,6 +13,7 @@ const productSchema = new mongoose.Schema(
     design: { type: String, trim: true },
     wire_type: { type: String, trim: true },
     with_cap: { type: String, trim: true},
+    ferrule: { type: String, trim: true},
     fitting_piece: { type: String, trim: true },
     skive_type: { type: String, trim: true },
     hose_dash_size: { type: String, trim: true },
