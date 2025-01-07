@@ -268,7 +268,7 @@ const ProductOptions = [
   const fittingTypeOptions = [
     { value: "Female", label: "Female", code: "F", dsc_code: "Female", fitting_thread: "normal"},
     { value: "Male", label: "Male", code: "M", dsc_code: "Male",fitting_thread: "normal" },
-    { value: "Flange", label: "Flange", code: "FL", dsc_code: "Flange", fitting_thread: "SAE" },
+    { value: "Flange", label: "Flange", code: "FL", dsc_code: "Flange", fitting_thread: "SAE 61" },
     { value: "CAT Flange", label: "CAT Flange", code: "FLC", dsc_code: "CAT Flange",fitting_thread: "SAE" }
   ];
   

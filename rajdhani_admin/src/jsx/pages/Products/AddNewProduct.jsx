@@ -220,8 +220,10 @@ const AddProduct = () => {
       dsc_code: `${option.dsc_code}`
     }));
   };
+
   const filterFittingTypeOptions = () => {
-    console.log(dropdownOptions?.fittingTypeOptions)
+    console.log("New ->>>>>>>>>>",dropdownOptions?.fittingTypeOptions,formData?.fitting_thread)
+
     const fittingTypeOptions = dropdownOptions?.fittingTypeOptions.filter((option) => {
       return (
        option?.fitting_thread?.startsWith("SAE") === formData?.fitting_thread?.startsWith("SAE") 
