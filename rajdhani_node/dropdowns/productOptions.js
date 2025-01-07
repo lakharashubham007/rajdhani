@@ -18,10 +18,10 @@ const ProductOptions = [
     { value: "TEFLON (TF) - T", label: "TEFLON (TF) - T", code: "T", dsc_code: "TF" }
   ];
   
-  
+ //added new options
   const CapWithoutCapOptions = [
-    { value: "With Cap", label: "With Cap" },
-    { value: "Without Cap", label: "Without Cap" },
+    { value: "With Ferrule", label: "With Ferrule", code: "", dsc_code: "" },
+    { value: "Without Ferrule", label: "Without Ferrule", code: "WF", dsc_code: "Without Ferrule" },
   ];
   
   const fittingPieceOptions = [
