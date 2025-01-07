@@ -65,6 +65,7 @@ const AddProduct = () => {
   const [selectedPartOption, setSelectedPartOption] = useState(null);
   const [selectpipeODOption, setSelectpipeODOption] = useState(null);
   const [selectedmetricTypeOptions, setSelectedmetricTypeOptions] = useState(null);
+  const [selectedDesignOption, setSelectedDesignOption] = useState(null);
   // Child Form  
 
   const [wireTypeOption, setWireTypeOption] = useState(dropdownOptions?.WireTypeOptions);
@@ -183,6 +184,11 @@ const AddProduct = () => {
       ) 
       console.log("filteredOption filteredOption filteredOption ", filteredOption)
 
+      // If no matching options, return an empty array
+      if (filteredOption.length === 0) {
+        return [{ value: "Invalid", label: "Invalid" }];
+      }
+
       if(filteredOption.length > 0){
         return filteredOption?.map((option) => ({
           value: `${option.thread} (${option.dash})`,
@@ -207,8 +213,6 @@ const AddProduct = () => {
       //     dsc_code: `${option.dsc_code}`
       //   }));
       // }
-    }else{
-
     }
 
 
@@ -225,11 +229,25 @@ const AddProduct = () => {
     console.log("New ->>>>>>>>>>",dropdownOptions?.fittingTypeOptions,formData?.fitting_thread)
 
     const fittingTypeOptions = dropdownOptions?.fittingTypeOptions.filter((option) => {
-      return (
-       option?.fitting_thread?.startsWith("SAE") === formData?.fitting_thread?.startsWith("SAE") 
-       );
+      if (formData?.fitting_thread === "SAE 61") {
+        // For SAE 61, include only "Flange"
+        return option?.value === "Flange" && option?.fitting_thread === "SAE 61";
+      }
+      if (formData?.fitting_thread === "SAE 62") {
+        // For SAE 62, include both "Flange" and "CAT Flange"
+        return option?.fitting_thread === "SAE" || option?.fitting_thread === "SAE 61";
+      }
+      // Default case: include all matching `fitting_thread`
+      return option?.fitting_thread === 'normal';
+    });
+  
 
-     });
+    // const fittingTypeOptions = dropdownOptions?.fittingTypeOptions.filter((option) => {
+    //   return (
+    //    option?.fitting_thread?.startsWith("SAE") === formData?.fitting_thread?.startsWith("SAE") 
+    //    );
+
+    //  });
      // Map the filtered options to the desired format
      return fittingTypeOptions.map((option) => ({
           value: `${option.value}`,
@@ -252,13 +270,13 @@ const AddProduct = () => {
       }
     }
   }, [formData?.fitting_thread]);
-
+  // console.log(selectedWithCapWithoutCapOption?.dsc_code)
   useEffect(() => {
     const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}`;
 
     setFittingCode(fitting_Code);
 
-    const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code + '-' : ''}${selectedFittingThreadOption?.dsc_code || ''} ${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code + 'X' : ''}${selectedFittingDashSizeOption?.dsc_code || ''} ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()} ${(selectedStraightBendangleOption?.dsc_code || '').toUpperCase()} ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()}`.trim();
+    const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code + '-' : ''}${selectedFittingThreadOption?.dsc_code || ''} ${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code + 'X' : ''}${selectedFittingDashSizeOption?.dsc_code || ''} ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()} ${(selectedStraightBendangleOption?.dsc_code || '').toUpperCase()} ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()} ${formData?.drop_length ? `DL-${formData.drop_length}` : ''} ${selectedWithCapWithoutCapOption?.dsc_code || ''}`.trim();
 
     setDescCode(desc_Code);
     setFormData((prevData) => ({
@@ -277,7 +295,8 @@ const AddProduct = () => {
     selectedvariantOption,
     selectedFittingDashSizeOption,
     selectedFittingTypeOption,
-    selectedStraightBendangleOption
+    selectedStraightBendangleOption,
+    formData?.drop_length,
   ])
 
   useEffect(() => {
@@ -724,6 +743,11 @@ const AddProduct = () => {
           //code prefilled
           fittingCode={fittingCode}
           descCode={descCode}
+
+          //design
+          setSelectedDesignOption={setSelectedDesignOption}
+          selectedDesignOption={selectedDesignOption}
+          designOption={dropLengthOption?.designOption}
           //variant
           variantOption={dropdownOptions?.variantsOption}
           setVariantOption={setVariantOption}

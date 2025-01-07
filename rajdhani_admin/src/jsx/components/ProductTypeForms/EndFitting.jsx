@@ -75,14 +75,19 @@ const EndFittingForm = (props) => {
     setSelectedmetricTypeOptions,
 
     fittingCode,
-    descCode
+    descCode,
+
+
+    setSelectedDesignOption,
+    selectedDesignOption,
+    designOption
 
   } = props;
 
   const [loading, setLoading] = useState(false);
 
 
-  console.log("sselectpipeODOption",selectedpipeODOption)
+  console.log("sselectpipeODOption", selectedpipeODOption)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -261,7 +266,7 @@ const EndFittingForm = (props) => {
               {/* SECTION 1ST Design Wire Type With Cap / Without Cap */}
               <div>
                 <div className="mb-3 row">
-                  <div className="col-md-3">
+                  {/* <div className="col-md-3">
                     <label className="col-form-label">Design</label>
                     <input
                       name="design"
@@ -273,6 +278,32 @@ const EndFittingForm = (props) => {
                     />
                     {errors.design && (
                       <span className="text-danger fs-12">{errors.design}</span>
+                    )}
+                  </div> */}
+
+                  <div className="col-md-3">
+                    <label className="col-form-label">Design</label>
+                    <Select
+                      value={selectedDesignOption}
+                      onChange={(option) => {
+                        setSelectedDesignOption(option);
+                        setFormData({
+                          ...formData,
+                          design: option.value,
+                        });
+                      }}
+                      defaultValue={selectedDesignOption}
+                      options={designOption}
+                      style={{
+                        lineHeight: "40px",
+                        color: "#7e7e7e",
+                        paddingLeft: " 15px",
+                      }}
+                    />
+                    {errors.design && (
+                      <span className="text-danger fs-12">
+                        {errors.design}
+                      </span>
                     )}
                   </div>
 
@@ -910,62 +941,62 @@ const EndFittingForm = (props) => {
                         </span>
                       )}
                     </div> */}
-                     {selectedFittingThreadOption?.value === "SAE 61" || selectedFittingThreadOption?.value === "SAE 62" ?
-                        (<>
-                          <div className="col-md-3">
-                            <label className="col-form-label">OD</label>
-                            <Select
-                              value={selectedFittingDashSizeOption}
-                              onChange={(option) => {
-                                setSelectedfittingDashSizeOption(option);
-                                setFormData({
-                                  ...formData,
-                                  OD: option.value,
-                                });
-                              }}
-                              defaultValue={selectedFittingDashSizeOption}
-                              options={fittingDashSizeOption}
-                              style={{
-                                lineHeight: "40px",
-                                color: "#7e7e7e",
-                                paddingLeft: " 15px",
-                              }}
-                            />
-                            {errors.OD && (
-                              <span className="text-danger fs-12">
-                                {errors.OD}
-                              </span>
-                            )}
-                          </div>
-                        </>) : (<>
-                          <div className="col-md-3">
-                            <label className="col-form-label">Fitting Dash Size</label>
-                            <Select
-                              value={selectedFittingDashSizeOption}
-                              onChange={(option) => {
-                                setSelectedfittingDashSizeOption(option);
-                                setFormData({
-                                  ...formData,
-                                  fitting_dash_size: option.value,
+                    {selectedFittingThreadOption?.value === "SAE 61" || selectedFittingThreadOption?.value === "SAE 62" ?
+                      (<>
+                        <div className="col-md-3">
+                          <label className="col-form-label">OD</label>
+                          <Select
+                            value={selectedFittingDashSizeOption}
+                            onChange={(option) => {
+                              setSelectedfittingDashSizeOption(option);
+                              setFormData({
+                                ...formData,
+                                OD: option.value,
+                              });
+                            }}
+                            defaultValue={selectedFittingDashSizeOption}
+                            options={fittingDashSizeOption}
+                            style={{
+                              lineHeight: "40px",
+                              color: "#7e7e7e",
+                              paddingLeft: " 15px",
+                            }}
+                          />
+                          {errors.OD && (
+                            <span className="text-danger fs-12">
+                              {errors.OD}
+                            </span>
+                          )}
+                        </div>
+                      </>) : (<>
+                        <div className="col-md-3">
+                          <label className="col-form-label">Fitting Dash Size</label>
+                          <Select
+                            value={selectedFittingDashSizeOption}
+                            onChange={(option) => {
+                              setSelectedfittingDashSizeOption(option);
+                              setFormData({
+                                ...formData,
+                                fitting_dash_size: option.value,
 
-                                });
-                              }}
-                              defaultValue={selectedFittingDashSizeOption}
-                              options={fittingDashSizeOption}
-                              style={{
-                                lineHeight: "40px",
-                                color: "#7e7e7e",
-                                paddingLeft: " 15px",
-                              }}
-                            />
-                            {errors.fitting_dash_size && (
-                              <span className="text-danger fs-12">
-                                {errors.fitting_dash_size}
-                              </span>
-                            )}
-                          </div>
-                        </>)
-                      }
+                              });
+                            }}
+                            defaultValue={selectedFittingDashSizeOption}
+                            options={fittingDashSizeOption}
+                            style={{
+                              lineHeight: "40px",
+                              color: "#7e7e7e",
+                              paddingLeft: " 15px",
+                            }}
+                          />
+                          {errors.fitting_dash_size && (
+                            <span className="text-danger fs-12">
+                              {errors.fitting_dash_size}
+                            </span>
+                          )}
+                        </div>
+                      </>)
+                    }
                   </>
                   ) : (
                     <>
@@ -1051,7 +1082,7 @@ const EndFittingForm = (props) => {
                 </div> */}
 
 
-                       <div className="col-md-2">
+                      <div className="col-md-2">
                         <label className="col-form-label">Fitting Dash Size</label>
                         <Select
                           value={selectedFittingDashSizeOption}
@@ -1076,9 +1107,9 @@ const EndFittingForm = (props) => {
                             {errors.fitting_dash_size}
                           </span>
                         )}
-                      </div> 
+                      </div>
 
-                     
+
                     </>
                   )
                 }

@@ -264,6 +264,15 @@ const ProductOptions = [
     // { value: "Lower Jump", label: "Lower Jump" },
   ];
   
+
+  const designOption = [
+    { value: "R", label: "R" },
+    { value: "G", label: "G" },
+    { value: "T", label: "T" },
+    { value: "H", label: "H" },
+    { value: "S", label: "S" },
+    { value: "Y", label: "Y" },
+  ];
   
   const fittingTypeOptions = [
     { value: "Female", label: "Female", code: "F", dsc_code: "Female", fitting_thread: "normal"},
@@ -422,4 +431,5 @@ module.exports = {
     hoseDashSizeOptions,
     skiveTypeOptions,
     fittingPieceOptions,
+    designOption
 };
