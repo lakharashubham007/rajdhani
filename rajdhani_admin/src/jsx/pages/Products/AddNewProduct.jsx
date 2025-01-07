@@ -31,6 +31,7 @@ import PackingSection from "../../components/ProductTypeForms/PackingSection";
 import TubeFittingsSection from "../../components/ProductTypeForms/TubeFittingsSection";
 import { validateFormComponent } from "./ValidationComponent";
 import { getAllOptions } from "../../../services/apis/options";
+import Nut from "../../components/ProductTypeForms/Nut";
 
 
 
@@ -747,7 +748,7 @@ const AddProduct = () => {
           //design
           setSelectedDesignOption={setSelectedDesignOption}
           selectedDesignOption={selectedDesignOption}
-          designOption={dropLengthOption?.designOption}
+          designOption={dropdownOptions?.designOption}
           //variant
           variantOption={dropdownOptions?.variantsOption}
           setVariantOption={setVariantOption}
@@ -822,7 +823,96 @@ const AddProduct = () => {
           setselectedNeckLengthOption={setselectedNeckLengthOption}
         />;
 
-      case "Hose Pipe":
+
+        case "Nut":
+        return <Nut
+        formData={formData}
+        setFormData={setFormData}
+        errors={errors}
+        //code prefilled
+        fittingCode={fittingCode}
+        descCode={descCode}
+
+        //design
+        setSelectedDesignOption={setSelectedDesignOption}
+        selectedDesignOption={selectedDesignOption}
+        designOption={dropdownOptions?.designOption}
+        //variant
+        variantOption={dropdownOptions?.variantsOption}
+        setVariantOption={setVariantOption}
+        selectedvariantOption={selectedvariantOption}
+        setSelectedvariantOption={setSelectedvariantOption}
+        //Fitting Dash Size  input 
+        // fittingDashSizeOption={fittingDashSizeOption}
+        fittingDashSizeOption={filterFittingDashSizeOptions()}
+        setfittingDashSizeOption={setfittingDashSizeOption}
+        selectedFittingDashSizeOption={selectedFittingDashSizeOption}
+        setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
+        ///pipe OD options
+        pipeODOption={dropdownOptions?.pipeODOptions}
+        setpipeODOption={setpipeODOption}
+        selectedpipeODOption={selectpipeODOption}
+        setSelectpipeODOption={setSelectpipeODOption}
+        //metricType
+        matricTypeOption={dropdownOptions?.metricTypeOptions}
+        setMatricTypeOption={setMatricTypeOption}
+        selectedmetricTypeOptions={selectedmetricTypeOptions}
+        setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
+        //wire type option
+        wireTypeOption={dropdownOptions?.WireTypeOptions}
+        setWireTypeOption={setWireTypeOption}
+        selectedWireTypeOption={selectedWireTypeOption}
+        setSelectedWireTypeOption={setSelectedWireTypeOption}
+        //with and without cap option
+        withCapWithoutCapOption={dropdownOptions?.CapWithoutCapOptions}
+        setWithCapWithoutCapOption={setWithCapWithoutCapOption}
+        selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
+        setSelectedWithCapWithoutCapOption={setSelectedWithCapWithoutCapOption}
+        //fitting piece
+        fittingPieceOption={dropdownOptions?.fittingPieceOptions}
+        setFittingPieceOption={setFittingPieceOption}
+        selectedFittingPieceOption={selectedFittingPieceOption}
+        setSelectedFittingPieceOption={setSelectedFittingPieceOption}
+        //skive type 
+        skiveTypeOption={dropdownOptions?.skiveTypeOptions}
+        setSkiveTypeOption={setSkiveTypeOption}
+        selectedSkiveTypeOption={selectedSkiveTypeOption}
+        setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
+        //hose dash size
+        HoseDashSizeOption={dropdownOptions?.hoseDashSizeOptions}
+        setHoseDashSizeOption={setHoseDashSizeOption}
+        selectedhoseDashSizeOption={selectedhoseDashSizeOption}
+        setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
+
+        //fitting thread
+        fittingThreadOption={dropdownOptions?.fittingThreadOptions}
+        setfittingThreadOption={setfittingThreadOption}
+        selectedFittingThreadOption={selectedFittingThreadOption}
+        setSelectedFittingThreadOption={setSelectedFittingThreadOption}
+        //fitting type
+        fittingTypeOption={filterFittingTypeOptions()}
+        setfittingTypeOption={setfittingTypeOption}
+        selectedFittingTypeOption={selectedFittingTypeOption}
+        setSelectedFittingTypeOption={setSelectedFittingTypeOption}
+        //steight and bend
+        straightBendangleOption={dropdownOptions?.straightBendangleOptions}
+        setStraightBendangleOption={setStraightBendangleOption}
+        selectedStraightBendangleOption={selectedStraightBendangleOption}
+        setSelectedStraightBendangleOption={setSelectedStraightBendangleOption}
+        //drop
+        dropLengthOption={dropdownOptions?.dropLengthOptions}
+        setDropLengthOption={setDropLengthOption}
+        selectedDropLengthOption={selectedDropLengthOption}
+        setSelectedDropLengthOption={setSelectedDropLengthOption}
+        //neck
+        neckLengthOption={dropdownOptions?.neckLengthOptions}
+        setNeckLengthOption={setNeckLengthOption}
+        selectedNeckLengthOption={selectedNeckLengthOption}
+        setselectedNeckLengthOption={setselectedNeckLengthOption}
+        />;
+      
+      
+        case "Hose Pipe":
         return <HosPipeSection
           formData={formData}
           setFormData={setFormData}

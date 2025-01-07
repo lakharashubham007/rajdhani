@@ -10,6 +10,9 @@ const ProductOptions = [
     { value: "Vinyl Cover", label: "Vinyl Cover" },
     { value: "Packing", label: "Packing" },
     { value: "Tube Fittings", label: "Tube Fittings" },
+    { value: "Nut", label: "Nut" },
+    { value: "Nipple", label: "Nipple" },
+    { value: "Cap", label: "Cap" },
   ];
   
   const WireTypeOptions = [
