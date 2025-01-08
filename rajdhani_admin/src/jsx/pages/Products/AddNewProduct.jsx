@@ -1033,7 +1033,20 @@ const AddProduct = () => {
                       <span className="text-danger fs-12">{errors.product_type}</span>
                     )}
                   </div>
+                  <div className="col-sm-3">
+                    <label className="col-form-label">Parts</label>
+                    <Select
+                      value={selectedProductTypeOption}
+                      onChange={handleProductDropChange}
+                      defaultValue={selectedProductTypeOption}
+                      options={dropdownOptions?.ProductOptions}
+                    />
+                    {errors.product_type && (
+                      <span className="text-danger fs-12">{errors.product_type}</span>
+                    )}
+                  </div>
                 </div>
+                
               </div>
             </div>
           </div>

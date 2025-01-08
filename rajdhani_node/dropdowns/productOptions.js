@@ -14,6 +14,12 @@ const ProductOptions = [
     { value: "Nipple", label: "Nipple" },
     { value: "Cap", label: "Cap" },
   ];
+
+  const PartOptions = [
+    { value: "Nut", label: "Nut" },
+    { value: "Nipple", label: "Nipple" },
+    { value: "Cap", label: "Cap" }
+  ];
   
   const WireTypeOptions = [
     { value: "BRAIDED (BR) - B", label: "BRAIDED (BR) - B", code: "B", dsc_code: "BR" },
@@ -434,5 +440,6 @@ module.exports = {
     hoseDashSizeOptions,
     skiveTypeOptions,
     fittingPieceOptions,
-    designOption
+    designOption,
+    PartOptions
 };

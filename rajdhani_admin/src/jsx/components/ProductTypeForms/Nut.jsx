@@ -784,7 +784,7 @@ const Nut = (props) => {
                   )}
                 </div>
 
-                <div className="col-md-3">
+                {/* <div className="col-md-3">
                   <label className="col-form-label">Hose Dash Size</label>
                   <Select
                     value={selectedhoseDashSizeOption}
@@ -808,11 +808,38 @@ const Nut = (props) => {
                       {errors.hose_dash_size}
                     </span>
                   )}
-                </div>
+                </div> */}
+
+                     <div className="col-md-3">
+                        <label className="col-form-label">Fitting Dash Size</label>
+                        <Select
+                          value={selectedFittingDashSizeOption}
+                          onChange={(option) => {
+                            setSelectedfittingDashSizeOption(option);
+                            setFormData({
+                              ...formData,
+                              fitting_dash_size: option,
+
+                            });
+                          }}
+                          defaultValue={selectedFittingDashSizeOption}
+                          options={fittingDashSizeOption}
+                          style={{
+                            lineHeight: "40px",
+                            color: "#7e7e7e",
+                            paddingLeft: " 15px",
+                          }}
+                        />
+                        {errors.fitting_dash_size && (
+                          <span className="text-danger fs-12">
+                            {errors.fitting_dash_size}
+                          </span>
+                        )}
+                      </div>
 
                 {selectedFittingThreadOption?.value !== "METRIC" ?
                   (<>
-                    <div className="col-md-3">
+                    {/* <div className="col-md-3">
                       <label className="col-form-label">Variant</label>
                       <Select
                         value={selectedvariantOption}
@@ -836,34 +863,10 @@ const Nut = (props) => {
                           {errors.fitting_thread}
                         </span>
                       )}
-                    </div>
-
-                    {/* <div className="col-md-3">
-                      <label className="col-form-label">Fitting Dash Size</label>
-                      <Select
-                        value={selectedFittingDashSizeOption}
-                        onChange={(option) => {
-                          setSelectedfittingDashSizeOption(option);
-                          setFormData({
-                            ...formData,
-                            fitting_dash_size: option.value,
-                          });
-                        }}
-                        defaultValue={selectedFittingDashSizeOption}
-                        options={fittingDashSizeOption}
-                        style={{
-                          lineHeight: "40px",
-                          color: "#7e7e7e",
-                          paddingLeft: " 15px",
-                        }}
-                      />
-                      {errors.fitting_dash_size && (
-                        <span className="text-danger fs-12">
-                          {errors.fitting_dash_size}
-                        </span>
-                      )}
                     </div> */}
-                    {selectedFittingThreadOption?.value === "SAE 61" || selectedFittingThreadOption?.value === "SAE 62" ?
+
+                    
+                    {/* {selectedFittingThreadOption?.value === "SAE 61" || selectedFittingThreadOption?.value === "SAE 62" ?
                       (<>
                         <div className="col-md-3">
                           <label className="col-form-label">OD</label>
@@ -918,13 +921,13 @@ const Nut = (props) => {
                           )}
                         </div>
                       </>)
-                    }
+                    } */}
                   </>
                   ) : (
                     <>
 
                       {/* POD */}
-                      <div className="col-md-2">
+                      {/* <div className="col-md-2">
                         <label className="col-form-label">Pipe OD</label>
                         <Select
                           value={selectedpipeODOption}
@@ -948,10 +951,10 @@ const Nut = (props) => {
                             {errors.pipeOD}
                           </span>
                         )}
-                      </div>
+                      </div> */}
 
                       {/* Metric Type */}
-                      <div className="col-md-2">
+                      {/* <div className="col-md-2">
                         <label className="col-form-label">Metric Type</label>
                         <Select
                           value={selectedmetricTypeOptions}
@@ -975,7 +978,7 @@ const Nut = (props) => {
                             {errors.metric_type}
                           </span>
                         )}
-                      </div>
+                      </div> */}
                       {/* Variant */}
                       {/* <div className="col-md-3">
                   <label className="col-form-label">Variant</label>
@@ -1036,9 +1039,9 @@ const Nut = (props) => {
                   )
                 }
               </div>
-              {/* Second */}
+              
               <div className="mb-3 row">
-                <div className="col-md-3">
+                {/* <div className="col-md-3">
                   <label className="col-form-label">Fitting Type</label>
                   <Select
                     value={selectedFittingTypeOption}
@@ -1062,11 +1065,11 @@ const Nut = (props) => {
                       {errors.fitting_type}
                     </span>
                   )}
-                </div>
+                </div> */}
 
 
 
-                <div className="col-md-3">
+                {/* <div className="col-md-3">
                   <label className="col-form-label">
                     Straight Bend Angle
                   </label>
@@ -1092,7 +1095,9 @@ const Nut = (props) => {
                       {errors.straight_bend_angle}
                     </span>
                   )}
-                </div>
+                </div> */}
+
+
                 {/* Neck Length dropdown */}
                 {/* <div className="col-md-3">
                   <label className="col-form-label">Neck Length</label>
@@ -1124,18 +1129,35 @@ const Nut = (props) => {
 
                 <div className="col-md-3">
                   <label className="col-form-label">
-                    Neck Length <small style={{ color: "grey" }} >(In mm)*</small>
+                    Nut Hex <small style={{ color: "grey" }} >(In mm)*</small>
                   </label>
                   <input
-                    name="neck_length"
+                    name="nut_hex"
                     value={formData.neck_length}
                     onChange={handleChange}
                     type="text"
                     className="form-control"
                     placeholder="Ex: 15"
                   />
-                  {errors.neck_length && (
-                    <span className="text-danger fs-12">{errors.neck_length}</span>
+                  {errors.nut_hex && (
+                    <span className="text-danger fs-12">{errors.nut_hex}</span>
+                  )}
+                </div>
+
+                <div className="col-md-3">
+                  <label className="col-form-label">
+                    Nut Length <small style={{ color: "grey" }} >(In mm)*</small>
+                  </label>
+                  <input
+                    name="nut_hex"
+                    value={formData.nut_length}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: 15"
+                  />
+                  {errors.nut_length && (
+                    <span className="text-danger fs-12">{errors.nut_length}</span>
                   )}
                 </div>
 
@@ -1168,7 +1190,7 @@ const Nut = (props) => {
 
 
                 {/* Conditionally render Drop Length */}
-                {selectedStraightBendangleOption?.value !== "Straight" && selectedStraightBendangleOption?.value !== undefined && (
+                {/* {selectedStraightBendangleOption?.value !== "Straight" && selectedStraightBendangleOption?.value !== undefined && (
 
                   // <div className="col-md-3">
                   //   <label className="col-form-label">Drop Length</label>
@@ -1193,21 +1215,22 @@ const Nut = (props) => {
                   //     <span className="text-danger fs-12">{errors.drop_length}</span>
                   //   )}
                   // </div>
-                  <div className="col-md-3">
-                    <label className="col-form-label">Drop Length<small style={{ color: "grey" }} >(In mm)*</small></label>
-                    <input
-                      name="drop_length"
-                      value={formData.drop_length}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 15"
-                    />
-                    {errors.drop_length && (
-                      <span className="text-danger fs-12">{errors.drop_length}</span>
-                    )}
-                  </div>
-                )}
+
+                //   <div className="col-md-3">
+                //     <label className="col-form-label">Drop Length<small style={{ color: "grey" }} >(In mm)*</small></label>
+                //     <input
+                //       name="drop_length"
+                //       value={formData.drop_length}
+                //       onChange={handleChange}
+                //       type="text"
+                //       className="form-control"
+                //       placeholder="Ex: 15"
+                //     />
+                //     {errors.drop_length && (
+                //       <span className="text-danger fs-12">{errors.drop_length}</span>
+                //     )}
+                //   </div>
+                )} */}
 
               </div>
 

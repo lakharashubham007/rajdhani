@@ -17,7 +17,8 @@ const {
     hoseDashSizeOptions,
     skiveTypeOptions,
     fittingPieceOptions,
-    designOption
+    designOption,
+    PartOptions
 } = require('../dropdowns/productOptions')
 
 
@@ -42,7 +43,8 @@ const getallOptions = async (req, res) => {
             hoseDashSizeOptions,
             skiveTypeOptions,
             fittingPieceOptions,
-            designOption 
+            designOption,
+            PartOptions 
         }  });
     } catch (error) {
         console.error("Error fetching dropdown options:", error);
