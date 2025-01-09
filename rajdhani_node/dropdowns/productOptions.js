@@ -18,7 +18,8 @@ const ProductOptions = [
   const PartOptions = [
     { value: "Nut", label: "Nut" },
     { value: "Nipple", label: "Nipple" },
-    { value: "Cap", label: "Cap" }
+    { value: "Cap", label: "Cap" },
+    { value: "None", label: "None" }
   ];
   
   const WireTypeOptions = [

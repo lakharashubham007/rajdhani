@@ -3,12 +3,12 @@ import Select from "react-select";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
-import { Toaster } from "../../components/Toaster/Toster";
-import Loader from "../../components/Loader/Loader";
+import { Toaster } from "../Toaster/Toster";
+import Loader from "../Loader/Loader";
 import { addProductApi } from "../../../services/apis/Product";
 import { useNavigate } from "react-router-dom";
 
-const Nut = (props) => {
+const Cap = (props) => {
     const {
         formData,
         setFormData,
@@ -148,7 +148,7 @@ const Nut = (props) => {
                                     <div className="card-header row">
                                         <div className="col-md-4">
                                             <div className="d-flex align-items-center">
-                                                <h4 className="card-title">Nut</h4>
+                                                <h4 className="card-title">Cap</h4>
                                             </div>
                                         </div>
                                         <div className="col-md-4">
@@ -334,39 +334,7 @@ const Nut = (props) => {
                             </div>
                             <div className="mb-3 row">
 
-                                {/* <div className="col-md-3">
-                                    <label className="col-form-label">
-                                        Nut Hex <small style={{ color: "grey" }} >(In mm)*</small>
-                                    </label>
-                                    <input
-                                        name="nut_hex"
-                                        value={formData.neck_length}
-                                        onChange={handleChange}
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Ex: 15"
-                                    />
-                                    {errors.nut_hex && (
-                                        <span className="text-danger fs-12">{errors.nut_hex}</span>
-                                    )}
-                                </div> */}
-
-                                {/* <div className="col-md-3">
-                                    <label className="col-form-label">
-                                        Nut Length <small style={{ color: "grey" }} >(In mm)*</small>
-                                    </label>
-                                    <input
-                                        name="nut_hex"
-                                        value={formData.nut_length}
-                                        onChange={handleChange}
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Ex: 15"
-                                    />
-                                    {errors.nut_length && (
-                                        <span className="text-danger fs-12">{errors.nut_length}</span>
-                                    )}
-                                </div> */}
+                               
                             </div>
                         </div>
                     </div>
@@ -376,4 +344,4 @@ const Nut = (props) => {
     );
 };
 
-export default Nut;
+export default Cap;

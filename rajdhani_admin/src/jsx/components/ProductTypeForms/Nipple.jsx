@@ -8,7 +8,7 @@ import Loader from "../../components/Loader/Loader";
 import { addProductApi } from "../../../services/apis/Product";
 import { useNavigate } from "react-router-dom";
 
-const Nut = (props) => {
+const Nipple = (props) => {
     const {
         formData,
         setFormData,
@@ -148,7 +148,7 @@ const Nut = (props) => {
                                     <div className="card-header row">
                                         <div className="col-md-4">
                                             <div className="d-flex align-items-center">
-                                                <h4 className="card-title">Nut</h4>
+                                                <h4 className="card-title">Nipple</h4>
                                             </div>
                                         </div>
                                         <div className="col-md-4">
@@ -376,4 +376,4 @@ const Nut = (props) => {
     );
 };
 
-export default Nut;
+export default Nipple;
