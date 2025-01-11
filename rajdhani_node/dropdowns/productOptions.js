@@ -19,7 +19,7 @@ const ProductOptions = [
     { value: "Nut", label: "Nut" },
     { value: "Nipple", label: "Nipple" },
     { value: "Cap", label: "Cap" },
-    { value: "None", label: "None" }
+    { value: "NA", label: "NA" },
   ];
   
   const WireTypeOptions = [
@@ -112,8 +112,8 @@ const ProductOptions = [
     // { value: "METRIC(HEAVY) WITH O", label: "METRIC(HEAVY) WITH O (DHO)", code: "DHO" },
     { value: "NPT", label: "NPT (NPT)", code: "NPT", dsc_code: "NPT" },
     { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "BJ", dsc_code: "JIS" },
-    { value: "SAE 61", label: "FLG CODE 61- 3000 PSI (3)", code: "3", dsc_code: "FL" },
-    { value: "SAE 62", label: "FLG CODE 62- 6000 PSI (6)", code: "6", dsc_code: "FLH" },
+    { value: "SAE 61", label: "FLG CODE 61- 3000 PSI (3)", code: "FL", dsc_code: "FLANGE-61" },
+    { value: "SAE 62", label: "FLG CODE 62- 6000 PSI (6)", code: "FLH", dsc_code: "FLANGE-62" },
     { value: "BANJO WITHOUT O", label: "BANJO WITHOUT O (BJ)", code: "BJ", dsc_code: "BANJO-WO" },
     { value: "BANJO WITH O", label: "BANJO WITH O (BJO)", code: "BJO", dsc_code: "BANJO" },
     { value: "METRIC THREAD ORFS", label: "METRIC THREAD ORFS (MO)", code: "MO", dsc_code: "M-ORFS" }

@@ -213,160 +213,111 @@ const Nipple = (props) => {
                                             </span>
                                         )}
                                     </div>
+                                    <div className="col-md-3">
+                                        <label className="col-form-label">Wire Type</label>
+                                        <Select
+                                            value={selectedWireTypeOption}
+                                            onChange={(option) => {
+                                                setSelectedWireTypeOption(option);
+                                                setFormData({
+                                                    ...formData,
+                                                    wire_type: option.value,
+                                                });
+                                            }}
+                                            defaultValue={selectedWireTypeOption}
+                                            options={wireTypeOption}
+                                            style={{
+                                                lineHeight: "40px",
+                                                color: "#7e7e7e",
+                                                paddingLeft: " 15px",
+                                            }}
+                                        />
+                                        {errors.wire_type && (
+                                            <span className="text-danger fs-12">
+                                                {errors.wire_type}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="col-md-2">
+                                        <label className="col-form-label">Skive Type</label>
+                                        <Select
+                                            value={selectedSkiveTypeOption}
+                                            onChange={(option) => {
+                                                setSelectedSkiveTypeOption(option);
+                                                setFormData({
+                                                    ...formData,
+                                                    skive_type: option.value,
+                                                });
+                                            }}
+                                            defaultValue={selectedSkiveTypeOption}
+                                            options={skiveTypeOption}
+                                            style={{
+                                                lineHeight: "40px",
+                                                color: "#7e7e7e",
+                                                paddingLeft: " 15px",
+                                            }}
+                                        />
+                                        {errors.skive_type && (
+                                            <span className="text-danger fs-12">
+                                                {errors.skive_type}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="col-md-2">
+                                        <label className="col-form-label">Hose Dash Size</label>
+                                        <Select
+                                            value={selectedhoseDashSizeOption}
+                                            onChange={(option) => {
+                                                setSelectedHoseDashSizeOption(option);
+                                                setFormData({
+                                                    ...formData,
+                                                    hose_dash_size: option.value,
+                                                });
+                                            }}
+                                            defaultValue={selectedhoseDashSizeOption}
+                                            options={HoseDashSizeOption}
+                                            style={{
+                                                lineHeight: "40px",
+                                                color: "#7e7e7e",
+                                                paddingLeft: " 15px",
+                                            }}
+                                        />
+                                        {errors.hose_dash_size && (
+                                            <span className="text-danger fs-12">
+                                                {errors.hose_dash_size}
+                                            </span>
+                                        )}
+                                    </div>
+
+                                    <div className="col-md-2">
+                                        <label className="col-form-label">Fitting Thread</label>
+                                        <Select
+                                            value={selectedFittingThreadOption}
+                                            onChange={(option) => {
+                                                setSelectedFittingThreadOption(option);
+                                                setFormData({
+                                                    ...formData,
+                                                    fitting_thread: option.value,
+                                                });
+                                            }}
+                                            defaultValue={selectedFittingThreadOption}
+                                            options={fittingThreadOption}
+                                            style={{
+                                                lineHeight: "40px",
+                                                color: "#7e7e7e",
+                                                paddingLeft: " 15px",
+                                            }}
+                                        />
+                                        {errors.fitting_thread && (
+                                            <span className="text-danger fs-12">
+                                                {errors.fitting_thread}
+                                            </span>
+                                        )}
+                                    </div>
+
                                 </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-
-            {/* Section2 */}
-            <div className="row">
-                {/* SECTION  */}
-                <div className="col-xl-12 col-lg-12">
-                    <div className="card">
-
-                        <div className="card-header" style={{
-                            display: 'flex',
-                            justifyContent: 'space-between',
-                            alignItems: 'center',
-                            flexWrap: 'wrap',
-                            padding: '10px',
-                            // backgroundColor: '#f8f9fa'
-                        }}>
-                            <h4 className="card-title" style={{ marginLeft: 15 }}>Nut Thread & Size</h4>
-
-                        </div>
-                        <div className="card-body">
-                            {/* First */}
-                            <div className="mb-3 row">
-
-                                <div className="col-md-3">
-                                    <label className="col-form-label">Fitting Thread</label>
-                                    <Select
-                                        value={selectedFittingThreadOption}
-                                        onChange={(option) => {
-                                            setSelectedFittingThreadOption(option);
-                                            setFormData({
-                                                ...formData,
-                                                fitting_thread: option.value,
-                                            });
-                                        }}
-                                        defaultValue={selectedFittingThreadOption}
-                                        options={fittingThreadOption}
-                                        style={{
-                                            lineHeight: "40px",
-                                            color: "#7e7e7e",
-                                            paddingLeft: " 15px",
-                                        }}
-                                    />
-                                    {errors.fitting_thread && (
-                                        <span className="text-danger fs-12">
-                                            {errors.fitting_thread}
-                                        </span>
-                                    )}
-                                </div>
-
-
-                                <div className="col-md-3">
-                                    <label className="col-form-label">Fitting Dash Size</label>
-                                    <Select
-                                        value={selectedFittingDashSizeOption}
-                                        onChange={(option) => {
-                                            setSelectedfittingDashSizeOption(option);
-                                            setFormData({
-                                                ...formData,
-                                                fitting_dash_size: option,
-
-                                            });
-                                        }}
-                                        defaultValue={selectedFittingDashSizeOption}
-                                        options={fittingDashSizeOption}
-                                        style={{
-                                            lineHeight: "40px",
-                                            color: "#7e7e7e",
-                                            paddingLeft: " 15px",
-                                        }}
-                                    />
-                                    {errors.fitting_dash_size && (
-                                        <span className="text-danger fs-12">
-                                            {errors.fitting_dash_size}
-                                        </span>
-                                    )}
-                                </div>
-
-
-                                <div className="col-md-3">
-                                    <label className="col-form-label">
-                                        Nut Hex <small style={{ color: "grey" }} >(In mm)*</small>
-                                    </label>
-                                    <input
-                                        name="nut_hex"
-                                        value={formData.neck_length}
-                                        onChange={handleChange}
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Ex: 15"
-                                    />
-                                    {errors.nut_hex && (
-                                        <span className="text-danger fs-12">{errors.nut_hex}</span>
-                                    )}
-                                </div>
-
-                                <div className="col-md-3">
-                                    <label className="col-form-label">
-                                        Nut Length <small style={{ color: "grey" }} >(In mm)*</small>
-                                    </label>
-                                    <input
-                                        name="nut_hex"
-                                        value={formData.nut_length}
-                                        onChange={handleChange}
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Ex: 15"
-                                    />
-                                    {errors.nut_length && (
-                                        <span className="text-danger fs-12">{errors.nut_length}</span>
-                                    )}
-                                </div>
-
-                            </div>
-                            <div className="mb-3 row">
-
-                                {/* <div className="col-md-3">
-                                    <label className="col-form-label">
-                                        Nut Hex <small style={{ color: "grey" }} >(In mm)*</small>
-                                    </label>
-                                    <input
-                                        name="nut_hex"
-                                        value={formData.neck_length}
-                                        onChange={handleChange}
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Ex: 15"
-                                    />
-                                    {errors.nut_hex && (
-                                        <span className="text-danger fs-12">{errors.nut_hex}</span>
-                                    )}
-                                </div> */}
-
-                                {/* <div className="col-md-3">
-                                    <label className="col-form-label">
-                                        Nut Length <small style={{ color: "grey" }} >(In mm)*</small>
-                                    </label>
-                                    <input
-                                        name="nut_hex"
-                                        value={formData.nut_length}
-                                        onChange={handleChange}
-                                        type="text"
-                                        className="form-control"
-                                        placeholder="Ex: 15"
-                                    />
-                                    {errors.nut_length && (
-                                        <span className="text-danger fs-12">{errors.nut_length}</span>
-                                    )}
-                                </div> */}
                             </div>
                         </div>
                     </div>

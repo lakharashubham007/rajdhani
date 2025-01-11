@@ -57,7 +57,7 @@ const AddProduct = () => {
   const [partOption, setPartOption] = useState(null);
   // selected
   const [selectedProductTypeOption, setSelectedProductTypeOption] = useState(null);
-  const [selectedPartsOption, setSelectedPartsOption] = useState(null);
+  const [selectedPartsOption, setSelectedPartsOption] = useState({ value: "None", label: "None" });
   const [selectedCategoryOption, setSelectedCategoryOption] = useState(null);
   const [selectedSubCategoryOption, setSelectedSubCategoryOption] = useState(null);
   const [selectedSubSubCategoryOption, setSelectedSubSubCategoryOption] = useState(null);
@@ -109,7 +109,8 @@ const AddProduct = () => {
   const [fittingCode, setFittingCode] = useState();
   const [descCode, setDescCode] = useState();
   console.log(formData, "formData is here")
-  
+
+  //Filter Fitting_Dash_Size_Options
   const filterFittingDashSizeOptions = () => {
     // Basic filtering based on fitting_thread
     const filteredOptions = dropdownOptions?.fittingDashSizeOptions?.filter((option) => {
@@ -229,9 +230,8 @@ const AddProduct = () => {
     }));
   };
 
+  // Filter fittingTypeOption
   const filterFittingTypeOptions = () => {
-    console.log("New ->>>>>>>>>>",dropdownOptions?.fittingTypeOptions,formData?.fitting_thread)
-
     const fittingTypeOptions = dropdownOptions?.fittingTypeOptions.filter((option) => {
       if (formData?.fitting_thread === "SAE 61") {
         // For SAE 61, include only "Flange"
@@ -244,14 +244,6 @@ const AddProduct = () => {
       // Default case: include all matching `fitting_thread`
       return option?.fitting_thread === 'normal';
     });
-  
-
-    // const fittingTypeOptions = dropdownOptions?.fittingTypeOptions.filter((option) => {
-    //   return (
-    //    option?.fitting_thread?.startsWith("SAE") === formData?.fitting_thread?.startsWith("SAE") 
-    //    );
-
-    //  });
      // Map the filtered options to the desired format
      return fittingTypeOptions.map((option) => ({
           value: `${option.value}`,
@@ -260,7 +252,8 @@ const AddProduct = () => {
          dsc_code: `${option.dsc_code}`,
      }));
   }
-  // Effect to dynamically set fittingTypeOption
+
+  // Set Dynamically -> fittingTypeOption
   useEffect(() => {
     // Check if required fields are provided
     if (formData.fitting_thread === "SAE 61" || formData.fitting_thread === "SAE 62") {
@@ -274,9 +267,14 @@ const AddProduct = () => {
       }
     }
   }, [formData?.fitting_thread]);
-  // console.log(selectedWithCapWithoutCapOption?.dsc_code)
+
+
+  // Fitting Code and Description
   useEffect(() => {
-    const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}`;
+    const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}${selectedWithCapWithoutCapOption?.code || ''}`;
+
+    // const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}${selectedWithCapWithoutCapOption?.code || ''}`;
+
 
     setFittingCode(fitting_Code);
 
@@ -301,6 +299,7 @@ const AddProduct = () => {
     selectedFittingTypeOption,
     selectedStraightBendangleOption,
     formData?.drop_length,
+    formData?.ferrule
   ])
 
   useEffect(() => {
@@ -1319,6 +1318,7 @@ const AddProduct = () => {
                       value={selectedPartsOption}
                       onChange={handlePartsDropChange}
                       defaultValue={selectedPartsOption}
+                      // defaultValue={{ value: "None", label: "None" }}
                       options={dropdownOptions?.PartOptions}
                     />
                     {errors.parts && (
