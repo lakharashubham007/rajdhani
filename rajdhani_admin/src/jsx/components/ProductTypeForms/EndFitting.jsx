@@ -246,7 +246,7 @@ const EndFittingForm = (props) => {
                           padding: '5px 10px',
                           fontSize: '12px',
                           fontWeight: 'bold',
-                          whiteSpace: 'nowrap'
+                          // whiteSpace: 'nowrap'
                         }}>
                           Description :- {descCode}
                         </span>
