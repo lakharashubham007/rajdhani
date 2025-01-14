@@ -91,6 +91,10 @@ const AllProductList = () => {
     "BANJO WITHOUT O": "#e8f5e9", // Mint green
     "BANJO WITH O": "#ede7f6", // Soft lavender
     "METRIC THREAD ORFS": "#ffecb3", // Light amber
+
+    "Cap": "#cce7ff", // Light blue-gray
+  "Nipple": "#ffcce7", // Light rose-pink
+  "Nut": "#d9ffcc", // Light greenish-yellow
   };
 
 
@@ -439,7 +443,8 @@ const AllProductList = () => {
                                 display: "inline-block", // Works for the span
                               }}
                             >
-                              {data?.fitting_thread}
+                              {["Cap", "Nipple", "Nut"].includes(data?.part) ? data?.part : data?.fitting_thread}
+                              {/* {data?.fitting_thread} */}
                             </span>
                           </td>
 
