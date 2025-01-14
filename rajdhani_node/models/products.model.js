@@ -108,7 +108,7 @@ const productSchema = new mongoose.Schema(
     image: {
         type: String,
         trim: true,
-        default: 'default-product-image.png', // Default image if none provided
+        default: 'rajdhani_product.jpg', // Default image if none provided
     },
     gallery: [
         {
