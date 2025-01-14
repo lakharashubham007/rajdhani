@@ -49,7 +49,7 @@ const createProduct = async (data, files) => {
 
     const productData = {
       ...data,
-      image: files && files.image ? files.image[0]?.originalname : 'rajdhani_product.png',
+      image: files && files.image ? files.image[0]?.originalname : 'rajdhani_product.jpg',
       gallery: files && files.gallery ? files.gallery.map(file => file.originalname) : [], // Process gallery images
     };
 
