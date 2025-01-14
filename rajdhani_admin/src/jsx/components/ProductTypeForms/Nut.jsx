@@ -319,7 +319,7 @@ const Nut = (props) => {
                                         Nut Length <small style={{ color: "grey" }} >(In mm)*</small>
                                     </label>
                                     <input
-                                        name="nut_hex"
+                                        name="nut_length"
                                         value={formData.nut_length}
                                         onChange={handleChange}
                                         type="text"

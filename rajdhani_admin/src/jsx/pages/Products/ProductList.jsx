@@ -28,9 +28,10 @@ const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
   { heading: "Image", sortingVale: "image" },
   { heading: "Product", sortingVale: "product" },
+  { heading: "Fitting Thread", sortingVale: "fitting_thread" },
   { heading: "Description", sortingVale: "description" },
   { heading: "Fitting Code", sortingVale: "Fitting Code" },
-  { heading: "Fitting Thread", sortingVale: "fitting_thread" },
+ 
   { heading: "Design", sortingVale: "design" },
   { heading: "Created At", sortingVale: "created_at" },
   { heading: "Status", sortingVale: "status" },
@@ -75,6 +76,23 @@ const AllProductList = () => {
     setLogo(null); // Reset the displayed image
     setErrors({}); // Clear errors
   };
+
+  const fittingThreadColors = {
+    "BSP": "#f0f4ff", // Light blue
+    "BSP O": "#ffe4e1", // Light coral
+    "JIC": "#e6ffe6", // Light green
+    "ORFS": "#fff2cc", // Light yellow
+    "KOMATSU": "#d9d9ff", // Light purple
+    "METRIC": "#ffe6e6", // Light pink
+    "NPT": "#d1e7ff", // Light sky blue
+    "JIS": "#fce4ec", // Light rose
+    "SAE 61": "#f2e6ff", // Lavender
+    "SAE 62": "#ffe6cc", // Light orange
+    "BANJO WITHOUT O": "#e8f5e9", // Mint green
+    "BANJO WITH O": "#ede7f6", // Soft lavender
+    "METRIC THREAD ORFS": "#ffecb3", // Light amber
+  };
+
 
   const validateForm = () => {
     const newErrors = {};
@@ -267,7 +285,7 @@ const AllProductList = () => {
             {/* <div className="card-header">
               <h4 className="card-title">Product List</h4>
               {/* <Link to={"/add-staff"} className="btn btn-primary">+ Add New</Link> */}
-              {/* <Button
+            {/* <Button
                 variant="primary"
                 type="button"
                 className="mb-2 me-2"
@@ -370,9 +388,7 @@ const AllProductList = () => {
 
                           <td className="d-flex align-items-center gap-2">
                             {data?.image ? (
-                              // <img className='select-file-img' src={`https://api.i2rtest.in/v1/images/image/${data?.image}`} alt={data?.name}/>
-                              <img className='select-file-img' src={`https://api.i2rtest.in/v1/images/image/rajdhani_logo%20(1).png`} alt={data?.name} />
-
+                              <img className='select-file-img' src={`https://api.i2rtest.in/v1/images/image/${data?.image}`} alt={data?.name} />
                             ) : (
                               ""
 
@@ -388,13 +404,52 @@ const AllProductList = () => {
                             {data?.product_type}
                           </td>
 
-                        
+                          {/* <td style={{
+                            textAlign: 'center', // Horizontally center the content
+                            verticalAlign: 'middle', // Vertically center the content
+                          }}>
+                            <span
+                              style={{
+                                backgroundColor: "#f0f4ff", // Light blue background
+                                color: "#d9251d", // Text color
+                                padding: "5px 10px", // Padding inside the badge
+                                borderRadius: "12px", // Rounded corners
+                                fontWeight: "bold", // Bold text
+                                textAlign: "center", // Centered text
+                                display: "inline-block", // Works for the span
+                              }}
+                            >
+                              {data?.fitting_thread}
+                            </span>
+                          </td> */}
+                          <td
+                            style={{
+                              textAlign: "center", // Horizontally center the content
+                              verticalAlign: "middle", // Vertically center the content
+                            }}
+                          >
+                            <span
+                              style={{
+                                backgroundColor: fittingThreadColors[data?.fitting_thread] || "#f5f5f5", // Default to light gray if no match
+                                color: "#000", // Black text color for better contrast
+                                padding: "5px 10px", // Padding inside the badge
+                                borderRadius: "12px", // Rounded corners
+                                fontWeight: "bold", // Bold text
+                                textAlign: "center", // Centered text
+                                display: "inline-block", // Works for the span
+                              }}
+                            >
+                              {data?.fitting_thread}
+                            </span>
+                          </td>
+
+
                           <td
                             style={{
                               whiteSpace: 'nowrap',
                               overflow: 'hidden',
                               textOverflow: 'ellipsis',
-                              maxWidth: '45ch'
+                              maxWidth: '55ch'
                             }}
                           >
                             <span
@@ -404,7 +459,7 @@ const AllProductList = () => {
                                 padding: '2px 6px', // Add padding for badge effect
                                 borderRadius: '4px', // Rounded corners
                                 display: 'inline-block', // Ensure proper layout inside the td
-                                color:'#686D76'
+                                color: '#686D76'
                               }}
                             >
                               {data?.desc_Code}
@@ -426,31 +481,14 @@ const AllProductList = () => {
                                 padding: '2px 6px', // Add padding for badge effect
                                 borderRadius: '4px', // Rounded corners
                                 display: 'inline-block', // Ensure proper layout inside the td
-                                color:'#686D76'
+                                color: '#686D76'
                               }}
                             >
-                               {data?.fitting_Code}
+                              {data?.fitting_Code}
                             </span>
                           </td>
 
-                          <td style={{
-                            textAlign: 'center', // Horizontally center the content
-                            verticalAlign: 'middle', // Vertically center the content
-                          }}>
-                            <span
-                              style={{
-                                backgroundColor: "#f0f4ff", // Light blue background
-                                color: "#d9251d", // Text color
-                                padding: "5px 10px", // Padding inside the badge
-                                borderRadius: "12px", // Rounded corners
-                                fontWeight: "bold", // Bold text
-                                textAlign: "center", // Centered text
-                                display: "inline-block", // Works for the span
-                              }}
-                            >
-                              {data?.fitting_thread}
-                            </span>
-                          </td>
+
 
                           <td style={{
                             textAlign: 'center', // Horizontally center the content

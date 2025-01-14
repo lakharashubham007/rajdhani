@@ -7,6 +7,7 @@ const productSchema = new mongoose.Schema(
     description: { type: String, trim: true },
     mfc: { type: String, trim: true }, // Manufacturer or supplier code
     product_type: { type: String, trim: true }, 
+    part: { type: String, trim: true }, 
 
 
     // End Fitting
@@ -28,7 +29,15 @@ const productSchema = new mongoose.Schema(
     OD: { type: String, trim: true },
     pipeOD: { type: String, trim: true },
     variant: { type: String, trim: true },
-    // description: { type: String, trim: true },
+
+    //Part
+    nut_hex: { type: String, trim: true }, 
+    nut_length: { type: String, trim: true },
+    cap_size: { type: String, trim: true },
+    big_bore: { type: String, trim: true },
+    length: { type: String, trim: true },
+    od: { type: String, trim: true },
+    additional: { type: String, trim: true },
 
     // Ferrule (Part of End Fittings)
     ferrule_design: { type: String, trim: true },

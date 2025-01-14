@@ -106,8 +106,15 @@ const AddProduct = () => {
     product_type: "",
     // with_cap:[]
   });
+  //code setup variables
   const [fittingCode, setFittingCode] = useState();
   const [descCode, setDescCode] = useState();
+  const [capFittingCode, setCapFittingCode] = useState();
+  const [capDescCode,setCapDescCode] = useState();
+  const [nutFittingCode, setNutFittingCode] = useState();
+  const [nutDescCode,setNutDescCode] = useState();
+  const [nippleFittingCode, setNippleFittingCode] = useState();
+  const [nippleDescCode,setNippleDescCode] = useState();
   console.log(formData, "formData is here")
 
   //Filter Fitting_Dash_Size_Options
@@ -271,14 +278,16 @@ const AddProduct = () => {
 
   // Fitting Code and Description
   useEffect(() => {
-    const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}${selectedWithCapWithoutCapOption?.code || ''}`;
+    const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code  : ''}${selectedFittingTypeOption?.code ? '-' + selectedFittingTypeOption?.code : ''}${selectedStraightBendangleOption?.code || ''}${selectedWithCapWithoutCapOption?.code || ''}`;
 
     // const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}${selectedWithCapWithoutCapOption?.code || ''}`;
-
-
     setFittingCode(fitting_Code);
 
-    const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code + '-' : ''}${selectedFittingThreadOption?.dsc_code || ''} ${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code + 'X' : ''}${selectedFittingDashSizeOption?.dsc_code || ''} ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()} ${(selectedStraightBendangleOption?.dsc_code || '').toUpperCase()} ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()} ${formData?.drop_length ? `DL-${formData.drop_length}` : ''} ${selectedWithCapWithoutCapOption?.dsc_code || ''}`.trim();
+    // const cap_fitting_code = `${}`
+
+   
+
+    const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code + '-' : ''}${selectedFittingThreadOption?.dsc_code || ''} ${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code  : ''}${selectedFittingDashSizeOption?.dsc_code ?  'X' + selectedFittingDashSizeOption?.dsc_code  : ''} ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()} ${(selectedStraightBendangleOption?.dsc_code || '').toUpperCase()} ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()} ${formData?.drop_length ? `DL-${formData.drop_length}` : ''} ${selectedWithCapWithoutCapOption?.dsc_code || ''}${formData?.nut_hex ? + formData?.nut_hex + 'X' : '' }${formData?.nut_length ?  formData?.nut_length  : '' }`.trim();
 
     setDescCode(desc_Code);
     setFormData((prevData) => ({
@@ -299,7 +308,79 @@ const AddProduct = () => {
     selectedFittingTypeOption,
     selectedStraightBendangleOption,
     formData?.drop_length,
-    formData?.ferrule
+    formData?.ferrule,
+    
+  ])
+
+  //Parts fitting-code and Description
+  useEffect(() => {
+
+  //Nut fitting code and description
+  if(formData?.part === 'Nut'){
+    const nut_fitting_code = `${'NUT-' + formData?.design || ''}${selectedFittingDashSizeOption?.code ?  selectedFittingDashSizeOption?.code  : ''}${selectedFittingThreadOption?.code ? '-' + selectedFittingThreadOption?.code + '-' : ''}${formData?.nut_hex ?  formData?.nut_hex + 'X' : '' }${formData?.nut_length ?  formData?.nut_length  : '' }`
+    setNutFittingCode(nut_fitting_code)
+
+    const desc_nut_Code = `${selectedFittingThreadOption?.dsc_code ?  selectedFittingThreadOption?.dsc_code  : ''}${selectedFittingDashSizeOption?.dsc_code ? ' ' + selectedFittingDashSizeOption?.dsc_code + ' NUT'  : ''}${formData?.nut_hex ? ' ' + formData?.nut_hex + 'X' : '' }${formData?.nut_length ?  formData?.nut_length  : '' }`;
+    setNutDescCode(desc_nut_Code)
+
+    setFormData((prevData) => ({
+      ...prevData,
+      desc_Code: desc_nut_Code, // Clear variant value in formData
+      fitting_Code: nut_fitting_code // Clear fitting_dash_size value in formData
+    }));
+   }
+
+    //Nipple fitting code and description
+    if(formData?.part === 'Nipple'){
+      const nipple_fitting_code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedSkiveTypeOption?.code ? '-' + selectedSkiveTypeOption?.code  : ''}${selectedFittingThreadOption?.code ? '-' + selectedFittingThreadOption?.code + '-' : ''}${selectedhoseDashSizeOption ? selectedhoseDashSizeOption.code : '' }`
+      setNippleFittingCode(nipple_fitting_code)
+
+      const desc_nipple_Code = `${selectedFittingThreadOption?.dsc_code ?  selectedFittingThreadOption?.dsc_code + ' ' : ''}${selectedhoseDashSizeOption ? selectedhoseDashSizeOption.dsc_code : '' }${selectedWireTypeOption?.dsc_code ? ' ' + selectedWireTypeOption?.dsc_code : ''}${selectedSkiveTypeOption?.dsc_code ? ' ' + selectedSkiveTypeOption?.dsc_code  : ''}`;
+      setNippleDescCode(desc_nipple_Code)
+
+      setFormData((prevData) => ({
+        ...prevData,
+        desc_Code: desc_nipple_Code, // Clear variant value in formData
+        fitting_Code: nipple_fitting_code // Clear fitting_dash_size value in formData
+      }));
+     }
+
+
+      //cap fitting code and description
+    if(formData?.part === 'Cap'){
+      const cap_fitting_code = `${'Cap ' + formData?.design || ''}${selectedWireTypeOption?.code || ''}${formData?.cap_size ?  '-' + (formData?.cap_size).split(' ').pop().replace(/[()]/g, '') : ''}${selectedSkiveTypeOption?.code ? '-' + selectedSkiveTypeOption?.code + '-' : ''}${formData?.od ?  formData?.od : ''}${formData?.length ? 'X' + formData?.length  : '' }${formData?.big_bore ? '-'+formData?.big_bore+'B' : ''}${ formData?.additional ? '-'+ (formData?.additional).replace(/(\d+)\s*wire/i, "$1W") : ''}`
+      setCapFittingCode(cap_fitting_code)
+
+      const desc_cap_Code = `${formData?.cap_size ?   'Cap ' + (formData?.cap_size).match(/^.*?(?=\s\()/)?.[0] + ' '  : ''}${formData?.od ? '('+ formData?.od : ''}${formData?.length ? 'X' + formData?.length + ')' : '' }${selectedWireTypeOption?.dsc_code ?  ' ' +  selectedWireTypeOption?.dsc_code : ''}${selectedSkiveTypeOption?.dsc_code ?  ' ' + selectedSkiveTypeOption?.dsc_code +  ' '   : ''}${formData?.big_bore ? 'BIGBORE-'+formData?.big_bore : ''}${ formData?.additional ?  ' ' + (formData?.additional) : ''}`;
+      setCapDescCode(desc_cap_Code)
+
+      setFormData((prevData) => ({
+        ...prevData,
+        desc_Code: desc_cap_Code, // Clear variant value in formData
+        fitting_Code: cap_fitting_code // Clear fitting_dash_size value in formData
+      }));
+     }
+
+   
+
+     
+    
+
+  },[
+    formData?.design,
+    selectedWireTypeOption,
+    selectedFittingDashSizeOption,
+    formData?.cap_size,
+    selectedSkiveTypeOption,
+    formData?.od,
+    formData.length,
+    formData?.big_bore,
+    formData?.additional,
+    selectedFittingThreadOption,
+    formData?.nut_hex,
+    formData?.nut_length,
+    selectedhoseDashSizeOption
+    
   ])
 
   useEffect(() => {
@@ -735,6 +816,8 @@ const AddProduct = () => {
   };
 
   console.log(formData?.product_type === "End Fittings" && formData?.part === "Nut")
+
+  //parts component
   const renderPartComponent = () => {
     switch (formData?.part){
       case "Nut":
@@ -743,8 +826,8 @@ const AddProduct = () => {
         setFormData={setFormData}
         errors={errors}
         //code prefilled
-        fittingCode={fittingCode}
-        descCode={descCode}
+        fittingCode={nutFittingCode}
+        descCode={nutDescCode}
 
         //design
         setSelectedDesignOption={setSelectedDesignOption}
@@ -829,8 +912,8 @@ const AddProduct = () => {
         setFormData={setFormData}
         errors={errors}
         //code prefilled
-        fittingCode={fittingCode}
-        descCode={descCode}
+        fittingCode={nippleFittingCode}
+        descCode={nippleDescCode}
 
         //design
         setSelectedDesignOption={setSelectedDesignOption}
@@ -915,8 +998,8 @@ const AddProduct = () => {
           setFormData={setFormData}
           errors={errors}
           //code prefilled
-          fittingCode={fittingCode}
-          descCode={descCode}
+          fittingCode={capFittingCode}
+          descCode={capDescCode}
   
           //design
           setSelectedDesignOption={setSelectedDesignOption}

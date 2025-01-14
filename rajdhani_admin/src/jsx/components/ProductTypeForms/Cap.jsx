@@ -377,7 +377,7 @@ const Cap = (props) => {
                                     </label>
                                     <input
                                         name="additional"
-                                        value={formData.length}
+                                        value={formData.additional}
                                         onChange={handleChange}
                                         type="text"
                                         className="form-control"
