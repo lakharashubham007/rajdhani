@@ -390,10 +390,10 @@ const AddProduct = () => {
   //Hose pipe type options
   useEffect(() => {
     
-      const hosepipe_fitting_code = `${selectedhoseDashSizeOption?.code ? selectedhoseDashSizeOption?.code : ''}${selectedHoseTypeOption?.code ? "-" + selectedHoseTypeOption?.code + " ": ''}${selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ''}${selectedHosePipeMFCOption?.value ? " " + selectedHosePipeMFCOption?.value : ''}`
+      const hosepipe_fitting_code = `${selectedhoseDashSizeOption?.code ? selectedhoseDashSizeOption?.code : ''}${selectedHoseTypeOption?.code ? "-" + selectedHoseTypeOption?.code + " ": ''}${selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ''}${selectedHosePipeMFCOption?.code ? " " + selectedHosePipeMFCOption?.code : ''}`
       setHosePipeFittingCode(hosepipe_fitting_code)
 
-      const desc_hosepipe_Code = `${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code : ''}${selectedHoseTypeOption?.dsc_code ? " " + selectedHoseTypeOption?.dsc_code + " ": ''}${selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ''}${selectedHosePipeMFCOption?.value ? " " + selectedHosePipeMFCOption?.value : ''}`;
+      const desc_hosepipe_Code = `${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code : ''}${selectedHoseTypeOption?.dsc_code ? " " + selectedHoseTypeOption?.dsc_code + " ": ''}${selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ''}${selectedHosePipeMFCOption?.dsc_code ? " " + selectedHosePipeMFCOption?.dsc_code : ''}`;
       setHosePipeDescCode(desc_hosepipe_Code)
 
       setFormData((prevData) => ({
