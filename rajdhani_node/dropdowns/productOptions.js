@@ -434,7 +434,7 @@ const ProductOptions = [
     { value: "IBN", label: "IBN", code: "N", dsc_code: "IBN" },
     { value: "BIN", label: "BIN", code: "B", dsc_code: "BIN" },
     { value: "ILT", label: "ILT", code: "L", dsc_code: "ILT" },
-    { value: "BLANK", label: "BLANK", code: "X", dsc_code: "BLANK" }
+    { value: "None", label: "None", code: "", dsc_code: "" }
   ];
 
   const BrandLayLineOptions = [
