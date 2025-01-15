@@ -27,6 +27,8 @@ const ProductOptions = [
     { value: "SPIRAL (SP) - S", label: "SPIRAL (SP) - S", code: "S", dsc_code: "SP" },
     { value: "TEFLON (TF) - T", label: "TEFLON (TF) - T", code: "T", dsc_code: "TF" }
   ];
+
+  
   
  //added new options
   const CapWithoutCapOptions = [
@@ -424,6 +426,59 @@ const ProductOptions = [
     { value: "Female", label: "Female" },
   ];
 
+  const MFCOptions = [
+    { value: "MFC", label: "MFC", code: "M", dsc_code: "MFC" },
+    { value: "IBL", label: "IBL", code: "I", dsc_code: "IBL" },
+    { value: "BPL", label: "BPL", code: "B", dsc_code: "BPL" },
+    { value: "BSR", label: "BSR", code: "R", dsc_code: "BSR" },
+    { value: "IBN", label: "IBN", code: "N", dsc_code: "IBN" },
+    { value: "BIN", label: "BIN", code: "B", dsc_code: "BIN" },
+    { value: "ILT", label: "ILT", code: "L", dsc_code: "ILT" },
+    { value: "BLANK", label: "BLANK", code: "X", dsc_code: "BLANK" }
+  ];
+
+  const BrandLayLineOptions = [
+    { value: "ADVANCE", label: "ADVANCE" },
+    { value: "RAJDHANI", label: "RAJDHANI" },
+    { value: "PRO", label: "PRO" },
+    { value: "MINEXPERT", label: "MINEXPERT" },
+    { value: "R PARTS", label: "R PARTS" },
+    { value: "ADVANCE SHIELD", label: "ADVANCE SHIELD" },
+    { value: "BCS174", label: "BCS174" },
+    { value: "EATON", label: "EATON" },
+    { value: "EUROFLEX", label: "EUROFLEX" },
+    { value: "MANULI", label: "MANULI" },
+    { value: "SB FLEX", label: "SB FLEX" },
+    { value: "SB PARTS", label: "SB PARTS" },
+    { value: "SEMPRIT", label: "SEMPRIT" },
+    { value: "INDO", label: "INDO" }
+  ];
+
+  const HoseTypeOptions = [
+    { value: "R1", label: "R1", code: "R1", dsc_code: "R1" },
+    { value: "R2", label: "R2", code: "R2", dsc_code: "R2" },
+    { value: "R3", label: "R3", code: "R3", dsc_code: "R3" },
+    { value: "R4", label: "R4", code: "R4", dsc_code: "R4" },
+    { value: "R6", label: "R6", code: "R6", dsc_code: "R6" },
+    { value: "4XP", label: "4XP", code: "4XP", dsc_code: "4XP" },
+    { value: "4XH", label: "4XH", code: "4XH", dsc_code: "4XH" },
+    { value: "R15", label: "R15", code: "R15", dsc_code: "R15" },
+    { value: "TEFLON", label: "TEFLON", code: "R14", dsc_code: "R14" },
+    { value: "R5", label: "R5", code: "R5", dsc_code: "R5" },
+    { value: "R5R", label: "R5R", code: "R5R", dsc_code: "R5R" },
+    { value: "R1-HT", label: "R1-HT", code: "R1-HT", dsc_code: "R1-HT" },
+    { value: "R2-HT", label: "R2-HT", code: "R2-HT", dsc_code: "R2-HT" },
+    { value: "EC-640", label: "EC-640", code: "EC-640", dsc_code: "EC-640" },
+    { value: "Rockdrill", label: "Rockdrill", code: "RD", dsc_code: "RD" },
+    { value: "Airdrill", label: "Airdrill", code: "AD", dsc_code: "AD" },
+    { value: "Pneumatic", label: "Pneumatic", code: "PU", dsc_code: "PU" },
+    { value: "Chemical", label: "Chemical", code: "CH", dsc_code: "CH" },
+    { value: "Airwater", label: "Airwater", code: "AW", dsc_code: "AW" },
+    { value: "Steam", label: "Steam", code: "ST", dsc_code: "ST" }
+  ];
+  
+  
+
 module.exports = {
     ProductOptions,
     springTypeOptions,
@@ -442,5 +497,8 @@ module.exports = {
     skiveTypeOptions,
     fittingPieceOptions,
     designOption,
-    PartOptions
+    PartOptions,
+    MFCOptions,
+    BrandLayLineOptions,
+    HoseTypeOptions
 };

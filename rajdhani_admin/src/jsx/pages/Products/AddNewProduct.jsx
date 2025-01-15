@@ -20,7 +20,7 @@ import { getAllPartsApi } from "../../../services/apis/Parts";
 import { addProductApi } from "../../../services/apis/Product";
 import { useNavigate } from "react-router-dom";
 import EndFittingForm from "../../components/ProductTypeForms/EndFitting";
-import HosPipeSection from "../../components/ProductTypeForms/HosPipeSection";
+import HosPipeSection from "../../components/ProductTypeForms/HosPipe";
 import HoseAssemblySection from "../../components/ProductTypeForms/HoseAssemblySection";
 import SpringSection from "../../components/ProductTypeForms/SpringSection";
 import O_ringSection from "../../components/ProductTypeForms/O_ringSection";
@@ -34,6 +34,7 @@ import { getAllOptions } from "../../../services/apis/options";
 import Nut from "../../components/ProductTypeForms/Nut";
 import Nipple from "../../components/ProductTypeForms/Nipple";
 import Cap from "../../components/ProductTypeForms/Cap";
+import HosePipe from "../../components/ProductTypeForms/HosPipe";
 
 
 
@@ -278,7 +279,7 @@ const AddProduct = () => {
 
   // Fitting Code and Description
   useEffect(() => {
-    const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code  : ''}${selectedFittingTypeOption?.code ? '-' + selectedFittingTypeOption?.code : ''}${selectedStraightBendangleOption?.code || ''}${selectedWithCapWithoutCapOption?.code || ''}`;
+    const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-'  : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-'  : ''}${selectedFittingTypeOption?.code ?  selectedFittingTypeOption?.code : ''}${selectedStraightBendangleOption?.code || ''}${formData?.drop_length ? `-${formData?.drop_length}` : ''}${ selectedWithCapWithoutCapOption?.code ? '-' +selectedWithCapWithoutCapOption?.code : ''}`;
 
     // const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}${selectedWithCapWithoutCapOption?.code || ''}`;
     setFittingCode(fitting_Code);
@@ -287,7 +288,7 @@ const AddProduct = () => {
 
    
 
-    const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code + '-' : ''}${selectedFittingThreadOption?.dsc_code || ''} ${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code  : ''}${selectedFittingDashSizeOption?.dsc_code ?  'X' + selectedFittingDashSizeOption?.dsc_code  : ''} ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()} ${(selectedStraightBendangleOption?.dsc_code || '').toUpperCase()} ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()} ${formData?.drop_length ? `DL-${formData.drop_length}` : ''} ${selectedWithCapWithoutCapOption?.dsc_code || ''}${formData?.nut_hex ? + formData?.nut_hex + 'X' : '' }${formData?.nut_length ?  formData?.nut_length  : '' }`.trim();
+    const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code  : ''}${selectedFittingThreadOption?.dsc_code ? ' ' + selectedFittingThreadOption?.dsc_code  : ''} ${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code  : ''}${selectedFittingDashSizeOption?.dsc_code ?  'X' + selectedFittingDashSizeOption?.dsc_code  : ''} ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()} ${(selectedStraightBendangleOption?.dsc_code || '').toUpperCase()} ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()}${selectedFittingThreadOption?.dsc ?  ' ' + selectedFittingThreadOption?.dsc  : ''} ${formData?.drop_length ? `DL-${formData.drop_length}` : ''} ${selectedWithCapWithoutCapOption?.dsc_code || ''}${formData?.nut_hex ? + formData?.nut_hex + 'X' : '' }${formData?.nut_length ?  formData?.nut_length  : '' }`.trim();
 
     setDescCode(desc_Code);
     setFormData((prevData) => ({
@@ -463,6 +464,18 @@ const AddProduct = () => {
       
     }
   }, [selectedhoseDashSizeOption]);
+
+  //Clear bend code
+  useEffect(() => {
+    //When user select Staight clear the drop length in fitting and descrition code
+    if(selectedStraightBendangleOption?.value === 'Straight'){
+      setFormData((prevData) => ({
+        ...prevData,
+        drop_length: "" // Clear the bend code when `selectedStraightBendangleOption` changes
+      }));
+    }
+   
+  }, [selectedStraightBendangleOption]);
 
   useEffect(() => {
     setFormData((prevData) => ({
@@ -809,8 +822,7 @@ const AddProduct = () => {
     },
   };
 
-  console.log(formData?.product_type === "End Fittings" && formData?.part === "Nut")
-
+ 
   //parts component
   const renderPartComponent = () => {
     switch (formData?.part){
@@ -1166,10 +1178,21 @@ const AddProduct = () => {
         />;
       
       case "Hose Pipe":
-        return <HosPipeSection
+        return <HosePipe
           formData={formData}
           setFormData={setFormData}
           errors={errors}
+
+          //hose dash size
+          HoseDashSizeOption={dropdownOptions?.hoseDashSizeOptions}
+          setHoseDashSizeOption={setHoseDashSizeOption}
+          selectedhoseDashSizeOption={selectedhoseDashSizeOption}
+          setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
+          //HosePipeMFC options
+          HosePipeMFCOption={dropdownOptions?.MFCOptions}
+          setHosePipeMFCOption={setHoseDashSizeOption}
+          selectedHosePipeMFCOption={selectedhoseDashSizeOption}
+          setSelectedHosePipeMFCOption={setSelectedHoseDashSizeOption}
         />;
 
       case "Hose Assembly":
