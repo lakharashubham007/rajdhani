@@ -116,7 +116,7 @@ const ProductOptions = [
     { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "BJ", dsc_code: "JIS" },
     { value: "SAE 61", label: "FLG CODE 61- 3000 PSI (3)", code: "FL", dsc_code: "FLANGE" ,dsc:'61-(3)'},
     { value: "SAE 62", label: "FLG CODE 62- 6000 PSI (6)", code: "FLH", dsc_code: "FLANGE" ,dsc: '62-(6)'},
-    { value: "SAE 62", label: "CAT FLANGE", code: "FLC", dsc_code: "CAT FLANGE" ,dsc: '62-(6)'},
+    // { value: "SAE 62", label: "CAT FLANGE", code: "FLC", dsc_code: "CAT FLANGE" ,dsc: '62-(6)'},
     { value: "BANJO WITHOUT O", label: "BANJO WITHOUT O (BJ)", code: "BJ", dsc_code: "BANJO-WO" },
     { value: "BANJO WITH O", label: "BANJO WITH O (BJO)", code: "BJO", dsc_code: "BANJO" },
     { value: "METRIC THREAD ORFS", label: "METRIC THREAD ORFS (MO)", code: "MO", dsc_code: "M-ORFS" }
@@ -290,10 +290,10 @@ const ProductOptions = [
   const fittingTypeOptions = [
     { value: "Female", label: "Female", code: "F", dsc_code: "Female", fitting_thread: "normal"},
     { value: "Male", label: "Male", code: "M", dsc_code: "Male",fitting_thread: "normal" },
-    { value: "Flange", label: "Flange", code: "", dsc_code: "", fitting_thread: "SAE 61" },
-    { value: "CAT Flange", label: "CAT Flange", code: "", dsc_code: "",fitting_thread: "SAE" }
-    // { value: "Flange", label: "Flange", code: "FL", dsc_code: "Flange", fitting_thread: "SAE 61" },
-    // { value: "CAT Flange", label: "CAT Flange", code: "FLC", dsc_code: "CAT Flange",fitting_thread: "SAE" }
+    // { value: "Flange", label: "Flange", code: "", dsc_code: "", fitting_thread: "SAE 61" },
+    // { value: "CAT Flange", label: "CAT Flange", code: "", dsc_code: "",fitting_thread: "SAE" }
+    { value: "Flange", label: "Flange", code: "FL", dsc_code: "Flange", fitting_thread: "SAE 61" },
+    { value: "CAT Flange", label: "CAT Flange", code: "FLC", dsc_code: "CAT Flange",fitting_thread: "SAE" }
   ];
   
   const straightBendangleOptions = [
