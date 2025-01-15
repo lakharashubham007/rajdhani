@@ -94,7 +94,7 @@ const AllProductList = () => {
 
     "Cap": "#cce7ff", // Light blue-gray
   "Nipple": "#ffcce7", // Light rose-pink
-  "Nut": "#d9ffcc", // Light greenish-yellow
+  "Nut": "rgb(255 122 65 / 76%)", // Light greenish-yellow
   };
 
 
@@ -434,7 +434,11 @@ const AllProductList = () => {
                           >
                             <span
                               style={{
-                                backgroundColor: fittingThreadColors[data?.fitting_thread] || "#f5f5f5", // Default to light gray if no match
+                                // backgroundColor: fittingThreadColors[data?.fitting_thread] || "#f5f5f5", // Default to light gray if no match
+                                backgroundColor:
+                                fittingThreadColors[data?.part] || // Check for `Cap`, `Nipple`, `Nut`
+                                fittingThreadColors[data?.fitting_thread] || // Check for fitting_thread
+                                "#f5f5f5", // Default to light gray if no match
                                 color: "#000", // Black text color for better contrast
                                 padding: "5px 10px", // Padding inside the badge
                                 borderRadius: "12px", // Rounded corners

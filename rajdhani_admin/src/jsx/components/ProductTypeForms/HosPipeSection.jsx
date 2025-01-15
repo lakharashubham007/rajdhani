@@ -23,6 +23,19 @@ const HosPipeSection = (props) => {
             </div>
             <div className="card-body">
                 <div className="mb-3 row">
+                  
+                  <div className="col-md-4">
+                    <label className="col-form-label">MFC</label>
+                    <input
+                      name="mfc"
+                      value={formData.mfc}
+                      onChange={handleChange}
+                      type="text"
+                      className={`form-control`}
+                      placeholder="Enter MFC"
+                    />
+                    {errors.mfc && <span className="text-danger fs-12">{errors.mfc}</span>}
+                  </div>
                   <div className="col-md-4">
                     <label className="col-form-label">Brand</label>
                     <input
@@ -49,18 +62,7 @@ const HosPipeSection = (props) => {
                       <span className="text-danger fs-12">{errors.brandLayLine}</span>
                     )}
                   </div>
-                  <div className="col-md-4">
-                    <label className="col-form-label">MFC</label>
-                    <input
-                      name="mfc"
-                      value={formData.mfc}
-                      onChange={handleChange}
-                      type="text"
-                      className={`form-control`}
-                      placeholder="Enter MFC"
-                    />
-                    {errors.mfc && <span className="text-danger fs-12">{errors.mfc}</span>}
-                  </div>
+                 
                 </div>
                 <div className="mb-3 row">
                   <div className="col-md-4">
