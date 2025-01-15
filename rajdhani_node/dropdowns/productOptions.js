@@ -427,13 +427,13 @@ const ProductOptions = [
   ];
 
   const MFCOptions = [
-    { value: "MFC", label: "MFC", code: "M", dsc_code: "MFC" },
-    { value: "IBL", label: "IBL", code: "I", dsc_code: "IBL" },
-    { value: "BPL", label: "BPL", code: "B", dsc_code: "BPL" },
-    { value: "BSR", label: "BSR", code: "R", dsc_code: "BSR" },
-    { value: "IBN", label: "IBN", code: "N", dsc_code: "IBN" },
-    { value: "BIN", label: "BIN", code: "B", dsc_code: "BIN" },
-    { value: "ILT", label: "ILT", code: "L", dsc_code: "ILT" },
+    { value: "MFC", label: "MFC", code: "MFC", dsc_code: "MFC" },
+    { value: "IBL", label: "IBL", code: "IBL", dsc_code: "IBL" },
+    { value: "BPL", label: "BPL", code: "IBL", dsc_code: "BPL" },
+    { value: "BSR", label: "BSR", code: "BSR", dsc_code: "BSR" },
+    { value: "IBN", label: "IBN", code: "IBN", dsc_code: "IBN" },
+    { value: "BIN", label: "BIN", code: "BIN", dsc_code: "BIN" },
+    { value: "ILT", label: "ILT", code: "ILT", dsc_code: "ILT" },
     { value: "None", label: "None", code: "", dsc_code: "" }
   ];
 
