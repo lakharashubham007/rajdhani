@@ -75,29 +75,29 @@ const ProductOptions = [
   // ];
   
   const hoseDashSizeOptions = [
-    { value: "3/16\" (03)", label: "3/16\" (03)", code: "03", dsc_code: "3/16",dash: "03"},
-    { value: "1/4\" (04)", label: "1/4\" (04)", code: "04", dsc_code: "1/4",dash: "04"},
-    { value: "5/16\" (05)", label: "5/16\" (05)", code: "05", dsc_code: "5/16",dash: "05"},
-    { value: "3/8\" (06)", label: "3/8\" (06)", code: "06", dsc_code: "3/8" ,dash: "06"},
-    { value: "1/2\" (08)", label: "1/2\" (08)", code: "08", dsc_code: "1/2" ,dash: "08"},
-    { value: "5/8\" (10)", label: "5/8\" (10)", code: "10", dsc_code: "5/8" ,dash: "10"},
-    { value: "3/4\" (12)", label: "3/4\" (12)", code: "12", dsc_code: "3/4" ,dash: "12"},
-    { value: "1\" (16)", label: "1\" (16)", code: "16", dsc_code: "1" ,dash: "16"},
-    { value: "1-1/4\" (20)", label: "1-1/4\" (20)", code: "20", dsc_code: "1-1/4",dash: "20" },
-    { value: "1-1/2\" (24)", label: "1-1/2\" (24)", code: "24", dsc_code: "1-1/2",dash: "24" },
-    { value: "2\" (32)", label: "2\" (32)", code: "32", dsc_code: "2",dash: "32" },
-    { value: "2-1/2\" (40)", label: "2-1/2\" (40)", code: "40", dsc_code: "2-1/2",dash: "40" },
-    { value: "3\" (48)", label: "3\" (48)", code: "48", dsc_code: "3",dash: "48" },
-    { value: "3-1/2\" (56)", label: "3-1/2\" (56)", code: "56", dsc_code: "3-1/2",dash: "56" },
-    { value: "4\" (64)", label: "4\" (64)", code: "64", dsc_code: "4",dash: "64" },
-    { value: "4-1/2\" (72)", label: "4-1/2\" (72)", code: "72", dsc_code: "4-1/2",dash: "72" },
-    { value: "5\" (80)", label: "5\" (80)", code: "80", dsc_code: "5",dash: "80" },
-    { value: "13/32\" ", label: "13/32\" ", code: "", dsc_code: "13/32" },
-    { value: "7/8\" ", label: "7/8\" ", code: "", dsc_code: "7/8" },
-    { value: "1-1/8\" ", label: "1-1/8\" ", code: "", dsc_code: "1-1/8" },
-    { value: "1-3/8\" ", label: "1-3/8\" ", code: "", dsc_code: "1-3/8" },
-    { value: "1-13/16\" ", label: "1-13/16\" ", code: "", dsc_code: "1-13/16" },
-    { value: "2-3/8\" ", label: "2-3/8\" ", code: "", dsc_code: "2-3/8" }
+    { value: "3/16\" (03)", label: "3/16\" (03)", code: "03", dsc_code: "3/16\"",dash: "03"},
+    { value: "1/4\" (04)", label: "1/4\" (04)", code: "04", dsc_code: "1/4\"",dash: "04"},
+    { value: "5/16\" (05)", label: "5/16\" (05)", code: "05", dsc_code: "5/16\"",dash: "05"},
+    { value: "3/8\" (06)", label: "3/8\" (06)", code: "06", dsc_code: "3/8\"" ,dash: "06"},
+    { value: "1/2\" (08)", label: "1/2\" (08)", code: "08", dsc_code: "1/2\"" ,dash: "08"},
+    { value: "5/8\" (10)", label: "5/8\" (10)", code: "10", dsc_code: "5/8\"" ,dash: "10"},
+    { value: "3/4\" (12)", label: "3/4\" (12)", code: "12", dsc_code: "3/4\"" ,dash: "12"},
+    { value: "1\" (16)", label: "1\" (16)", code: "16", dsc_code: "1\"" ,dash: "16"},
+    { value: "1-1/4\" (20)", label: "1-1/4\" (20)", code: "20", dsc_code: "1-1/4\"",dash: "20" },
+    { value: "1-1/2\" (24)", label: "1-1/2\" (24)", code: "24", dsc_code: "1-1/2\"",dash: "24" },
+    { value: "2\" (32)", label: "2\" (32)", code: "32", dsc_code: "2\"",dash: "32" },
+    { value: "2-1/2\" (40)", label: "2-1/2\" (40)", code: "40", dsc_code: "2-1/2\"",dash: "40" },
+    { value: "3\" (48)", label: "3\" (48)", code: "48", dsc_code: "3\"",dash: "48" },
+    { value: "3-1/2\" (56)", label: "3-1/2\" (56)", code: "56", dsc_code: "3-1/2\"",dash: "56" },
+    { value: "4\" (64)", label: "4\" (64)", code: "64", dsc_code: "4\"",dash: "64" },
+    { value: "4-1/2\" (72)", label: "4-1/2\" (72)", code: "72", dsc_code: "4-1/2\"",dash: "72" },
+    { value: "5\" (80)", label: "5\" (80)", code: "80", dsc_code: "5\"",dash: "80" },
+    { value: "13/32\" ", label: "13/32\" ", code: "13/32\"", dsc_code: "13/32\"" },
+    { value: "7/8\" ", label: "7/8\" ", code: "7/8\"", dsc_code: "7/8\"" },
+    { value: "1-1/8\" ", label: "1-1/8\" ", code: "1-1/8\"", dsc_code: "1-1/8\"" },
+    { value: "1-3/8\" ", label: "1-3/8\" ", code: "1-3/8\"", dsc_code: "1-3/8\"" },
+    { value: "1-13/16\" ", label: "1-13/16\" ", code: "1-13/16\"", dsc_code: "1-13/16\"" },
+    { value: "2-3/8\" ", label: "2-3/8\" ", code: "2-3/8\"", dsc_code: "2-3/8\"" }
   ];
   
   
@@ -466,15 +466,15 @@ const ProductOptions = [
     { value: "TEFLON", label: "TEFLON", code: "R14", dsc_code: "R14" },
     { value: "R5", label: "R5", code: "R5", dsc_code: "R5" },
     { value: "R5R", label: "R5R", code: "R5R", dsc_code: "R5R" },
-    { value: "R1-HT", label: "R1-HT", code: "R1-HT", dsc_code: "R1-HT" },
-    { value: "R2-HT", label: "R2-HT", code: "R2-HT", dsc_code: "R2-HT" },
-    { value: "EC-640", label: "EC-640", code: "EC-640", dsc_code: "EC-640" },
-    { value: "Rockdrill", label: "Rockdrill", code: "RD", dsc_code: "RD" },
-    { value: "Airdrill", label: "Airdrill", code: "AD", dsc_code: "AD" },
-    { value: "Pneumatic", label: "Pneumatic", code: "PU", dsc_code: "PU" },
-    { value: "Chemical", label: "Chemical", code: "CH", dsc_code: "CH" },
-    { value: "Airwater", label: "Airwater", code: "AW", dsc_code: "AW" },
-    { value: "Steam", label: "Steam", code: "ST", dsc_code: "ST" }
+    { value: "R1(HT)", label: "R1(HT)", code: "R1(HT)", dsc_code: "R1(HT)" },
+    { value: "R2(HT)", label: "R2(HT)", code: "R2(HT)", dsc_code: "R2(HT)" },
+    { value: "EC(640)", label: "EC(640)", code: "EC(640)", dsc_code: "EC(640)" },
+    { value: "Rockdrill", label: "Rockdrill", code: "RD", dsc_code: "Rockdrill" },
+    { value: "Airdrill", label: "Airdrill", code: "AD", dsc_code: "Airdrill" },
+    { value: "Pneumatic", label: "Pneumatic", code: "PU", dsc_code: "Pneumatic" },
+    { value: "Chemical", label: "Chemical", code: "CH", dsc_code: "Chemical" },
+    { value: "Airwater", label: "Airwater", code: "AW", dsc_code: "Airwater" },
+    { value: "Steam", label: "Steam", code: "ST", dsc_code: "Steam" }
   ];
   
   

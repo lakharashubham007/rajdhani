@@ -83,6 +83,16 @@ const HosePipe = (props) => {
     designOption,
 
     HosePipeMFCOption,
+    selectedHosePipeMFCOption,
+    setSelectedHosePipeMFCOption,
+
+    BrandLayLineOption,
+    selectedBrandLayLineOption,
+    setSelectedBrandLayLineOption,
+
+    HoseTypeOption,
+    selectedHoseTypeOption,
+    setSelectedHoseTypeOption
 
 
   } = props;
@@ -206,19 +216,19 @@ const HosePipe = (props) => {
               <div>
                 <div className="mb-3 row">
                 
-
+                   {/* MFC options */}
                   <div className="col-md-3">
                     <label className="col-form-label">MFC</label>
                     <Select
-                      value={selectedDesignOption}
+                      value={selectedHosePipeMFCOption}
                       onChange={(option) => {
-                        setSelectedDesignOption(option);
+                        setSelectedHosePipeMFCOption(option);
                         setFormData({
                           ...formData,
-                          design: option.value,
+                          hose_pipe_mfc: option.value,
                         });
                       }}
-                      defaultValue={selectedDesignOption}
+                      defaultValue={selectedHosePipeMFCOption}
                       options={HosePipeMFCOption}
                       style={{
                         lineHeight: "40px",
@@ -226,39 +236,39 @@ const HosePipe = (props) => {
                         paddingLeft: " 15px",
                       }}
                     />
-                    {errors.design && (
+                    {errors.hose_pipe_mfc && (
                       <span className="text-danger fs-12">
-                        {errors.design}
+                        {errors.hose_pipe_mfc}
                       </span>
                     )}
                   </div>
-
+                   {/* BrandLayLineOption */}
                   <div className="col-md-3">
                     <label className="col-form-label">Brand Lay Line</label>
                     <Select
-                      value={selectedWireTypeOption}
+                      value={selectedBrandLayLineOption}
                       onChange={(option) => {
-                        setSelectedWireTypeOption(option);
+                        setSelectedBrandLayLineOption(option);
                         setFormData({
                           ...formData,
-                          wire_type: option.value,
+                          brand_lay_line: option.value,
                         });
                       }}
-                      defaultValue={selectedWireTypeOption}
-                      options={wireTypeOption}
+                      defaultValue={selectedBrandLayLineOption}
+                      options={BrandLayLineOption}
                       style={{
                         lineHeight: "40px",
                         color: "#7e7e7e",
                         paddingLeft: " 15px",
                       }}
                     />
-                    {errors.wire_type && (
+                    {errors.brand_lay_line && (
                       <span className="text-danger fs-12">
-                        {errors.wire_type}
+                        {errors.brand_lay_line}
                       </span>
                     )}
                   </div>
-
+                 {/* HoseDash size options */}
                   <div className="col-md-3">
                   <label className="col-form-label">Hose Dash Size</label>
                   <Select
@@ -284,38 +294,32 @@ const HosePipe = (props) => {
                     </span>
                   )}
                 </div>
-
-
+                {/* Hose Type size options */}
                   <div className="col-md-3">
                     <label className="col-form-label">Hose Type</label>
-                    {/* <label className="col-form-label" style={{ whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>
-                      With Cap / Without Cap
-                    </label> */}
                     <Select
-                      value={selectedWithCapWithoutCapOption}
+                      value={selectedHoseTypeOption}
                       onChange={(option) => {
-                        setSelectedWithCapWithoutCapOption(option);
+                        setSelectedHoseTypeOption(option);
                         setFormData({
                           ...formData,
-                          ferrule: option.value,
+                          hose_type: option.value,
                         });
                       }}
-                      defaultValue={selectedWithCapWithoutCapOption}
-                      options={withCapWithoutCapOption}
+                      defaultValue={selectedHoseTypeOption}
+                      options={HoseTypeOption}
                       style={{
                         lineHeight: "40px",
                         color: "#7e7e7e",
                         paddingLeft: " 15px",
                       }}
                     />
-                    {errors.with_cap && (
+                    {errors.hose_type && (
                       <span className="text-danger fs-12">
-                        {errors.with_cap}
+                        {errors.hose_type}
                       </span>
                     )}
                   </div>
-
-                
                 </div>
 
               </div>
