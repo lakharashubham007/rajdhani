@@ -292,9 +292,9 @@ const ProductOptions = [
     { value: "Male", label: "Male", code: "M", dsc_code: "Male",fitting_thread: "normal" },
     // { value: "Flange", label: "Flange", code: "", dsc_code: "", fitting_thread: "SAE 61" },
     // { value: "CAT Flange", label: "CAT Flange", code: "", dsc_code: "",fitting_thread: "SAE" }
-    { value: "Flange1", label: "Flange", code: "FL", dsc_code: "", fitting_thread: "SAE 61" },
-    { value: "Flange", label: "Flange", code: "FLH", dsc_code: "", fitting_thread: "SAE 61" },
-    { value: "CAT Flange", label: "CAT Flange", code: "FLC", dsc_code: "",fitting_thread: "SAE" }
+    { value: "Flange", label: "Flange", code: "FL", dsc_code: "Flange", fitting_thread: "SAE 61" },
+    { value: "Flange1", label: "Flange", code: "FLH", dsc_code: "Flange", fitting_thread: "SAE 61" },
+    { value: "CAT Flange", label: "CAT Flange", code: "FLC", dsc_code: "CAT Flange",fitting_thread: "SAE" }
   ];
   
   const straightBendangleOptions = [
