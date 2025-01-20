@@ -323,12 +323,42 @@ const HosePipe = (props) => {
                 </div>
 
               </div>
+              
+            </div>
+            
+          </div>
+          
+        </div>
+      </div>
+ {/* Section 2nd Location and additional field */}
+ <div className="row">
+        <div className="col-xl-12 col-lg-12">
+          <div className="card">
+            <div className="card-header">
+              <h4 className="card-title">Additional</h4>
+            </div>
+            <div className="card-body">
+              <div className="mb-3 row">
+
+                  <div className="col-md-6">
+                    <label className="col-form-label">Additional<small style={{ color: "grey" }} >(Optional Field)*</small></label>
+                    <input
+                      name="additional"
+                      value={formData.additional}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: Additional"
+                    />
+                    {errors.additional && (
+                      <span className="text-danger fs-12">{errors.additional}</span>
+                    )}
+                  </div>
+              </div>
             </div>
           </div>
         </div>
-
-      </div>
-
+      </div> 
 
      
 

@@ -2,9 +2,6 @@ import axios from "axios";
 import apis from './index'
 
 export const addProductApi = async (formData) => {
-  console.log("DAta send to api is from here-------------->")
-    console.log("formdata in addProductApi", formData)
-
     const form = new FormData();
 
     for (const key in formData) {
@@ -12,8 +9,6 @@ export const addProductApi = async (formData) => {
         form.append(key, formData[key]);
       }
     }
-
-   
     if (formData.image) {
       form.append("image", formData.image);
     }
@@ -29,7 +24,6 @@ export const addProductApi = async (formData) => {
             form,
       {
         headers: {
-          // 'Content-Type': 'application/json',
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
         },

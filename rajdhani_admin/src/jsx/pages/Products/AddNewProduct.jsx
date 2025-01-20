@@ -44,6 +44,7 @@ const AddProduct = () => {
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  console.log("errors are here", errors)
   const [galleryImages, setGalleryImages] = useState([]);
   //drop option list
   const [productTypeOption, setProductTypeOption] = useState(dropdownOptions?.ProductOptions);
@@ -252,7 +253,7 @@ const AddProduct = () => {
       }
       if (formData?.fitting_thread === "SAE 62") {
         // For SAE 62, include both "Flange" and "CAT Flange"
-        return option?.fitting_thread === "SAE" || option?.fitting_thread === "SAE 61";
+        return option?.fitting_thread === "SAE";
       }
       // Default case: include all matching `fitting_thread`
       return option?.fitting_thread === 'normal';
@@ -579,14 +580,10 @@ const AddProduct = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    setFormData({ ...formData, [name]: value });
+    console.log(name)
 
-    if (errors[name]) {
-      setErrors({
-        ...errors,
-        [name]: null,
-      });
-    }
+    setFormData({ ...formData, [name]: value });
+   
   };
 
   const handleSelectChange = (name) => (selectedOption) => {
@@ -686,30 +683,9 @@ const AddProduct = () => {
     const validationErrors = validateFormComponent(formData);
     setErrors(validationErrors);
 
-    // console.log("formData formData formData formData formData formData",formData)
-    // const form = new FormData();
-
-    // for (const key in formData) {
-    //   if (key !== 'image' && key !== 'gallery' && formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
-    //     form.append(key, formData[key]);
-    //   }
-    // }
-
-
-    // if (formData.image) {
-    //   form.append("image", formData.image);
-    // }
-
-    // formData?.gallery?.forEach((file) => {
-    //   form.append("gallery", file);
-    // });
-    // Object.keys(validationErrors).length === 0
-
-    //      console.log("form form form form formData formData",form)
-    //     // To log all FormData contents
-    // console.log("FormData contents:");
-    // for (const [key, value] of form.entries()) {
-    //   console.log(`${key}: ${value}`);
+    // if(Object.keys(validationErrors).length > 0){
+    //   console.log("validationErrors is available",validationErrors )
+    //   return
     // }
 
     if (formData) {
@@ -725,18 +701,16 @@ const AddProduct = () => {
             timer: 1500,
           });
           resetForm();
-          navigate('/productlist');
+          // navigate('/productlist');
         } else {
           setLoading(false);
           Toaster.error(res.data?.message || "Failed to create product");
-          console.error("Product creation error:", res);
         }
       } catch (error) {
         setLoading(false);
         Toaster.error(error.response?.data?.message ||
           "An error occurred while processing your request"
         );
-        console.error("Error creating product:", error);
       }
     }
   }
@@ -1126,6 +1100,7 @@ const AddProduct = () => {
           formData={formData}
           setFormData={setFormData}
           errors={errors}
+          setErrors={setErrors}
           //code prefilled
           fittingCode={fittingCode}
           descCode={descCode}

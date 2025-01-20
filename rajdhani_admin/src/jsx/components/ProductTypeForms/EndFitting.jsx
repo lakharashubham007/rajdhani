@@ -13,6 +13,7 @@ const EndFittingForm = (props) => {
     formData,
     setFormData,
     errors,
+    setErrors,
     resetForm,
     wireTypeOption,
     setWireTypeOption,
@@ -92,12 +93,12 @@ const EndFittingForm = (props) => {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    // if(errors[name]) {
-    //   setErrors({
-    //     ...errors,
-    //     [name]: null,
-    //   });
-    // }
+    if(errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null,
+      });
+    }
   };
 
   const resetEndFittingForm = () => {
@@ -291,6 +292,11 @@ const EndFittingForm = (props) => {
                           ...formData,
                           design: option.value,
                         });
+                        setErrors({
+                          ...errors,
+                          design: null
+                        })
+                        
                       }}
                       defaultValue={selectedDesignOption}
                       options={designOption}
@@ -317,6 +323,10 @@ const EndFittingForm = (props) => {
                           ...formData,
                           wire_type: option.value,
                         });
+                        setErrors({
+                          ...errors,
+                          wire_type: null
+                        })
                       }}
                       defaultValue={selectedWireTypeOption}
                       options={wireTypeOption}
@@ -347,6 +357,10 @@ const EndFittingForm = (props) => {
                           ...formData,
                           ferrule: option.value,
                         });
+                        setErrors({
+                          ...errors,
+                          ferrule: null
+                        })
                       }}
                       defaultValue={selectedWithCapWithoutCapOption}
                       options={withCapWithoutCapOption}
@@ -356,9 +370,9 @@ const EndFittingForm = (props) => {
                         paddingLeft: " 15px",
                       }}
                     />
-                    {errors.with_cap && (
+                    {errors.ferrule && (
                       <span className="text-danger fs-12">
-                        {errors.with_cap}
+                        {errors.ferrule}
                       </span>
                     )}
                   </div>
@@ -401,6 +415,10 @@ const EndFittingForm = (props) => {
                           ...formData,
                           fitting_piece: option.value,
                         });
+                        setErrors({
+                          ...errors,
+                          fitting_piece: null
+                        })
                       }}
                       defaultValue={selectedFittingPieceOption}
                       options={fittingPieceOption}
@@ -427,6 +445,10 @@ const EndFittingForm = (props) => {
                           ...formData,
                           skive_type: option.value,
                         });
+                        setErrors({
+                          ...errors,
+                          skive_type: null
+                        })
                       }}
                       defaultValue={selectedSkiveTypeOption}
                       options={skiveTypeOption}
@@ -846,6 +868,10 @@ const EndFittingForm = (props) => {
                         ...formData,
                         fitting_thread: option.value,
                       });
+                      setErrors({
+                        ...errors,
+                        fitting_thread: null
+                      })
                     }}
                     defaultValue={selectedFittingThreadOption}
                     options={fittingThreadOption}
@@ -872,6 +898,10 @@ const EndFittingForm = (props) => {
                         ...formData,
                         hose_dash_size: option.value,
                       });
+                      setErrors({
+                        ...errors,
+                        hose_dash_size: null
+                      })
                     }}
                     defaultValue={selectedhoseDashSizeOption}
                     options={HoseDashSizeOption}
@@ -900,6 +930,10 @@ const EndFittingForm = (props) => {
                             ...formData,
                             variant: option.value,
                           });
+                          setErrors({
+                            ...errors,
+                            variant: null
+                          })
                         }}
                         defaultValue={selectedvariantOption}
                         options={variantOption}
@@ -953,6 +987,10 @@ const EndFittingForm = (props) => {
                                 ...formData,
                                 OD: option.value,
                               });
+                              setErrors({
+                                ...errors,
+                                OD: null
+                              })
                             }}
                             defaultValue={selectedFittingDashSizeOption}
                             options={fittingDashSizeOption}
@@ -980,6 +1018,10 @@ const EndFittingForm = (props) => {
                                 fitting_dash_size: option.value,
 
                               });
+                              setErrors({
+                                ...errors,
+                                fitting_dash_size: null
+                              })
                             }}
                             defaultValue={selectedFittingDashSizeOption}
                             options={fittingDashSizeOption}
@@ -1012,6 +1054,10 @@ const EndFittingForm = (props) => {
                               ...formData,
                               pipeOD: option.value,
                             });
+                            setErrors({
+                              ...errors,
+                              pipeOD: null
+                            })
                           }}
                           defaultValue={selectedpipeODOption}
                           options={pipeODOption}
@@ -1039,6 +1085,10 @@ const EndFittingForm = (props) => {
                               ...formData,
                               metric_type: option.value,
                             });
+                            setErrors({
+                              ...errors,
+                              metric_type: null
+                            })
                           }}
                           defaultValue={selectedmetricTypeOptions}
                           options={matricTypeOption}
@@ -1093,6 +1143,10 @@ const EndFittingForm = (props) => {
                               fitting_dash_size: option,
 
                             });
+                            setErrors({
+                              ...errors,
+                              fitting_dash_size: null
+                            })
                           }}
                           defaultValue={selectedFittingDashSizeOption}
                           options={fittingDashSizeOption}
@@ -1126,6 +1180,10 @@ const EndFittingForm = (props) => {
                         ...formData,
                         fitting_type: option.value,
                       });
+                      setErrors({
+                        ...errors,
+                        fitting_type: null
+                      })
                     }}
                     defaultValue={selectedFittingTypeOption}
                     options={fittingTypeOption}
@@ -1156,6 +1214,10 @@ const EndFittingForm = (props) => {
                         ...formData,
                         straight_bend_angle: option.value,
                       });
+                      setErrors({
+                        ...errors,
+                        straight_bend_angle: null
+                      })
                     }}
                     defaultValue={selectedStraightBendangleOption}
                     options={straightBendangleOption}
@@ -1293,72 +1355,48 @@ const EndFittingForm = (props) => {
           </div>
         </div>
       </div>
-      {/* Section 3 Ferrul Part of End fittings */}
-
-      {/* <div className="row">
-        
+      {/* Section 3 Location and additional field */}
+      <div className="row">
         <div className="col-xl-12 col-lg-12">
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Ferrule(Part of End Fittings)</h4>
+              <h4 className="card-title">Location</h4>
             </div>
             <div className="card-body">
               <div className="mb-3 row">
-                <div className="col-md-4">
-                  <label className="col-form-label">Design</label>
-                  <input
-                    name="ferrule_design"
-                    value={formData.ferrule_design}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: ABC"
-                  />
-                  {errors.ferrule_design && (
-                    <span className="text-danger fs-12">
-                      {errors.ferrule_design}
-                    </span>
-                  )}
-                </div>
-
-                <div className="col-md-4">
-                  <label className="col-form-label">Wire Type</label>
-                  <input
-                    name="ferrule_wire_type"
-                    value={formData.ferrule_wire_type}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: ABC"
-                  />
-                  {errors.ferrule_wire_type && (
-                    <span className="text-danger fs-12">
-                      {errors.ferrule_wire_type}
-                    </span>
-                  )}
-                </div>
-
-                <div className="col-md-4">
-                  <label className="col-form-label">Hose Dash Size</label>
-                  <input
-                    name="ferrule_hose_dash_size"
-                    value={formData.ferrule_hose_dash_size}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: ABC"
-                  />
-                  {errors.ferrule_hose_dash_size && (
-                    <span className="text-danger fs-12">
-                      {errors.ferrule_hose_dash_size}
-                    </span>
-                  )}
-                </div>
+              <div className="col-md-6">
+                    <label className="col-form-label">Location<small style={{ color: "grey" }} ></small></label>
+                    <input
+                      name="location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: Row-5, BucketNo.22, Rack-15"
+                    />
+                    {errors.location && (
+                      <span className="text-danger fs-12">{errors.location}</span>
+                    )}
+                  </div>
+                  <div className="col-md-6">
+                    <label className="col-form-label">Fitting Additional<small style={{ color: "grey" }} >(Optional)*</small></label>
+                    <input
+                      name="additional"
+                      value={formData.additional}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: Additional"
+                    />
+                    {errors.additional && (
+                      <span className="text-danger fs-12">{errors.additional}</span>
+                    )}
+                  </div>
               </div>
             </div>
           </div>
         </div>
-      </div> */}
+      </div> 
 
 
     </>
