@@ -29,8 +29,7 @@ module.exports.purchaseOrderBillService = require("./purchaseOrderBill.service")
 module.exports.purchaseOrderBillItemService = require("./PurchaseOrderBillItems.service");
 module.exports.bulkimportservice = require("./bulkimport.service");
 module.exports.designService = require("./design.service");
-
-// module.exports. = require("./");
+module.exports.fittingThreadService = require("./fittingThread.service");
 // module.exports. = require("./");
 // module.exports. = require("./");
 // module.exports. = require("./");

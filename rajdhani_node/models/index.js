@@ -10,7 +10,6 @@ module.exports.Categories = require('./categories.model').Categories
 module.exports.Subcategories = require('./subCategories.model').Subcategories
 module.exports.SubSubcategory = require('./subSubcategory.model').SubSubcategory
 module.exports.Addons = require('./addons.model').Addons
-module.exports.Food = require('./food.model').Food
 module.exports.Vendors = require('./vendors.model').Vendors
 module.exports.Products = require('./products.model').Products
 module.exports.Brands = require('./brands.model').Brands
@@ -29,8 +28,7 @@ module.exports.PurchaseOrderItem = require('./purchaseOrderItem.model').Purchase
 module.exports.PurchaseOrderBill = require('./purchaseOrderBill.model').PurchaseOrderBill
 module.exports.PurchaseOrderBillItem = require('./purchaseOrderBillItem.model').PurchaseOrderBillItem
 module.exports.Design = require('./design.model').Design
-
-// module.exports. = require('./').
+module.exports.FittingThreads = require('./fittingThreads.model').FittingThreads
 // module.exports. = require('./').
 // module.exports. = require('./').
 

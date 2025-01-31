@@ -28,8 +28,8 @@ module.exports.purchaseOrderBillItemController = require('./PurchaseOrderBillIte
 module.exports.dropdownOptiosController = require('./dropdowns.controller')
 module.exports.bulkimportController = require('./bulkimport.controller')
 module.exports.designController = require('./design.controller')
+module.exports.fittingThreadsController = require('./fittingThreads.controller')
 
-// module.exports. = require('./')
 // module.exports. = require('./')
 // module.exports. = require('./')
 // module.exports. = require('./')
