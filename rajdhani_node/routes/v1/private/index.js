@@ -13,7 +13,7 @@ const supplier = require('./supplier.route')
 const purchaseorders = require('./purchaseOrder.route')
 const pobills = require('./purchaseOrderBill.route')
 const bulk = require('./bulkimport.route')
-
+const design = require('./design.route')
 const router = express.Router();
 
 //rajdhani route
@@ -29,7 +29,7 @@ router.use("/materials",material)
 router.use("/suppliers",supplier)
 router.use("/purchaseorders",purchaseorders)
 router.use("/pobills",pobills)
-
+router.use("/design",design)
 router.use("/bulk",bulk)
 
 

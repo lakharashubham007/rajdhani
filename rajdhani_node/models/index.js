@@ -28,8 +28,8 @@ module.exports.PurchaseOrder = require('./purchaseOrders.model').PurchaseOrder
 module.exports.PurchaseOrderItem = require('./purchaseOrderItem.model').PurchaseOrderItem
 module.exports.PurchaseOrderBill = require('./purchaseOrderBill.model').PurchaseOrderBill
 module.exports.PurchaseOrderBillItem = require('./purchaseOrderBillItem.model').PurchaseOrderBillItem
+module.exports.Design = require('./design.model').Design
 
-// module.exports. = require('./').
 // module.exports. = require('./').
 // module.exports. = require('./').
 // module.exports. = require('./').

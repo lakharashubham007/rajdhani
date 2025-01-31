@@ -350,8 +350,8 @@ const AddSupplierPurchaseOrder = () => {
     try {
       const res = await GetAllProductList();
       const dropdownProductList = res?.data?.products?.map((product) => ({
-        value: product.name,
-        label: product.name,
+        value: product?.desc_Code,
+        label: product?.desc_Code,
       }));
       setProductOption(dropdownProductList);
     } catch (error) {
@@ -1025,8 +1025,8 @@ const AddSupplierPurchaseOrder = () => {
                               <th>Product Name</th>
                               <th>Sku</th>
                               <th>Unit</th>
-                              <th>Variant</th>
-                              <th>Variant Type</th>
+                              {/* <th>Variant</th>
+                              <th>Variant Type</th> */}
                               <th>UOM</th>
                               <th>UOM Qty</th>
                               <th>Quantity</th>
@@ -1122,7 +1122,7 @@ const AddSupplierPurchaseOrder = () => {
                                     style={{ width: "70px" }}
                                   />
                                 </td>
-                                <td>
+                                {/* <td>
                                   <input
                                     type="text"
                                     placeholder="Variant"
@@ -1136,8 +1136,8 @@ const AddSupplierPurchaseOrder = () => {
                                     }
                                     className="form-control"
                                   />
-                                </td>
-                                <td>
+                                </td> */}
+                                {/* <td>
                                   <input
                                     type="text"
                                     placeholder="Variant Type"
@@ -1151,7 +1151,7 @@ const AddSupplierPurchaseOrder = () => {
                                     }
                                     className="form-control"
                                   />
-                                </td>
+                                </td> */}
                                 <td>
                                   <input
                                     type="text"

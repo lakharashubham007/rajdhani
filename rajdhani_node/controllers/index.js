@@ -27,7 +27,18 @@ module.exports.purchaseOrderBillController = require('./purchaseOrderBill.contro
 module.exports.purchaseOrderBillItemController = require('./PurchaseOrderBillItems.controller')
 module.exports.dropdownOptiosController = require('./dropdowns.controller')
 module.exports.bulkimportController = require('./bulkimport.controller')
+module.exports.designController = require('./design.controller')
 
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
 // module.exports. = require('./')
 
 // module.exports.variantSubSubCategoriesController = require('./')

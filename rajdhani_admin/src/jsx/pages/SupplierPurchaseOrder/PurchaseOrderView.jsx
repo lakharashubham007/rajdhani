@@ -63,6 +63,15 @@ const PurchaseOrderView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [singleBillData, setSingleBillData] = useState({});
   const [visibleCount, setVisibleCount] = useState(5);
+
+
+
+
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
   // console.log("purchaseOrderData",purchaseOrderData)
 
   // const exportToPDF = () => {
@@ -305,22 +314,22 @@ const PurchaseOrderView = () => {
                   <div className="row">
                     <div className="col-sm-6 col-xl-4 d-flex justify-content-center address-block">
                       <div>
-                      <h5>Invoice To</h5>
-                      <p className="po-view-p">
-                        {purchaseOrderData?.billing_details?.name}
-                      </p>
-                      <p className="po-view-p">
-                        {purchaseOrderData?.billing_details?.address}
-                      </p>
-                      <p className="po-view-p">
-                        State: {purchaseOrderData?.billing_details?.state_name}{" "}
-                        {purchaseOrderData?.billing_details?.state_code}
-                      </p>
-                      <p className="po-view-p">
-                        Email: {purchaseOrderData?.billing_details?.email}
-                      </p>
+                        <h5>Invoice To</h5>
+                        <p className="po-view-p">
+                          {purchaseOrderData?.billing_details?.name}
+                        </p>
+                        <p className="po-view-p">
+                          {purchaseOrderData?.billing_details?.address}
+                        </p>
+                        <p className="po-view-p">
+                          State: {purchaseOrderData?.billing_details?.state_name}{" "}
+                          {purchaseOrderData?.billing_details?.state_code}
+                        </p>
+                        <p className="po-view-p">
+                          Email: {purchaseOrderData?.billing_details?.email}
+                        </p>
+                      </div>
                     </div>
-                  </div>
 
                     <div className="col-sm-6 col-xl-4 d-flex justify-content-center mt-3 mt-sm-0 address-block">
                       <div className="divider">
@@ -375,27 +384,27 @@ const PurchaseOrderView = () => {
                   billData?.length > 0 ?
                     <div className="row card-main-div">
                       {
-                       billData?.slice(0, visibleCount)?.map((val, ind) => {
+                        billData?.slice(0, visibleCount)?.map((val, ind) => {
                           return (<>
                             <div className="col-sm-6 col-xl-3  pb-4">
-                             <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
+                              <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
                             </div>
                           </>)
                         })
                       }
-                      
+
                       {billData?.length > visibleCount && (
-                       <div className="col-md-6 col-xl-3">
-                        <button
-                          className="add-new-bill-btn"
-                          onClick={handleSeeMore}>
-                          <div className="bill-cards" style={{ textAlign: "center" }} >
-                            <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
-                              See More
-                            </p>
-                          </div>
-                        </button>
-                      </div>
+                        <div className="col-md-6 col-xl-3">
+                          <button
+                            className="add-new-bill-btn"
+                            onClick={handleSeeMore}>
+                            <div className="bill-cards" style={{ textAlign: "center" }} >
+                              <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
+                                See More
+                              </p>
+                            </div>
+                          </button>
+                        </div>
                       )}
                     </div>
                     :
@@ -406,157 +415,157 @@ const PurchaseOrderView = () => {
 
             {/* Bill Detail */}
             <div ref={billTableRef}>
-             {Object?.keys(singleBillData).length == 0 ? "" :
-              <Row>
-                <Col lg={12}>
-                  <div className="">
-                    <div className="card-header px-0">
-                      <h4 className="card-title">Bill Details</h4>
-                      <button className="table-close-btn" onClick={() => setSingleBillData({})}><i class="fa-solid fa-xmark fa-xl"></i></button>
-                    </div>
-                    <div className="card-body px-0">
-                      <div className="table-responsive">
-                        <div
-                          id="holidayList"
-                          className="dataTables_wrapper no-footer">
-                          <div className="justify-content-between d-sm-flex">
-                            <div className="dataTables_length">
-                              <label className="d-flex align-items-center">
-                                Show
-                                <Dropdown className="search-drop">
-                                  <Dropdown.Toggle
-                                    as="div"
-                                    className="search-drop-btn">
-                                    {sort}
-                                  </Dropdown.Toggle>
-                                  <Dropdown.Menu>
-                                    <Dropdown.Item
-                                      onClick={() => setSortata("2")}>
-                                      2
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setSortata("5")}>
-                                      5
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setSortata("10")}>
-                                      10
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setSortata("15")}>
-                                      15
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setSortata("20")}>
-                                      20
-                                    </Dropdown.Item>
-                                  </Dropdown.Menu>
-                                </Dropdown>
-                                entries
-                              </label>
-                            </div>
-                            <div className="dataTables_filter">
-                              <label>
-                                Search :
-                                <input
-                                  type="search"
-                                  className=""
-                                  placeholder=""
-                                  onChange={(e) =>
-                                    setSearchInputValue(e.target.value)
-                                  }
-                                />
-                              </label>
-                            </div>
-                          </div>
-
-                          <table id="example4" className="display dataTable no-footer w-100">
-                            <thead>
-                              <tr>
-                                {billtheadData?.map((item, ind) => {
-                                  return (
-                                    <th
-                                      key={ind}
-                                      onClick={() => {
-                                        SotingData(item?.sortingVale, ind);
-                                        setIconDate((prevState) => ({
-                                          complete: !prevState.complete,
-                                          ind: ind,
-                                        }));
-                                      }}>
-                                      {item.heading}
-                                      <span>
-                                        {ind !== iconData.ind && (
-                                          <i
-                                            className="fa fa-sort ms-2 fs-12"
-                                            style={{ opacity: "0.3" }}
-                                          />
-                                        )}
-                                        {ind === iconData.ind &&
-                                          (iconData.complete ? (
-                                            <i
-                                              className="fa fa-arrow-down ms-2 fs-12"
-                                              style={{ opacity: "0.7" }}
-                                            />
-                                          ) : (
-                                            <i
-                                              className="fa fa-arrow-up ms-2 fs-12"
-                                              style={{ opacity: "0.7" }}
-                                            />
-                                          ))}
-                                      </span>
-                                    </th>
-                                  );
-                                })}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr >
-
-                                <td>{singleBillData?.purchase_order_id}</td>
-                                <td className="">
-                                  {singleBillData?.bill_id}
-                                </td>
-                                <td className="">{singleBillData?.bill_doc}</td>
-                                <td className="">{singleBillData?.bill_amount}</td>
-                                <td className="">
-                                  {moment(singleBillData?.bill_date).format(
-                                    "DD MMM YYYY")}
-                                </td>
-                                <td>
-                                  {moment(singleBillData?.created_at).format(
-                                    "DD MMM YYYY, h:mm:ss a")}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          <div>
-                            {/* {brandList?.data?.length < brandList?.total && ( */}
-                            <div className="d-sm-flex text-center justify-content-end align-items-center mt-3">
-                              <div className="pagination-container">
-                                <ReactPaginate
-                                  pageCount={Math.ceil(
-                                    purchaseOrderData?.totalRecords /
-                                    purchaseOrderData?.rowsPerPage
-                                  )}
-                                  pageRangeDisplayed={1}
-                                  marginPagesDisplayed={2}
-                                  onPageChange={handlePageClick}
-                                  containerClassName="pagination"
-                                  activeClassName="selected"
-                                  disabledClassName="disabled"
-                                />
+              {Object?.keys(singleBillData).length == 0 ? "" :
+                <Row>
+                  <Col lg={12}>
+                    <div className="">
+                      <div className="card-header px-0">
+                        <h4 className="card-title">Bill Details</h4>
+                        <button className="table-close-btn" onClick={() => setSingleBillData({})}><i class="fa-solid fa-xmark fa-xl"></i></button>
+                      </div>
+                      <div className="card-body px-0">
+                        <div className="table-responsive">
+                          <div
+                            id="holidayList"
+                            className="dataTables_wrapper no-footer">
+                            <div className="justify-content-between d-sm-flex">
+                              <div className="dataTables_length">
+                                <label className="d-flex align-items-center">
+                                  Show
+                                  <Dropdown className="search-drop">
+                                    <Dropdown.Toggle
+                                      as="div"
+                                      className="search-drop-btn">
+                                      {sort}
+                                    </Dropdown.Toggle>
+                                    <Dropdown.Menu>
+                                      <Dropdown.Item
+                                        onClick={() => setSortata("2")}>
+                                        2
+                                      </Dropdown.Item>
+                                      <Dropdown.Item
+                                        onClick={() => setSortata("5")}>
+                                        5
+                                      </Dropdown.Item>
+                                      <Dropdown.Item
+                                        onClick={() => setSortata("10")}>
+                                        10
+                                      </Dropdown.Item>
+                                      <Dropdown.Item
+                                        onClick={() => setSortata("15")}>
+                                        15
+                                      </Dropdown.Item>
+                                      <Dropdown.Item
+                                        onClick={() => setSortata("20")}>
+                                        20
+                                      </Dropdown.Item>
+                                    </Dropdown.Menu>
+                                  </Dropdown>
+                                  entries
+                                </label>
+                              </div>
+                              <div className="dataTables_filter">
+                                <label>
+                                  Search :
+                                  <input
+                                    type="search"
+                                    className=""
+                                    placeholder=""
+                                    onChange={(e) =>
+                                      setSearchInputValue(e.target.value)
+                                    }
+                                  />
+                                </label>
                               </div>
                             </div>
-                            {/* )} */}
+
+                            <table id="example4" className="display dataTable no-footer w-100">
+                              <thead>
+                                <tr>
+                                  {billtheadData?.map((item, ind) => {
+                                    return (
+                                      <th
+                                        key={ind}
+                                        onClick={() => {
+                                          SotingData(item?.sortingVale, ind);
+                                          setIconDate((prevState) => ({
+                                            complete: !prevState.complete,
+                                            ind: ind,
+                                          }));
+                                        }}>
+                                        {item.heading}
+                                        <span>
+                                          {ind !== iconData.ind && (
+                                            <i
+                                              className="fa fa-sort ms-2 fs-12"
+                                              style={{ opacity: "0.3" }}
+                                            />
+                                          )}
+                                          {ind === iconData.ind &&
+                                            (iconData.complete ? (
+                                              <i
+                                                className="fa fa-arrow-down ms-2 fs-12"
+                                                style={{ opacity: "0.7" }}
+                                              />
+                                            ) : (
+                                              <i
+                                                className="fa fa-arrow-up ms-2 fs-12"
+                                                style={{ opacity: "0.7" }}
+                                              />
+                                            ))}
+                                        </span>
+                                      </th>
+                                    );
+                                  })}
+                                </tr>
+                              </thead>
+                              <tbody>
+                                <tr >
+
+                                  <td>{singleBillData?.purchase_order_id}</td>
+                                  <td className="">
+                                    {singleBillData?.bill_id}
+                                  </td>
+                                  <td className="">{singleBillData?.bill_doc}</td>
+                                  <td className="">{singleBillData?.bill_amount}</td>
+                                  <td className="">
+                                    {moment(singleBillData?.bill_date).format(
+                                      "DD MMM YYYY")}
+                                  </td>
+                                  <td>
+                                    {moment(singleBillData?.created_at).format(
+                                      "DD MMM YYYY, h:mm:ss a")}
+                                  </td>
+                                </tr>
+                              </tbody>
+                            </table>
+                            <div>
+                              {/* {brandList?.data?.length < brandList?.total && ( */}
+                              <div className="d-sm-flex text-center justify-content-end align-items-center mt-3">
+                                <div className="pagination-container">
+                                  <ReactPaginate
+                                    pageCount={Math.ceil(
+                                      purchaseOrderData?.totalRecords /
+                                      purchaseOrderData?.rowsPerPage
+                                    )}
+                                    pageRangeDisplayed={1}
+                                    marginPagesDisplayed={2}
+                                    onPageChange={handlePageClick}
+                                    containerClassName="pagination"
+                                    activeClassName="selected"
+                                    disabledClassName="disabled"
+                                  />
+                                </div>
+                              </div>
+                              {/* )} */}
+                            </div>
                           </div>
                         </div>
                       </div>
                     </div>
-                  </div>
-                </Col>
-              </Row>
-             }
+                  </Col>
+                </Row>
+              }
             </div>
             {/* Product Table */}
             <Row>
@@ -671,9 +680,108 @@ const PurchaseOrderView = () => {
 
                                 {/* <td>{data?._id}</td> */}
 
-                                <td className="">
-                                  {data?.product_name}
-                                </td>
+                                {/* <td>
+                                  <div
+                                    style={{
+                                      whiteSpace: "nowrap",
+                                      width: "290px",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      padding: "4px 8px",
+                                      border: "1px solid #ddd",
+                                      borderRadius: "8px",
+                                      backgroundColor: "#f5f5f5",
+                                      textAlign: "start",
+                                    }}
+                                  >
+                                    {data?.product_name}
+                                  </div>
+                                </td>  */}
+
+                                 <td>
+                                  <div
+                                    style={{
+                                      whiteSpace: "nowrap",
+                                      width: isExpanded ? "100%" : "290px", // Expands width on toggle
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      padding: "4px 8px",
+                                      border: "1px solid #ddd",
+                                      borderRadius: "8px",
+                                      backgroundColor: "#f5f5f5",
+                                      textAlign: "start",
+                                      cursor: "pointer",
+                                      transition: "width 0.3s ease", // Smooth transition
+                                    }}
+                                    onClick={toggleExpand}
+                                  >
+                                    {data?.product_name}
+                                    {!isExpanded && (
+                                      <span
+                                        style={{
+                                          position: "absolute",
+                                          right: "8px",
+                                          top: "50%",
+                                          transform: "translateY(-50%)",
+                                          color: "#007bff",
+                                          fontSize: "12px",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        ...
+                                      </span>
+                                    )}
+                                  </div>
+                                </td> 
+
+                                {/* <td>
+                                  <div
+                                    style={{
+                                      whiteSpace: "nowrap",
+                                      width: isExpanded ? "100%" : "290px", // Expands width on toggle
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      padding: "4px 8px",
+                                      border: "1px solid #ddd",
+                                      borderRadius: "8px",
+                                      backgroundColor: "#f5f5f5",
+                                      textAlign: "start",
+                                      cursor: "pointer",
+                                      transition: "width 0.3s ease", // Smooth transition
+                                      position: "relative",
+                                    }}
+                                    onClick={toggleExpand}
+                                  >
+                                    {data?.product_name}
+                                    <span
+                                      style={{
+                                        position: "absolute",
+                                        // left: "10px",
+                                        right: "2px",
+                                        top: "50%",
+                                        transform: "translateY(-50%)",
+                                        display: "flex",
+                                        alignItems: "center",
+                                        justifyContent: "center",
+                                        width: "20px",
+                                        height: "20px",
+                                        borderRadius: "50%",
+                                        // backgroundColor: "#007bff",
+                                        zIndex: '1111',
+                                        color: "#fff",
+                                        fontSize: "12px",
+                                        cursor: "pointer",
+                                        transition: "transform 0.3s ease", // Rotate arrow on toggle
+                                        transform: isExpanded ? "translateY(-50%) rotate(180deg)" : "translateY(-50%)",
+                                      }}
+                                    >
+                                      ➡️
+                                    </span>
+                                  </div>
+                                </td> */}
+
+
+
 
                                 <td className="">{data?.variant}</td>
 

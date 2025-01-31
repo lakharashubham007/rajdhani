@@ -76,6 +76,7 @@ const VerifyPurchaseOrder = () => {
   const [logo, setLogo] = useState(null);
   const [apiSuccess, setApiSuccess] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
+   console.log("productOption",productOption);
   const [rows, setRows] = useState([
     {
       id: 1,
@@ -102,6 +103,11 @@ const VerifyPurchaseOrder = () => {
       is_short_close: ""
     },
   ]);
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
 
   const handleBillingDetailChange = (e) => {
     const { name, value } = e.target;
@@ -118,8 +124,8 @@ const VerifyPurchaseOrder = () => {
     try {
       const res = await GetAllProductList();
       const dropdownProductList = res?.data?.products?.map((product) => ({
-        value: product.name,
-        label: product.name,
+        value: product.desc_Code,
+        label: product.desc_Code,
       }));
       setProductOption(dropdownProductList);
     } catch (error) {
@@ -1386,9 +1392,41 @@ const VerifyPurchaseOrder = () => {
 
                                 <td>{data?._id}</td>
 
-                                <td className="">
-                                  {data?.product_name}
-                                </td>
+                                <td>
+                                  <div
+                                    style={{
+                                      whiteSpace: "nowrap",
+                                      width: isExpanded ? "100%" : "290px", // Expands width on toggle
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                      padding: "4px 8px",
+                                      border: "1px solid #ddd",
+                                      borderRadius: "8px",
+                                      backgroundColor: "#f5f5f5",
+                                      textAlign: "start",
+                                      cursor: "pointer",
+                                      transition: "width 0.3s ease", // Smooth transition
+                                    }}
+                                    onClick={toggleExpand}
+                                  >
+                                    {data?.product_name}
+                                    {!isExpanded && (
+                                      <span
+                                        style={{
+                                          position: "absolute",
+                                          right: "8px",
+                                          top: "50%",
+                                          transform: "translateY(-50%)",
+                                          color: "#007bff",
+                                          fontSize: "12px",
+                                          cursor: "pointer",
+                                        }}
+                                      >
+                                        ...
+                                      </span>
+                                    )}
+                                  </div>
+                                </td> 
 
                                 <td className="">{data?.variant}</td>
 

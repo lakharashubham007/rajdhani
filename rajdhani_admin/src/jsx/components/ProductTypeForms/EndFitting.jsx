@@ -1356,7 +1356,7 @@ const EndFittingForm = (props) => {
         </div>
       </div>
       {/* Section 3 Location and additional field */}
-      <div className="row">
+      {/* <div className="row">
         <div className="col-xl-12 col-lg-12">
           <div className="card">
             <div className="card-header">
@@ -1396,7 +1396,7 @@ const EndFittingForm = (props) => {
             </div>
           </div>
         </div>
-      </div> 
+      </div>  */}
 
 
     </>

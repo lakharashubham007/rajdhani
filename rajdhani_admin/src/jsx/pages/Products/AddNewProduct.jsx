@@ -37,6 +37,27 @@ import Cap from "../../components/ProductTypeForms/Cap";
 import HosePipe from "../../components/ProductTypeForms/HosPipe";
 
 
+const gstOption = [
+  // { value: '', label: 'Select GST Rate' },
+  { value: '0', label: '0%' },
+  { value: '5', label: '5%' },
+  { value: '12', label: '12%' },
+  { value: '18', label: '18%' },
+  { value: '28', label: '28%' },
+];
+
+
+const uomOptions = [
+  { value: 'pcs', label: 'Pieces (pcs)' },
+  { value: 'inch', label: 'Inches (inch)' },
+  { value: 'meter', label: 'Meters (m)' },
+  { value: 'pairs', label: 'Pairs' },
+  { value: 'Numbers', label: 'NOS' },
+  { value: 'set', label: 'Sets' }
+];
+
+
+
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -72,6 +93,8 @@ const AddProduct = () => {
   const [selectpipeODOption, setSelectpipeODOption] = useState(null);
   const [selectedmetricTypeOptions, setSelectedmetricTypeOptions] = useState(null);
   const [selectedDesignOption, setSelectedDesignOption] = useState(null);
+  const [selectedUOMOption, setSelectedUOMOption] = useState(null);
+  const [selectedGSTOption, setSelectedGSTOption] = useState(null);
   // Child Form  
 
   const [wireTypeOption, setWireTypeOption] = useState(dropdownOptions?.WireTypeOptions);
@@ -324,7 +347,7 @@ const AddProduct = () => {
 
     //Nut fitting code and description
     if (formData?.part === 'Nut') {
-      const nut_fitting_code = `${'NUT-' + formData?.design || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code : ''}${selectedFittingThreadOption?.code ? '-' + selectedFittingThreadOption?.code + '-' : ''}${formData?.nut_hex ? '(' + formData?.nut_hex + 'X' : ''}${formData?.nut_length ? formData?.nut_length  + ')' : ''}`
+      const nut_fitting_code = `${'NUT-' + formData?.design || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code : ''}${selectedFittingThreadOption?.code ? '-' + selectedFittingThreadOption?.code + '-' : ''}${formData?.nut_hex ?  + formData?.nut_hex + 'X' : ''}${formData?.nut_length ? formData?.nut_length : ''}`
       setNutFittingCode(nut_fitting_code)
 
       const desc_nut_Code = `${selectedFittingThreadOption?.dsc_code ? selectedFittingThreadOption?.dsc_code : ''}${selectedFittingDashSizeOption?.dsc_code ? ' ' + selectedFittingDashSizeOption?.dsc_code + ' NUT' : ''}${formData?.nut_hex ? ' (' + formData?.nut_hex + 'X' : ''}${formData?.nut_length ? formData?.nut_length + ')': ''}`;
@@ -1364,7 +1387,7 @@ const AddProduct = () => {
       </div>
       {/* Dynamic Form*/}
       {formData.product_type && formData?.part ? renderPartComponent() : renderComponent()}
-
+       {/* Basic Info */}
       <div className="col-xl-12 col-lg-12">
         <div className="card">
           <div className="card-header">
@@ -1372,23 +1395,165 @@ const AddProduct = () => {
           </div>
           <div className="card-body">
             <div>
-              <div className="mb-3 row">
-                {/* <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-3 col-form-label">Name</label>
+             
+              
+               {/* Weight */}
+              {/* <div className="col-sm-6 col-xl-4">
+                  <label className="col-sm-3 col-form-label">Weight</label>
                   <input
-                    name="name"
-                    value={formData.name}
+                    name="Weight"
+                    value={formData.weight}
                     onChange={handleChange}
                     type="text"
                     className="form-control"
-                    placeholder="Ex: ABC"
+                    placeholder="Ex: 100"
                   />
-                  {errors.name && (
-                    <span className="text-danger fs-12">{errors.name}</span>
+                  {errors.weight && (
+                    <span className="text-danger fs-12">{errors.weight}</span>
                   )}
                 </div> */}
 
-                <div className="col-sm-6 col-xl-4">
+                 {/* UOM */}
+                {/* <div className="col-sm-6 col-xl-4">
+                  <label className="col-sm-6 col-form-label">Unit of Measurement</label>
+                  <input
+                    name="UOM"
+                    value={formData.uom}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: 15 inch, meter, set..etc"
+                  />
+                  {errors.uom && (
+                    <span className="text-danger fs-12">{errors.uom}</span>
+                  )}
+                </div> */}
+
+                {/* Price and Rate */}
+                <div className="mb-3 row">
+                  
+                <div className="col-sm-3 col-xl-3">
+                  <label className="col-sm-3 col-form-label">Rate</label>
+                  <input
+                    name="Rate"
+                    value={formData.rate}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: 2000 INR"
+                  />
+                  {errors.rate && (
+                    <span className="text-danger fs-12">{errors.rate}</span>
+                  )}
+                </div>
+
+                <div className="col-sm-3 col-xl-3">
+                  {/* <label className="col-sm-3 col-form-label">GST</label>
+                  <input
+                    name="Gst"
+                    value={formData.gst}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: 15%"
+                  />
+                  {errors.gst && (
+                    <span className="text-danger fs-12">{errors.gst}</span>
+                  )} */}
+                  <label className="col-form-label">GST</label>
+                    <Select
+                      value={selectedGSTOption}
+                      onChange={(option) => {
+                        setSelectedGSTOption(option);
+                        setFormData({
+                          ...formData,
+                          gst: option.value,
+                        });
+                        setErrors({
+                          ...errors,
+                          gst: null
+                        })
+                        
+                      }}
+                      defaultValue={selectedGSTOption}
+                      options={gstOption}
+                      style={{
+                        lineHeight: "40px",
+                        color: "#7e7e7e",
+                        paddingLeft: " 15px",
+                      }}
+                    />
+                    {errors.gst && (
+                      <span className="text-danger fs-12">
+                        {errors.gst}
+                      </span>
+                    )}
+                </div>
+
+                <div className="col-sm-3 col-xl-3">
+                  <label className="col-sm-3 col-form-label">Weight</label>
+                  <input
+                    name="Weight"
+                    value={formData.weight}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: 100"
+                  />
+                  {errors.weight && (
+                    <span className="text-danger fs-12">{errors.weight}</span>
+                  )}
+                </div>
+
+                <div className="col-sm-3 col-xl-3">
+                  {/* <label className="col-sm-12 col-form-label">Unit of Measurement</label>
+                  <input
+                    name="UOM"
+                    value={formData.uom}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: 15 inch, meter, set..etc"
+                  />
+                  {errors.uom && (
+                    <span className="text-danger fs-12">{errors.uom}</span>
+                  )} */}
+                  <label className="col-sm-12 col-form-label">Unit of Measurement</label>
+                    <Select
+                      value={selectedUOMOption}
+                      onChange={(option) => {
+                        setSelectedUOMOption(option);
+                        setFormData({
+                          ...formData,
+                          uom: option.value,
+                        });
+                        setErrors({
+                          ...errors,
+                          uom: null
+                        })
+                        
+                      }}
+                      defaultValue={selectedUOMOption}
+                      options={uomOptions}
+                      style={{
+                        lineHeight: "40px",
+                        color: "#7e7e7e",
+                        paddingLeft: " 15px",
+                      }}
+                    />
+                    {errors.uom && (
+                      <span className="text-danger fs-12">
+                        {errors.uom}
+                      </span>
+                    )}
+                </div>
+
+              </div>
+
+                {/* Inputs */}
+                <div className="mb-3 row">
+                {/* MFC INPUT */}
+                <div className="col-sm-6 col-xl-3">
                   <label className="col-sm-3 col-form-label">MFC</label>
                   <input
                     name="mfc"
@@ -1402,12 +1567,12 @@ const AddProduct = () => {
                     <span className="text-danger fs-12">{errors.mfc}</span>
                   )}
                 </div>
-
+                 {/* Fitting And Description code input */}
                 {
                   formData?.product_type === 'End Fittings' && (
                     <>
-                      <div className="col-sm-6 col-xl-4">
-                        <label className="col-sm-3 col-form-label">Fitting Code</label>
+                      <div className="col-sm-6 col-xl-3">
+                        <label className="col-sm-12 col-form-label">Fitting Code</label>
                         <input
                           name="fitting_code"
                           value={fittingCode}
@@ -1421,7 +1586,7 @@ const AddProduct = () => {
                           <span className="text-danger fs-12">{errors.fitting_code}</span>
                         )}
                       </div>
-                      <div className="col-sm-6 col-xl-4">
+                      <div className="col-sm-6 col-xl-6">
                         <label className="col-sm-3 col-form-label">Description</label>
                         <input
                           name="desc_code"
@@ -1455,10 +1620,43 @@ const AddProduct = () => {
 
                   )
                 }
-
-
-
               </div>
+                
+
+               {/* Location and additional info */}
+
+              <div className="mb-3 row">
+              {/* <div className="col-md-6">
+                    <label className="col-form-label">Location<small style={{ color: "grey" }} ></small></label>
+                    <input
+                      name="location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: Row-5, BucketNo.22, Rack-15"
+                    />
+                    {errors.location && (
+                      <span className="text-danger fs-12">{errors.location}</span>
+                    )}
+                  </div> */}
+                  {/* <div className="col-md-6">
+                    <label className="col-form-label">Additional<small style={{ color: "grey" }} >(Optional)*</small></label>
+                    <input
+                      name="additional"
+                      value={formData.additional}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: Additional"
+                    />
+                    {errors.additional && (
+                      <span className="text-danger fs-12">{errors.additional}</span>
+                    )}
+                  </div> */}
+              </div>
+
+              {/* Note */}
               <div className="mb-3 row">
                 <div className="col-sm-8">
                   <label className="col-sm-3 col-form-label">
@@ -1479,11 +1677,126 @@ const AddProduct = () => {
                     </span>
                   )}
                 </div>
+                  {/* Location */}
+                <div className="col-sm-4">
+                  <label className="col-sm-3 col-form-label">
+                    Location
+                  </label>
+                  <textarea
+                    name="location"
+                    className="form-control"
+                    rows="3"
+                    id="comment"
+                    placeholder="Ex: Row-5, BucketNo.22, Rack-15"
+                    value={formData.location}
+                    onChange={handleChange}
+                  ></textarea>
+                  {errors.location && (
+                    <span className="text-danger fs-12">
+                      {errors.location}
+                    </span>
+                  )}
+                </div>
               </div>
+
             </div>
           </div>
         </div>
       </div>
+
+       {/*Weight & Measurement*/}
+       {/* <div className="col-xl-12 col-lg-12">
+        <div className="card">
+          <div className="card-header">
+            <h4 className="card-title">Weight & Measurement</h4>
+          </div>
+          <div className="card-body">
+            <div>
+              <div className="mb-3 row">
+                
+                <div className="col-sm-6 col-xl-4">
+                  <label className="col-sm-3 col-form-label">Weight</label>
+                  <input
+                    name="Weight"
+                    value={formData.weight}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: 100"
+                  />
+                  {errors.weight && (
+                    <span className="text-danger fs-12">{errors.weight}</span>
+                  )}
+                </div>
+
+                <div className="col-sm-6 col-xl-4">
+                  <label className="col-sm-6 col-form-label">Unit of Measurement</label>
+                  <input
+                    name="UOM"
+                    value={formData.uom}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: 15 inch, meter, set..etc"
+                  />
+                  {errors.uom && (
+                    <span className="text-danger fs-12">{errors.uom}</span>
+                  )}
+                </div>
+
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div> */}
+       
+       {/* Price and GST */}
+      {/* <div className="col-xl-12 col-lg-12">
+        <div className="card">
+          <div className="card-header">
+            <h4 className="card-title">Price & Tax</h4>
+          </div>
+          <div className="card-body">
+            <div>
+              <div className="mb-3 row">
+                
+                <div className="col-sm-6 col-xl-4">
+                  <label className="col-sm-3 col-form-label">Rate</label>
+                  <input
+                    name="Rate"
+                    value={formData.rate}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: 2000 INR"
+                  />
+                  {errors.rate && (
+                    <span className="text-danger fs-12">{errors.rate}</span>
+                  )}
+                </div>
+
+                <div className="col-sm-6 col-xl-4">
+                  <label className="col-sm-3 col-form-label">GST</label>
+                  <input
+                    name="Gst"
+                    value={formData.gst}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: 15%"
+                  />
+                  {errors.gst && (
+                    <span className="text-danger fs-12">{errors.gst}</span>
+                  )}
+                </div>
+
+              </div>
+              
+            </div>
+          </div>
+        </div>
+      </div> */}
 
       {/* SECTION 3RD Image & Gallery*/}
       <div className="row">
