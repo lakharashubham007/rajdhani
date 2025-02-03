@@ -29,7 +29,7 @@ module.exports.PurchaseOrderBill = require('./purchaseOrderBill.model').Purchase
 module.exports.PurchaseOrderBillItem = require('./purchaseOrderBillItem.model').PurchaseOrderBillItem
 module.exports.Design = require('./design.model').Design
 module.exports.FittingThreads = require('./fittingThreads.model').FittingThreads
-// module.exports. = require('./').
+module.exports.HoseDashSize = require('./hosedashSize.model').HoseDashSize
 // module.exports. = require('./').
 
 // module.exports.Clients = require('./clients.model').Clients
