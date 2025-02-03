@@ -5,51 +5,53 @@ const fittingDashSizeSchema = new mongoose.Schema(
     thread_type: {
       type: String,
       trim: true,
-      maxlength: 50, // Limit the string length
     },
-    dash: {
+    dash_code: {
       type: String,
-      trim: true,
-      maxlength: 10,
+      trim: true
     },
     inch: {
       type: String,
       trim: true,
-      maxlength: 10, // Some entries might not have an inch value
-      default: null, // Set to null if not provided
+    },
+    variant: {
+      type: String,
+      trim: true,
     },
     thread: {
       type: String,
       trim: true,
-      maxlength: 50,
+    },
+    dsc_code: {
+      type: String,
+      trim: true,
+    },
+    metric_type: {
+      type: String,
+      trim: true,
     },
     pipe_od: {
       type: String,
       trim: true,
-      maxlength: 10,
-      default: null, // Not all records have this field
     },
-    variant: {
-        type: String,
-        trim: true,
-        enum: ["standard", "lower join", "upper join", null], // Restricts to specific values or null
-        default: null, // Default to null if not provided
-      },
+    status: {
+      type: Boolean,
+      default: true,
+    },
     created_at: {
       type: Date,
-      default: Date.now, // Timestamp for when the record is created
+      default: Date.now,
     },
     updated_at: {
       type: Date,
-      default: Date.now, // Timestamp for when the record is updated
+      default: Date.now,
     },
   },
   {
-    timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' }, // Automatically manage timestamps
+    timestamps: { createdAt: "created_at", updatedAt: "updated_at" },
   }
 );
 
-// Create the model
 const FittingDashSize = mongoose.model("FittingDashSize", fittingDashSizeSchema);
 
 module.exports.FittingDashSize = FittingDashSize;

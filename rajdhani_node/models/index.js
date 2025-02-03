@@ -18,7 +18,7 @@ module.exports.Variants = require('./variants.model').Variants
 module.exports.VariantCategory = require('./variants.model').VariantCategory
 module.exports.VariantSubCategory = require('./variants.model').VariantSubCategory
 module.exports.VariantSubSubCategory = require('./variants.model').VariantSubSubCategory
-module.exports.FittingSize = require('./fittingSizes.model').FittingSize
+// module.exports.FittingSize = require('./fittingSizes.model').FittingSize
 module.exports.Thread = require('./threads.model').Thread
 module.exports.Materials = require('./materials.model').Materials
 module.exports.Supplier = require('./supplier.model').Supplier
@@ -30,7 +30,18 @@ module.exports.PurchaseOrderBillItem = require('./purchaseOrderBillItem.model').
 module.exports.Design = require('./design.model').Design
 module.exports.FittingThreads = require('./fittingThreads.model').FittingThreads
 module.exports.HoseDashSize = require('./hosedashSize.model').HoseDashSize
+module.exports.FittingDashSize = require('./fittingdashsize.model').FittingDashSize
+
+
 // module.exports. = require('./').
+// module.exports. = require('./').
+// module.exports. = require('./').
+// module.exports. = require('./').
+// module.exports. = require('./').
+// module.exports. = require('./').
+// module.exports. = require('./').
+// module.exports. = require('./').
+
 
 // module.exports.Clients = require('./clients.model').Clients
 

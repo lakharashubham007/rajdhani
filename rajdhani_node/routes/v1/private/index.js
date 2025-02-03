@@ -16,6 +16,7 @@ const bulk = require('./bulkimport.route')
 const design = require('./design.route')
 const fittingthreads = require('./fittingThreads.route')
 const hosedashsize = require('./hoseDashSize.route')
+const fittingdashsize = require('./fittingDashSize.route')
 const router = express.Router();
 
 //rajdhani route
@@ -35,7 +36,7 @@ router.use("/design",design)
 router.use("/fittingthreads",fittingthreads)
 router.use("/bulk",bulk)
 router.use("/hosedashsize", hosedashsize)
-
+router.use("/fittingdashsize",fittingdashsize)
 
 
 //restaurant
