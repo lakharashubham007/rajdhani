@@ -31,9 +31,7 @@ module.exports.Design = require('./design.model').Design
 module.exports.FittingThreads = require('./fittingThreads.model').FittingThreads
 module.exports.HoseDashSize = require('./hosedashSize.model').HoseDashSize
 module.exports.FittingDashSize = require('./fittingdashsize.model').FittingDashSize
-
-
-// module.exports. = require('./').
+module.exports.BendAngle = require('./bendAngle.model').BendAngle
 // module.exports. = require('./').
 // module.exports. = require('./').
 // module.exports. = require('./').

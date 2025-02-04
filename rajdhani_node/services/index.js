@@ -31,7 +31,7 @@ module.exports.designService = require("./design.service");
 module.exports.fittingThreadService = require("./fittingThread.service");
 module.exports.hoseDashSizeService = require("./hoseDashSize.service");
 module.exports.fittingDashSizeService = require("./fittingDashSize.service");
-// module.exports. = require("./");
+module.exports.bendAngleService = require("./bendAngle.service");
 // module.exports. = require("./");
 // module.exports. = require("./");
 
