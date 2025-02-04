@@ -18,6 +18,9 @@ const fittingthreads = require('./fittingThreads.route')
 const hosedashsize = require('./hoseDashSize.route')
 const fittingdashsize = require('./fittingDashSize.route')
 const bendAngle = require('./bendangle.route')
+const hosetype = require('./hosetype.route')
+const brandlayline = require('./brandlayline.route')
+
 const router = express.Router();
 
 //rajdhani route
@@ -39,7 +42,8 @@ router.use("/bulk",bulk)
 router.use("/hosedashsize", hosedashsize)
 router.use("/fittingdashsize",fittingdashsize)
 router.use("/bendangle", bendAngle)
-
+router.use("/hosetype",hosetype)
+router.use("/brandlayline",brandlayline)
 //restaurant
 router.use("/vendor",vendor)
 

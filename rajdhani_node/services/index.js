@@ -32,10 +32,14 @@ module.exports.fittingThreadService = require("./fittingThread.service");
 module.exports.hoseDashSizeService = require("./hoseDashSize.service");
 module.exports.fittingDashSizeService = require("./fittingDashSize.service");
 module.exports.bendAngleService = require("./bendAngle.service");
+module.exports.hoseTypeService = require("./hosetype.service");
+module.exports.brandLayLineService = require("./brandlayline.service");
+
 // module.exports. = require("./");
 // module.exports. = require("./");
-
-
+// module.exports. = require("./");
+// module.exports. = require("./");
+// module.exports. = require("./");
 
 
 
