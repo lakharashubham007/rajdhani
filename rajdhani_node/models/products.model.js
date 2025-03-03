@@ -7,7 +7,13 @@ const productSchema = new mongoose.Schema(
     description: { type: String, trim: true },
     mfc: { type: String, trim: true }, // Manufacturer or supplier code
     product_type: { type: String, trim: true }, 
+    product_code: {type: String , trim: true},
+    product_unit: {type: String , trim: true},
+    uom: {type: String , trim: true},
+    weight: {type: String , trim: true},
     part: { type: String, trim: true }, 
+    price: { type: String, trim: true }, 
+    gst: { type: String, trim: true }, 
 
 
     // End Fitting

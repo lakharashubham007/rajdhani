@@ -152,3 +152,61 @@ export const GetAllProductList = async () => {
 }
 };
 
+export const getCountryApi = async () => {
+  const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+  try {
+      const response = await axios.get(
+          apis.countryStateCity.country,
+          {
+              headers: {
+                  'Content-Type': 'application/json',
+              },
+          }
+      );
+      return response;
+  } catch (error) {
+      console.error("Error creating facility:", error);
+      throw error;
+  }
+};
+
+export const getStateApi = async (id) => {
+    const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+    try {
+        const response = await axios.get(
+            `${apis.countryStateCity.state}/${id}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        console.error("Error creating facility:", error);
+        throw error;
+    }
+};
+
+
+export const getCityApi = async ( state_id) => {
+    const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+    try {
+        const response = await axios.get(
+            `${apis.countryStateCity.city}/${state_id}`,
+            {
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+            }
+        );
+        return response;
+    } catch (error) {
+        console.error("Error creating facility:", error);
+        throw error;
+    }
+};
+
+
+
+

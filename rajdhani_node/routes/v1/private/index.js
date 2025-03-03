@@ -20,6 +20,12 @@ const fittingdashsize = require('./fittingDashSize.route')
 const bendAngle = require('./bendangle.route')
 const hosetype = require('./hosetype.route')
 const brandlayline = require('./brandlayline.route')
+const batch = require("./batch.route")
+const stockMaintenance = require("./stockMaintenance.route")
+const inventory = require('./inventory.route')
+const countries = require('./country.route')
+const customer = require('./customer.route')
+const saleorders = require('./saleorders.route')
 
 const router = express.Router();
 
@@ -46,6 +52,14 @@ router.use("/hosetype",hosetype)
 router.use("/brandlayline",brandlayline)
 //restaurant
 router.use("/vendor",vendor)
+
+//Batch Allocation
+router.use("/batch", batch)
+router.use("/stock", stockMaintenance)
+router.use("/inventory", inventory)
+router.use("/locations", countries)
+router.use("/customer", customer)
+router.use("/so", saleorders)
 
 
 module.exports = router;

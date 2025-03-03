@@ -1,15 +1,15 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import {
-    Row,
-    Col,
-    Dropdown,
-    Button,
-    Modal,
-    Container,
-    Card,
-    Form,
-  } from "react-bootstrap";
+  Row,
+  Col,
+  Dropdown,
+  Button,
+  Modal,
+  Container,
+  Card,
+  Form,
+} from "react-bootstrap";
 import { DatePicker } from "rsuite";
 import Select from "react-select";
 import PageTitle from "../../layouts/PageTitle";
@@ -50,17 +50,17 @@ const discountOptions = [
 ];
 
 const theadData = [
-    { heading: "S.No.", sortingVale: "sno" },
-    { heading: "Id", sortingVale: "_id" },
-    { heading: "Name", sortingVale: "name" },
-    { heading: "Type", sortingVale: "type" },
-    { heading: "Created At", sortingVale: "created_at" },
-    { heading: "Status", sortingVale: "status" },
-    { heading: "Action", sortingVale: "action" },
-  ];
+  { heading: "S.No.", sortingVale: "sno" },
+  { heading: "Id", sortingVale: "_id" },
+  { heading: "Name", sortingVale: "name" },
+  { heading: "Type", sortingVale: "type" },
+  { heading: "Created At", sortingVale: "created_at" },
+  { heading: "Status", sortingVale: "status" },
+  { heading: "Action", sortingVale: "action" },
+];
 
 const AddNewSupplier = () => {
-    const navigate = useNavigate();
+  const navigate = useNavigate();
   const [logo, setLogo] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const [loading, setLoading] = useState(false);
@@ -68,7 +68,7 @@ const AddNewSupplier = () => {
   const [errors, setErrors] = useState({});
   const [galleryImages, setGalleryImages] = useState([]);
 
-  const [allFittingSizeList,setAllFittingSizeList]=useState([]);
+  const [allFittingSizeList, setAllFittingSizeList] = useState([]);
 
 
   const [sort, setSortata] = useState(10);
@@ -86,45 +86,46 @@ const AddNewSupplier = () => {
   const [iconData, setIconDate] = useState({ complete: false, ind: Number });
   const activePag = useRef(0);
   const [test, settest] = useState(0);
-  const [showDeleteMdl,setShowDeleteMdl]=useState(false);
-  const [deleteTableDataId,setDeleteTableDataId] = useState("");
-  const [selectedStatusOption,setSelectedStatusOption]=useState(null);
-  const [statusOption,setStatusOption]=useState([{
+  const [showDeleteMdl, setShowDeleteMdl] = useState(false);
+  const [deleteTableDataId, setDeleteTableDataId] = useState("");
+  const [selectedStatusOption, setSelectedStatusOption] = useState(null);
+  const [statusOption, setStatusOption] = useState([{
     value: "true",
-    label: "Active"},
-   {
+    label: "Active"
+  },
+  {
     value: "false",
     label: "Inactive",
   }]);
 
-  const [states,setStates]=useState([]);
-  const [selectedStateOption,setSelectedStateOption]=useState(null);
-  const [stateOption,setStateOption]=useState(null);
-  
-  const [selectedCityOption,setSelectedCityOption]=useState(null);
-  const [cityOption,setCityOption]=useState(null);
+  const [states, setStates] = useState([]);
+  const [selectedStateOption, setSelectedStateOption] = useState(null);
+  const [stateOption, setStateOption] = useState(null);
+
+  const [selectedCityOption, setSelectedCityOption] = useState(null);
+  const [cityOption, setCityOption] = useState(null);
 
   const [formData, setFormData] = useState({
     name: "",
-    firstName:"",
-    lastName:"",
-    phone:"",
-    email:"",
-    address:"",
-    state:"",
-    city:"",
-    pincode:"",
-    gstNumber:"",
-    panNumber:"",
+    firstName: "",
+    lastName: "",
+    phone: "",
+    email: "",
+    address: "",
+    state: "",
+    city: "",
+    pincode: "",
+    gstNumber: "",
+    panNumber: "",
     description: "",
-    status:null,
-    image:null
+    status: null,
+    image: null
   });
 
-  
+
 
   const debouncedSearchValue = useDebounce(searchInputValue, 500);
-  
+
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
@@ -137,28 +138,28 @@ const AddNewSupplier = () => {
   };
 
 
-const fetchCountryStateCity=async()=>{
+  const fetchCountryStateCity = async () => {
     try {
-        const res = await getCountryStateCityApi();
-        const data = res?.data?.data?.countries[100];
-        setStates(data?.states);
-        const dropdownStateData = data?.states?.map((state) => ({
-              value: state.state_name,
-              label: state.state_name,
-            })
-          );
-        setStateOption(dropdownStateData)
+      const res = await getCountryStateCityApi();
+      const data = res?.data?.data?.countries[100];
+      setStates(data?.states);
+      const dropdownStateData = data?.states?.map((state) => ({
+        value: state.state_name,
+        label: state.state_name,
+      })
+      );
+      setStateOption(dropdownStateData)
 
-      } catch (error) {
-        // Catch and handle errors
-        console.error("Error fetching cuisines:", error);
-        Toaster.error("Failed to load cuisines. Please try again.");
-      } 
-}
+    } catch (error) {
+      // Catch and handle errors
+      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    }
+  }
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchCountryStateCity()
-  },[]);
+  }, []);
 
 
 
@@ -220,20 +221,20 @@ const fetchCountryStateCity=async()=>{
 
   const resetForm = () => {
     setFormData({
-        name: "",
-        firstName:"",
-        lastName:"",
-        phone:"",
-        email:"",
-        address:"",
-        state:"",
-        city:"",
-        pincode:"",
-        gstNumber:"",
-        panNumber:"",
-        description: "",
-        status:null,
-        image:null
+      name: "",
+      firstName: "",
+      lastName: "",
+      phone: "",
+      email: "",
+      address: "",
+      state: "",
+      city: "",
+      pincode: "",
+      gstNumber: "",
+      panNumber: "",
+      description: "",
+      status: null,
+      image: null
     });
     setLogo(null);
     setSelectedStatusOption(null);
@@ -250,15 +251,15 @@ const fetchCountryStateCity=async()=>{
     if (!formData.firstName) newErrors.firstName = "FirstName is required.";
     if (!formData.lastName) newErrors.lastName = "LastName is required.";
     if (!formData.phone) {
-        newErrors.phone = "Phone is required.";
-      } else if (!/^\+91\d{10}$/.test(formData.phone)) {
-        newErrors.phone = "Phone must start with '+91' and be followed by 10 digits.";
-      }
-      if (!formData.email) {
-        newErrors.email = "Email is required.";
-      } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
-        newErrors.email = "Invalid email format.";
-      }
+      newErrors.phone = "Phone is required.";
+    } else if (!/^\+91\d{10}$/.test(formData.phone)) {
+      newErrors.phone = "Phone must start with '+91' and be followed by 10 digits.";
+    }
+    if (!formData.email) {
+      newErrors.email = "Email is required.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(formData.email)) {
+      newErrors.email = "Invalid email format.";
+    }
     if (!formData.address) newErrors.address = "Address is required.";
     if (!formData.state) newErrors.state = "State is required.";
     if (!formData.city) newErrors.city = "City is required.";
@@ -309,38 +310,38 @@ const fetchCountryStateCity=async()=>{
     if (!validateForm()) {
       return;
     }
-    
-    if(isEdit){
+
+    if (isEdit) {
       handleUpdateSubmit();
-    }else{
-    setLoading(true); 
-    try {
-      const res = await addSupplier(formData);
-      if (res.data?.success) {
-        setLoading(false);
-        // Toaster.success(res?.data?.message);
-        Swal.fire({
+    } else {
+      setLoading(true);
+      try {
+        const res = await addSupplier(formData);
+        if (res.data?.success) {
+          setLoading(false);
+          // Toaster.success(res?.data?.message);
+          Swal.fire({
             icon: "success",
             title: "Supplier",
             text: res.data?.message || "Add New Supplier successfully",
             showConfirmButton: false,
             timer: 1500,
           });
-        resetForm(); // Reset form after success
-        navigate("/supplierlist");
-      } else {
+          resetForm(); // Reset form after success
+          navigate("/supplierlist");
+        } else {
+          setLoading(false);
+          Toaster.error(res.data?.message || "Failed to create food item");
+          console.error("Food creation error:", res);
+        }
+      } catch (error) {
         setLoading(false);
-        Toaster.error(res.data?.message || "Failed to create food item");
-        console.error("Food creation error:", res);
-      }
-    } catch (error) {
-      setLoading(false);
-      Toaster.error(
-        error.response?.data?.message ||
+        Toaster.error(
+          error.response?.data?.message ||
           "An error occurred while processing your request"
-      );
+        );
+      }
     }
-   }
   };
 
   const handleDeleteLogo = () => {
@@ -350,7 +351,7 @@ const fetchCountryStateCity=async()=>{
 
 
 
-  const fetchFittingSizeList=async()=>{
+  const fetchFittingSizeList = async () => {
     setLoading(true);
     try {
       const res = await getAllFittingSizeListApi();
@@ -367,7 +368,7 @@ const fetchCountryStateCity=async()=>{
     } finally {
       setLoading(false);
     }
-}
+  }
 
   useEffect(() => {
     fetchFittingSizeList();
@@ -399,36 +400,36 @@ const fetchCountryStateCity=async()=>{
     const phone = `${country_code}${phoneNum}`;
     setFormData({
       ...formData,
-      phone:phone
+      phone: phone
     })
   };
 
 
-  const handleStateChange=(option)=>{
+  const handleStateChange = (option) => {
     if (option?.value) {
-        const state = states? states?.find((state) => state?.state_name == option?.value)
-          : null;
-          const drpCityValue= state?.cities?.map((city) => ({
-              value: city?.city_name,
-              label: city?.city_name,
-            })
-          );
-         setCityOption(drpCityValue)
-      } else {
-        setCityOption([]);
-      }
+      const state = states ? states?.find((state) => state?.state_name == option?.value)
+        : null;
+      const drpCityValue = state?.cities?.map((city) => ({
+        value: city?.city_name,
+        label: city?.city_name,
+      })
+      );
+      setCityOption(drpCityValue)
+    } else {
+      setCityOption([]);
+    }
 
     setSelectedStateOption(option);
     setFormData({
       ...formData,
-      state:option.value,
+      state: option.value,
     });
   }
 
 
   return (
     <>
-      
+
       <ToastContainer />
       <Loader visible={loading} />
       <PageTitle activeMenu={"Supplier"} motherMenu={"Home"} />
@@ -456,8 +457,8 @@ const fetchCountryStateCity=async()=>{
                       <span className="text-danger fs-12">{errors.name}</span>
                     )}
                   </div>
-                  </div>
-      
+                </div>
+
                 <div className="mb-3 row">
                   <div className="col-md-6 col-xl-3">
                     <label className="col-form-label">Contact Person First Name</label>
@@ -472,7 +473,7 @@ const fetchCountryStateCity=async()=>{
                     {errors.firstName && (
                       <span className="text-danger fs-12">{errors.firstName}</span>
                     )}
-                </div>
+                  </div>
 
                   <div className="col-md-6 col-xl-3">
                     <label className="col-form-label">Contact Person Last Name</label>
@@ -487,86 +488,86 @@ const fetchCountryStateCity=async()=>{
                     {errors.lastName && (
                       <span className="text-danger fs-12">{errors.lastName}</span>
                     )}
+                  </div>
+
+                  <div className="col-md-6 col-xl-3">
+                    <label className="col-md-8 col-form-label">Phone</label>
+                    <PhoneInput
+                      className=""
+                      inputClass=""
+                      country={"in"}
+                      value={formData?.phone}
+                      onChange={handleOnChange}
+                    />
+                    {errors.phone && (
+                      <span className="text-danger fs-12">
+                        {errors.phone}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="col-md-6 col-xl-3">
+                    <label className="col-sm-6 col-form-label">Email</label>
+                    <input
+                      name="email"
+                      value={formData.email}
+                      onChange={handleChange}
+                      type="email"
+                      required="email"
+                      className="form-control"
+                      placeholder="Ex: ABC"
+                    />
+                    {errors.email && (
+                      <span className="text-danger fs-12">
+                        {errors.email}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
-                <div className="col-md-6 col-xl-3">
-                <label className="col-md-8 col-form-label">Phone</label>
-                 <PhoneInput
-                  className=""
-                  inputClass=""
-                  country={"in"}
-                  value={formData?.phone}
-                  onChange={handleOnChange}
-                 />
-                {errors.phone && (
-                  <span className="text-danger fs-12">
-                    {errors.phone}
-                  </span>
-                )}
-                </div>
 
-                <div className="col-md-6 col-xl-3">
-                <label className="col-sm-6 col-form-label">Email</label>
-                <input
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    type="email"
-                    required="email"
-                    className="form-control"
-                    placeholder="Ex: ABC"
-                  />
-                {errors.email && (
-                  <span className="text-danger fs-12">
-                    {errors.email}
-                  </span>
-                )}
-                </div>
-                </div>
-
-    
                 <div className="mb-3 row">
                   <div className="col-sm-6 col-xl-3">
-                  <label className=" col-form-label">State</label>
-                  <Select
-                    value={selectedStateOption}
-                    onChange={handleStateChange}
-                    defaultValue={selectedStateOption}
-                    options={stateOption}
-                    style={{
-                      lineHeight: "40px",
-                      color: "#7e7e7e",
-                      paddingLeft: " 15px",
-                    }}
-                  />
-                  {errors.status && (
-                    <span className="text-danger fs-12">{errors.status}</span>
-                  )}
-                </div>
+                    <label className=" col-form-label">State</label>
+                    <Select
+                      value={selectedStateOption}
+                      onChange={handleStateChange}
+                      defaultValue={selectedStateOption}
+                      options={stateOption}
+                      style={{
+                        lineHeight: "40px",
+                        color: "#7e7e7e",
+                        paddingLeft: " 15px",
+                      }}
+                    />
+                    {errors.status && (
+                      <span className="text-danger fs-12">{errors.status}</span>
+                    )}
+                  </div>
 
-                <div className="col-sm-6 col-xl-3">
-                  <label className=" col-form-label">City</label>
-                  <Select
-                    value={selectedCityOption}
-                    onChange={(option) => {
+                  <div className="col-sm-6 col-xl-3">
+                    <label className=" col-form-label">City</label>
+                    <Select
+                      value={selectedCityOption}
+                      onChange={(option) => {
                         setSelectedCityOption(option);
                         setFormData({
                           ...formData,
-                          city:option.value,
+                          city: option.value,
                         });
                       }}
-                    defaultValue={selectedCityOption}
-                    options={cityOption}
-                    style={{
-                      lineHeight: "40px",
-                      color: "#7e7e7e",
-                      paddingLeft: " 15px",
-                    }}
-                  />
-                  {errors.status && (
-                    <span className="text-danger fs-12">{errors.status}</span>
-                  )}
-                </div>
+                      defaultValue={selectedCityOption}
+                      options={cityOption}
+                      style={{
+                        lineHeight: "40px",
+                        color: "#7e7e7e",
+                        paddingLeft: " 15px",
+                      }}
+                    />
+                    {errors.status && (
+                      <span className="text-danger fs-12">{errors.status}</span>
+                    )}
+                  </div>
 
                   {/* <div className="col-sm-6 col-xl-3">
                     <label className="col-sm-8 col-form-label">Country</label>
@@ -583,28 +584,28 @@ const fetchCountryStateCity=async()=>{
                     )}
                 </div> */}
 
-                <div className="col-sm-6 col-xl-3">
-                <label className="col-form-label">PinCode</label>
-                <input
-                    name="pincode"
-                    value={formData.pincode}
-                    onChange={handleChange}
-                    type="number"
-                    className="form-control"
-                    placeholder="Ex: 123"
-                />
-                {errors.pincode && (
-                  <span className="text-danger fs-12">
-                    {errors.pincode}
-                  </span>
-                )}
-                </div>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-form-label">PinCode</label>
+                    <input
+                      name="pincode"
+                      value={formData.pincode}
+                      onChange={handleChange}
+                      type="number"
+                      className="form-control"
+                      placeholder="Ex: 123"
+                    />
+                    {errors.pincode && (
+                      <span className="text-danger fs-12">
+                        {errors.pincode}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="row mb-3">
-                <div className="col-sm-6">
-                  <label className="col-sm-6 col-form-label">Address</label>
-                  <input
+                  <div className="col-sm-6">
+                    <label className="col-sm-6 col-form-label">Address</label>
+                    <input
                       name="address"
                       value={formData.address}
                       onChange={handleChange}
@@ -612,16 +613,16 @@ const fetchCountryStateCity=async()=>{
                       className="form-control"
                       placeholder="Ex: ABC"
                     />
-                  {errors.address && (
-                    <span className="text-danger fs-12">
-                      {errors.address}
-                    </span>
-                  )}
-                </div>
+                    {errors.address && (
+                      <span className="text-danger fs-12">
+                        {errors.address}
+                      </span>
+                    )}
+                  </div>
                 </div>
 
                 <div className="row mb-3">
-                 {/* <div className="col-sm-3">
+                  {/* <div className="col-sm-3">
                   <label className="col-sm-6 col-form-label">Created Date</label>
                     <input
                       name="type"
@@ -637,9 +638,9 @@ const fetchCountryStateCity=async()=>{
                     </span>
                   )}
                 </div> */}
-     
-                <div className="col-sm-6 col-xl-3">
-                  <label className="col-form-label">GST Number</label>
+
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-form-label">GST Number</label>
                     <input
                       name="gstNumber"
                       value={formData.gstNumber}
@@ -648,15 +649,15 @@ const fetchCountryStateCity=async()=>{
                       className="form-control"
                       placeholder="Ex: 08ABCDE9999F1Z8"
                     />
-                  {errors.gstNumber && (
-                    <span className="text-danger fs-12">
-                      {errors.gstNumber}
-                    </span>
-                  )}
-                </div>
-   
-                <div className="col-sm-6 col-xl-3">
-                  <label className="col-form-label">PAN Number</label>
+                    {errors.gstNumber && (
+                      <span className="text-danger fs-12">
+                        {errors.gstNumber}
+                      </span>
+                    )}
+                  </div>
+
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-form-label">PAN Number</label>
                     <input
                       name="panNumber"
                       value={formData.panNumber}
@@ -665,88 +666,89 @@ const fetchCountryStateCity=async()=>{
                       className="form-control"
                       placeholder="Ex: ABCTY1234D"
                     />
-                  {errors.panNumber && (
-                    <span className="text-danger fs-12">
-                      {errors.panNumber}
-                    </span>
-                  )}
-                </div>
-
-                <div className="col-sm-6 col-xl-3">
-                  <label className="col-form-label">Status</label>
-                  <Select
-                    value={selectedStatusOption}
-                    onChange={(option) => {
-                      setSelectedStatusOption(option);
-                      setFormData({
-                        ...formData,
-                        status:option.value,
-                      });
-                    }}
-                    defaultValue={selectedStatusOption}
-                    options={statusOption}
-                    style={{
-                      lineHeight: "40px",
-                      color: "#7e7e7e",
-                      paddingLeft: " 15px",
-                    }}
-                  />
-                  {errors.status && (
-                    <span className="text-danger fs-12">{errors.status}</span>
-                  )}
-                </div>
-
-                </div>
-
-           
-
-               <div className="row mb-3">
-               <div className="col-sm-4" style={{ display: 'flex', flexDirection: 'column', alignItems: 'start', justifyContent: 'center' }}>
-                 <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
-                <label className="col-form-label">Supplier Image</label>
-                <div className=' uploadImageContainer' >
-                    <input
-                        type="file"
-                        accept="image/*"
-                        name="image"
-                        //value={formData?.image}
-                        onChange={handleLogoChange}
-                        style={{ display: 'none' }}
-                        id="logoUpload"
-                    />
-                    {logo ? (
-                        <>
-                            {
-                             isEdit ?
-                            <>
-                            {/* Simple 'X' button as the delete icon */}
-                             <div className="deleteIcon" onClick={handleDeleteLogo}> ⛌ </div>
-                             <img className='img' src={`https://api.i2rtest.in/v1/images/image/${logo}`} alt="Logo" />
-                            </>
-                             :
-                            <>
-                             <div className='deleteIcon' onClick={handleDeleteLogo}> ⛌ </div>
-                             <img className='img' src={logo} alt="Logo" />
-                            </>   
-                          }
-                        </>
-                    ) : (
-                        <label htmlFor="logoUpload" className="imgPlaceholder" >
-                            <div className='flex flex-col cursor-pointer imgUploadIcon'>
-                                <img width="30" src={uplodIcon} alt="Upload Icon"></img>
-                                <p>Upload Image</p>
-                            </div>
-                        </label>
+                    {errors.panNumber && (
+                      <span className="text-danger fs-12">
+                        {errors.panNumber}
+                      </span>
                     )}
+                  </div>
+
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-form-label">Status</label>
+                    <Select
+                      value={selectedStatusOption}
+                      onChange={(option) => {
+                        setSelectedStatusOption(option);
+                        setFormData({
+                          ...formData,
+                          status: option.value,
+                        });
+                      }}
+                      defaultValue={selectedStatusOption}
+                      options={statusOption}
+                      style={{
+                        lineHeight: "40px",
+                        color: "#7e7e7e",
+                        paddingLeft: " 15px",
+                      }}
+                    />
+                    {errors.status && (
+                      <span className="text-danger fs-12">{errors.status}</span>
+                    )}
+                  </div>
+
                 </div>
+
+
+
+                <div className="row mb-3">
+                  <div className="col-sm-4" style={{ display: 'flex', flexDirection: 'column', alignItems: 'start', justifyContent: 'center' }}>
+                    <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', }}>
+                      <label className="col-form-label">Supplier Image</label>
+                      <div className=' uploadImageContainer' >
+                        <input
+                          type="file"
+                          accept="image/*"
+                          name="image"
+                          //value={formData?.image}
+                          onChange={handleLogoChange}
+                          style={{ display: 'none' }}
+                          id="logoUpload"
+                        />
+                        {logo ? (
+                          <>
+                            {
+                              isEdit ?
+                                <>
+                                  {/* Simple 'X' button as the delete icon */}
+                                  <div className="deleteIcon" onClick={handleDeleteLogo}> ⛌ </div>
+                                  <img className='img' src={`https://api.i2rtest.in/v1/images/image/${logo}`} alt="Logo" />
+                                </>
+                                :
+                                <>
+                                  <div className='deleteIcon' onClick={handleDeleteLogo}> ⛌ </div>
+                                  <img className='img' src={logo} alt="Logo" />
+                                </>
+                            }
+                          </>
+                        ) : (
+                          <label htmlFor="logoUpload" className="imgPlaceholder" >
+                            <div className='flex flex-col cursor-pointer imgUploadIcon'>
+                              <img width="30" src={uplodIcon} alt="Upload Icon"></img>
+                              <p>Upload Image</p>
+                            </div>
+                          </label>
+                        )}
+                      </div>
+                    </div>
+                    <p className='mt-2'>Image format - jpg png jpeg gif<br />Image Size - maximum size 2 MB<br />Image Ratio - 1:1</p>
+                    {errors?.image && <span className="text-danger fs-12">{errors?.image}</span>}
+                  </div>
+
                 </div>
-                <p className='mt-2'>Image format - jpg png jpeg gif<br />Image Size - maximum size 2 MB<br />Image Ratio - 1:1</p>
-                {errors?.image && <span className="text-danger fs-12">{errors?.image}</span>}
-            </div>
-               </div>
 
                 <div className="mb-3 row">
-                
+
                   <div className="col-sm-8">
                     <label className="col-sm-3 col-form-label">
                       Description
@@ -769,15 +771,15 @@ const fetchCountryStateCity=async()=>{
                 </div>
               </div>
               <div className="text-end">
-          <button
-            type="submit"
-            onClick={handleSubmit}
-            className="btn btn-primary rounded-sm">
-            Save Information
-          </button>
-        </div>
-        </div>
-          
+                <button
+                  type="submit"
+                  onClick={handleSubmit}
+                  className="btn btn-primary rounded-sm">
+                  Save Information
+                </button>
+              </div>
+            </div>
+
           </div>
         </div>
         {/* Section Submit button */}

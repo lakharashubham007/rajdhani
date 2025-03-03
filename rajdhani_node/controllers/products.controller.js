@@ -5,12 +5,7 @@ const createProduct = async (req, res) => {
     
     try {
         const productData = req.body;
-
-        console.log('Received files:', req.files);  //
-
-        // Pass the files for image and gallery to the service
         const product = await productService.createProduct(productData, req.files);
-
         res.json({ success: true, product, message: 'Product created successfully!' });
     } catch (error) {
         console.error(error);

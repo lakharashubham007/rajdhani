@@ -45,10 +45,32 @@ const createProduct = async (data, files) => {
          console.warn('Unexpected format for parts field:', data.parts);
        }
      }
- 
+
+     // Determine the starting series based on wire_type
+    let codePrefix = 20000; // Default to BRAIDED series
+    if (data.wire_type.includes("SPIRAL")) {
+      codePrefix = 40000;
+    }
+    if (data.wire_type.includes("TEFLON")) {
+      codePrefix = 10000;
+    }
+
+    // Find the last assigned code in this series
+    const lastProduct = await Products.findOne(
+      { wire_type: data.wire_type },
+      { product_code: 1 },
+      // {},
+      { sort: { product_code: -1 } }
+    );
+    console.log("lastProduct lastProduct ",lastProduct)
+    let newCode = lastProduct ? Number(lastProduct.product_code) + 1 : codePrefix;
+
+
+    console.log("newCode newCode newCode newCode newCode",newCode)
 
     const productData = {
       ...data,
+      product_code: newCode,
       image: files && files.image ? files.image[0]?.originalname : 'rajdhani_product.jpg',
       gallery: files && files.gallery ? files.gallery.map(file => file.originalname) : [], // Process gallery images
     };

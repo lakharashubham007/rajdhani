@@ -22,7 +22,6 @@ router.get("/purchase-orders", Authentication, purchaseOrderController.getAllPur
 router.get("/purchase-order-list/:id", Authentication, Authorization, purchaseOrderController.getPurchaseOrderById);
 router.patch("/edit-purchase-order/:id", Authentication, Authorization, purchaseOrderController.updatePurchaseOrder);
 router.delete("/delete-purchase-order/:id", Authentication, Authorization, purchaseOrderController.deletePurchaseOrder);
-
 router.patch("/update-po-status/:id", Authentication, Authorization, purchaseOrderController.updatePurchaseOrderStatus);
 
 

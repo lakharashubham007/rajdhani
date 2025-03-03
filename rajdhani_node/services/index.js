@@ -34,12 +34,24 @@ module.exports.fittingDashSizeService = require("./fittingDashSize.service");
 module.exports.bendAngleService = require("./bendAngle.service");
 module.exports.hoseTypeService = require("./hosetype.service");
 module.exports.brandLayLineService = require("./brandlayline.service");
+module.exports.batchService = require("./batch.service");
+module.exports.stockMaintenanceService = require("./stockMaintenance.service");
+module.exports.inventoryService = require("./inventory.service");
+module.exports.countryService = require("./country.service");
+module.exports.cityService = require("./city.service");
+module.exports.stateService = require("./state.service");
+module.exports.customerService = require("./customer.service");
+module.exports.saleOrderService = require("./saleOrders.service");
+module.exports.saleOrderItemService = require("./saleOrderItems.service");
+module.exports.saleOrderVerifyService = require("./saleOrdersVerify.service");
+// module.exports. = require("./");
+// module.exports. = require("./");
+// module.exports. = require("./");
+// module.exports. = require("./");
+// module.exports. = require("./");
+// module.exports. = require("./");
+// module.exports. = require("./");
 
-// module.exports. = require("./");
-// module.exports. = require("./");
-// module.exports. = require("./");
-// module.exports. = require("./");
-// module.exports. = require("./");
 
 
 

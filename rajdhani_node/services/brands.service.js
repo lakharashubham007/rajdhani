@@ -90,20 +90,6 @@ const updateBrand = async (id, updateData) => {
 };
 
 
-// // Update a Brand by ID
-// const updateBrand = async (id, data, file) => {
-//   try {
-//     const updatedBrand = await Brands.findByIdAndUpdate(
-//       id,
-//       { ...data, ...(file && { image: file }) },
-//       { new: true }
-//     );
-//     return updatedBrand;
-//   } catch (error) {
-//     console.error('Error updating brand:', error);
-//     throw error;
-//   }
-// };
 
 // Delete a Brand by ID
 const deleteBrand = async (id) => {

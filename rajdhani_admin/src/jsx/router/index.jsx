@@ -29,6 +29,10 @@ import AddProfessor from './../pages/professors/AddProfessor';
 import EditProfessor from './../pages/professors/EditProfessor';
 import ProfileProfessor from './../pages/professors/ProfileProfessor';
 
+
+//Inventory
+import Inventory from "../pages/Inventory/Inventory";
+
 //Student
 import AllStudent from './../pages/students/AllStudent';
 import AddStudent from './../pages/students/AddStudent';
@@ -156,24 +160,13 @@ import Error403 from './../pages/error/Error403'
 import Error404 from './../pages/error/Error404'
 import Error500 from './../pages/error/Error500'
 import Error503 from './../pages/error/Error503'
-import AddRestaurant from "../pages/Restaurants/AddRestaurant";
-import Restaurants from "../pages/Restaurants/Restaurants";
-import Cuisine from "../pages/Cuisine/Cuisine";
-import Zone from "../pages/Zone/Zone";
 import { components } from "react-select";
 import Addons from "../pages/Addons/Addons";
-import AddFood from "../pages/Foods/AddFood";
 import AllOrders from "../pages/Orders/AllOrders";
 import ScheduledOrder from "../pages/Orders/ScheduledOrder";
 import EmployeeRole from "../pages/Employee/EployeeRole";
 import AddEmployee from "../pages/Employee/AddEmployee";
 import EmployeeList from "../pages/Employee/EmployeeList";
-import FoodList from "../pages/Foods/FoodList";
-import RestaurantGrid from "../pages/OrderOnline/OrderOnline/RestaurantGrid";
-import RestaurantsDetail from "../pages/OrderOnline/OrderOnline/RestaurantsDetail";
-import MenuList from "../pages/OrderOnline/OrderOnline/MenuList";
-import EditRestaurant from "../pages/Restaurants/EditRestaurant";
-import EditFood from "../pages/Foods/EditFood";
 import Brands from "../pages/Brands/Brands";
 import OldCategories from "../pages/OldCategories/OldCategories";
 import OldSubCategories from "../pages/OldCategories/OldSubCategories";
@@ -193,14 +186,27 @@ import Parts from "../pages/Parts/Parts";
 import AllSupplierList from "../pages/Supplier/SupplierList";
 import AddNewSupplier from "../pages/Supplier/AddNewSupplier";
 import EditSupplier from "../pages/Supplier/EditSupplier";
-import AddSupplierPurchaseOrder from "../pages/SupplierPurchaseOrder/AddSupplierPurchaseOrder";
-import SupplierPurchaseOrderList from "../pages/SupplierPurchaseOrder/SupplierPurchaseOrderList";
-import PurchaseOrderView from "../pages/SupplierPurchaseOrder/PurchaseOrderView";
-import VerifyPurchaseOrder from "../pages/SupplierPurchaseOrder/VerifyPurchaseOrder";
-import ReturnOrdersLits from "../pages/SupplierPurchaseOrder/ReturnOrdersLits";
-import ReturnOrderView from "../pages/SupplierPurchaseOrder/ReturnOrderView";
-import BillView from "../pages/SupplierPurchaseOrder/BillView";
+import AddSupplierPurchaseOrder from "../pages/PurchaseOrder/AddPurchaseOrder";
+import SupplierPurchaseOrderList from "../pages/PurchaseOrder/PurchaseOrderList";
+import PurchaseOrderView from "../pages/PurchaseOrder/PurchaseOrderView";
+import VerifyPurchaseOrder from "../pages/PurchaseOrder/VerifyPurchaseOrder";
+import ReturnOrdersLits from "../pages/PurchaseOrder/ReturnOrdersLits";
+import ReturnOrderView from "../pages/PurchaseOrder/ReturnOrderView";
+import BillView from "../pages/PurchaseOrder/BillView";
 import BulkImport from "../pages/Products/BulkImport";
+import Design from "../pages/Design/Design";
+import FittingThreads from "../pages/FittingThreads/FittingThreads";
+import HoseDashSize from "../pages/HoseDashSize/HoseDashSize";
+import FittingDashSize from "../pages/FittingDashSize/FittingDashSize";
+import BendAngle from "../pages/BendAngle/BendAngle";
+import BrandLayLine from "../pages/BrandLayLine/BrandLayLine";
+import HoseType from "../pages/HoseType/HoseType";
+import AddCustomer from "../pages/Customer/AddCustomer";
+import CustomerList from "../pages/Customer/CustomerList";
+import AddSalesOrder from "../pages/SalesOrder/AddSalesOrder";
+import SaleOrderList from "../pages/SalesOrder/SaleOrderList";
+import SaleOrderView from "../pages/SalesOrder/SaleOrderView";
+import VerifySaleOrder from "../pages/SalesOrder/VerifySaleOrder";
 
 
 // import Todo from './pages/Todo';
@@ -217,14 +223,21 @@ const Markup = () => {
     { url: "index-3", component: <Dashboard3 /> },
     { url: "event-management", component: <EventManagement /> },
 
-    //Restaurants 
-    { url: "add-restaurant", component: <AddRestaurant /> },
-    { url: 'restaurants-list', component: <Restaurants /> },
-    { url: 'edit-restaurant/:id', component: <EditRestaurant /> },
+    
+    //Inventory
+    {url: 'inventory', component: <Inventory/>},
 
-    //Cuisine
-    { url: 'cuisines', component: <Cuisine /> },
-    { url: 'zone', component: <Zone /> },
+     //Customer
+     {url: 'add-customer', component: <AddCustomer/>},
+     {url: 'customer-list', component: <CustomerList/>},
+
+     //sales Order
+     {url: 'add-sales-order', component: <AddSalesOrder/>},
+     {url: 'sales-order-list', component: <SaleOrderList/>},
+     { url: 'saleorderview/:id', component: <SaleOrderView /> },
+     { url: 'verifysSaleOrder/:id', component: <VerifySaleOrder/> },
+
+    
 
     //Brands
     { url: 'brands', component: <Brands /> },
@@ -238,6 +251,22 @@ const Markup = () => {
     { url: 'variants', component: <Variants /> },
     { url: 'parts', component: <Parts /> },
     
+    // Design
+    { url: 'design', component: <Design /> },
+    // fittingthreads
+    { url: 'fittingthreads', component: <FittingThreads /> },
+    // HoseDashSize
+    { url: 'hosedashsize', component: <HoseDashSize /> },
+    // fittingdashsize
+    { url: 'fittingdashsize', component: <FittingDashSize /> },
+    // Bend Angle
+    { url: 'bendangle', component: <BendAngle /> },
+    // Brand Lay Line
+    { url: 'brandlayline', component: <BrandLayLine/> },
+    // Brand Lay Line
+    { url: 'hosetype', component: <HoseType/> },
+    
+
     // Products
     { url: 'addnewproduct', component: <AddProduct /> },
     { url: 'productlist', component: <AllProductList /> },
@@ -265,14 +294,7 @@ const Markup = () => {
     { url: 'category', component: <OldCategories /> },
     { url: 'sub-category', component: <OldSubCategories /> },
 
-    //Addons
-    { url: 'addons', component: <Addons /> },
-
-    //Foods
-    { url: 'add-new-food', component: <AddFood /> },
-    { url: 'food-list', component: <FoodList /> },
-    { url: 'edit-food/:id', component: <EditFood /> },
-
+   
 
     //Orders
     { url: 'all/orders', component: <AllOrders /> },
@@ -283,10 +305,7 @@ const Markup = () => {
     { url: 'add-new-employee', component: <AddEmployee /> },
     { url: 'employee/list', component: <EmployeeList /> },
 
-    //restaurant Online
-    { url: "order-online", component: <RestaurantGrid /> },
-    { url: "restaurant-detail/:id", component: <RestaurantsDetail /> },
-    { url: "menus", component: <MenuList /> },
+    
 
 
 

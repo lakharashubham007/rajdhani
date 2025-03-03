@@ -2,7 +2,11 @@ import React, { useEffect, useState } from "react";
 import { DatePicker } from "rsuite";
 import Select from "react-select";
 import PageTitle from "../../layouts/PageTitle";
-import { getAllCategoriesListApi, getAllSubCategoriesListApi, getAllSubSubCategoriesListApi } from "../../../services/apis/CategoryApi";
+import {
+  getAllCategoriesListApi,
+  getAllSubCategoriesListApi,
+  getAllSubSubCategoriesListApi,
+} from "../../../services/apis/CategoryApi";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import Swal from "sweetalert2";
@@ -35,29 +39,31 @@ import Nut from "../../components/ProductTypeForms/Nut";
 import Nipple from "../../components/ProductTypeForms/Nipple";
 import Cap from "../../components/ProductTypeForms/Cap";
 import HosePipe from "../../components/ProductTypeForms/HosPipe";
-
+import { getAllDesignApi } from "../../../services/apis/Design";
+import { getAllFittingThreadApi } from "../../../services/apis/FittingThreads";
+import { getAllHoseDashSizeApi } from "../../../services/apis/HoseDashSize";
+import { getAllFittingDashSizeApi } from "../../../services/apis/FittingDashSize";
+import { getAllBendAngleApi } from "../../../services/apis/BendAngle";
+import { getAllBrandLayLineApi } from "../../../services/apis/BrandLayLine";
+import { getAllHoseTypeApi } from "../../../services/apis/HoseType";
 
 const gstOption = [
   // { value: '', label: 'Select GST Rate' },
-  { value: '0', label: '0%' },
-  { value: '5', label: '5%' },
-  { value: '12', label: '12%' },
-  { value: '18', label: '18%' },
-  { value: '28', label: '28%' },
+  { value: "0", label: "0%" },
+  { value: "5", label: "5%" },
+  { value: "12", label: "12%" },
+  { value: "18", label: "18%" },
+  { value: "28", label: "28%" },
 ];
-
 
 const uomOptions = [
-  { value: 'pcs', label: 'Pieces (pcs)' },
-  { value: 'inch', label: 'Inches (inch)' },
-  { value: 'meter', label: 'Meters (m)' },
-  { value: 'pairs', label: 'Pairs' },
-  { value: 'Numbers', label: 'NOS' },
-  { value: 'set', label: 'Sets' }
+  { value: "pcs", label: "Pieces (pcs)" },
+  { value: "inch", label: "Inches (inch)" },
+  { value: "meter", label: "Meters (m)" },
+  { value: "pairs", label: "Pairs" },
+  { value: "Numbers", label: "NOS" },
+  { value: "set", label: "Sets" },
 ];
-
-
-
 
 const AddProduct = () => {
   const navigate = useNavigate();
@@ -65,25 +71,32 @@ const AddProduct = () => {
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  console.log("errors are here", errors)
+  console.log("errors are here", errors);
   const [galleryImages, setGalleryImages] = useState([]);
   //drop option list
-  const [productTypeOption, setProductTypeOption] = useState(dropdownOptions?.ProductOptions);
+  const [productTypeOption, setProductTypeOption] = useState(
+    dropdownOptions?.ProductOptions
+  );
   const [categoryOption, setCategoryOption] = useState(null);
   const [subCategoryOption, setSubCategoryOption] = useState(null);
   const [subSubCategoryOption, setSubSubCategoryOption] = useState(null);
   const [brandOption, setBrandOption] = useState(null);
   const [fittingSizeOption, setfittingSizeOption] = useState(null);
   const [materialOption, setmaterialOption] = useState(null);
-  const [variantOption, setVariantOption] = useState(dropdownOptions?.variantsOption);
+  const [variantOption, setVariantOption] = useState(
+    dropdownOptions?.variantsOption
+  );
   const [threadtypeOption, setThreadtypeOption] = useState(null);
   const [partOption, setPartOption] = useState(null);
   // selected
-  const [selectedProductTypeOption, setSelectedProductTypeOption] = useState(null);
-  const [selectedPartsOption, setSelectedPartsOption] = useState({ value: "None", label: "None" });
+  const [selectedProductTypeOption, setSelectedProductTypeOption] =useState(null);
+  const [selectedPartsOption, setSelectedPartsOption] = useState({
+    value: "None",
+    label: "None",
+  });
   const [selectedCategoryOption, setSelectedCategoryOption] = useState(null);
-  const [selectedSubCategoryOption, setSelectedSubCategoryOption] = useState(null);
-  const [selectedSubSubCategoryOption, setSelectedSubSubCategoryOption] = useState(null);
+  const [selectedSubCategoryOption, setSelectedSubCategoryOption] =useState(null);
+  const [selectedSubSubCategoryOption, setSelectedSubSubCategoryOption] =useState(null);
   const [selectedBrandOption, setSelectedBrandOption] = useState(null);
   const [selectedfittingSizeOption, setSelectedfittingSizeOption] = useState(null);
   const [selectedmaterialOption, setSelectedmaterialOption] = useState(null);
@@ -95,32 +108,35 @@ const AddProduct = () => {
   const [selectedDesignOption, setSelectedDesignOption] = useState(null);
   const [selectedUOMOption, setSelectedUOMOption] = useState(null);
   const [selectedGSTOption, setSelectedGSTOption] = useState(null);
-  // Child Form  
+  // Child Form
 
   const [wireTypeOption, setWireTypeOption] = useState(dropdownOptions?.WireTypeOptions);
   const [withCapWithoutCapOption, setWithCapWithoutCapOption] = useState(dropdownOptions?.CapWithoutCapOptions);
   const [fittingPieceOption, setFittingPieceOption] = useState(dropdownOptions?.fittingPieceOptions);
   const [skiveTypeOption, setSkiveTypeOption] = useState(dropdownOptions?.skiveTypeOptions);
-  const [HoseDashSizeOption, setHoseDashSizeOption] = useState(dropdownOptions?.hoseDashSizeOptions);
+  const [HoseDashSizeOption, setHoseDashSizeOption] = useState(null);
   const [fittingDashSizeOption, setfittingDashSizeOption] = useState(dropdownOptions?.fittingDashSizeOptions);
-  const [fittingThreadOption, setfittingThreadOption] = useState(dropdownOptions?.fittingThreadOptions);
+  const [fittingThreadOption, setfittingThreadOption] = useState(null);
   const [fittingTypeOption, setfittingTypeOption] = useState(dropdownOptions?.fittingTypeOptions);
-  const [straightBendangleOption, setStraightBendangleOption] = useState(dropdownOptions?.straightBendangleOptions);
+  const [straightBendangleOption, setStraightBendangleOption] = useState(null);
   const [dropLengthOption, setDropLengthOption] = useState(dropdownOptions?.dropLengthOptions);
   const [neckLengthOption, setNeckLengthOption] = useState(dropdownOptions?.dropLengthOptions);
   const [pipeODOption, setpipeODOption] = useState(dropdownOptions?.pipeODOptions);
   const [matricTypeOption, setMatricTypeOption] = useState(dropdownOptions?.metricTypeOptions);
-
+  const [designOption, setDesignOption] = useState([]);
+  const [brandLayLineOption,setBrandLayLineOption]=useState(null);
+  const [hoseTypeOption,setHoseTypeOption]=useState(null);
+  
   // selected
   const [selectedWireTypeOption, setSelectedWireTypeOption] = useState(null);
-  const [selectedWithCapWithoutCapOption, setSelectedWithCapWithoutCapOption] = useState(null);
-  const [selectedFittingPieceOption, setSelectedFittingPieceOption] = useState(null);
+  const [selectedWithCapWithoutCapOption, setSelectedWithCapWithoutCapOption] =useState(null);
+  const [selectedFittingPieceOption, setSelectedFittingPieceOption] =useState(null);
   const [selectedSkiveTypeOption, setSelectedSkiveTypeOption] = useState(null);
-  const [selectedhoseDashSizeOption, setSelectedHoseDashSizeOption] = useState(null);
+  const [selectedhoseDashSizeOption, setSelectedHoseDashSizeOption] =useState(null);
   const [selectedFittingDashSizeOption, setSelectedfittingDashSizeOption] = useState(null);
-  const [selectedFittingTypeOption, setSelectedFittingTypeOption] = useState(null);
-  const [selectedFittingThreadOption, setSelectedFittingThreadOption] = useState(null);
-  const [selectedStraightBendangleOption, setSelectedStraightBendangleOption] = useState(null);
+  const [selectedFittingTypeOption, setSelectedFittingTypeOption] =useState(null);
+  const [selectedFittingThreadOption, setSelectedFittingThreadOption] =useState(null);
+  const [selectedStraightBendangleOption, setSelectedStraightBendangleOption] =useState(null);
   const [selectedDropLengthOption, setSelectedDropLengthOption] = useState(null);
   const [selectedNeckLengthOption, setselectedNeckLengthOption] = useState(null);
   const [springTypeOption, setSpringTypeOption] = useState(null);
@@ -136,6 +152,7 @@ const AddProduct = () => {
     product_type: "",
     // with_cap:[]
   });
+  console.log(formData,"formData is here")
   //code setup variables
   const [fittingCode, setFittingCode] = useState();
   const [descCode, setDescCode] = useState();
@@ -145,34 +162,174 @@ const AddProduct = () => {
   const [nutDescCode, setNutDescCode] = useState();
   const [nippleFittingCode, setNippleFittingCode] = useState();
   const [nippleDescCode, setNippleDescCode] = useState();
-  console.log(formData, "formData is here")
+  // console.log(formData, "formData is here");
 
+  const fetchDesignOptions = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllDesignApi();
+      const resData = res?.data?.designs;
+      console.log("resss",res)
+      const mappedData = resData?.map((val) => ({
+        label: val?.name,
+        value: val?.name,
+      }));
+      setDesignOption(mappedData)
+      // setfittingThreadOption(mappedData);
+    } catch (error) {
+      // console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchFittingThreadOptions = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllFittingThreadApi();
+      const resData = res?.data?.fittingThreads;
+      const mappedData = resData?.map((val) => ({
+        label: `${val?.name} (${val?.code})`,
+        value: val?.name,
+      }));
+      setfittingThreadOption(mappedData);
+    } catch (error) {
+      // console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchHoseDashSizeOptions = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllHoseDashSizeApi();
+      const resData = res?.data?.hoseDashSizes;
+      const mappedData = resData?.map((val) => ({
+        label: `${val?.size} (${val?.code})`,
+        value: val?.size,
+      }));
+      setHoseDashSizeOption(mappedData);
+    } catch (error) {
+      // console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchFittingDashSizeOptions = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllFittingDashSizeApi();
+      const resData = res?.data?.fittingDashSizes;
+      const mappedData = resData?.map((val) => ({
+        label: `${val?.size} (${val?.code})`,
+        value: val?.size,
+      }));
+      // setHoseDashSizeOption(mappedData);
+    } catch (error) {
+      // console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchBendAngleOptions = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllBendAngleApi();
+      const resData = res?.data?.bendAngles;
+      const mappedData = resData?.map((val) => ({
+        label: val?.name,
+        value: val?.name,
+      }));
+      setStraightBendangleOption(mappedData);
+    } catch (error) {
+      // console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const fetchBrandLayLineOptions = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllBrandLayLineApi();
+      const resData = res?.data?.brandLayLines;
+      const mappedData = resData?.map((val) => ({
+        label: val?.name,
+        value: val?.name,
+      }));
+      setBrandLayLineOption(mappedData);
+    } catch (error) {
+      // console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchHoseTypeOptions = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllHoseTypeApi();
+      const resData = res?.data?.hoseTypes;
+      const mappedData = resData?.map((val) => ({
+        label: val?.name,
+        value: val?.name,
+      }));
+      setHoseTypeOption(mappedData);
+    } catch (error) {
+      // console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load cuisines. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(()=>{
+    fetchDesignOptions();
+    fetchFittingThreadOptions();
+    fetchHoseDashSizeOptions();
+    fetchFittingDashSizeOptions();
+    fetchBendAngleOptions();
+    fetchBrandLayLineOptions();
+    fetchHoseTypeOptions();
+  },[]);
+  
   //Filter Fitting_Dash_Size_Options
   const filterFittingDashSizeOptions = () => {
     // Basic filtering based on fitting_thread
-    const filteredOptions = dropdownOptions?.fittingDashSizeOptions?.filter((option) => {
-      return (
-        option.thread_type === formData?.fitting_thread && // Match the selected fitting_thread
-        option.thread !== null // Exclude options with null threads
-      );
-    });
-
-
+    const filteredOptions = dropdownOptions?.fittingDashSizeOptions?.filter(
+      (option) => {
+        return (
+          option.thread_type === formData?.fitting_thread && // Match the selected fitting_thread
+          option.thread !== null // Exclude options with null threads
+        );
+      }
+    );
 
     if (formData?.fitting_thread === "METRIC") {
-
       const selectedMetricType = formData?.metric_type;
-      const normalizedMetricType = selectedMetricType === "Light With O" ? "Light" : selectedMetricType === "Heavy With O" ? "Heavy" : selectedMetricType;
+      const normalizedMetricType =
+        selectedMetricType === "Light With O"
+          ? "Light"
+          : selectedMetricType === "Heavy With O"
+          ? "Heavy"
+          : selectedMetricType;
 
-
-      const metricFilteredOptions = dropdownOptions?.fittingDashSizeOptions.filter((option) => {
-        // console.log("-=-=-=-=-=-=-", option, option.metric_type, formData?.metric_type, option.pipe_od, formData?.pipeOD)
-        return (
-          option.metric_type === normalizedMetricType && // Match the selected metric_type
-          option.pipe_od === formData?.pipeOD // Match the selected pipe_od
-        );
-
-      });
+      const metricFilteredOptions =
+        dropdownOptions?.fittingDashSizeOptions.filter((option) => {
+          // console.log("-=-=-=-=-=-=-", option, option.metric_type, formData?.metric_type, option.pipe_od, formData?.pipeOD)
+          return (
+            option.metric_type === normalizedMetricType && // Match the selected metric_type
+            option.pipe_od === formData?.pipeOD // Match the selected pipe_od
+          );
+        });
       // console.log("-=-=-=-=-=-=-", metricFilteredOptions)
 
       // If no matching options, return an empty array
@@ -184,7 +341,7 @@ const AddProduct = () => {
         value: `${option.thread} (${option.dash})`,
         label: `${option.thread} (${option.dash})`,
         code: `${option.dash}`,
-        dsc_code: `${option.dsc_code}`
+        dsc_code: `${option.dsc_code}`,
       }));
     }
 
@@ -208,23 +365,21 @@ const AddProduct = () => {
     //   }
     // }
 
-
-
     const hoseDash = dropdownOptions?.hoseDashSizeOptions.filter(
-      (option) =>
-        option?.value === formData?.hose_dash_size
+      (option) => option?.value === formData?.hose_dash_size
     );
 
-    if ((formData?.variant === "Standard") && (hoseDash[0]?.dash)) {
-
-
-
-
+    if (formData?.variant === "Standard" && hoseDash[0]?.dash) {
       const filteredOption = dropdownOptions?.fittingDashSizeOptions.filter(
         (option) =>
-          option.thread_type === formData?.fitting_thread && option.dash === hoseDash[0]?.dash && option.variant === formData?.variant
-      )
-      console.log("filteredOption filteredOption filteredOption ", filteredOption)
+          option.thread_type === formData?.fitting_thread &&
+          option.dash === hoseDash[0]?.dash &&
+          option.variant === formData?.variant
+      );
+      console.log(
+        "filteredOption filteredOption filteredOption ",
+        filteredOption
+      );
 
       // If no matching options, return an empty array
       if (filteredOption.length === 0) {
@@ -236,8 +391,8 @@ const AddProduct = () => {
           value: `${option.thread} (${option.dash})`,
           label: `${option.thread} (${option.dash})`,
           code: `${option.dash}`,
-          dsc_code: `${option.dsc_code}`
-        }))
+          dsc_code: `${option.dsc_code}`,
+        }));
       }
       // const variantOptions = dropdownOptions?.fittingDashSizeOptions.filter(
       //   (option) =>
@@ -257,30 +412,33 @@ const AddProduct = () => {
       // }
     }
 
-
     // Map the filtered options to the desired format
     return filteredOptions?.map((option) => ({
       value: `${option.thread} (${option.dash})`,
       label: `${option.thread} (${option.dash})`,
       code: `${option.dash}`,
-      dsc_code: `${option.dsc_code}`
+      dsc_code: `${option.dsc_code}`,
     }));
   };
 
   // Filter fittingTypeOption
   const filterFittingTypeOptions = () => {
-    const fittingTypeOptions = dropdownOptions?.fittingTypeOptions.filter((option) => {
-      if (formData?.fitting_thread === "SAE 61") {
-        // For SAE 61, include only "Flange"
-        return option?.value === "Flange" && option?.fitting_thread === "SAE 61";
+    const fittingTypeOptions = dropdownOptions?.fittingTypeOptions.filter(
+      (option) => {
+        if (formData?.fitting_thread === "SAE 61") {
+          // For SAE 61, include only "Flange"
+          return (
+            option?.value === "Flange" && option?.fitting_thread === "SAE 61"
+          );
+        }
+        if (formData?.fitting_thread === "SAE 62") {
+          // For SAE 62, include both "Flange" and "CAT Flange"
+          return option?.fitting_thread === "SAE";
+        }
+        // Default case: include all matching `fitting_thread`
+        return option?.fitting_thread === "normal";
       }
-      if (formData?.fitting_thread === "SAE 62") {
-        // For SAE 62, include both "Flange" and "CAT Flange"
-        return option?.fitting_thread === "SAE";
-      }
-      // Default case: include all matching `fitting_thread`
-      return option?.fitting_thread === 'normal';
-    });
+    );
     // Map the filtered options to the desired format
     return fittingTypeOptions.map((option) => ({
       value: `${option.value}`,
@@ -288,44 +446,88 @@ const AddProduct = () => {
       code: `${option.code}`,
       dsc_code: `${option.dsc_code}`,
     }));
-  }
+  };
 
   // Set Dynamically -> fittingTypeOption
   useEffect(() => {
     // Check if required fields are provided
-    if (formData.fitting_thread === "SAE 61" || formData.fitting_thread === "SAE 62") {
-
+    if (
+      formData.fitting_thread === "SAE 61" ||
+      formData.fitting_thread === "SAE 62"
+    ) {
       // Call the filtering function
       const filteredOptions = filterFittingTypeOptions();
       if (filteredOptions.length > 0) {
-
         setfittingTypeOption(filteredOptions);
-
       }
     }
   }, [formData?.fitting_thread]);
 
-
   // Fitting Code and Description
   useEffect(() => {
-    const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code ? selectedFittingTypeOption?.code : ''}${selectedStraightBendangleOption?.code || ''}${formData?.drop_length ? `-${formData?.drop_length}` : ''}${selectedWithCapWithoutCapOption?.code ? '-' + selectedWithCapWithoutCapOption?.code : ''}`;
+    const fitting_Code = `${formData?.design || ""}${
+      selectedWireTypeOption?.code || ""
+    }${
+      selectedFittingPieceOption?.code
+        ? selectedFittingPieceOption?.code + "-"
+        : ""
+    }${
+      selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + "-" : ""
+    }${selectedhoseDashSizeOption?.code || ""}${
+      selectedFittingDashSizeOption?.code
+        ? selectedFittingDashSizeOption?.code + "-"
+        : ""
+    }${
+      selectedFittingThreadOption?.code
+        ? selectedFittingThreadOption?.code + "-"
+        : ""
+    }${selectedFittingTypeOption?.code ? selectedFittingTypeOption?.code : ""}${
+      selectedStraightBendangleOption?.code || ""
+    }${formData?.drop_length ? `-${formData?.drop_length}` : ""}${
+      selectedWithCapWithoutCapOption?.code
+        ? "-" + selectedWithCapWithoutCapOption?.code
+        : ""
+    }`;
 
     // const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}${selectedWithCapWithoutCapOption?.code || ''}`;
     setFittingCode(fitting_Code);
 
     // const cap_fitting_code = `${}`
 
-
-
-    const desc_Code = `${selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code : ''}${selectedFittingThreadOption?.dsc_code ? ' ' + selectedFittingThreadOption?.dsc_code : ''} ${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code : ''}${selectedFittingDashSizeOption?.dsc_code ? 'X' + selectedFittingDashSizeOption?.dsc_code : ''} ${(selectedFittingTypeOption?.dsc_code || '').toUpperCase()} ${(selectedStraightBendangleOption?.dsc_code || '').toUpperCase()} ${(selectedSkiveTypeOption?.dsc_code || '').toUpperCase()}${selectedFittingThreadOption?.dsc ? ' ' + selectedFittingThreadOption?.dsc : ''} ${formData?.drop_length ? `DL-${formData.drop_length}` : ''} ${selectedWithCapWithoutCapOption?.dsc_code || ''}${formData?.nut_hex ? + formData?.nut_hex + 'X' : ''}${formData?.nut_length ? formData?.nut_length : ''}`.trim();
+    const desc_Code = `${
+      selectedWireTypeOption?.dsc_code ? selectedWireTypeOption?.dsc_code : ""
+    }${
+      selectedFittingThreadOption?.dsc_code
+        ? " " + selectedFittingThreadOption?.dsc_code
+        : ""
+    } ${
+      selectedhoseDashSizeOption?.dsc_code
+        ? selectedhoseDashSizeOption?.dsc_code
+        : ""
+    }${
+      selectedFittingDashSizeOption?.dsc_code
+        ? "X" + selectedFittingDashSizeOption?.dsc_code
+        : ""
+    } ${(selectedFittingTypeOption?.dsc_code || "").toUpperCase()} ${(
+      selectedStraightBendangleOption?.dsc_code || ""
+    ).toUpperCase()} ${(
+      selectedSkiveTypeOption?.dsc_code || ""
+    ).toUpperCase()}${
+      selectedFittingThreadOption?.dsc
+        ? " " + selectedFittingThreadOption?.dsc
+        : ""
+    } ${formData?.drop_length ? `DL-${formData.drop_length}` : ""} ${
+      selectedWithCapWithoutCapOption?.dsc_code || ""
+    }${formData?.nut_hex ? +formData?.nut_hex + "X" : ""}${
+      formData?.nut_length ? formData?.nut_length : ""
+    }`.trim();
 
     setDescCode(desc_Code);
     setFormData((prevData) => ({
       ...prevData,
       desc_Code: desc_Code, // Clear variant value in formData
-      fitting_Code: fitting_Code // Clear fitting_dash_size value in formData
+      fitting_Code: fitting_Code, // Clear fitting_dash_size value in formData
     }));
-
   }, [
     formData?.design,
     selectedWireTypeOption,
@@ -339,58 +541,128 @@ const AddProduct = () => {
     selectedStraightBendangleOption,
     formData?.drop_length,
     formData?.ferrule,
-
-  ])
+  ]);
 
   //Parts fitting-code and Description
   useEffect(() => {
-
     //Nut fitting code and description
-    if (formData?.part === 'Nut') {
-      const nut_fitting_code = `${'NUT-' + formData?.design || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code : ''}${selectedFittingThreadOption?.code ? '-' + selectedFittingThreadOption?.code + '-' : ''}${formData?.nut_hex ?  + formData?.nut_hex + 'X' : ''}${formData?.nut_length ? formData?.nut_length : ''}`
-      setNutFittingCode(nut_fitting_code)
+    if (formData?.part === "Nut") {
+      const nut_fitting_code = `${"NUT-" + formData?.design || ""}${
+        selectedFittingDashSizeOption?.code
+          ? selectedFittingDashSizeOption?.code
+          : ""
+      }${
+        selectedFittingThreadOption?.code
+          ? "-" + selectedFittingThreadOption?.code + "-"
+          : ""
+      }${formData?.nut_hex ? +formData?.nut_hex + "X" : ""}${
+        formData?.nut_length ? formData?.nut_length : ""
+      }`;
+      setNutFittingCode(nut_fitting_code);
 
-      const desc_nut_Code = `${selectedFittingThreadOption?.dsc_code ? selectedFittingThreadOption?.dsc_code : ''}${selectedFittingDashSizeOption?.dsc_code ? ' ' + selectedFittingDashSizeOption?.dsc_code + ' NUT' : ''}${formData?.nut_hex ? ' (' + formData?.nut_hex + 'X' : ''}${formData?.nut_length ? formData?.nut_length + ')': ''}`;
-      setNutDescCode(desc_nut_Code)
+      const desc_nut_Code = `${
+        selectedFittingThreadOption?.dsc_code
+          ? selectedFittingThreadOption?.dsc_code
+          : ""
+      }${
+        selectedFittingDashSizeOption?.dsc_code
+          ? " " + selectedFittingDashSizeOption?.dsc_code + " NUT"
+          : ""
+      }${formData?.nut_hex ? " (" + formData?.nut_hex + "X" : ""}${
+        formData?.nut_length ? formData?.nut_length + ")" : ""
+      }`;
+      setNutDescCode(desc_nut_Code);
 
       setFormData((prevData) => ({
         ...prevData,
         desc_Code: desc_nut_Code, // Clear variant value in formData
-        fitting_Code: nut_fitting_code // Clear fitting_dash_size value in formData
+        fitting_Code: nut_fitting_code, // Clear fitting_dash_size value in formData
       }));
     }
 
     //Nipple fitting code and description
-    if (formData?.part === 'Nipple') {
-      const nipple_fitting_code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedSkiveTypeOption?.code ? '-' + selectedSkiveTypeOption?.code : ''}${selectedFittingThreadOption?.code ? '-' + selectedFittingThreadOption?.code + '-' : ''}${selectedhoseDashSizeOption ? selectedhoseDashSizeOption.code : ''}`
-      setNippleFittingCode(nipple_fitting_code)
+    if (formData?.part === "Nipple") {
+      const nipple_fitting_code = `${formData?.design || ""}${
+        selectedWireTypeOption?.code || ""
+      }${
+        selectedSkiveTypeOption?.code ? "-" + selectedSkiveTypeOption?.code : ""
+      }${
+        selectedFittingThreadOption?.code
+          ? "-" + selectedFittingThreadOption?.code + "-"
+          : ""
+      }${selectedhoseDashSizeOption ? selectedhoseDashSizeOption.code : ""}`;
+      setNippleFittingCode(nipple_fitting_code);
 
-      const desc_nipple_Code = `${selectedFittingThreadOption?.dsc_code ? selectedFittingThreadOption?.dsc_code + ' ' : ''}${selectedhoseDashSizeOption ? selectedhoseDashSizeOption.dsc_code : ''}${selectedWireTypeOption?.dsc_code ? ' ' + selectedWireTypeOption?.dsc_code : ''}${selectedSkiveTypeOption?.dsc_code ? ' ' + selectedSkiveTypeOption?.dsc_code : ''}`;
-      setNippleDescCode(desc_nipple_Code)
+      const desc_nipple_Code = `${
+        selectedFittingThreadOption?.dsc_code
+          ? selectedFittingThreadOption?.dsc_code + " "
+          : ""
+      }${
+        selectedhoseDashSizeOption ? selectedhoseDashSizeOption.dsc_code : ""
+      }${
+        selectedWireTypeOption?.dsc_code
+          ? " " + selectedWireTypeOption?.dsc_code
+          : ""
+      }${
+        selectedSkiveTypeOption?.dsc_code
+          ? " " + selectedSkiveTypeOption?.dsc_code
+          : ""
+      }`;
+      setNippleDescCode(desc_nipple_Code);
 
       setFormData((prevData) => ({
         ...prevData,
         desc_Code: desc_nipple_Code, // Clear variant value in formData
-        fitting_Code: nipple_fitting_code // Clear fitting_dash_size value in formData
+        fitting_Code: nipple_fitting_code, // Clear fitting_dash_size value in formData
       }));
     }
 
-
     //cap fitting code and description
-    if (formData?.part === 'Cap') {
-      const cap_fitting_code = `${'Cap ' + formData?.design || ''}${selectedWireTypeOption?.code || ''}${formData?.cap_size ? '-' + (formData?.cap_size).split(' ').pop().replace(/[()]/g, '') : ''}${selectedSkiveTypeOption?.code ? '-' + selectedSkiveTypeOption?.code + '-' : ''}${formData?.od ? formData?.od : ''}${formData?.length ? 'X' + formData?.length : ''}${formData?.big_bore ? '-' + formData?.big_bore + 'B' : ''}${formData?.additional ? '-' + (formData?.additional).replace(/(\d+)\s*wire/i, "$1W") : ''}`
-      setCapFittingCode(cap_fitting_code)
+    if (formData?.part === "Cap") {
+      const cap_fitting_code = `${"Cap " + formData?.design || ""}${
+        selectedWireTypeOption?.code || ""
+      }${
+        formData?.cap_size
+          ? "-" + (formData?.cap_size).split(" ").pop().replace(/[()]/g, "")
+          : ""
+      }${
+        selectedSkiveTypeOption?.code
+          ? "-" + selectedSkiveTypeOption?.code + "-"
+          : ""
+      }${formData?.od ? formData?.od : ""}${
+        formData?.length ? "X" + formData?.length : ""
+      }${formData?.big_bore ? "-" + formData?.big_bore + "B" : ""}${
+        formData?.additional
+          ? "-" + (formData?.additional).replace(/(\d+)\s*wire/i, "$1W")
+          : ""
+      }`;
+      setCapFittingCode(cap_fitting_code);
 
-      const desc_cap_Code = `${formData?.cap_size ? 'Cap ' + (formData?.cap_size).match(/^.*?(?=\s\()/)?.[0] + ' ' : ''}${formData?.od ? '(' + formData?.od : ''}${formData?.length ? 'X' + formData?.length + ')' : ''}${selectedWireTypeOption?.dsc_code ? ' ' + selectedWireTypeOption?.dsc_code : ''}${selectedSkiveTypeOption?.dsc_code ? ' ' + selectedSkiveTypeOption?.dsc_code + ' ' : ''}${formData?.big_bore ? 'BIGBORE-' + formData?.big_bore : ''}${formData?.additional ? ' ' + (formData?.additional) : ''}`;
-      setCapDescCode(desc_cap_Code)
+      const desc_cap_Code = `${
+        formData?.cap_size
+          ? "Cap " + (formData?.cap_size).match(/^.*?(?=\s\()/)?.[0] + " "
+          : ""
+      }${formData?.od ? "(" + formData?.od : ""}${
+        formData?.length ? "X" + formData?.length + ")" : ""
+      }${
+        selectedWireTypeOption?.dsc_code
+          ? " " + selectedWireTypeOption?.dsc_code
+          : ""
+      }${
+        selectedSkiveTypeOption?.dsc_code
+          ? " " + selectedSkiveTypeOption?.dsc_code + " "
+          : ""
+      }${formData?.big_bore ? "BIGBORE-" + formData?.big_bore : ""}${
+        formData?.additional ? " " + formData?.additional : ""
+      }`;
+      setCapDescCode(desc_cap_Code);
 
       setFormData((prevData) => ({
         ...prevData,
         desc_Code: desc_cap_Code, // Clear variant value in formData
-        fitting_Code: cap_fitting_code // Clear fitting_dash_size value in formData
+        fitting_Code: cap_fitting_code, // Clear fitting_dash_size value in formData
       }));
     }
-
   }, [
     formData?.design,
     selectedWireTypeOption,
@@ -404,34 +676,57 @@ const AddProduct = () => {
     selectedFittingThreadOption,
     formData?.nut_hex,
     formData?.nut_length,
-    selectedhoseDashSizeOption
-  ])
+    selectedhoseDashSizeOption,
+  ]);
 
-  const [hosepipeFittingCode,setHosePipeFittingCode] = useState(null);
-  const [hosepipedescCode,setHosePipeDescCode] = useState(null);
-
+  const [hosepipeFittingCode, setHosePipeFittingCode] = useState(null);
+  const [hosepipedescCode, setHosePipeDescCode] = useState(null);
 
   //Hose pipe type options
   useEffect(() => {
-    
-      const hosepipe_fitting_code = `${selectedhoseDashSizeOption?.code ? selectedhoseDashSizeOption?.code : ''}${selectedHoseTypeOption?.code ? "-" + selectedHoseTypeOption?.code + " ": ''}${selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ''}${selectedHosePipeMFCOption?.code ? " " + selectedHosePipeMFCOption?.code : ''}`
-      setHosePipeFittingCode(hosepipe_fitting_code)
+    const hosepipe_fitting_code = `${
+      selectedhoseDashSizeOption?.code ? selectedhoseDashSizeOption?.code : ""
+    }${
+      selectedHoseTypeOption?.code
+        ? "-" + selectedHoseTypeOption?.code + " "
+        : ""
+    }${
+      selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ""
+    }${
+      selectedHosePipeMFCOption?.code
+        ? " " + selectedHosePipeMFCOption?.code
+        : ""
+    }`;
+    setHosePipeFittingCode(hosepipe_fitting_code);
 
-      const desc_hosepipe_Code = `${selectedhoseDashSizeOption?.dsc_code ? selectedhoseDashSizeOption?.dsc_code : ''}${selectedHoseTypeOption?.dsc_code ? " " + selectedHoseTypeOption?.dsc_code + " ": ''}${selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ''}${selectedHosePipeMFCOption?.dsc_code ? " " + selectedHosePipeMFCOption?.dsc_code : ''}`;
-      setHosePipeDescCode(desc_hosepipe_Code)
+    const desc_hosepipe_Code = `${
+      selectedhoseDashSizeOption?.dsc_code
+        ? selectedhoseDashSizeOption?.dsc_code
+        : ""
+    }${
+      selectedHoseTypeOption?.dsc_code
+        ? " " + selectedHoseTypeOption?.dsc_code + " "
+        : ""
+    }${
+      selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ""
+    }${
+      selectedHosePipeMFCOption?.dsc_code
+        ? " " + selectedHosePipeMFCOption?.dsc_code
+        : ""
+    }`;
+    setHosePipeDescCode(desc_hosepipe_Code);
 
-      setFormData((prevData) => ({
-        ...prevData,
-        desc_Code: desc_hosepipe_Code,
-        fitting_Code: hosepipe_fitting_code 
-      }));
-  
+    setFormData((prevData) => ({
+      ...prevData,
+      desc_Code: desc_hosepipe_Code,
+      fitting_Code: hosepipe_fitting_code,
+    }));
   }, [
     selectedhoseDashSizeOption,
     selectedBrandLayLineOption,
     selectedHoseTypeOption,
-    selectedHosePipeMFCOption
-  ])
+    selectedHosePipeMFCOption,
+  ]);
 
   useEffect(() => {
     // Check if required fields are provided
@@ -465,10 +760,13 @@ const AddProduct = () => {
     }
   }, [selectpipeODOption]);
 
-
   useEffect(() => {
     // Check if both values are provided
-    if (formData?.fitting_thread && formData?.variant && formData?.hose_dash_size) {
+    if (
+      formData?.fitting_thread &&
+      formData?.variant &&
+      formData?.hose_dash_size
+    ) {
       const filteredOptions = filterFittingDashSizeOptions();
       if (filteredOptions.length > 0) {
         setSelectedfittingDashSizeOption(filteredOptions[0]);
@@ -476,7 +774,6 @@ const AddProduct = () => {
           ...formData,
           fitting_dash_size: filteredOptions[0].value,
         });
-
       }
     }
   }, [formData?.fitting_thread, formData?.variant, formData?.hose_dash_size]);
@@ -490,13 +787,12 @@ const AddProduct = () => {
         fitting_dash_size: "", // Clear fitting_dash_size value in formData
         fitting_type: "",
         OD: "",
-        pipeOD: ""
+        pipeOD: "",
       }));
       setSelectedvariantOption(null); // Clear variant option
       setSelectedfittingDashSizeOption(null); // Clear fitting_dash size option
       setSelectedFittingTypeOption(null);
-      setSelectpipeODOption(null)
-
+      setSelectpipeODOption(null);
     }
   }, [selectedFittingThreadOption]); // Trigger this whenever fitting thread is selected
 
@@ -510,26 +806,24 @@ const AddProduct = () => {
         fitting_dash_size: "", // Clear fitting_dash_size value in formData
         fitting_type: "",
         OD: "",
-        pipeOD: ""
+        pipeOD: "",
       }));
       setSelectedvariantOption(null); // Clear variant option
       setSelectedfittingDashSizeOption(null); // Clear fitting_dash size option
       setSelectedFittingTypeOption(null);
-      setSelectpipeODOption(null)
-
+      setSelectpipeODOption(null);
     }
   }, [selectedhoseDashSizeOption]);
 
   //Clear bend code
   useEffect(() => {
     //When user select Staight clear the drop length in fitting and descrition code
-    if (selectedStraightBendangleOption?.value === 'Straight') {
+    if (selectedStraightBendangleOption?.value === "Straight") {
       setFormData((prevData) => ({
         ...prevData,
-        drop_length: "" // Clear the bend code when `selectedStraightBendangleOption` changes
+        drop_length: "", // Clear the bend code when `selectedStraightBendangleOption` changes
       }));
     }
-
   }, [selectedStraightBendangleOption]);
 
   useEffect(() => {
@@ -538,7 +832,7 @@ const AddProduct = () => {
       fitting_dash_size: "",
     }));
     setSelectedfittingDashSizeOption(null);
-  }, [formData?.variant === "Manual"])
+  }, [formData?.variant === "Manual"]);
 
   const resetEndFittingForm = () => {
     setFormData({
@@ -573,7 +867,6 @@ const AddProduct = () => {
     setLoading(false);
   };
 
-
   const handleGalleryChange = (e) => {
     const files = Array.from(e.target.files); // Convert FileList to an array
     // Map through the selected files and create an array of objects containing the file and preview URL
@@ -586,13 +879,16 @@ const AddProduct = () => {
     setGalleryImages((prevImages) => [...prevImages, ...newImages]);
     setFormData((prevData) => ({
       ...prevData,
-      gallery: [...(prevData.gallery || []), ...newImages?.map(image => image.file)],
+      gallery: [
+        ...(prevData.gallery || []),
+        ...newImages?.map((image) => image.file),
+      ],
     }));
   };
 
   // Deletes an image from the array
   const handleDeleteImage = (index) => {
-    setGalleryImages((prevImages) => prevImages.filter((_, i) => i !== index));;
+    setGalleryImages((prevImages) => prevImages.filter((_, i) => i !== index));
 
     setFormData((prevData) => ({
       ...prevData,
@@ -600,13 +896,11 @@ const AddProduct = () => {
     }));
   };
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name)
+    console.log(name);
 
     setFormData({ ...formData, [name]: value });
-   
   };
 
   const handleSelectChange = (name) => (selectedOption) => {
@@ -655,18 +949,18 @@ const AddProduct = () => {
       product_id: "",
       product_Type: "",
     });
-    setLogo(null)
+    setLogo(null);
     setGalleryImages([]);
 
-    setSelectedCategoryOption(null)
-    setSelectedSubCategoryOption(null)
-    setSelectedSubSubCategoryOption(null)
-    setSelectedBrandOption(null)
-    setSelectedfittingSizeOption(null)
-    setSelectedmaterialOption(null)
-    setSelectedvariantOption(null)
-    setSelectedThreadtypeOption(null)
-    setSelectedPartOption(null)
+    setSelectedCategoryOption(null);
+    setSelectedSubCategoryOption(null);
+    setSelectedSubSubCategoryOption(null);
+    setSelectedBrandOption(null);
+    setSelectedfittingSizeOption(null);
+    setSelectedmaterialOption(null);
+    setSelectedvariantOption(null);
+    setSelectedThreadtypeOption(null);
+    setSelectedPartOption(null);
     setErrors({});
     setLoading(false);
   };
@@ -674,24 +968,32 @@ const AddProduct = () => {
   const validateForm = () => {
     const newErrors = {};
     if (!formData.name) newErrors.name = "Food name is required.";
-    if (!formData.description) newErrors.description = "Description is required.";
+    if (!formData.description)
+      newErrors.description = "Description is required.";
     if (!formData.product_id) newErrors.product_id = "Product Id is required.";
-    if (!formData.product_Type) newErrors.product_Type = "Product Type is required.";
+    if (!formData.product_Type)
+      newErrors.product_Type = "Product Type is required.";
 
     if (!formData.image) newErrors.image = "Image is required.";
 
     if (!formData.category_id) newErrors.category_id = "Category is required.";
-    if (!formData.subcategory_id) newErrors.subcategory_id = "Sub Category is required.";
-    if (!formData.subsubcategory_id) newErrors.subsubcategory_id = "Sub Sub Category is required.";
+    if (!formData.subcategory_id)
+      newErrors.subcategory_id = "Sub Category is required.";
+    if (!formData.subsubcategory_id)
+      newErrors.subsubcategory_id = "Sub Sub Category is required.";
 
     if (!formData.brand) newErrors.brand = "Brand is required.";
     if (!formData.variant) newErrors.variant = "Variant is required.";
-    if (!formData.fittingSize) newErrors.fittingSize = "fittingSize is required.";
-    if (!formData.thread_type) newErrors.thread_type = "Thread Type is required.";
+    if (!formData.fittingSize)
+      newErrors.fittingSize = "fittingSize is required.";
+    if (!formData.thread_type)
+      newErrors.thread_type = "Thread Type is required.";
     if (!formData.material) newErrors.material = "Material is required.";
-    if (!formData.pressure_rating) newErrors.pressure_rating = "Pressure Rating is required.";
-    if (!formData.temperature_range) newErrors.temperature_range = "Temperature Range Rating is required.";
-    if (!formData.price) newErrors.price = "Price is required."
+    if (!formData.pressure_rating)
+      newErrors.pressure_rating = "Pressure Rating is required.";
+    if (!formData.temperature_range)
+      newErrors.temperature_range = "Temperature Range Rating is required.";
+    if (!formData.price) newErrors.price = "Price is required.";
     else if (formData.price && isNaN(formData.price))
       newErrors.price = "Price must be a numeric value.";
 
@@ -699,7 +1001,6 @@ const AddProduct = () => {
 
     return Object.keys(newErrors).length === 0;
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -731,12 +1032,13 @@ const AddProduct = () => {
         }
       } catch (error) {
         setLoading(false);
-        Toaster.error(error.response?.data?.message ||
-          "An error occurred while processing your request"
+        Toaster.error(
+          error.response?.data?.message ||
+            "An error occurred while processing your request"
         );
       }
     }
-  }
+  };
 
   const handleDeleteLogo = () => {
     setLogo(null);
@@ -747,19 +1049,18 @@ const AddProduct = () => {
     setLoading(true);
     try {
       const res = await getAllOptions();
-      setDropwonOptions(res?.data?.data)
+      setDropwonOptions(res?.data?.data);
     } catch (error) {
       console.error("Error fetching cuisines:", error);
       Toaster.error("Failed to load cuisines. Please try again.");
     } finally {
       setLoading(false);
     }
-  }
+  };
 
   useEffect(() => {
-    fetchAllOptions()
+    fetchAllOptions();
   }, []);
-
 
   // Handle the logo image change
   const handleLogoChange = (e) => {
@@ -850,452 +1151,482 @@ const AddProduct = () => {
     },
   };
 
-
   //parts component
   const renderPartComponent = () => {
     switch (formData?.part) {
       case "Nut":
-        return <Nut
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-          //code prefilled
-          fittingCode={nutFittingCode}
-          descCode={nutDescCode}
-
-          //design
-          setSelectedDesignOption={setSelectedDesignOption}
-          selectedDesignOption={selectedDesignOption}
-          designOption={dropdownOptions?.designOption}
-          //variant
-          variantOption={dropdownOptions?.variantsOption}
-          setVariantOption={setVariantOption}
-          selectedvariantOption={selectedvariantOption}
-          setSelectedvariantOption={setSelectedvariantOption}
-          //Fitting Dash Size  input 
-          // fittingDashSizeOption={fittingDashSizeOption}
-          fittingDashSizeOption={filterFittingDashSizeOptions()}
-          setfittingDashSizeOption={setfittingDashSizeOption}
-          selectedFittingDashSizeOption={selectedFittingDashSizeOption}
-          setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
-          ///pipe OD options
-          pipeODOption={dropdownOptions?.pipeODOptions}
-          setpipeODOption={setpipeODOption}
-          selectedpipeODOption={selectpipeODOption}
-          setSelectpipeODOption={setSelectpipeODOption}
-          //metricType
-          matricTypeOption={dropdownOptions?.metricTypeOptions}
-          setMatricTypeOption={setMatricTypeOption}
-          selectedmetricTypeOptions={selectedmetricTypeOptions}
-          setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
-          //wire type option
-          wireTypeOption={dropdownOptions?.WireTypeOptions}
-          setWireTypeOption={setWireTypeOption}
-          selectedWireTypeOption={selectedWireTypeOption}
-          setSelectedWireTypeOption={setSelectedWireTypeOption}
-          //with and without cap option
-          withCapWithoutCapOption={dropdownOptions?.CapWithoutCapOptions}
-          setWithCapWithoutCapOption={setWithCapWithoutCapOption}
-          selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
-          setSelectedWithCapWithoutCapOption={setSelectedWithCapWithoutCapOption}
-          //fitting piece
-          fittingPieceOption={dropdownOptions?.fittingPieceOptions}
-          setFittingPieceOption={setFittingPieceOption}
-          selectedFittingPieceOption={selectedFittingPieceOption}
-          setSelectedFittingPieceOption={setSelectedFittingPieceOption}
-          //skive type 
-          skiveTypeOption={dropdownOptions?.skiveTypeOptions}
-          setSkiveTypeOption={setSkiveTypeOption}
-          selectedSkiveTypeOption={selectedSkiveTypeOption}
-          setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
-          //hose dash size
-          HoseDashSizeOption={dropdownOptions?.hoseDashSizeOptions}
-          setHoseDashSizeOption={setHoseDashSizeOption}
-          selectedhoseDashSizeOption={selectedhoseDashSizeOption}
-          setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
-
-          //fitting thread
-          fittingThreadOption={dropdownOptions?.fittingThreadOptions}
-          setfittingThreadOption={setfittingThreadOption}
-          selectedFittingThreadOption={selectedFittingThreadOption}
-          setSelectedFittingThreadOption={setSelectedFittingThreadOption}
-          //fitting type
-          fittingTypeOption={filterFittingTypeOptions()}
-          setfittingTypeOption={setfittingTypeOption}
-          selectedFittingTypeOption={selectedFittingTypeOption}
-          setSelectedFittingTypeOption={setSelectedFittingTypeOption}
-          //steight and bend
-          straightBendangleOption={dropdownOptions?.straightBendangleOptions}
-          setStraightBendangleOption={setStraightBendangleOption}
-          selectedStraightBendangleOption={selectedStraightBendangleOption}
-          setSelectedStraightBendangleOption={setSelectedStraightBendangleOption}
-          //drop
-          dropLengthOption={dropdownOptions?.dropLengthOptions}
-          setDropLengthOption={setDropLengthOption}
-          selectedDropLengthOption={selectedDropLengthOption}
-          setSelectedDropLengthOption={setSelectedDropLengthOption}
-          //neck
-          neckLengthOption={dropdownOptions?.neckLengthOptions}
-          setNeckLengthOption={setNeckLengthOption}
-          selectedNeckLengthOption={selectedNeckLengthOption}
-          setselectedNeckLengthOption={setselectedNeckLengthOption}
-        />;
+        return (
+          <Nut
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            //code prefilled
+            fittingCode={nutFittingCode}
+            descCode={nutDescCode}
+            //design
+            setSelectedDesignOption={setSelectedDesignOption}
+            selectedDesignOption={selectedDesignOption}
+            designOption={designOption}
+            //variant
+            variantOption={dropdownOptions?.variantsOption}
+            setVariantOption={setVariantOption}
+            selectedvariantOption={selectedvariantOption}
+            setSelectedvariantOption={setSelectedvariantOption}
+            //Fitting Dash Size  input
+            // fittingDashSizeOption={fittingDashSizeOption}
+            fittingDashSizeOption={filterFittingDashSizeOptions()}
+            setfittingDashSizeOption={setfittingDashSizeOption}
+            selectedFittingDashSizeOption={selectedFittingDashSizeOption}
+            setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
+            ///pipe OD options
+            pipeODOption={dropdownOptions?.pipeODOptions}
+            setpipeODOption={setpipeODOption}
+            selectedpipeODOption={selectpipeODOption}
+            setSelectpipeODOption={setSelectpipeODOption}
+            //metricType
+            matricTypeOption={dropdownOptions?.metricTypeOptions}
+            setMatricTypeOption={setMatricTypeOption}
+            selectedmetricTypeOptions={selectedmetricTypeOptions}
+            setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
+            //wire type option
+            wireTypeOption={dropdownOptions?.WireTypeOptions}
+            setWireTypeOption={setWireTypeOption}
+            selectedWireTypeOption={selectedWireTypeOption}
+            setSelectedWireTypeOption={setSelectedWireTypeOption}
+            //with and without cap option
+            withCapWithoutCapOption={dropdownOptions?.CapWithoutCapOptions}
+            setWithCapWithoutCapOption={setWithCapWithoutCapOption}
+            selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
+            setSelectedWithCapWithoutCapOption={
+              setSelectedWithCapWithoutCapOption
+            }
+            //fitting piece
+            fittingPieceOption={dropdownOptions?.fittingPieceOptions}
+            setFittingPieceOption={setFittingPieceOption}
+            selectedFittingPieceOption={selectedFittingPieceOption}
+            setSelectedFittingPieceOption={setSelectedFittingPieceOption}
+            //skive type
+            skiveTypeOption={dropdownOptions?.skiveTypeOptions}
+            setSkiveTypeOption={setSkiveTypeOption}
+            selectedSkiveTypeOption={selectedSkiveTypeOption}
+            setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
+            //hose dash size
+            HoseDashSizeOption={HoseDashSizeOption}
+            setHoseDashSizeOption={setHoseDashSizeOption}
+            selectedhoseDashSizeOption={selectedhoseDashSizeOption}
+            setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
+            //fitting thread
+            fittingThreadOption={fittingThreadOption}
+            setfittingThreadOption={setfittingThreadOption}
+            selectedFittingThreadOption={selectedFittingThreadOption}
+            setSelectedFittingThreadOption={setSelectedFittingThreadOption}
+            //fitting type
+            fittingTypeOption={filterFittingTypeOptions()}
+            setfittingTypeOption={setfittingTypeOption}
+            selectedFittingTypeOption={selectedFittingTypeOption}
+            setSelectedFittingTypeOption={setSelectedFittingTypeOption}
+            //steight and bend
+            straightBendangleOption={straightBendangleOption}
+            setStraightBendangleOption={setStraightBendangleOption}
+            selectedStraightBendangleOption={selectedStraightBendangleOption}
+            setSelectedStraightBendangleOption={
+              setSelectedStraightBendangleOption
+            }
+            //drop
+            dropLengthOption={dropdownOptions?.dropLengthOptions}
+            setDropLengthOption={setDropLengthOption}
+            selectedDropLengthOption={selectedDropLengthOption}
+            setSelectedDropLengthOption={setSelectedDropLengthOption}
+            //neck
+            neckLengthOption={dropdownOptions?.neckLengthOptions}
+            setNeckLengthOption={setNeckLengthOption}
+            selectedNeckLengthOption={selectedNeckLengthOption}
+            setselectedNeckLengthOption={setselectedNeckLengthOption}
+          />
+        );
       case "Nipple":
-        return <Nipple
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-          //code prefilled
-          fittingCode={nippleFittingCode}
-          descCode={nippleDescCode}
-
-          //design
-          setSelectedDesignOption={setSelectedDesignOption}
-          selectedDesignOption={selectedDesignOption}
-          designOption={dropdownOptions?.designOption}
-          //variant
-          variantOption={dropdownOptions?.variantsOption}
-          setVariantOption={setVariantOption}
-          selectedvariantOption={selectedvariantOption}
-          setSelectedvariantOption={setSelectedvariantOption}
-          //Fitting Dash Size  input 
-          // fittingDashSizeOption={fittingDashSizeOption}
-          fittingDashSizeOption={filterFittingDashSizeOptions()}
-          setfittingDashSizeOption={setfittingDashSizeOption}
-          selectedFittingDashSizeOption={selectedFittingDashSizeOption}
-          setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
-          ///pipe OD options
-          pipeODOption={dropdownOptions?.pipeODOptions}
-          setpipeODOption={setpipeODOption}
-          selectedpipeODOption={selectpipeODOption}
-          setSelectpipeODOption={setSelectpipeODOption}
-          //metricType
-          matricTypeOption={dropdownOptions?.metricTypeOptions}
-          setMatricTypeOption={setMatricTypeOption}
-          selectedmetricTypeOptions={selectedmetricTypeOptions}
-          setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
-          //wire type option
-          wireTypeOption={dropdownOptions?.WireTypeOptions}
-          setWireTypeOption={setWireTypeOption}
-          selectedWireTypeOption={selectedWireTypeOption}
-          setSelectedWireTypeOption={setSelectedWireTypeOption}
-          //with and without cap option
-          withCapWithoutCapOption={dropdownOptions?.CapWithoutCapOptions}
-          setWithCapWithoutCapOption={setWithCapWithoutCapOption}
-          selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
-          setSelectedWithCapWithoutCapOption={setSelectedWithCapWithoutCapOption}
-          //fitting piece
-          fittingPieceOption={dropdownOptions?.fittingPieceOptions}
-          setFittingPieceOption={setFittingPieceOption}
-          selectedFittingPieceOption={selectedFittingPieceOption}
-          setSelectedFittingPieceOption={setSelectedFittingPieceOption}
-          //skive type 
-          skiveTypeOption={dropdownOptions?.skiveTypeOptions}
-          setSkiveTypeOption={setSkiveTypeOption}
-          selectedSkiveTypeOption={selectedSkiveTypeOption}
-          setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
-          //hose dash size
-          HoseDashSizeOption={dropdownOptions?.hoseDashSizeOptions}
-          setHoseDashSizeOption={setHoseDashSizeOption}
-          selectedhoseDashSizeOption={selectedhoseDashSizeOption}
-          setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
-
-          //fitting thread
-          fittingThreadOption={dropdownOptions?.fittingThreadOptions}
-          setfittingThreadOption={setfittingThreadOption}
-          selectedFittingThreadOption={selectedFittingThreadOption}
-          setSelectedFittingThreadOption={setSelectedFittingThreadOption}
-          //fitting type
-          fittingTypeOption={filterFittingTypeOptions()}
-          setfittingTypeOption={setfittingTypeOption}
-          selectedFittingTypeOption={selectedFittingTypeOption}
-          setSelectedFittingTypeOption={setSelectedFittingTypeOption}
-          //steight and bend
-          straightBendangleOption={dropdownOptions?.straightBendangleOptions}
-          setStraightBendangleOption={setStraightBendangleOption}
-          selectedStraightBendangleOption={selectedStraightBendangleOption}
-          setSelectedStraightBendangleOption={setSelectedStraightBendangleOption}
-          //drop
-          dropLengthOption={dropdownOptions?.dropLengthOptions}
-          setDropLengthOption={setDropLengthOption}
-          selectedDropLengthOption={selectedDropLengthOption}
-          setSelectedDropLengthOption={setSelectedDropLengthOption}
-          //neck
-          neckLengthOption={dropdownOptions?.neckLengthOptions}
-          setNeckLengthOption={setNeckLengthOption}
-          selectedNeckLengthOption={selectedNeckLengthOption}
-          setselectedNeckLengthOption={setselectedNeckLengthOption}
-        />;
+        return (
+          <Nipple
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            //code prefilled
+            fittingCode={nippleFittingCode}
+            descCode={nippleDescCode}
+            //design
+            setSelectedDesignOption={setSelectedDesignOption}
+            selectedDesignOption={selectedDesignOption}
+            designOption={designOption}
+            //variant
+            variantOption={dropdownOptions?.variantsOption}
+            setVariantOption={setVariantOption}
+            selectedvariantOption={selectedvariantOption}
+            setSelectedvariantOption={setSelectedvariantOption}
+            //Fitting Dash Size  input
+            // fittingDashSizeOption={fittingDashSizeOption}
+            fittingDashSizeOption={filterFittingDashSizeOptions()}
+            setfittingDashSizeOption={setfittingDashSizeOption}
+            selectedFittingDashSizeOption={selectedFittingDashSizeOption}
+            setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
+            ///pipe OD options
+            pipeODOption={dropdownOptions?.pipeODOptions}
+            setpipeODOption={setpipeODOption}
+            selectedpipeODOption={selectpipeODOption}
+            setSelectpipeODOption={setSelectpipeODOption}
+            //metricType
+            matricTypeOption={dropdownOptions?.metricTypeOptions}
+            setMatricTypeOption={setMatricTypeOption}
+            selectedmetricTypeOptions={selectedmetricTypeOptions}
+            setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
+            //wire type option
+            wireTypeOption={dropdownOptions?.WireTypeOptions}
+            setWireTypeOption={setWireTypeOption}
+            selectedWireTypeOption={selectedWireTypeOption}
+            setSelectedWireTypeOption={setSelectedWireTypeOption}
+            //with and without cap option
+            withCapWithoutCapOption={dropdownOptions?.CapWithoutCapOptions}
+            setWithCapWithoutCapOption={setWithCapWithoutCapOption}
+            selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
+            setSelectedWithCapWithoutCapOption={
+              setSelectedWithCapWithoutCapOption
+            }
+            //fitting piece
+            fittingPieceOption={dropdownOptions?.fittingPieceOptions}
+            setFittingPieceOption={setFittingPieceOption}
+            selectedFittingPieceOption={selectedFittingPieceOption}
+            setSelectedFittingPieceOption={setSelectedFittingPieceOption}
+            //skive type
+            skiveTypeOption={dropdownOptions?.skiveTypeOptions}
+            setSkiveTypeOption={setSkiveTypeOption}
+            selectedSkiveTypeOption={selectedSkiveTypeOption}
+            setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
+            //hose dash size
+            HoseDashSizeOption={HoseDashSizeOption}
+            setHoseDashSizeOption={setHoseDashSizeOption}
+            selectedhoseDashSizeOption={selectedhoseDashSizeOption}
+            setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
+            //fitting thread
+            fittingThreadOption={fittingThreadOption}
+            setfittingThreadOption={setfittingThreadOption}
+            selectedFittingThreadOption={selectedFittingThreadOption}
+            setSelectedFittingThreadOption={setSelectedFittingThreadOption}
+            //fitting type
+            fittingTypeOption={filterFittingTypeOptions()}
+            setfittingTypeOption={setfittingTypeOption}
+            selectedFittingTypeOption={selectedFittingTypeOption}
+            setSelectedFittingTypeOption={setSelectedFittingTypeOption}
+            //steight and bend
+            straightBendangleOption={straightBendangleOption}
+            setStraightBendangleOption={setStraightBendangleOption}
+            selectedStraightBendangleOption={selectedStraightBendangleOption}
+            setSelectedStraightBendangleOption={
+              setSelectedStraightBendangleOption
+            }
+            //drop
+            dropLengthOption={dropdownOptions?.dropLengthOptions}
+            setDropLengthOption={setDropLengthOption}
+            selectedDropLengthOption={selectedDropLengthOption}
+            setSelectedDropLengthOption={setSelectedDropLengthOption}
+            //neck
+            neckLengthOption={dropdownOptions?.neckLengthOptions}
+            setNeckLengthOption={setNeckLengthOption}
+            selectedNeckLengthOption={selectedNeckLengthOption}
+            setselectedNeckLengthOption={setselectedNeckLengthOption}
+          />
+        );
       case "Cap":
-        return <Cap
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-          //code prefilled
-          fittingCode={capFittingCode}
-          descCode={capDescCode}
-
-          //design
-          setSelectedDesignOption={setSelectedDesignOption}
-          selectedDesignOption={selectedDesignOption}
-          designOption={dropdownOptions?.designOption}
-          //variant
-          variantOption={dropdownOptions?.variantsOption}
-          setVariantOption={setVariantOption}
-          selectedvariantOption={selectedvariantOption}
-          setSelectedvariantOption={setSelectedvariantOption}
-          //Fitting Dash Size  input 
-          // fittingDashSizeOption={fittingDashSizeOption}
-          fittingDashSizeOption={filterFittingDashSizeOptions()}
-          setfittingDashSizeOption={setfittingDashSizeOption}
-          selectedFittingDashSizeOption={selectedFittingDashSizeOption}
-          setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
-          ///pipe OD options
-          pipeODOption={dropdownOptions?.pipeODOptions}
-          setpipeODOption={setpipeODOption}
-          selectedpipeODOption={selectpipeODOption}
-          setSelectpipeODOption={setSelectpipeODOption}
-          //metricType
-          matricTypeOption={dropdownOptions?.metricTypeOptions}
-          setMatricTypeOption={setMatricTypeOption}
-          selectedmetricTypeOptions={selectedmetricTypeOptions}
-          setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
-          //wire type option
-          wireTypeOption={dropdownOptions?.WireTypeOptions}
-          setWireTypeOption={setWireTypeOption}
-          selectedWireTypeOption={selectedWireTypeOption}
-          setSelectedWireTypeOption={setSelectedWireTypeOption}
-          //with and without cap option
-          withCapWithoutCapOption={dropdownOptions?.CapWithoutCapOptions}
-          setWithCapWithoutCapOption={setWithCapWithoutCapOption}
-          selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
-          setSelectedWithCapWithoutCapOption={setSelectedWithCapWithoutCapOption}
-          //fitting piece
-          fittingPieceOption={dropdownOptions?.fittingPieceOptions}
-          setFittingPieceOption={setFittingPieceOption}
-          selectedFittingPieceOption={selectedFittingPieceOption}
-          setSelectedFittingPieceOption={setSelectedFittingPieceOption}
-          //skive type 
-          skiveTypeOption={dropdownOptions?.skiveTypeOptions}
-          setSkiveTypeOption={setSkiveTypeOption}
-          selectedSkiveTypeOption={selectedSkiveTypeOption}
-          setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
-          //hose dash size
-          HoseDashSizeOption={dropdownOptions?.hoseDashSizeOptions}
-          setHoseDashSizeOption={setHoseDashSizeOption}
-          selectedhoseDashSizeOption={selectedhoseDashSizeOption}
-          setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
-
-          //fitting thread
-          fittingThreadOption={dropdownOptions?.fittingThreadOptions}
-          setfittingThreadOption={setfittingThreadOption}
-          selectedFittingThreadOption={selectedFittingThreadOption}
-          setSelectedFittingThreadOption={setSelectedFittingThreadOption}
-          //fitting type
-          fittingTypeOption={filterFittingTypeOptions()}
-          setfittingTypeOption={setfittingTypeOption}
-          selectedFittingTypeOption={selectedFittingTypeOption}
-          setSelectedFittingTypeOption={setSelectedFittingTypeOption}
-          //steight and bend
-          straightBendangleOption={dropdownOptions?.straightBendangleOptions}
-          setStraightBendangleOption={setStraightBendangleOption}
-          selectedStraightBendangleOption={selectedStraightBendangleOption}
-          setSelectedStraightBendangleOption={setSelectedStraightBendangleOption}
-          //drop
-          dropLengthOption={dropdownOptions?.dropLengthOptions}
-          setDropLengthOption={setDropLengthOption}
-          selectedDropLengthOption={selectedDropLengthOption}
-          setSelectedDropLengthOption={setSelectedDropLengthOption}
-          //neck
-          neckLengthOption={dropdownOptions?.neckLengthOptions}
-          setNeckLengthOption={setNeckLengthOption}
-          selectedNeckLengthOption={selectedNeckLengthOption}
-          setselectedNeckLengthOption={setselectedNeckLengthOption}
-        />;
+        return (
+          <Cap
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            //code prefilled
+            fittingCode={capFittingCode}
+            descCode={capDescCode}
+            //design
+            setSelectedDesignOption={setSelectedDesignOption}
+            selectedDesignOption={selectedDesignOption}
+            designOption={designOption}
+            //variant
+            variantOption={dropdownOptions?.variantsOption}
+            setVariantOption={setVariantOption}
+            selectedvariantOption={selectedvariantOption}
+            setSelectedvariantOption={setSelectedvariantOption}
+            //Fitting Dash Size  input
+            // fittingDashSizeOption={fittingDashSizeOption}
+            fittingDashSizeOption={filterFittingDashSizeOptions()}
+            setfittingDashSizeOption={setfittingDashSizeOption}
+            selectedFittingDashSizeOption={selectedFittingDashSizeOption}
+            setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
+            ///pipe OD options
+            pipeODOption={dropdownOptions?.pipeODOptions}
+            setpipeODOption={setpipeODOption}
+            selectedpipeODOption={selectpipeODOption}
+            setSelectpipeODOption={setSelectpipeODOption}
+            //metricType
+            matricTypeOption={dropdownOptions?.metricTypeOptions}
+            setMatricTypeOption={setMatricTypeOption}
+            selectedmetricTypeOptions={selectedmetricTypeOptions}
+            setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
+            //wire type option
+            wireTypeOption={dropdownOptions?.WireTypeOptions}
+            setWireTypeOption={setWireTypeOption}
+            selectedWireTypeOption={selectedWireTypeOption}
+            setSelectedWireTypeOption={setSelectedWireTypeOption}
+            //with and without cap option
+            withCapWithoutCapOption={dropdownOptions?.CapWithoutCapOptions}
+            setWithCapWithoutCapOption={setWithCapWithoutCapOption}
+            selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
+            setSelectedWithCapWithoutCapOption={
+              setSelectedWithCapWithoutCapOption
+            }
+            //fitting piece
+            fittingPieceOption={dropdownOptions?.fittingPieceOptions}
+            setFittingPieceOption={setFittingPieceOption}
+            selectedFittingPieceOption={selectedFittingPieceOption}
+            setSelectedFittingPieceOption={setSelectedFittingPieceOption}
+            //skive type
+            skiveTypeOption={dropdownOptions?.skiveTypeOptions}
+            setSkiveTypeOption={setSkiveTypeOption}
+            selectedSkiveTypeOption={selectedSkiveTypeOption}
+            setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
+            //hose dash size
+            HoseDashSizeOption={HoseDashSizeOption}
+            setHoseDashSizeOption={setHoseDashSizeOption}
+            selectedhoseDashSizeOption={selectedhoseDashSizeOption}
+            setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
+            //fitting thread
+            fittingThreadOption={fittingThreadOption}
+            setfittingThreadOption={setfittingThreadOption}
+            selectedFittingThreadOption={selectedFittingThreadOption}
+            setSelectedFittingThreadOption={setSelectedFittingThreadOption}
+            //fitting type
+            fittingTypeOption={filterFittingTypeOptions()}
+            setfittingTypeOption={setfittingTypeOption}
+            selectedFittingTypeOption={selectedFittingTypeOption}
+            setSelectedFittingTypeOption={setSelectedFittingTypeOption}
+            //steight and bend
+            straightBendangleOption={straightBendangleOption}
+            setStraightBendangleOption={setStraightBendangleOption}
+            selectedStraightBendangleOption={selectedStraightBendangleOption}
+            setSelectedStraightBendangleOption={
+              setSelectedStraightBendangleOption
+            }
+            //drop
+            dropLengthOption={dropdownOptions?.dropLengthOptions}
+            setDropLengthOption={setDropLengthOption}
+            selectedDropLengthOption={selectedDropLengthOption}
+            setSelectedDropLengthOption={setSelectedDropLengthOption}
+            //neck
+            neckLengthOption={dropdownOptions?.neckLengthOptions}
+            setNeckLengthOption={setNeckLengthOption}
+            selectedNeckLengthOption={selectedNeckLengthOption}
+            setselectedNeckLengthOption={setselectedNeckLengthOption}
+          />
+        );
     }
-
-
-  }
+  };
   const renderComponent = () => {
     switch (formData?.product_type) {
       case "End Fittings":
-        return <EndFittingForm
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-          setErrors={setErrors}
-          //code prefilled
-          fittingCode={fittingCode}
-          descCode={descCode}
-
-          //design
-          setSelectedDesignOption={setSelectedDesignOption}
-          selectedDesignOption={selectedDesignOption}
-          designOption={dropdownOptions?.designOption}
-          //variant
-          variantOption={dropdownOptions?.variantsOption}
-          setVariantOption={setVariantOption}
-          selectedvariantOption={selectedvariantOption}
-          setSelectedvariantOption={setSelectedvariantOption}
-          //Fitting Dash Size  input 
-          // fittingDashSizeOption={fittingDashSizeOption}
-          fittingDashSizeOption={filterFittingDashSizeOptions()}
-          setfittingDashSizeOption={setfittingDashSizeOption}
-          selectedFittingDashSizeOption={selectedFittingDashSizeOption}
-          setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
-          ///pipe OD options
-          pipeODOption={dropdownOptions?.pipeODOptions}
-          setpipeODOption={setpipeODOption}
-          selectedpipeODOption={selectpipeODOption}
-          setSelectpipeODOption={setSelectpipeODOption}
-          //metricType
-          matricTypeOption={dropdownOptions?.metricTypeOptions}
-          setMatricTypeOption={setMatricTypeOption}
-          selectedmetricTypeOptions={selectedmetricTypeOptions}
-          setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
-          //wire type option
-          wireTypeOption={dropdownOptions?.WireTypeOptions}
-          setWireTypeOption={setWireTypeOption}
-          selectedWireTypeOption={selectedWireTypeOption}
-          setSelectedWireTypeOption={setSelectedWireTypeOption}
-          //with and without cap option
-          withCapWithoutCapOption={dropdownOptions?.CapWithoutCapOptions}
-          setWithCapWithoutCapOption={setWithCapWithoutCapOption}
-          selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
-          setSelectedWithCapWithoutCapOption={setSelectedWithCapWithoutCapOption}
-          //fitting piece
-          fittingPieceOption={dropdownOptions?.fittingPieceOptions}
-          setFittingPieceOption={setFittingPieceOption}
-          selectedFittingPieceOption={selectedFittingPieceOption}
-          setSelectedFittingPieceOption={setSelectedFittingPieceOption}
-          //skive type 
-          skiveTypeOption={dropdownOptions?.skiveTypeOptions}
-          setSkiveTypeOption={setSkiveTypeOption}
-          selectedSkiveTypeOption={selectedSkiveTypeOption}
-          setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
-          //hose dash size
-          HoseDashSizeOption={dropdownOptions?.hoseDashSizeOptions}
-          setHoseDashSizeOption={setHoseDashSizeOption}
-          selectedhoseDashSizeOption={selectedhoseDashSizeOption}
-          setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
-
-          //fitting thread
-          fittingThreadOption={dropdownOptions?.fittingThreadOptions}
-          setfittingThreadOption={setfittingThreadOption}
-          selectedFittingThreadOption={selectedFittingThreadOption}
-          setSelectedFittingThreadOption={setSelectedFittingThreadOption}
-          //fitting type
-          fittingTypeOption={filterFittingTypeOptions()}
-          setfittingTypeOption={setfittingTypeOption}
-          selectedFittingTypeOption={selectedFittingTypeOption}
-          setSelectedFittingTypeOption={setSelectedFittingTypeOption}
-          //steight and bend
-          straightBendangleOption={dropdownOptions?.straightBendangleOptions}
-          setStraightBendangleOption={setStraightBendangleOption}
-          selectedStraightBendangleOption={selectedStraightBendangleOption}
-          setSelectedStraightBendangleOption={setSelectedStraightBendangleOption}
-          //drop
-          dropLengthOption={dropdownOptions?.dropLengthOptions}
-          setDropLengthOption={setDropLengthOption}
-          selectedDropLengthOption={selectedDropLengthOption}
-          setSelectedDropLengthOption={setSelectedDropLengthOption}
-          //neck
-          neckLengthOption={dropdownOptions?.neckLengthOptions}
-          setNeckLengthOption={setNeckLengthOption}
-          selectedNeckLengthOption={selectedNeckLengthOption}
-          setselectedNeckLengthOption={setselectedNeckLengthOption}
-        />;
+        return (
+          <EndFittingForm
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            setErrors={setErrors}
+            //code prefilled
+            fittingCode={fittingCode}
+            descCode={descCode}
+            //design
+            setSelectedDesignOption={setSelectedDesignOption}
+            selectedDesignOption={selectedDesignOption}
+            designOption={designOption}
+            //variant
+            variantOption={dropdownOptions?.variantsOption}
+            setVariantOption={setVariantOption}
+            selectedvariantOption={selectedvariantOption}
+            setSelectedvariantOption={setSelectedvariantOption}
+            //Fitting Dash Size  input
+            // fittingDashSizeOption={fittingDashSizeOption}
+            fittingDashSizeOption={filterFittingDashSizeOptions()}
+            setfittingDashSizeOption={setfittingDashSizeOption}
+            selectedFittingDashSizeOption={selectedFittingDashSizeOption}
+            setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
+            ///pipe OD options
+            pipeODOption={dropdownOptions?.pipeODOptions}
+            setpipeODOption={setpipeODOption}
+            selectedpipeODOption={selectpipeODOption}
+            setSelectpipeODOption={setSelectpipeODOption}
+            //metricType
+            matricTypeOption={dropdownOptions?.metricTypeOptions}
+            setMatricTypeOption={setMatricTypeOption}
+            selectedmetricTypeOptions={selectedmetricTypeOptions}
+            setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
+            //wire type option
+            wireTypeOption={dropdownOptions?.WireTypeOptions}
+            setWireTypeOption={setWireTypeOption}
+            selectedWireTypeOption={selectedWireTypeOption}
+            setSelectedWireTypeOption={setSelectedWireTypeOption}
+            //with and without cap option
+            withCapWithoutCapOption={dropdownOptions?.CapWithoutCapOptions}
+            setWithCapWithoutCapOption={setWithCapWithoutCapOption}
+            selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
+            setSelectedWithCapWithoutCapOption={
+              setSelectedWithCapWithoutCapOption
+            }
+            //fitting piece
+            fittingPieceOption={dropdownOptions?.fittingPieceOptions}
+            setFittingPieceOption={setFittingPieceOption}
+            selectedFittingPieceOption={selectedFittingPieceOption}
+            setSelectedFittingPieceOption={setSelectedFittingPieceOption}
+            //skive type
+            skiveTypeOption={dropdownOptions?.skiveTypeOptions}
+            setSkiveTypeOption={setSkiveTypeOption}
+            selectedSkiveTypeOption={selectedSkiveTypeOption}
+            setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
+            //hose dash size
+            HoseDashSizeOption={HoseDashSizeOption}
+            setHoseDashSizeOption={setHoseDashSizeOption}
+            selectedhoseDashSizeOption={selectedhoseDashSizeOption}
+            setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
+            //fitting thread
+            fittingThreadOption={fittingThreadOption}
+            setfittingThreadOption={setfittingThreadOption}
+            selectedFittingThreadOption={selectedFittingThreadOption}
+            setSelectedFittingThreadOption={setSelectedFittingThreadOption}
+            //fitting type
+            fittingTypeOption={filterFittingTypeOptions()}
+            setfittingTypeOption={setfittingTypeOption}
+            selectedFittingTypeOption={selectedFittingTypeOption}
+            setSelectedFittingTypeOption={setSelectedFittingTypeOption}
+            //steight and bend
+            straightBendangleOption={straightBendangleOption}
+            setStraightBendangleOption={setStraightBendangleOption}
+            selectedStraightBendangleOption={selectedStraightBendangleOption}
+            setSelectedStraightBendangleOption={
+              setSelectedStraightBendangleOption
+            }
+            //drop
+            dropLengthOption={dropdownOptions?.dropLengthOptions}
+            setDropLengthOption={setDropLengthOption}
+            selectedDropLengthOption={selectedDropLengthOption}
+            setSelectedDropLengthOption={setSelectedDropLengthOption}
+            //neck
+            neckLengthOption={dropdownOptions?.neckLengthOptions}
+            setNeckLengthOption={setNeckLengthOption}
+            selectedNeckLengthOption={selectedNeckLengthOption}
+            setselectedNeckLengthOption={setselectedNeckLengthOption}
+          />
+        );
 
       case "Hose Pipe":
-        return <HosePipe
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-
-          fittingCode={hosepipeFittingCode}
-          descCode={hosepipedescCode}
-
-          //hose dash size
-          HoseDashSizeOption={dropdownOptions?.hoseDashSizeOptions}
-          setHoseDashSizeOption={setHoseDashSizeOption}
-          selectedhoseDashSizeOption={selectedhoseDashSizeOption}
-          setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
-          //HosePipeMFC options
-          HosePipeMFCOption={dropdownOptions?.MFCOptions}
-          selectedHosePipeMFCOption={selectedHosePipeMFCOption}
-          setSelectedHosePipeMFCOption={setSelectedHosePipeMFCOption}
-          //BrandLayLine options
-          BrandLayLineOption={dropdownOptions?.BrandLayLineOptions}
-          selectedBrandLayLineOption={selectedBrandLayLineOption}
-          setSelectedBrandLayLineOption={setSelectedBrandLayLineOption}
-          //HoseType options
-          HoseTypeOption={dropdownOptions?.HoseTypeOptions}
-          selectedHoseTypeOption={selectedHoseTypeOption}
-          setSelectedHoseTypeOption={setSelectedHoseTypeOption}
-
-        />;
+        return (
+          <HosePipe
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            fittingCode={hosepipeFittingCode}
+            descCode={hosepipedescCode}
+            //hose dash size
+            HoseDashSizeOption={HoseDashSizeOption}
+            setHoseDashSizeOption={setHoseDashSizeOption}
+            selectedhoseDashSizeOption={selectedhoseDashSizeOption}
+            setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
+            //HosePipeMFC options
+            HosePipeMFCOption={dropdownOptions?.MFCOptions}
+            selectedHosePipeMFCOption={selectedHosePipeMFCOption}
+            setSelectedHosePipeMFCOption={setSelectedHosePipeMFCOption}
+            //BrandLayLine options
+            BrandLayLineOption={brandLayLineOption}
+            selectedBrandLayLineOption={selectedBrandLayLineOption}
+            setSelectedBrandLayLineOption={setSelectedBrandLayLineOption}
+            //HoseType options
+            HoseTypeOption={hoseTypeOption  }
+            selectedHoseTypeOption={selectedHoseTypeOption}
+            setSelectedHoseTypeOption={setSelectedHoseTypeOption}
+          />
+        );
 
       case "Hose Assembly":
-        return <HoseAssemblySection
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-        />;
+        return (
+          <HoseAssemblySection
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        );
 
       case "Spring":
-        return <SpringSection
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-          springTypeOption={springTypeOption}
-          setSpringTypeOption={setSpringTypeOption}
-          selectedSpringTypeOption={selectedSpringTypeOption}
-          setSelectedSpringTypeOption={setSelectedSpringTypeOption}
-        />;
+        return (
+          <SpringSection
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            springTypeOption={springTypeOption}
+            setSpringTypeOption={setSpringTypeOption}
+            selectedSpringTypeOption={selectedSpringTypeOption}
+            setSelectedSpringTypeOption={setSelectedSpringTypeOption}
+          />
+        );
 
       case "O-ring":
-        return <O_ringSection
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-        />;
+        return (
+          <O_ringSection
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        );
 
       case "Dust Cap":
-        return <DustCapSection
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-          maleFemaleOption={maleFemaleOption}
-          setmaleFemaleOption={setmaleFemaleOption}
-          selectedMaleFemaleOption={selectedMaleFemaleOption}
-          setSelectedMaleFemaleOption={setSelectedMaleFemaleOption}
-        />;
+        return (
+          <DustCapSection
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+            maleFemaleOption={maleFemaleOption}
+            setmaleFemaleOption={setmaleFemaleOption}
+            selectedMaleFemaleOption={selectedMaleFemaleOption}
+            setSelectedMaleFemaleOption={setSelectedMaleFemaleOption}
+          />
+        );
 
       case "Sleeve":
-        return <SleeveSection
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-        />;
+        return (
+          <SleeveSection
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        );
 
       case "Vinyl Cover":
-        return <VinylCoverSection
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors} />;
+        return (
+          <VinylCoverSection
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        );
 
       case "Packing":
-        return <PackingSection
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors} />;
+        return (
+          <PackingSection
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        );
 
       case "Tube Fittings":
-        return <TubeFittingsSection
-          formData={formData}
-          setFormData={setFormData}
-          errors={errors}
-        />;
+        return (
+          <TubeFittingsSection
+            formData={formData}
+            setFormData={setFormData}
+            errors={errors}
+          />
+        );
 
       default:
         return null;
@@ -1322,22 +1653,26 @@ const AddProduct = () => {
     setSelectedMaleFemaleOption(null);
 
     setErrors({});
-  }
+  };
 
   const handlePartsDropChange = (option) => {
-    setSelectedPartsOption(option)
+    setSelectedPartsOption(option);
     setFormData((data) => ({
       ...data, // Spread existing data to retain other fields
       part: option.value, // Update only the `part` field
     }));
     setErrors({});
-  }
+  };
 
   return (
     <>
       <ToastContainer />
       <Loader visible={loading} />
-      <PageTitle activeMenu={"Add Product"} motherMenu={"Home"} motherMenuLink={'/dashboard'} />
+      <PageTitle
+        activeMenu={"Add Product"}
+        motherMenu={"Home"}
+        motherMenuLink={"/dashboard"}
+      />
       {/* Product Options*/}
       <div className="row">
         <div className="col-xl-12 col-lg-12">
@@ -1357,12 +1692,13 @@ const AddProduct = () => {
                       options={dropdownOptions?.ProductOptions}
                     />
                     {errors.product_type && (
-                      <span className="text-danger fs-12">{errors.product_type}</span>
+                      <span className="text-danger fs-12">
+                        {errors.product_type}
+                      </span>
                     )}
                   </div>
 
-                  {
-                    formData?.product_type === "End Fittings" &&
+                  {formData?.product_type === "End Fittings" && (
                     <div className="col-sm-3">
                       <label className="col-form-label">Parts</label>
                       <Select
@@ -1373,21 +1709,23 @@ const AddProduct = () => {
                         options={dropdownOptions?.PartOptions}
                       />
                       {errors.parts && (
-                        <span className="text-danger fs-12">{errors.parts}</span>
+                        <span className="text-danger fs-12">
+                          {errors.parts}
+                        </span>
                       )}
                     </div>
-
-                  }
+                  )}
                 </div>
-
               </div>
             </div>
           </div>
         </div>
       </div>
       {/* Dynamic Form*/}
-      {formData.product_type && formData?.part ? renderPartComponent() : renderComponent()}
-       {/* Basic Info */}
+      {formData.product_type && formData?.part
+        ? renderPartComponent()
+        : renderComponent()}
+      {/* Basic Info */}
       <div className="col-xl-12 col-lg-12">
         <div className="card">
           <div className="card-header">
@@ -1395,9 +1733,7 @@ const AddProduct = () => {
           </div>
           <div className="card-body">
             <div>
-             
-              
-               {/* Weight */}
+              {/* Weight */}
               {/* <div className="col-sm-6 col-xl-4">
                   <label className="col-sm-3 col-form-label">Weight</label>
                   <input
@@ -1413,8 +1749,8 @@ const AddProduct = () => {
                   )}
                 </div> */}
 
-                 {/* UOM */}
-                {/* <div className="col-sm-6 col-xl-4">
+              {/* UOM */}
+              {/* <div className="col-sm-6 col-xl-4">
                   <label className="col-sm-6 col-form-label">Unit of Measurement</label>
                   <input
                     name="UOM"
@@ -1429,21 +1765,20 @@ const AddProduct = () => {
                   )}
                 </div> */}
 
-                {/* Price and Rate */}
-                <div className="mb-3 row">
-                  
+              {/* Price and Rate */}
+              <div className="mb-3 row">
                 <div className="col-sm-3 col-xl-3">
-                  <label className="col-sm-3 col-form-label">Rate</label>
+                  <label className="col-sm-3 col-form-label">Price</label>
                   <input
-                    name="Rate"
-                    value={formData.rate}
+                    name="price"
+                    value={formData.price}
                     onChange={handleChange}
                     type="text"
                     className="form-control"
                     placeholder="Ex: 2000 INR"
                   />
-                  {errors.rate && (
-                    <span className="text-danger fs-12">{errors.rate}</span>
+                  {errors.price && (
+                    <span className="text-danger fs-12">{errors.price}</span>
                   )}
                 </div>
 
@@ -1461,33 +1796,30 @@ const AddProduct = () => {
                     <span className="text-danger fs-12">{errors.gst}</span>
                   )} */}
                   <label className="col-form-label">GST</label>
-                    <Select
-                      value={selectedGSTOption}
-                      onChange={(option) => {
-                        setSelectedGSTOption(option);
-                        setFormData({
-                          ...formData,
-                          gst: option.value,
-                        });
-                        setErrors({
-                          ...errors,
-                          gst: null
-                        })
-                        
-                      }}
-                      defaultValue={selectedGSTOption}
-                      options={gstOption}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.gst && (
-                      <span className="text-danger fs-12">
-                        {errors.gst}
-                      </span>
-                    )}
+                  <Select
+                    value={selectedGSTOption}
+                    onChange={(option) => {
+                      setSelectedGSTOption(option);
+                      setFormData({
+                        ...formData,
+                        gst: option.value,
+                      });
+                      setErrors({
+                        ...errors,
+                        gst: null,
+                      });
+                    }}
+                    defaultValue={selectedGSTOption}
+                    options={gstOption}
+                    style={{
+                      lineHeight: "40px",
+                      color: "#7e7e7e",
+                      paddingLeft: " 15px",
+                    }}
+                  />
+                  {errors.gst && (
+                    <span className="text-danger fs-12">{errors.gst}</span>
+                  )}
                 </div>
 
                 <div className="col-sm-3 col-xl-3">
@@ -1518,40 +1850,38 @@ const AddProduct = () => {
                   {errors.uom && (
                     <span className="text-danger fs-12">{errors.uom}</span>
                   )} */}
-                  <label className="col-sm-12 col-form-label">Unit of Measurement</label>
-                    <Select
-                      value={selectedUOMOption}
-                      onChange={(option) => {
-                        setSelectedUOMOption(option);
-                        setFormData({
-                          ...formData,
-                          uom: option.value,
-                        });
-                        setErrors({
-                          ...errors,
-                          uom: null
-                        })
-                        
-                      }}
-                      defaultValue={selectedUOMOption}
-                      options={uomOptions}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.uom && (
-                      <span className="text-danger fs-12">
-                        {errors.uom}
-                      </span>
-                    )}
+                  <label className="col-sm-12 col-form-label">
+                    Unit of Measurement
+                  </label>
+                  <Select
+                    value={selectedUOMOption}
+                    onChange={(option) => {
+                      setSelectedUOMOption(option);
+                      setFormData({
+                        ...formData,
+                        uom: option.value,
+                      });
+                      setErrors({
+                        ...errors,
+                        uom: null,
+                      });
+                    }}
+                    defaultValue={selectedUOMOption}
+                    options={uomOptions}
+                    style={{
+                      lineHeight: "40px",
+                      color: "#7e7e7e",
+                      paddingLeft: " 15px",
+                    }}
+                  />
+                  {errors.uom && (
+                    <span className="text-danger fs-12">{errors.uom}</span>
+                  )}
                 </div>
-
               </div>
 
-                {/* Inputs */}
-                <div className="mb-3 row">
+              {/* Inputs */}
+              <div className="mb-3 row">
                 {/* MFC INPUT */}
                 <div className="col-sm-6 col-xl-3">
                   <label className="col-sm-3 col-form-label">MFC</label>
@@ -1567,41 +1897,48 @@ const AddProduct = () => {
                     <span className="text-danger fs-12">{errors.mfc}</span>
                   )}
                 </div>
-                 {/* Fitting And Description code input */}
-                {
-                  formData?.product_type === 'End Fittings' && (
-                    <>
-                      <div className="col-sm-6 col-xl-3">
-                        <label className="col-sm-12 col-form-label">Fitting Code</label>
-                        <input
-                          name="fitting_code"
-                          value={fittingCode}
-                          // onChange={handleChange}
-                          type="text"
-                          className="form-control"
-                          placeholder="Ex: RB1-NS-0404-B-FS"
-                          disabled
-                        />
-                        {errors.fitting_code && (
-                          <span className="text-danger fs-12">{errors.fitting_code}</span>
-                        )}
-                      </div>
-                      <div className="col-sm-6 col-xl-6">
-                        <label className="col-sm-3 col-form-label">Description</label>
-                        <input
-                          name="desc_code"
-                          value={descCode}
-                          // onChange={handleChange}
-                          type="text"
-                          className="form-control"
-                          placeholder="Ex: BR-BSP 1/4x1/4 FEMALE STRAIGHT (NON-SKIVE)"
-                          disabled
-                        />
-                        {errors.desc_code && (
-                          <span className="text-danger fs-12">{errors.desc_code}</span>
-                        )}
-                      </div>
-                      {/* <div className="col-sm-6 col-xl-4">
+                {/* Fitting And Description code input */}
+                {formData?.product_type === "End Fittings" && (
+                  <>
+                    <div className="col-sm-6 col-xl-3">
+                      <label className="col-sm-12 col-form-label">
+                        Fitting Code
+                      </label>
+                      <input
+                        name="fitting_code"
+                        value={fittingCode}
+                        // onChange={handleChange}
+                        type="text"
+                        className="form-control"
+                        placeholder="Ex: RB1-NS-0404-B-FS"
+                        disabled
+                      />
+                      {errors.fitting_code && (
+                        <span className="text-danger fs-12">
+                          {errors.fitting_code}
+                        </span>
+                      )}
+                    </div>
+                    <div className="col-sm-6 col-xl-6">
+                      <label className="col-sm-3 col-form-label">
+                        Description
+                      </label>
+                      <input
+                        name="desc_code"
+                        value={descCode}
+                        // onChange={handleChange}
+                        type="text"
+                        className="form-control"
+                        placeholder="Ex: BR-BSP 1/4x1/4 FEMALE STRAIGHT (NON-SKIVE)"
+                        disabled
+                      />
+                      {errors.desc_code && (
+                        <span className="text-danger fs-12">
+                          {errors.desc_code}
+                        </span>
+                      )}
+                    </div>
+                    {/* <div className="col-sm-6 col-xl-4">
                         <label className="col-sm-3 col-form-label">Description</label>
                         <input
                           name="description_code"
@@ -1616,17 +1953,14 @@ const AddProduct = () => {
                           <span className="text-danger fs-12">{errors.description_code}</span>
                         )}
                       </div> */}
-                    </>
-
-                  )
-                }
+                  </>
+                )}
               </div>
-                
 
-               {/* Location and additional info */}
+              {/* Location and additional info */}
 
               <div className="mb-3 row">
-              {/* <div className="col-md-6">
+                {/* <div className="col-md-6">
                     <label className="col-form-label">Location<small style={{ color: "grey" }} ></small></label>
                     <input
                       name="location"
@@ -1640,7 +1974,7 @@ const AddProduct = () => {
                       <span className="text-danger fs-12">{errors.location}</span>
                     )}
                   </div> */}
-                  {/* <div className="col-md-6">
+                {/* <div className="col-md-6">
                     <label className="col-form-label">Additional<small style={{ color: "grey" }} >(Optional)*</small></label>
                     <input
                       name="additional"
@@ -1659,9 +1993,7 @@ const AddProduct = () => {
               {/* Note */}
               <div className="mb-3 row">
                 <div className="col-sm-8">
-                  <label className="col-sm-3 col-form-label">
-                    Note
-                  </label>
+                  <label className="col-sm-3 col-form-label">Note</label>
                   <textarea
                     name="description"
                     className="form-control"
@@ -1677,11 +2009,9 @@ const AddProduct = () => {
                     </span>
                   )}
                 </div>
-                  {/* Location */}
+                {/* Location */}
                 <div className="col-sm-4">
-                  <label className="col-sm-3 col-form-label">
-                    Location
-                  </label>
+                  <label className="col-sm-3 col-form-label">Location</label>
                   <textarea
                     name="location"
                     className="form-control"
@@ -1692,20 +2022,17 @@ const AddProduct = () => {
                     onChange={handleChange}
                   ></textarea>
                   {errors.location && (
-                    <span className="text-danger fs-12">
-                      {errors.location}
-                    </span>
+                    <span className="text-danger fs-12">{errors.location}</span>
                   )}
                 </div>
               </div>
-
             </div>
           </div>
         </div>
       </div>
 
-       {/*Weight & Measurement*/}
-       {/* <div className="col-xl-12 col-lg-12">
+      {/*Weight & Measurement*/}
+      {/* <div className="col-xl-12 col-lg-12">
         <div className="card">
           <div className="card-header">
             <h4 className="card-title">Weight & Measurement</h4>
@@ -1750,8 +2077,8 @@ const AddProduct = () => {
           </div>
         </div>
       </div> */}
-       
-       {/* Price and GST */}
+
+      {/* Price and GST */}
       {/* <div className="col-xl-12 col-lg-12">
         <div className="card">
           <div className="card-header">
@@ -1812,7 +2139,8 @@ const AddProduct = () => {
                 flexDirection: "column",
                 alignItems: "center",
                 justifyContent: "center",
-              }}>
+              }}
+            >
               <div style={styles.container}>
                 <input
                   type="file"
@@ -1833,7 +2161,8 @@ const AddProduct = () => {
                   <label htmlFor="logoUpload" style={styles.placeholder}>
                     <div
                       style={styles.uploadIcon}
-                      className="flex flex-col cursor-pointer">
+                      className="flex flex-col cursor-pointer"
+                    >
                       <img width="30" src={uplodIcon} alt="Upload Icon"></img>
                       <p>Upload Image</p>
                     </div>
@@ -1859,9 +2188,11 @@ const AddProduct = () => {
             <div className="card-header">
               <h4 className="card-title">Gallery</h4>
             </div>
-            <div className="card-body d-flex gap-3" >
-              <div className="row"
-                style={{ gap: "10px", display: "flex", flexWrap: "wrap" }}>
+            <div className="card-body d-flex gap-3">
+              <div
+                className="row"
+                style={{ gap: "10px", display: "flex", flexWrap: "wrap" }}
+              >
                 {galleryImages?.map((image, index) => (
                   <div
                     key={index}
@@ -1872,8 +2203,9 @@ const AddProduct = () => {
                       padding: "6px",
                       border: "solid #cbcbcb 1px",
                       borderStyle: "dashed",
-                      borderRadius: '10px'
-                    }}>
+                      borderRadius: "10px",
+                    }}
+                  >
                     <div
                       style={{
                         position: "absolute",
@@ -1886,7 +2218,8 @@ const AddProduct = () => {
                         color: "white",
                         fontSize: "12px",
                       }}
-                      onClick={() => handleDeleteImage(index)}>
+                      onClick={() => handleDeleteImage(index)}
+                    >
                       ⛌
                     </div>
                     <img
@@ -1915,7 +2248,10 @@ const AddProduct = () => {
                       onChange={handleGalleryChange}
                     />
                     <label htmlFor="imageUpload" style={styles.placeholder}>
-                      <div style={styles.uploadIcon} className="flex flex-col cursor-pointer">
+                      <div
+                        style={styles.uploadIcon}
+                        className="flex flex-col cursor-pointer"
+                      >
                         <img width="30" src={uplodIcon} alt="Upload Icon"></img>
                         <p>Upload Gallery Image</p>
                       </div>
@@ -1934,12 +2270,12 @@ const AddProduct = () => {
       </div>
       {/* Section Submit button */}
       <div className="row">
-
         <div className="text-end">
           <button
             type="submit"
             onClick={handleSubmit}
-            className="btn btn-primary rounded-sm">
+            className="btn btn-primary rounded-sm"
+          >
             Save Information
           </button>
         </div>
