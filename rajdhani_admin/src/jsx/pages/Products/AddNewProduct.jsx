@@ -71,7 +71,7 @@ const AddProduct = () => {
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-  console.log("errors are here", errors);
+  
   const [galleryImages, setGalleryImages] = useState([]);
   //drop option list
   const [productTypeOption, setProductTypeOption] = useState(
@@ -115,7 +115,7 @@ const AddProduct = () => {
   const [fittingPieceOption, setFittingPieceOption] = useState(dropdownOptions?.fittingPieceOptions);
   const [skiveTypeOption, setSkiveTypeOption] = useState(dropdownOptions?.skiveTypeOptions);
   const [HoseDashSizeOption, setHoseDashSizeOption] = useState(null);
-  const [fittingDashSizeOption, setfittingDashSizeOption] = useState(dropdownOptions?.fittingDashSizeOptions);
+  const [fittingDashSizeOption, setfittingDashSizeOption] = useState(null);
   const [fittingThreadOption, setfittingThreadOption] = useState(null);
   const [fittingTypeOption, setfittingTypeOption] = useState(dropdownOptions?.fittingTypeOptions);
   const [straightBendangleOption, setStraightBendangleOption] = useState(null);
@@ -133,9 +133,12 @@ const AddProduct = () => {
   const [selectedFittingPieceOption, setSelectedFittingPieceOption] =useState(null);
   const [selectedSkiveTypeOption, setSelectedSkiveTypeOption] = useState(null);
   const [selectedhoseDashSizeOption, setSelectedHoseDashSizeOption] =useState(null);
+  console.log("selectedhoseDashSizeOption",selectedhoseDashSizeOption)
   const [selectedFittingDashSizeOption, setSelectedfittingDashSizeOption] = useState(null);
+  console.log("selectedFittingDashSizeOption",selectedFittingDashSizeOption)
   const [selectedFittingTypeOption, setSelectedFittingTypeOption] =useState(null);
   const [selectedFittingThreadOption, setSelectedFittingThreadOption] =useState(null);
+  console.log("selectedFittingThreadOption",selectedFittingThreadOption)
   const [selectedStraightBendangleOption, setSelectedStraightBendangleOption] =useState(null);
   const [selectedDropLengthOption, setSelectedDropLengthOption] = useState(null);
   const [selectedNeckLengthOption, setselectedNeckLengthOption] = useState(null);
@@ -164,12 +167,12 @@ const AddProduct = () => {
   const [nippleDescCode, setNippleDescCode] = useState();
   // console.log(formData, "formData is here");
 
+
   const fetchDesignOptions = async () => {
     setLoading(true);
     try {
       const res = await getAllDesignApi();
       const resData = res?.data?.designs;
-      console.log("resss",res)
       const mappedData = resData?.map((val) => ({
         label: val?.name,
         value: val?.name,
@@ -192,6 +195,8 @@ const AddProduct = () => {
       const mappedData = resData?.map((val) => ({
         label: `${val?.name} (${val?.code})`,
         value: val?.name,
+        code: val?.code,
+        dsc_code: val?.dsc_code
       }));
       setfittingThreadOption(mappedData);
     } catch (error) {
@@ -210,6 +215,9 @@ const AddProduct = () => {
       const mappedData = resData?.map((val) => ({
         label: `${val?.size} (${val?.code})`,
         value: val?.size,
+        code: val?.code,
+        dsc_code: val?.dsc_code,
+        dash: val?.dash_code
       }));
       setHoseDashSizeOption(mappedData);
     } catch (error) {
@@ -225,10 +233,21 @@ const AddProduct = () => {
     try {
       const res = await getAllFittingDashSizeApi();
       const resData = res?.data?.fittingDashSizes;
+     
       const mappedData = resData?.map((val) => ({
-        label: `${val?.size} (${val?.code})`,
-        value: val?.size,
+        label: `${val?.thread} (${val?.dash_code})`,
+        // value: val?.dash_code,
+        // code: val?.dash_code,
+        dsc_code: val?.dsc_code,
+        thread_type: val?.thread_type,
+        thread: val?.thread,
+        dash_code: val?.hose_dash_code,
+        variant: val?.variant
+
+
       }));
+      console.log("resData ----------------------)))",resData)
+      setfittingDashSizeOption(mappedData)
       // setHoseDashSizeOption(mappedData);
     } catch (error) {
       // console.error("Error fetching cuisines:", error);
@@ -246,6 +265,8 @@ const AddProduct = () => {
       const mappedData = resData?.map((val) => ({
         label: val?.name,
         value: val?.name,
+        code: val?.code,
+        dsc_code: val?.dsc_code
       }));
       setStraightBendangleOption(mappedData);
     } catch (error) {
@@ -264,6 +285,8 @@ const AddProduct = () => {
       const mappedData = resData?.map((val) => ({
         label: val?.name,
         value: val?.name,
+        code: val?.code,
+        dsc_code: val?.dsc_code
       }));
       setBrandLayLineOption(mappedData);
     } catch (error) {
@@ -282,6 +305,8 @@ const AddProduct = () => {
       const mappedData = resData?.map((val) => ({
         label: val?.name,
         value: val?.name,
+        code: val?.code,
+        dsc_code: val?.dsc_code
       }));
       setHoseTypeOption(mappedData);
     } catch (error) {
@@ -291,6 +316,7 @@ const AddProduct = () => {
       setLoading(false);
     }
   };
+
   useEffect(()=>{
     fetchDesignOptions();
     fetchFittingThreadOptions();
@@ -301,10 +327,11 @@ const AddProduct = () => {
     fetchHoseTypeOptions();
   },[]);
   
+  console.log("fittingDashSizeOptionfittingDashSizeOptionfittingDashSizeOption",fittingDashSizeOption,formData?.fitting_thread)
   //Filter Fitting_Dash_Size_Options
   const filterFittingDashSizeOptions = () => {
     // Basic filtering based on fitting_thread
-    const filteredOptions = dropdownOptions?.fittingDashSizeOptions?.filter(
+    const filteredOptions = fittingDashSizeOption.filter(
       (option) => {
         return (
           option.thread_type === formData?.fitting_thread && // Match the selected fitting_thread
@@ -312,7 +339,8 @@ const AddProduct = () => {
         );
       }
     );
-
+  
+    console.log("filteredOptions filteredOptions filteredOptions",filteredOptions)
     if (formData?.fitting_thread === "METRIC") {
       const selectedMetricType = formData?.metric_type;
       const normalizedMetricType =
@@ -365,9 +393,11 @@ const AddProduct = () => {
     //   }
     // }
 
-    const hoseDash = dropdownOptions?.hoseDashSizeOptions.filter(
+    const hoseDash = HoseDashSizeOption.filter(
       (option) => option?.value === formData?.hose_dash_size
     );
+
+    console.log(" dropdownOptions?.hoseDashSizeOptions", HoseDashSizeOption,formData?.hose_dash_size,formData?.variant ,hoseDash[0]?.dash)
 
     if (formData?.variant === "Standard" && hoseDash[0]?.dash) {
       const filteredOption = dropdownOptions?.fittingDashSizeOptions.filter(
@@ -376,6 +406,9 @@ const AddProduct = () => {
           option.dash === hoseDash[0]?.dash &&
           option.variant === formData?.variant
       );
+
+      
+   
       console.log(
         "filteredOption filteredOption filteredOption ",
         filteredOption
@@ -414,9 +447,9 @@ const AddProduct = () => {
 
     // Map the filtered options to the desired format
     return filteredOptions?.map((option) => ({
-      value: `${option.thread} (${option.dash})`,
-      label: `${option.thread} (${option.dash})`,
-      code: `${option.dash}`,
+      value: `${option.thread} (${option.dash_code})`,
+      label: `${option.thread} (${option.dash_code})`,
+      code: `${option.dash_code}`,
       dsc_code: `${option.dsc_code}`,
     }));
   };
@@ -465,6 +498,7 @@ const AddProduct = () => {
 
   // Fitting Code and Description
   useEffect(() => {
+    console.log("Fitting code =-=-=-=-=-=-=-=-=-=-",selectedhoseDashSizeOption?.code,selectedFittingDashSizeOption?.code,selectedFittingThreadOption?.code)
     const fitting_Code = `${formData?.design || ""}${
       selectedWireTypeOption?.code || ""
     }${
@@ -542,6 +576,8 @@ const AddProduct = () => {
     formData?.drop_length,
     formData?.ferrule,
   ]);
+
+  
 
   //Parts fitting-code and Description
   useEffect(() => {

@@ -30,6 +30,7 @@ const theadData = [
   // { heading: "Id", sortingVale: "_id" },
   { heading: "Fitting Thread", sortingVale: "thread_type" },
   { heading: "Hose Dash Size", sortingVale: "dash_code" },
+  { heading: "Fitting Dash Size", sortingVale: "dash_code" },
   { heading: "Fitting Code", sortingVale: "thread" },
   { heading: "Description Code", sortingVale: "dsc_code" },
   { heading: "Created At", sortingVale: "created_at" },
@@ -71,6 +72,8 @@ const FittingDashSize = () => {
     metric_type:""
   });
 
+  console.log("formData",formData);
+
   const [HoseDashSizeOption, setHoseDashSizeOption] = useState(null);
   const [fittingDashSizeOption, setfittingDashSizeOption] = useState(
     dropdownOptions?.fittingDashSizeOptions
@@ -96,7 +99,7 @@ const FittingDashSize = () => {
   const [selectedvariantOption, setSelectedvariantOption] = useState(null);
   const [selectedmetricTypeOptions, setSelectedmetricTypeOptions] =useState(null);
 
-  // console.log("fittingThreadOption",fittingThreadOption)
+  console.log("selectedhoseDashSizeOption",selectedhoseDashSizeOption)
 
   const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
@@ -137,6 +140,7 @@ const FittingDashSize = () => {
       const mappedData = resData?.map((val) => ({
         label: `${val?.size} (${val?.code})`,
         value: val?.size,
+        code: val?.code
       }));
       setHoseDashSizeOption(mappedData);
     } catch (error) {
@@ -373,7 +377,7 @@ const FittingDashSize = () => {
     // Required field validation
     if (!formData.thread_type) newErrors.thread_type = "Fitting Thread is required.";
 
-    if (!formData.dash_code) newErrors.dash_code = "Hose Dash Size is required.";
+    if (!formData.hose_dash_code) newErrors.hose_dash_code = "Hose Dash Size is required.";
 
     if (!formData.thread) newErrors.thread = "Fitting Code is required.";
 
@@ -434,9 +438,12 @@ const FittingDashSize = () => {
       setLoading(true);
       const fData={
         ...formData,
-        thread:`${formData?.thread}\"`,
+        thread_type:`${formData?.thread_type}`,
+        dash:`${formData?.hose_dash_code}`,
+        thread:`${formData?.size}\"`,
         dsc_code:`${formData?.dsc_code}\"`,
-        size:`${formData?.size}\"`
+        // size:`${formData?.size}\"`,
+        variant: `${formData?.variant}`
       }
       try {
         const res = await addFittingDashSizeApi(fData);
@@ -521,7 +528,8 @@ const FittingDashSize = () => {
                         setSelectedHoseDashSizeOption(option);
                         setFormData({
                           ...formData,
-                          dash_code: option.value,
+                          hose_dash_size: option.value,
+                          hose_dash_code: option.code,
                         });
                         setErrors({
                           ...errors,
@@ -542,6 +550,23 @@ const FittingDashSize = () => {
                       </span>
                     )}
                   </div>
+
+                 {selectedFittingThreadOption?.value !== "METRIC" &&
+                  <div className="col-md-3">
+                    <label className="col-form-label">Fitting Dash Size</label>
+                    <input
+                      name="size"
+                      value={formData?.size}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: 1/2"
+                    />
+                    {errors.size && (
+                      <span className="text-danger fs-12">{errors.size}</span>
+                    )}
+                  </div>
+                } 
 
                   {selectedFittingThreadOption?.value !== "METRIC" ? (
                     <>
@@ -666,22 +691,7 @@ const FittingDashSize = () => {
                     )}
                   </div>
 
-                {selectedFittingThreadOption?.value !== "METRIC" &&
-                  <div className="col-md-3">
-                    <label className="col-form-label">Size</label>
-                    <input
-                      name="size"
-                      value={formData?.size}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 1/2"
-                    />
-                    {errors.size && (
-                      <span className="text-danger fs-12">{errors.size}</span>
-                    )}
-                  </div>
-                }
+                
               </div>
               </div>
               <div className="text-end">
@@ -810,8 +820,9 @@ const FittingDashSize = () => {
                           </td>
 
                           <td className="">{data?.thread_type}</td>
-                          <td className="">{data?.dash_code}</td>
-                          <td className="">{data?.thread}</td>                          
+                          <td className="">{data?.hose_dash_size}</td>
+                          <td className="">{data?.thread}</td>
+                          <td className="">{data?.hose_dash_code}</td>                          
                           <td className="">{data?.dsc_code}</td>
                           
                           <td>

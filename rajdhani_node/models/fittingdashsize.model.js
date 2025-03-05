@@ -10,6 +10,14 @@ const fittingDashSizeSchema = new mongoose.Schema(
       type: String,
       trim: true
     },
+    hose_dash_code: {
+      type: String,
+      trim: true
+    },
+    hose_dash_size: {
+      type: String,
+      trim: true
+    },
     inch: {
       type: String,
       trim: true,
@@ -23,6 +31,10 @@ const fittingDashSizeSchema = new mongoose.Schema(
       trim: true,
     },
     dsc_code: {
+      type: String,
+      trim: true,
+    },
+    code: {
       type: String,
       trim: true,
     },

@@ -221,7 +221,7 @@ const HoseDashSize = () => {
 
     if (!formData.dsc_code) newErrors.dsc_code = "Description Code is required.";
 
-    if (!formData.dash_code) newErrors.dash_code = "Dash Code is required.";
+    // if (!formData.dash_code) newErrors.dash_code = "Dash Code is required.";
     // Set errors to the state
     setErrors(newErrors);
     // Return true if there are no errors, false otherwise
