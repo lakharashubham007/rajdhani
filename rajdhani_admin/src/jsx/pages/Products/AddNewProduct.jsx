@@ -193,7 +193,7 @@ const AddProduct = () => {
       const res = await getAllFittingThreadApi();
       const resData = res?.data?.fittingThreads;
       const mappedData = resData?.map((val) => ({
-        label: `${val?.name} (${val?.code})`,
+        label: `${val?.name}`,
         value: val?.name,
         code: val?.code,
         dsc_code: val?.dsc_code
@@ -335,7 +335,8 @@ const AddProduct = () => {
       (option) => {
         return (
           option.thread_type === formData?.fitting_thread && // Match the selected fitting_thread
-          option.thread !== null // Exclude options with null threads
+          option.thread !== null &&  // Exclude options with null threads
+          option.thread !== "null\""
         );
       }
     );
@@ -400,10 +401,11 @@ const AddProduct = () => {
     console.log(" dropdownOptions?.hoseDashSizeOptions", HoseDashSizeOption,formData?.hose_dash_size,formData?.variant ,hoseDash[0]?.dash)
 
     if (formData?.variant === "Standard" && hoseDash[0]?.dash) {
-      const filteredOption = dropdownOptions?.fittingDashSizeOptions.filter(
+      console.log("909090909090909090909090909090",formData?.variant === "Standard" ,formData?.fitting_thread, hoseDash[0]?.dash,fittingDashSizeOption)
+      const filteredOption = fittingDashSizeOption.filter(
         (option) =>
           option.thread_type === formData?.fitting_thread &&
-          option.dash === hoseDash[0]?.dash &&
+          option.dash_code === hoseDash[0]?.dash &&
           option.variant === formData?.variant
       );
 
@@ -421,9 +423,9 @@ const AddProduct = () => {
 
       if (filteredOption.length > 0) {
         return filteredOption?.map((option) => ({
-          value: `${option.thread} (${option.dash})`,
-          label: `${option.thread} (${option.dash})`,
-          code: `${option.dash}`,
+          value: `${option.thread} (${option.dash_code})`,
+          label: `${option.thread} (${option.dash_code})`,
+          code: `${option.dash_code}`,
           dsc_code: `${option.dsc_code}`,
         }));
       }

@@ -23,10 +23,23 @@ const getAllFittingDashSizes = async () => {
 };
 
 // Get FittingDashSizes with pagination, sorting, and search
-const getFittingDashSizes = async (page, limit, sort, search) => {
+const getFittingDashSizes = async (page, limit, sort, search,thread_type) => {
   try {
     const skip = (page - 1) * limit;
-    const filter = search ? { name: { $regex: search, $options: 'i' } } : {};
+    // const filter = search ? { name: { $regex: search, $options: 'i' } } : {};
+
+    // Build the filter object
+    let filter = {};
+
+    // If search term is provided, apply regex search on 'name'
+    if (search) {
+      filter.name = { $regex: search, $options: "i" };
+    }
+
+    // If thread_type is provided, apply exact match filter
+    if (thread_type) {
+      filter.thread_type = thread_type;
+    }
     
     let sortOptions = {};
     if (sort) {

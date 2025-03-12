@@ -26,6 +26,7 @@ const inventory = require('./inventory.route')
 const countries = require('./country.route')
 const customer = require('./customer.route')
 const saleorders = require('./saleorders.route')
+const productCodeSeries = require('./productCodeSeries.route')
 
 const router = express.Router();
 
@@ -60,6 +61,7 @@ router.use("/inventory", inventory)
 router.use("/locations", countries)
 router.use("/customer", customer)
 router.use("/so", saleorders)
+router.use("/series", productCodeSeries)
 
 
 module.exports = router;

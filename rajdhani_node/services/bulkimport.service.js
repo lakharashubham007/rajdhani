@@ -1,7 +1,7 @@
 const XLSX = require("xlsx");
-const { Products } = require("../models");
+const { Products ,ProductCodeCounter} = require("../models");
 
-// options
+// fitting thread options
 const fittingThreadOptions = [
     { value: "BSP", code: "B", dsc_code: "BSP" },
     { value: "BSP O", code: "BO", dsc_code: "BSPO" },
@@ -11,8 +11,8 @@ const fittingThreadOptions = [
     { value: "METRIC", code: "M", dsc_code: "M" },
     { value: "NPT", code: "NPT", dsc_code: "NPT" },
     { value: "JIS", code: "BJ", dsc_code: "JIS" },
-    { value: "SAE 61", code: "3", dsc_code: "SAE61" },
-    { value: "SAE 62", code: "6", dsc_code: "SAE62" },
+    { value: "SAE 61", code: "", dsc_code: "61-(3)" },
+    { value: "SAE 62", code: "", dsc_code: "62-(6)" },
     { value: "BANJO WITHOUT O", code: "BJ", dsc_code: "BANJO_WO" },
     { value: "BANJO WITH O", code: "BJO", dsc_code: "BANJO_W" },
     { value: "METRIC THREAD ORFS", code: "MO", dsc_code: "METRIC_ORFS" },
@@ -28,72 +28,89 @@ const fittingTypeOptions = [
 
 const straightBendangleOptions = [
     { value: "Straight", code: "S", dsc_code: "Straight" },
-    { value: "BEND 90", code: "90", dsc_code: "BEND 90" },
-    { value: "BEND 75", code: "75", dsc_code: "BEND 75" },
-    { value: "BEND 67.5", code: "67.5", dsc_code: "BEND 67.5" },
-    { value: "BEND 45", code: "45", dsc_code: "BEND 45" },
-    { value: "BEND 30", code: "30", dsc_code: "BEND 30" },
-    { value: "BEND 22.5", code: "22.5", dsc_code: "BEND 22.5" },
-    { value: "BEND 15", code: "15", dsc_code: "BEND 15" },
-    { value: "BEND 135", code: "135", dsc_code: "BEND 135" },
+    { value: "Bend 90", code: "90", dsc_code: "Bend 90" },
+    { value: "Bend 75", code: "75", dsc_code: "Bend 75" },
+    { value: "Bend 67.5", code: "67.5", dsc_code: "Bend 67.5" },
+    { value: "Bend 45", code: "45", dsc_code: "Bend 45" },
+    { value: "Bend 30", code: "30", dsc_code: "Bend 30" },
+    { value: "Bend 22.5", code: "22.5", dsc_code: "Bend 22.5" },
+    { value: "Bend 15", code: "15", dsc_code: "Bend 15" },
+    { value: "Bend 135", code: "135", dsc_code: "Bend 135" },
 ];
 
 const wireTypeOptions = [
-    { value: "BRAIDED (BR) - B", code: "B", dsc_code: "BR" },
-    { value: "SPIRAL (SP) - S", code: "S", dsc_code: "SP" },
-    { value: "TEFLON (TF) - T", code: "T", dsc_code: "TF" },
+    { value: "Braided", code: "B", dsc_code: "BR" },
+    { value: "Spiral", code: "S", dsc_code: "SP" },
+    { value: "Teflon", code: "T", dsc_code: "TF" },
 ];
 
 const fittingPieceOptions = [
-    { value: "ONE PIECE - 1", code: "1" },
-    { value: "TWO PIECE - 2", code: "2" },
-    { value: "THREE PIECE - 3", code: "3" },
+    { value: "One Piece", code: "1" },
+    { value: "Two Piece", code: "2" },
+    { value: "Three Piece", code: "3" },
 ];
 
 const skiveTypeOptions = [
-    { value: "SKIVE (SK)", code: "SK", dsc_code: "(SKIVE)" },
-    { value: "NON-SKIVE (NS)", code: "NS", dsc_code: "(NON-SKIVE)" },
-    { value: "INNER-SKIVE (IS)", code: "IS", dsc_code: "(INNER-SKIVE)" },
+    { value: "Skive", code: "SK", dsc_code: "(SKIVE)" },
+    { value: "Non-Skive", code: "NS", dsc_code: "(NON-SKIVE)" },
+    { value: "Inner-Skive", code: "IS", dsc_code: "(INNER-SKIVE)" },
 ];
 
-const hoseDashSizeOptions = [
-    { value: "3/16\" (03)", code: "O3", dsc_code: "3/16" },
-    { value: "1/4\" (04)", code: "O4", dsc_code: "1/4" },
-    { value: "5/16\" (05)", code: "O5", dsc_code: "5/16" },
-    { value: "3/8\" (06)", code: "O6", dsc_code: "3/8" },
-    { value: "1/2\" (08)", code: "O8", dsc_code: "1/2" },
-    { value: "5/8\" (10)", code: "10", dsc_code: "5/8" },
-    { value: "3/4\" (12)", code: "12", dsc_code: "3/4" },
-    { value: "1\" (16)", code: "16", dsc_code: "1" },
-    { value: "1-1/4\" (20)", code: "20", dsc_code: "1-1/4" },
-    { value: "1-1/2\" (24)", code: "24", dsc_code: "1-1/2" },
-    { value: "2\" (32)", code: "32", dsc_code: "2" },
-    { value: "2-1/2\" (40)", code: "40", dsc_code: "2-1/2" },
-    { value: "3\" (48)", code: "48", dsc_code: "3" },
-    { value: "3-1/2\" (56)", code: "56", dsc_code: "3-1/2" },
-    { value: "4\" (64)", code: "64", dsc_code: "4" },
-    { value: "4-1/2\" (72)", code: "72", dsc_code: "4-1/2" },
-    { value: "5\" (80)", code: "80", dsc_code: "5" },
-    { value: "13/32\" ", code: "", dsc_code: "13/32" },
-    { value: "7/8\" ", code: "", dsc_code: "7/8" },
-    { value: "1-1/8\" ", code: "", dsc_code: "1-1/8" },
-    { value: "1-3/8\" ", code: "", dsc_code: "1-3/8" },
-    { value: "1-13/16\" ", code: "", dsc_code: "1-13/16" },
-    { value: "2-3/8\" ", code: "", dsc_code: "2-3/8" },
+const designOption = [
+    { value: "R", label: "R" },
+    { value: "S", label: "S" },
+    { value: "K", label: "K" },
+    { value: "P", label: "P" },
+    { value: "H", label: "H" },
+    { value: "Y", label: "Y" },
 ];
+
+//added new options
+const CapWithoutCapOptions = [
+    { value: "With Ferrule", label: "With Ferrule", code: "", dsc_code: "" },
+    { value: "Without Ferrule", label: "Without Ferrule", code: "WF", dsc_code: "Without Ferrule" },
+  ];
+
+const hoseDashSizeOptions = [
+    { value: "3/16\"", code: "O3", dsc_code: "3/16\"" },
+    { value: "1/4\"", code: "O4", dsc_code: "1/4\"" },
+    { value: "5/16\"", code: "O5", dsc_code: "5/16\"" },
+    { value: "3/8\"", code: "O6", dsc_code: "3/8\"" },
+    { value: "1/2\"", code: "O8", dsc_code: "1/2\"" },
+    { value: "5/8\"", code: "10", dsc_code: "5/8\"" },
+    { value: "3/4\"", code: "12", dsc_code: "3/4\"" },
+    { value: "1\"", code: "16", dsc_code: "1\"" },
+    { value: "1-1/4\"", code: "20", dsc_code: "1-1/4\"" },
+    { value: "1-1/2\"", code: "24", dsc_code: "1-1/2\"" },
+    { value: "2\"", code: "32", dsc_code: "2\"" },
+    { value: "2-1/2\"", code: "40", dsc_code: "2-1/2\"" },
+    { value: "3\"", code: "48", dsc_code: "3\"" },
+    { value: "3-1/2\"", code: "56", dsc_code: "3-1/2\"" },
+    { value: "4\"", code: "64", dsc_code: "4\"" },
+    { value: "4-1/2\"", code: "72", dsc_code: "4-1/2\"" },
+    { value: "5\"", code: "80", dsc_code: "5\"" },
+    { value: "13/32\"", code: "", dsc_code: "13/32\"" },
+    { value: "7/8\"", code: "", dsc_code: "7/8\"" },
+    { value: "1-1/8\"", code: "", dsc_code: "1-1/8\"" },
+    { value: "1-3/8\"", code: "", dsc_code: "1-3/8\"" },
+    { value: "1-13/16\"", code: "", dsc_code: "1-13/16\"" },
+    { value: "2-3/8\"", code: "", dsc_code: "2-3/8\"" },
+];
+
 
 const fittingDashSizeOptions = [
     // BSP
-    { thread_type: "BSP", dash: "O4", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4", variant: "Standard" },
-    { thread_type: "BSP", dash: "O5", inch: "5/16\"", thread: "5/16\"", dsc_code: "5/16", variant: "Lower Jump" },
-    { thread_type: "BSP", dash: "O6", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8", variant: null },
-    { thread_type: "BSP", dash: "O8", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2", variant: null },
-    { thread_type: "BSP", dash: "10", inch: "5/8\"", thread: "5/8\"", dsc_code: "5/8", variant: null },
-    { thread_type: "BSP", dash: "12", inch: "3/4\"", thread: "3/4\"", dsc_code: "3/4", variant: null },
-    { thread_type: "BSP", dash: "16", inch: "1\"", thread: "1\"", dsc_code: "1", variant: null },
-    { thread_type: "BSP", dash: "20", inch: "1-1/4\"", thread: "1-1/4\"", dsc_code: "1-1/4", variant: "Upper Jump" },
-    { thread_type: "BSP", dash: "24", inch: "1-1/2\"", thread: "1-1/2\"", dsc_code: "1-1/2", variant: "Upper Jump" },
-    { thread_type: "BSP", dash: "32", inch: "2\"", thread: "2\"", dsc_code: "2", variant: "Upper Jump" },
+    { thread_type: "BSP", dash: "O4", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4\"", variant: "Standard" },
+    { thread_type: "BSP", dash: "O5", inch: "5/16\"", thread: "5/16\"", dsc_code: "5/16\"", variant: "Standard" },
+    { thread_type: "BSP", dash: "O6", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8\"", variant: "Standard" },
+    { thread_type: "BSP", dash: "O8", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2\"", variant: "Standard" },
+    { thread_type: "BSP", dash: "10", inch: "5/8\"", thread: "5/8\"", dsc_code: "5/8\"", variant: "Standard" },
+    { thread_type: "BSP", dash: "12", inch: "3/4\"", thread: "3/4\"", dsc_code: "3/4\"", variant: "Standard" },
+    { thread_type: "BSP", dash: "16", inch: "1\"", thread: "1\"", dsc_code: "1\"", variant: "Standard" },
+    { thread_type: "BSP", dash: "20", inch: "1-1/4\"", thread: "1-1/4\"", dsc_code: "1-1/4\"", variant: "Standard" },
+    { thread_type: "BSP", dash: "24", inch: "1-1/2\"", thread: "1-1/2\"", dsc_code: "1-1/2\"", variant: "Standard" },
+    { thread_type: "BSP", dash: "32", inch: "2\"", thread: "2\"", dsc_code: "2\"", variant: "Standard" },
+
 
     // BSP O
     { thread_type: "BSP O", dash: "O4", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4", variant: "Standard" },
@@ -216,9 +233,10 @@ const fittingDashSizeOptions = [
 
 // Function to get fitting dash size based on fitting thread and size
 function getFittingDashSize(fittingThread, fittingDashSize) {
+
     // Match fitting thread type with dash size options
     for (const option of fittingDashSizeOptions) {
-        if (option.thread_type === fittingThread && option.inch === fittingDashSize) {
+        if (option.thread_type === fittingThread && option.inch == fittingDashSize) {
             return option.dash; // Return the corresponding dash size code
         }
     }
@@ -252,6 +270,8 @@ const createDscMap = (options) => options.reduce((map, option) => {
 }, {});
 
 
+
+
 //DESCRIPTION 
 const fittingThreadDscMap = createDscMap(fittingThreadOptions);
 const fittingTypeDscMap = createDscMap(fittingTypeOptions);
@@ -259,7 +279,7 @@ const hoseDashSizeDscMap = createDscMap(hoseDashSizeOptions);
 const straightBendangleDscMap = createDscMap(straightBendangleOptions);
 const skiveTypDsceMap = createDscMap(skiveTypeOptions);
 const wireTypeDscMap = createDscMap(wireTypeOptions);
-
+const withFerruleDscMap = createDscMap(CapWithoutCapOptions)
 
 //FITTING CODE
 const fittingThreadMap = createMap(fittingThreadOptions);
@@ -269,6 +289,9 @@ const wireTypeMap = createMap(wireTypeOptions);
 const fittingPieceMap = createMap(fittingPieceOptions);
 const skiveTypeMap = createMap(skiveTypeOptions);
 const hoseDashSizeMap = createMap(hoseDashSizeOptions);
+const designMap = createMap(designOption);
+const withFerruleMap = createMap(CapWithoutCapOptions)
+
 
 
 // Import products from an Excel file
@@ -282,27 +305,55 @@ const bulkimport = async (filePath) => {
             throw new Error("No data found in the uploaded file");
         }
 
+        // Fetch last assigned product codes for all unique categories in the sheet
+        const categories = [...new Set(sheetData.map(row => row["wire_type"]))];
+        const productCounters = await ProductCodeCounter.find({ category: { $in: categories } });
+
+        // Create a map for quick lookup of last assigned product codes
+        const categoryCodeMap = {};
+        for (const counter of productCounters) {
+            categoryCodeMap[counter.category] = counter.last_assigned_product_code;
+        }
+
+
         // Process and save each product
         const products = sheetData.map((row) => {
+            const design = row["design"] || "";
             const fittingThread = row["fitting_thread"] || "";
             const fittingType = row["fitting_type"] || "";
             const straightBendAngle = row["straight_bend_angle"] || "";
             const wireType = row["wire_type"] || "";
+            const withCap = row["with_cap"] || "";
             const fittingPiece = row["fitting_piece"] || "";
             const skiveType = row["skive_type"] || "";
             const hoseDashSize = row["hose_dash_size"] || "";
             const fittingDashSize = row["fitting_dash_size"] || "";
+            const dropLength = row["drop_length"] || ""
+
+            //For Product Code
+            if (!categoryCodeMap[wireType]) {
+                throw new Error(`Category series code not found for wire type: ${wireType}`);
+            }
+            // Increment the last assigned product code for this category
+            categoryCodeMap[wireType] += 1;
+            const product_code = categoryCodeMap[wireType];
+
+            console.log("product_code",product_code)
+
 
             //code
             const fittingThreadCode = fittingThreadMap[fittingThread] || "";
             const fittingTypeCode = fittingTypeMap[fittingType] || "";
-            const straightBendAngleCode = straightBendangleMap[straightBendAngle] || "";
+            const straightBendAngleCode = straightBendangleMap[straightBendAngle.trim()] || "";
             const wireTypeCode = wireTypeMap[wireType] || "";
             const fittingPieceCode = fittingPieceMap[fittingPiece] || "";
             const skiveTypeCode = skiveTypeMap[skiveType] || "";
             const hoseDashSizeCode = hoseDashSizeMap[hoseDashSize] || "";
+            const designCode = designMap[design] || "";
             // Get the corresponding dash size
             const fittingdashSizeCode = getFittingDashSize(fittingThread, fittingDashSize);
+            const withCapCode = withFerruleMap[withCap] || "";
+
 
             //DESCRIPTION
             const fittingThreadDscCode = fittingThreadDscMap[fittingThread] || "";
@@ -312,20 +363,35 @@ const bulkimport = async (filePath) => {
             const skiveTypeDscCode = skiveTypDsceMap[skiveType] || "";
             const wireTypeDscCode = wireTypeDscMap[wireType] || "";
             const fittingdashSizeDscCode = getFittingDashdscSize(fittingThread, fittingDashSize);
+            const withCapDscCode = withFerruleDscMap[withCap] || "";
 
+            console.log("straightBendAngleDscCodee ", straightBendAngleDscCode)
 
-            const desc_Code = `${wireTypeDscCode}-${fittingThreadDscCode} ${hoseDashSizedscCode}X${fittingdashSizeDscCode} ${fittingTypeDscCode} ${straightBendAngleDscCode} ${skiveTypeDscCode}`.trim();
+            const desc_Code = `${wireTypeDscCode}-${fittingThreadDscCode} ${hoseDashSizedscCode}X${fittingdashSizeDscCode} ${fittingTypeDscCode} ${straightBendAngleDscCode} ${skiveTypeDscCode} DL-${dropLength} ${withCapDscCode}`.trim();
 
-            const fitting_Code = `${row["design"] || ""}${wireTypeCode}${fittingPieceCode}-${skiveTypeCode}-${hoseDashSizeCode}${fittingdashSizeCode}-${fittingThreadCode}-${fittingTypeCode}${straightBendAngleCode}`.trim();
+            const fitting_Code = `${row["design"] || ""}${wireTypeCode}${fittingPieceCode}-${skiveTypeCode}-${hoseDashSizeCode}${fittingdashSizeCode}-${fittingThreadCode}-${fittingTypeCode}${straightBendAngleCode}-${dropLength}${withCapCode ? '-'+withCapCode : ""}`.trim();
+
 
             return {
                 ...row,
+                product_code,
                 desc_Code,
                 fitting_Code,
             };
         });
 
         await Products.insertMany(products);
+
+        // Update productCounter table with the last assigned product codes
+        await Promise.all(
+            categories.map(category => 
+                ProductCodeCounter.updateOne(
+                    { category },
+                    { $set: { last_assigned_product_code: categoryCodeMap[category] } }
+                )
+            )
+        );
+
         return products.length;
     } catch (error) {
         console.error("Error importing products:", error);

@@ -22,6 +22,10 @@ import { addSupplierPurchaseOrderApi, createPoItemApi } from "../../../services/
 import { getCountryListApi, getStateListApi, getStateListTinApi } from "../../../services/apis/CommonApi";
 import { getAllCusotmerListApi } from "../../../services/apis/CustomerApi";
 import { addSalesOrderApi, createSOItemApi } from "../../../services/apis/salesOrderApi";
+import BillingDetail from "../../components/PurchaseOrder/BillingDetail";
+import ShippingDetail from "../../components/PurchaseOrder/Shippingdetail";
+import ShippingDetailFormMdl from "../../components/PurchaseOrder/ShippingDetailFormMdl";
+import BillingDetailFormMdl from "../../components/PurchaseOrder/BillingDetailFormMdl";
 
 const options = [
   { value: "veg", label: "Veg" },
@@ -66,13 +70,34 @@ const AddSalesOrder = () => {
   const [selectedShippingCityOption, setSelectedShippingCityOption] = useState(null);
 
   const [stateTIN, setStateTIN] = useState();
-  console.log("stateTIN",stateTIN)
+  // console.log("stateTIN",stateTIN)
   const [countriesList, setCountriesList] = useState();
   const [stateList, setStateList] = useState();
   const [cityList, setCityList] = useState();
   const [supplierDetail, setSupplierDetail] = useState({});
   const [customerDetail, setCustomerDetail] = useState({});
   const TodayDate = moment().format("YYYY-MM-DD");
+  const [draggedRow, setDraggedRow] = useState(null);
+  // console.log("row data is here : --------->", rows);
+
+  const handleDragStart = (index) => {
+    setDraggedRow(index);
+  };
+
+  const handleDragOver = (event) => {
+    event.preventDefault();
+  };
+
+  const handleDrop = (index) => {
+    if (draggedRow === null) return;
+
+    const newRows = [...rows];
+    const [movedRow] = newRows.splice(draggedRow, 1);
+    newRows.splice(index, 0, movedRow);
+
+    setRows(newRows);
+    setDraggedRow(null);
+  };
 
   //All Form Data is here
   const [formData, setFormData] = useState({
@@ -82,7 +107,7 @@ const AddSalesOrder = () => {
     note: "",
   });
 
-  console.log("formData Form", formData)
+  // console.log("formData Form", formData)
 
   //Billing Form Details Fields
   const [formBillingData, setBillingFormData] = useState({
@@ -98,7 +123,7 @@ const AddSalesOrder = () => {
     gstin: '',
   });
 
-  console.log("Billing Form", formBillingData)
+  // console.log("Billing Form", formBillingData)
 
   //Shipping Form Details Fields
   const [formShippingData, setShippingFormData] = useState({
@@ -113,62 +138,35 @@ const AddSalesOrder = () => {
     address: '',
     gstin: '',
   });
-  console.log("Shipping Form", formShippingData)
-
+  // console.log("Shipping Form", formShippingData)
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [openBillingMdl, setOpenBillingMdl] = useState(false);
+  const [openShippingMdl, setOpenShippingMdl] = useState(false);
   // console.log(formBillingData.state_name)
   // console.log(formShippingData.state_name)
   // console.log(formBillingData.state_name === formShippingData.state_name)
 
   //Rows Fields
-  const [rows, setRows] = useState([
-    {
-      id: 1,
-      // product_name: "",
-      // sku: "",
-      // unit: "",
-      // variant: "",
-      // variant_type: "",
-      // uom: "",
-      // uom_qty: "",
-      // quantity: "",
-      // price_per_unit: "",
-      // discount_per_unit: "",
-      // total_discount: "",
-      // gst: "",
-      // cgst: "",
-      // sgst: "",
-      // igst: "",
-      // cess: "",
-      // amount: "",
-    },
-  ]);
-
-  console.log("row data is here : --------->",rows)
+  const [rows, setRows] = useState([]);
+  // console.log("row data is here : --------->",rows)
 
   // Function to add a new row
   const addRow = () => {
-    setRows([
-      ...rows,
-      {
-        id: rows.length + 1,
-        // product_name: "",
-        // sku: "",
-        // unit: "",
-        // variant: "",
-        // variant_type: "",
-        // uom: "",
-        // uom_qty: "",
-        // quantity: "",
-        // price_per_unit: "",
-        // discount_per_unit: "",
-        // total_discount: "",
-        // cgst: "",
-        // sgst: "",
-        // igst: "",
-        // cess: "",
-        // amount: "",
-      },
-    ]);
+    if (!selectedProduct) return; // Prevent adding empty rows
+    const newRow = {
+      ...selectedProduct,
+      id: rows.length,
+      product_code: selectedProduct.value,
+      quantity: selectedProduct?.quantity,
+      uom: selectedProduct.uom || "",
+      weight: selectedProduct.weight || "",
+      price: selectedProduct.price || 0,
+      discount_per_unit: 0,
+      taxable_amount: selectedProduct.price || 0,
+      gst: selectedProduct.gst || 0,
+    };
+    setRows([...rows, newRow]);
+    setSelectedProduct(null);
   };
 
   //Funciton to Delete Row
@@ -340,7 +338,7 @@ const AddSalesOrder = () => {
   const validateForm = () => {
     const newErrors = {};
     // Required field validation
-    if (!formData.supplier_id) newErrors.supplier_id = "Supplier is required.";
+    if (!formData.customer_id) newErrors.customer_id = "Customer is required.";
     if (!formData.note) newErrors.note = "Note is required.";
     if (!formData.due_date) newErrors.due_date = "Due Date Id is required.";
 
@@ -354,9 +352,9 @@ const AddSalesOrder = () => {
     if (!selectedBillingStateOption) {
       newErrors.billing_state_name = "Billing state is required.";
     }
-    if (!formBillingData.state_code || !/^\d{1,2}$/.test(formBillingData.state_code)) {
-      newErrors.billing_state_code = "Valid billing state code is required.";
-    }
+    // if (!formBillingData.state_code || !/^\d{1,2}$/.test(formBillingData.state_code)) {
+    //   newErrors.billing_state_code = "Valid billing state code is required.";
+    // }
     if (!formBillingData.gstin
       // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formBillingData.gstin)
     ) {
@@ -371,45 +369,46 @@ const AddSalesOrder = () => {
     if (!formShippingData.name) {
       newErrors.shipping_name = "Shipping name is required.";
     }
+
     if (!formShippingData.email || !/\S+@\S+\.\S+/.test(formShippingData.email)) {
       newErrors.shipping_email = "Valid email is required for shipping.";
     }
+
     if (!selectedShippingStateOption) {
       newErrors.shipping_state_name = "Shipping state is required.";
     }
-    if (!formShippingData.state_tin_code || !/^\d{1,2}$/.test(formShippingData.state_code)) {
-      newErrors.state_tin_code = "Valid shipping state code is required.";
-    }
-    if (!formShippingData.gstin
-      // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formShippingData.gstin)
-    ) {
-      newErrors.shipping_gstin = "Valid GSTIN is required for shipping.";
-    }
+
+    // if (!formShippingData.state_tin_code || !/^\d{1,2}$/.test(formShippingData.state_code)) {
+    //   newErrors.state_tin_code = "Valid shipping state code is required.";
+    // }
+
+    // if (!formShippingData.gstin
+    //   || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formShippingData.gstin)
+    // ) {
+    //   newErrors.shipping_gstin = "Valid GSTIN is required for shipping.";
+    // }
 
     if (!formShippingData.address) {
       newErrors.shipping_address = "Address required for billing.";
     }
-
-
     // Set errors to the state
     setErrors(newErrors);
-
     // Return true if there are no errors, false otherwise
     return Object.keys(newErrors).length === 0;
   };
 
+  // console.log("err",errors)
+
   const handleDeleteLogo = () => {
     setLogo(null);
     document.getElementById("logoUpload").value = "";
-
-    
   };
 
   const fetchCustomerAllList = async () => {
     setLoading(true);
     try {
       const res = await getAllCusotmerListApi();
-      console.log(res,"=-=-=-=-=-=-=-=-=-=-=-=-=-=")
+      // console.log(res,"=-=-=-=-=-=-=-=-=-=-=-=-=-=")
       const dropdownCustomerList = res?.data?.map((customer) => ({
         value: customer._id,
         label: customer.fname + " " + customer.lname,
@@ -572,8 +571,6 @@ const AddSalesOrder = () => {
     }
   };
 
-
-
   useEffect(() => {
     fetchCustomerAllList();
     fetchSupplierAllList();
@@ -640,10 +637,75 @@ const AddSalesOrder = () => {
     setFormData({ ...formData, customer_id: option?.value });
 
     setSelectedCustomerOption(option);
-    const custoerDetail = allCustomers?.find((val) => val?._id == option?.value);
-    setCustomerDetail(custoerDetail);
-  };
+    const customerDetail = allCustomers?.find((val) => val?._id == option?.value);
+    setCustomerDetail(customerDetail);
+  // console.log("customerDetail",customerDetail)
+     
+    const countryData = countriesList?.filter((val) => val?.label == "India");
+    const stateData = stateList?.filter(
+      (val) => val?.label == customerDetail?.state
+    );
+    const cityData = cityList?.filter((val) => val?.label == customerDetail?.city);
 
+    //  console.log("countryData",countryData)
+    setSelectedBillingCountryOption({
+      label: "India",
+      value: "India",
+      id: countryData && countryData[0]?.id,
+    });
+    setSelectedBillingStateOption({
+      label: customerDetail?.state_name,
+      value: customerDetail?.state_name,
+      id: stateData && stateData[0]?.id,
+    });
+
+    setSelectedBillingCityOption({
+      label: customerDetail?.city,
+      value: customerDetail?.city,
+    });
+
+    setBillingFormData({
+      ...customerDetail,
+      name: `${customerDetail?.fname} ${customerDetail?.lname}`,
+      mobile_no1: customerDetail?.mobile_no1,
+      gstin: customerDetail?.gstNumber,
+      pin_code: customerDetail?.pin_code,
+      country: customerDetail?.country,
+      state_name: customerDetail?.state_name,
+      city: customerDetail?.city,
+    });
+
+    // Shipping Form
+    setSelectedShippingCountryOption({
+      label: "India",
+      value: "India",
+      id: countryData && countryData[0]?.id,
+    });
+
+    setSelectedShippingStateOption({
+      label: customerDetail?.state_name,
+      value: customerDetail?.state_name,
+      id: stateData && stateData[0]?.id,
+    });
+
+    setSelectedShippingCityOption({
+      label: customerDetail?.city,
+      value: customerDetail?.city,
+    });
+
+    setShippingFormData({
+      ...customerDetail,
+      name: `${customerDetail?.fname} ${customerDetail?.lname}`,
+      mobile_no1: customerDetail?.mobile_no1,
+      gstin: customerDetail?.gstNumber,
+      pin_code: customerDetail?.pin_code,
+      country: customerDetail?.country,
+      state_name: customerDetail?.state_name,
+      city: customerDetail?.city,
+    });
+  };
+ 
+  // console.log("ssss",customerDetail)
 
   const calculateTotalAmount = () => {
     return rows.reduce((total, row) => {
@@ -719,9 +781,6 @@ const AddSalesOrder = () => {
 
   const summary = calculateSummary();
 
-
-
-  
   const CreateSOItem = async (SO_id) => {
 
     const fDataProducts = rows?.map(({ id, selectedOption, ...rest }) => {
@@ -831,9 +890,9 @@ const AddSalesOrder = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    // if (!validateForm()) {
-    //   return;
-    // }
+    if (!validateForm()) {
+      return;
+    }
     setLoading(true);
 
     const fData = {
@@ -983,10 +1042,62 @@ const AddSalesOrder = () => {
   }
 
 
+  const handleBillingPhoneDetailChange = (value, field) => {
+    setBillingFormData((prev) => ({
+      ...prev,
+      [field]: value, // Dynamically update the correct field
+    }));
+  };
+
+  const handleShippingPhoneDetailChange = (value, field) => {
+    setShippingFormData((prevState) => ({
+      ...prevState,
+      [field]: value, // Dynamically update the corresponding field
+    }));
+  };
+
+  const handleProductDataChange = (selectedOption) => {
+    setSelectedProduct(selectedOption);
+  };
 
   return (
     <>
       <ToastContainer />
+        <BillingDetailFormMdl
+           openBillingMdl={openBillingMdl}
+           setOpenBillingMdl={setOpenBillingMdl}
+           formBillingData={formBillingData}
+           handleBillingDetailChange={handleBillingDetailChange}
+           selectedBillingCountryOption={selectedBillingCountryOption}
+           handleBillingDetailCountryChange={handleBillingDetailCountryChange}
+           countriesList={countriesList}
+           selectedBillingStateOption={selectedBillingStateOption}
+           handleBillingDetailStateChange={handleBillingDetailStateChange}
+           stateList={stateList}
+           selectedBillingCityOption={selectedBillingCityOption}
+           handleBillingDetailCityChange={handleBillingDetailCityChange}
+           cityList={cityList}
+           handleBillingPhoneDetailChange={handleBillingPhoneDetailChange}
+           errors={errors}
+         />
+      
+         <ShippingDetailFormMdl
+           openShippingMdl={openShippingMdl}
+           setOpenShippingMdl={setOpenShippingMdl}
+           formShippingData={formShippingData}
+           handleShippingDetailChange={handleShippingDetailChange}
+           handleShippingPhoneDetailChange={handleShippingPhoneDetailChange}
+           selectedShippingCountryOption={selectedShippingCountryOption}
+           handleShippingDetailCountryChange={handleShippingDetailCountryChange}
+           countriesList={countriesList}
+           selectedShippingStateOption={selectedShippingStateOption}
+           handleShippingDetailStateChange={handleShippingDetailStateChange}
+           stateList={stateList}
+           selectedShippingCityOption={selectedShippingCityOption}
+           handleShippingDetailCityChange={handleShippingDetailCityChange}
+           cityList={cityList}
+         />
+      
       <Loader visible={loading} />
       <PageTitle
         activeMenu={"Add New Sales Order"}
@@ -1007,7 +1118,7 @@ const AddSalesOrder = () => {
                 <h4 className="card-title">Customer Detail</h4>
                 <div className="mb-3 row">
                   <div className="col-sm-6 col-xl-4">
-                    <label className="col-form-label">Customer</label>
+                    <label className="col-form-label">Customer<span className="text-danger">*</span></label>
                     <Select
                       value={selectedCustomerOption}
                       onChange={handleCustomerChange}
@@ -1019,15 +1130,15 @@ const AddSalesOrder = () => {
                         paddingLeft: " 15px",
                       }}
                     />
-                    {errors.supplier_id && (
+                    {errors.customer_id && (
                       <span className="text-danger fs-12">
-                        {errors.supplier_id}
+                        {errors.customer_id}
                       </span>
                     )}
                   </div>
 
                   <div className="col-sm-6 col-xl-4">
-                    <label className="col-sm-3 col-form-label">Date</label>
+                    <label className="col-sm-3 col-form-label">Date<span className="text-danger">*</span></label>
                     <input
                       disabled
                       name="date"
@@ -1043,7 +1154,7 @@ const AddSalesOrder = () => {
                   </div>
 
                   <div className="col-sm-6 col-xl-4">
-                    <label className="col-form-label">Due Date</label>
+                    <label className="col-form-label">Due Date<span className="text-danger">*</span></label>
                     <input
                       name="due_date"
                       value={formData?.due_date}
@@ -1060,9 +1171,11 @@ const AddSalesOrder = () => {
                     )}
                   </div>
                 </div>
-
+                
+                {customerDetail && Object.keys(customerDetail).length !== 0 && (
                 <div className="mb-3 row">
                   <div className="col-sm-6 col-xl-4">
+                    <div className="supplier-card">
                     <label className="col-form-label">
                       Customer Details
                     </label>
@@ -1109,10 +1222,11 @@ const AddSalesOrder = () => {
                         </div>
                       )} */}
                     </div>
+
                   </div>
 
                   <div className="col-sm-12 col-sm-8">
-                    <label className="col-form-label">Note</label>
+                    <label className="col-form-label">Note<span className="text-danger">*</span></label>
                     <textarea
                       name="note"
                       className="form-control"
@@ -1126,16 +1240,47 @@ const AddSalesOrder = () => {
                       <span className="text-danger fs-12">{errors.note}</span>
                     )}
                   </div>
+                  </div>
+
+                  <BillingDetail
+                    billingDetail={formBillingData}
+                    setOpenBillingMdl={setOpenBillingMdl}
+                  />
+
+                  <ShippingDetail
+                    shippingDetail={formShippingData}
+                    setOpenShippingMdl={setOpenShippingMdl}
+                  />
                 </div>
+                )}
               </div>
 
               <hr className="w-100" />
 
+            <h4 className="card-title">Product Detail</h4>
+                <div className="row mt-3">
+                  <label className="col-form-label">Product<span className="text-danger">*</span></label>
+                  <div className="col-md-6">
+                    <Select
+                      options={productOption}
+                      value={selectedProduct}
+                      onChange={handleProductDataChange}
+                    />
+                   <button onClick={addRow} className="btn btn-primary mt-2">
+                     Add Product
+                   </button>
+                  </div>
+                  
+                  {/* <div className="col-md-6">
+                    <div className="product-sidebox">
+
+                    </div>
+                  </div> */}
+                </div>
               {/* Billing Details */}
-              <div className="mb-3">
+              {/* <div className="mb-3">
                 <h4 className="card-title">Billing Detail</h4>
                 <div className="row mb-3">
-                  {/* name */}
                   <div className="col-sm-6 col-xl-3">
                     <label className=" col-form-label">Name</label>
                     <input
@@ -1153,7 +1298,6 @@ const AddSalesOrder = () => {
                       </span>
                     )}
                   </div>
-                  { /* email */}
                   <div className="col-sm-6 col-xl-3">
                     <label className=" col-form-label">Email</label>
                     <input
@@ -1171,7 +1315,6 @@ const AddSalesOrder = () => {
                       </span>
                     )}
                   </div>
-                  { /* mobile number */}
                   <div className="col-sm-6 col-xl-3">
                     <label className=" col-form-label">Mobile No.1</label>
                     <input
@@ -1189,7 +1332,7 @@ const AddSalesOrder = () => {
                       </span>
                     )}
                   </div>
-                  { /* mobile number */}
+
                   <div className="col-sm-6 col-xl-3">
                     <label className=" col-form-label">Mobile No.2</label>
                     <input
@@ -1207,7 +1350,7 @@ const AddSalesOrder = () => {
                       </span>
                     )}
                   </div>
-                  { /* country */}
+
                   <div className="col-sm-6 col-xl-3">
                     <label className="col-form-label">Country</label>
                     <Select
@@ -1227,7 +1370,7 @@ const AddSalesOrder = () => {
                       </span>
                     )}
                   </div>
-                  { /* state */}
+
                   <div className="col-sm-6 col-xl-3">
                     <label className="col-form-label">State</label>
                     <Select
@@ -1247,7 +1390,7 @@ const AddSalesOrder = () => {
                       </span>
                     )}
                   </div>
-                  { /* city */}
+
                   <div className="col-sm-6 col-xl-3">
                     <label className="col-form-label">City</label>
                     <Select
@@ -1267,7 +1410,7 @@ const AddSalesOrder = () => {
                       </span>
                     )}
                   </div>
-                  { /* Pincode */}
+
                   <div className="col-sm-6 col-xl-2">
                     <label className="col-form-label">Pincode</label>
                     <input
@@ -1285,7 +1428,7 @@ const AddSalesOrder = () => {
                       </span>
                     )}
                   </div>
-                  { /* TIN */}
+
                   <div className="col-sm-6 col-xl-1">
                     <label className="col-form-label flex-wrap">TIN</label>
                     <input
@@ -1304,8 +1447,8 @@ const AddSalesOrder = () => {
                       </span>
                     )}
                   </div>
-
                 </div>
+
                 <div className="row mb-3">
                   <div className="col-xl-6">
                     <label className="col-sm-3 col-form-label">Address</label>
@@ -1343,11 +1486,10 @@ const AddSalesOrder = () => {
                   </div>
                 </div>
 
-              </div>
+              </div> */}
 
-              <hr className="w-100" />
-              {/* Shipping Details */}
-              <div className="mb-3">
+              {/* <hr className="w-100" /> */}
+              {/* <div className="mb-3">
                 <h4 className="card-title">Shipping Detail</h4>
                 <div className="row mb-3">
 
@@ -1560,7 +1702,7 @@ const AddSalesOrder = () => {
                   </div>
                 </div>
 
-              </div>
+              </div> */}
 
 
               {/* <div className="">
@@ -1691,7 +1833,7 @@ const AddSalesOrder = () => {
                           <thead className="table-head">
                             <tr>
                               <th>SL</th>
-                              <th>Product Name</th>
+                              {/* <th>Product Name</th> */}
                               <th>Product Code</th>
                               <th>Quantity</th>
                               <th>UOM</th>
@@ -1711,14 +1853,21 @@ const AddSalesOrder = () => {
                           {/* Table Body */}
                           <tbody>
                             {rows?.map((row, index) => (
-                              <tr key={row.id}>
-
-                                <td>{row.id}</td>
-                                 {/* Product  */}
-                                <td>
+                              <tr key={row.id}
+                               draggable
+                               onDragStart={() => handleDragStart(index)}
+                               onDragOver={handleDragOver}
+                               onDrop={() => handleDrop(index)}
+                               style={{ cursor: "grab", background: "#f8f9fa" }}
+                              >
+                               <td>{row?.id + 1}</td>
+                                {/* Product  */}
+                                {/* <td>
                                   <Select
                                     value={row.selectedOption} // Prefill selected option
-                                    onChange={(selectedOption) => handleProductChange(selectedOption, index)}
+                                    onChange={(selectedOption) =>
+                                      handleProductChange(selectedOption, index)
+                                    }
                                     options={productOption} // Ensure productOption is properly defined
                                     styles={{
                                       control: (provided) => ({
@@ -1739,7 +1888,7 @@ const AddSalesOrder = () => {
                                     }}
                                     menuPortalTarget={document.body} // Ensures the dropdown is rendered in the body
                                   />
-                                </td>
+                                </td> */}
                                 {/* Product Code */}
                                 <td>
                                   <input
@@ -1747,13 +1896,17 @@ const AddSalesOrder = () => {
                                     placeholder="Product Code"
                                     value={row?.product_code} // Auto-fill product code
                                     onChange={(e) =>
-                                      handleChangeRow(index, "product_code", e.target.value)
+                                      handleChangeRow(
+                                        index,
+                                        "product_code",
+                                        e.target.value
+                                      )
                                     }
                                     className="form-control row-input"
                                     style={{ width: "100px" }}
                                   />
                                 </td>
-                                  {/* Quantity */}
+                                {/* Quantity */}
                                 <td>
                                   <input
                                     type="number"
@@ -1770,14 +1923,18 @@ const AddSalesOrder = () => {
                                     style={{ width: "100px" }}
                                   />
                                 </td>
-                                 {/* UOM */}
+                                {/* UOM */}
                                 <td>
                                   <input
                                     type="text"
                                     placeholder="UOM"
                                     value={row?.uom} // Auto-fill product code
                                     onChange={(e) =>
-                                      handleChangeRow(index, "uom", e.target.value)
+                                      handleChangeRow(
+                                        index,
+                                        "uom",
+                                        e.target.value
+                                      )
                                     }
                                     className="form-control row-input"
                                     style={{ width: "60px" }}
@@ -1790,7 +1947,11 @@ const AddSalesOrder = () => {
                                     placeholder="1 KG"
                                     value={row?.weight} // Auto-fill product code
                                     onChange={(e) =>
-                                      handleChangeRow(index, "weight", e.target.value)
+                                      handleChangeRow(
+                                        index,
+                                        "weight",
+                                        e.target.value
+                                      )
                                     }
                                     className="form-control row-input"
                                     style={{ width: "60px" }}
@@ -1828,7 +1989,7 @@ const AddSalesOrder = () => {
                                     className="form-control"
                                   />
                                 </td>
-                                 {/*Taxable Amount */}
+                                {/*Taxable Amount */}
                                 <td>
                                   <input
                                     type="number"
@@ -1844,13 +2005,19 @@ const AddSalesOrder = () => {
                                     className="form-control"
                                   />
                                 </td>
-                                 {/*GST */}
-                                  <td>
+                                {/*GST */}
+                                <td>
                                   <input
                                     type="text"
                                     placeholder="GST"
                                     value={row?.gst}
-                                    onChange={(e) => handleChangeRow(index, "gst", e.target.value)}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "gst",
+                                        e.target.value
+                                      )
+                                    }
                                     className="form-control"
                                     style={{ width: "70px" }}
                                     // disabled={formBillingData.state_name !== formShippingData.state_name} // Disable for inter-state
@@ -1862,10 +2029,19 @@ const AddSalesOrder = () => {
                                     type="text"
                                     placeholder="CGST"
                                     value={row?.cgst}
-                                    onChange={(e) => handleChangeRow(index, "cgst", e.target.value)}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "cgst",
+                                        e.target.value
+                                      )
+                                    }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    disabled={formBillingData.state_name !== formShippingData.state_name} // Disable for inter-state
+                                    disabled={
+                                      formBillingData.state_name !==
+                                      formShippingData.state_name
+                                    } // Disable for inter-state
                                   />
                                 </td>
                                 {/* SGST */}
@@ -1874,10 +2050,19 @@ const AddSalesOrder = () => {
                                     type="text"
                                     placeholder="SGST"
                                     value={row?.sgst}
-                                    onChange={(e) => handleChangeRow(index, "sgst", e.target.value)}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "sgst",
+                                        e.target.value
+                                      )
+                                    }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    disabled={formBillingData.state_name !== formShippingData.state_name} // Disable for inter-state
+                                    disabled={
+                                      formBillingData.state_name !==
+                                      formShippingData.state_name
+                                    } // Disable for inter-state
                                   />
                                 </td>
                                 {/* IGST */}
@@ -1886,10 +2071,19 @@ const AddSalesOrder = () => {
                                     type="text"
                                     placeholder="IGST"
                                     value={row?.igst}
-                                    onChange={(e) => handleChangeRow(index, "igst", e.target.value)}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "igst",
+                                        e.target.value
+                                      )
+                                    }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    disabled={formBillingData.state_name === formShippingData.state_name} // Disable for intra-state
+                                    disabled={
+                                      formBillingData.state_name ===
+                                      formShippingData.state_name
+                                    } // Disable for intra-state
                                   />
                                 </td>
                                 {/* Cess */}
@@ -1898,12 +2092,18 @@ const AddSalesOrder = () => {
                                     type="text"
                                     placeholder="Cess"
                                     value={row?.cess}
-                                    onChange={(e) => handleChangeRow(index, "cess", e.target.value)}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "cess",
+                                        e.target.value
+                                      )
+                                    }
                                     className="form-control"
                                     style={{ width: "70px" }}
                                   />
                                 </td>
-                                 {/* Total_amount */}
+                                {/* Total_amount */}
                                 <td>
                                   {row?.total_amount
                                     ? (row?.total_amount).toFixed(2) + ` ₹`
@@ -1911,13 +2111,14 @@ const AddSalesOrder = () => {
                                 </td>
                                 {/* Delete */}
                                 <td>
-                                  {index > 0 ? (
-                                    <button
-                                      className="btn btn-danger mt-2"
-                                      onClick={() => handleDeleteTableRow(row?.id)}>
-                                      Delete
-                                    </button>
-                                  ) : null}
+                                  <button
+                                    className="btn btn-danger mt-2"
+                                    onClick={() =>
+                                      handleDeleteTableRow(row?.id)
+                                    }
+                                  >
+                                    Delete
+                                  </button>
                                 </td>
                               </tr>
                             ))}
@@ -1925,9 +2126,9 @@ const AddSalesOrder = () => {
                         </table>
                       )}
                     </div>
-                    <button onClick={addRow} className="btn btn-primary mt-2">
+                    {/* <button onClick={addRow} className="btn btn-primary mt-2">
                       Add New Row
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>

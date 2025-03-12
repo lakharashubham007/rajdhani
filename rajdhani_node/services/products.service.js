@@ -1,4 +1,4 @@
-const { Products } = require('../models'); // Assuming the Products model is located here
+const { Products ,ProductCodeCounter} = require('../models'); // Assuming the Products model is located here
 
 const generateCodes = (formData, options) => {
   console.log('formData is herer0-=-=-=-=-=-=-',formData); 
@@ -46,27 +46,56 @@ const createProduct = async (data, files) => {
        }
      }
 
-     // Determine the starting series based on wire_type
-    let codePrefix = 20000; // Default to BRAIDED series
-    if (data.wire_type.includes("SPIRAL")) {
-      codePrefix = 40000;
+    //  // Determine the starting series based on wire_type
+    // let codePrefix = 20000; // Default to BRAIDED series
+    // if (data.wire_type.includes("SPIRAL")) {
+    //   codePrefix = 40000;
+    // }
+    // if (data.wire_type.includes("TEFLON")) {
+    //   codePrefix = 10000;
+    // }
+
+    // // Find the last assigned code in this series
+    // const lastProduct = await Products.findOne(
+    //   { wire_type: data.wire_type },
+    //   { product_code: 1 },
+    //   // {},
+    //   { sort: { product_code: -1 } }
+    // );
+    // console.log("lastProduct lastProduct ",lastProduct)
+    // let newCode = lastProduct ? Number(lastProduct.product_code) + 1 : codePrefix;
+
+
+    // console.log("newCode newCode newCode newCode newCode",newCode)
+
+     // Determine the category series code based on wire_type
+     let category = "";
+     if (data.wire_type.includes("Braided")) {
+       category = "Braided";
+     } else if (data.wire_type.includes("Spiral")) {
+       category = "Spiral";
+     } else if (data.wire_type.includes("TEFLON")) {
+      category = "Teflon";
     }
-    if (data.wire_type.includes("TEFLON")) {
-      codePrefix = 10000;
-    }
 
-    // Find the last assigned code in this series
-    const lastProduct = await Products.findOne(
-      { wire_type: data.wire_type },
-      { product_code: 1 },
-      // {},
-      { sort: { product_code: -1 } }
-    );
-    console.log("lastProduct lastProduct ",lastProduct)
-    let newCode = lastProduct ? Number(lastProduct.product_code) + 1 : codePrefix;
-
-
-    console.log("newCode newCode newCode newCode newCode",newCode)
+    console.log(data.wire_type, " category is here-=-=-==-=-=")
+ 
+     // Fetch last assigned product code from productCounter
+     let productCounter = await ProductCodeCounter.findOne({ category });
+     if (!productCounter) {
+       throw new Error(`Product series not found for category: ${category}`);
+     }
+ 
+     let newCode = productCounter.last_assigned_product_code + 1;
+ 
+     // Update last_assigned_product_code in productCounter table
+     await ProductCodeCounter.updateOne(
+       { category },
+       { last_assigned_product_code: newCode, updated_at: Date.now() }
+     );
+ 
+     console.log("Generated Product Code:", newCode);
+ 
 
     const productData = {
       ...data,

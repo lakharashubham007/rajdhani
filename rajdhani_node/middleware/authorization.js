@@ -4,9 +4,9 @@ const authorization = async (req, res, next) => {
     try {
         // Step 1 - Check if role has permissions
         const user = await models.Admins.findById(req.user.sub);
-        console.log(user, 'user is here');
+        // console.log(user, 'user is here');
         const role = await models.adminRoles.findById(user.role_id._id).populate('permissions');
-        console.log(role, 'role is here');
+        // console.log(role, 'role is here');
         
         if (!role.permissions || role.permissions.length === 0) {
             return res.status(401).json({
@@ -28,16 +28,16 @@ const authorization = async (req, res, next) => {
             }
         })).map(permission => permission.route);
 
-        console.log(modules, "modules are here...");
+        // console.log(modules, "modules are here...");
 
         // Step 4 - Check if the current route is authorized
         const segments = urlPath.split('/');
         const lastSegment = segments[segments.length - 1]; // Last part of the route path
         const secondLastSegment = segments[segments.length - 2]; // Second last part of the path
-        console.log("This is secondLastSegment --->", secondLastSegment);
+        // console.log("This is secondLastSegment --->", secondLastSegment);
 
         if (modules.includes(lastSegment) || modules.includes(secondLastSegment)) {
-            console.log("Authorization successful for route:", urlPath);
+            // console.log("Authorization successful for route:", urlPath);
             next();
         } else {
             return res.status(401).json({

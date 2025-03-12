@@ -7,7 +7,7 @@ dotenv.config();
 const auth = async (req, res, next) => {
 	try {
 		// Extract JWT from request headers (Authorization header)
-		console.log(req.header("Authorization"),"here is consoleee-------");
+		// console.log(req.header("Authorization"),"here is consoleee-------");
 		// const token = req.header("Authorization").replace("Bearer ", "");
 		
 		 // Extract the Authorization header

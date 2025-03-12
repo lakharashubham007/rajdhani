@@ -22,10 +22,16 @@ const PartOptions = [
   { value: "NA", label: "NA" },
 ];
 
+// const WireTypeOptions = [
+//   { value: "BRAIDED (BR) - B", label: "BRAIDED (BR) - B", code: "B", dsc_code: "BR" },
+//   { value: "SPIRAL (SP) - S", label: "SPIRAL (SP) - S", code: "S", dsc_code: "SP" },
+//   { value: "TEFLON (TF) - T", label: "TEFLON (TF) - T", code: "T", dsc_code: "TF" }
+// ];
+
 const WireTypeOptions = [
-  { value: "BRAIDED (BR) - B", label: "BRAIDED (BR) - B", code: "B", dsc_code: "BR" },
-  { value: "SPIRAL (SP) - S", label: "SPIRAL (SP) - S", code: "S", dsc_code: "SP" },
-  { value: "TEFLON (TF) - T", label: "TEFLON (TF) - T", code: "T", dsc_code: "TF" }
+  { value: "Braided", label: "BRAIDED (BR) - B", code: "B", dsc_code: "BR" },
+  { value: "Spiral", label: "SPIRAL (SP) - S", code: "S", dsc_code: "SP" },
+  { value: "Teflon", label: "TEFLON (TF) - T", code: "T", dsc_code: "TF" }
 ];
 
 

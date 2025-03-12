@@ -28,6 +28,7 @@ const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
   { heading: "Image", sortingVale: "image" },
   { heading: "Product", sortingVale: "product" },
+  { heading: "Code", sortingVale: "product_code" },
   { heading: "Fitting Thread", sortingVale: "fitting_thread" },
   { heading: "Description", sortingVale: "description" },
   { heading: "Fitting Code", sortingVale: "Fitting Code" },
@@ -407,6 +408,34 @@ const AllProductList = () => {
                           }}>
                             {data?.product_type}
                           </td>
+
+
+                          {/* Product Code */}
+                         <td
+                            style={{
+                              whiteSpace: 'nowrap',
+                              overflow: 'hidden',
+                              textOverflow: 'ellipsis',
+                              maxWidth: '55ch'
+                            }}
+                          >
+                            <span
+                              style={{
+                                fontSize: "0.875rem", // Smaller text size (adjust as needed)
+                                backgroundColor: "transparent", // Transparent background
+                                padding: "2px 6px", // Add padding for badge effect
+                                borderRadius: "10px", // Rounded corners
+                                display: "inline-block", // Ensure proper layout inside the td
+                                color: "#686D76", // Text color
+                                border: "1px solid gray", // Black border
+                              }}
+                            >
+                              {data?.product_code}
+                            </span>
+                          </td>
+
+                         
+
 
                           {/* <td style={{
                             textAlign: 'center', // Horizontally center the content

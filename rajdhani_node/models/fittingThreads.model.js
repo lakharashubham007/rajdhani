@@ -12,13 +12,14 @@ const fittingThreadSchema = new mongoose.Schema(
         code: {
             type: String,
             trim: true,
-            maxlength: 10,
-            unique: true,
         },
         dsc_code: {
             type: String,
             trim: true,
-            maxlength: 20,
+        },
+        dsc: {
+            type: String,
+            trim: true,
         },
         status: {
             type: Boolean,

@@ -29,8 +29,9 @@ const getFittingDashSizes = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const sort = req.query.sort || 'thread_type';
         const search = req.query.search || '';
+        const thread_type = req.query.thread_type || '';
 
-        const fittingDashSizes = await fittingDashSizeService.getFittingDashSizes(page, limit, sort, search);
+        const fittingDashSizes = await fittingDashSizeService.getFittingDashSizes(page, limit, sort, search,thread_type);
         res.json({ success: true, fittingDashSizes });
     } catch (error) {
         console.error(error);

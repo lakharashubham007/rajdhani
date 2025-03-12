@@ -22,7 +22,28 @@ export const addFittingDashSizeApi = async (formData) => {
   }
 };
 
-export const getFittingDashSizeApi = async (currentPage,sort,sortValue,searchInputValue) => {
+export const getFittingDashSizeApi = async (currentPage,sort,sortValue,searchInputValue,thread_type) => {
+  const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+  try {
+      const response = await axios.get(`${apis.fittingDashSize.fittingDashSizeList}?page=${currentPage}&limit=${sort}&sort=${sortValue?.value ? `${sortValue?.value}:`: ""}${sortValue?.type ? sortValue?.type : ""}&search=${searchInputValue}&thread_type=${thread_type}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response;
+} catch (error) {
+  console.error("Error creating facility:", error);
+  throw error;
+}
+};
+
+
+
+
+export const fetchFilteredFittingDashSize = async (currentPage,sort,sortValue,searchInputValue) => {
   const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
   try {
       const response = await axios.get(`${apis.fittingDashSize.fittingDashSizeList}?page=${currentPage}&limit=${sort}&sort=${sortValue?.value ? `${sortValue?.value}:`: ""}${sortValue?.type ? sortValue?.type : ""}&search=${searchInputValue}`,

@@ -50,8 +50,9 @@ const FittingThreads = () => {
   const [formData, setFormData] = useState({
     name: "",
     code:"",
-    dsc_code:""
+    dsc_code:"",
   });
+  console.log("formData",formData, )
   const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
   const handleInputChange = (e) => {
@@ -255,12 +256,21 @@ const FittingThreads = () => {
     if (!validateForm()) {
       return;
     }
+
+    // Prepare fData with required fields
+  const fData = {
+    name: formData.name,
+    dsc_code: formData.dsc_code,
+    dsc: formData.dsc_code, // Binding dsc with dsc_code
+    code: formData.code,
+  };
+
     if (isEdit) {
       handleUpdateSubmit();
     } else {
       setLoading(true);
       try {
-        const res = await addFittingThreadApi(formData);
+        const res = await addFittingThreadApi(fData);
         if(res?.data?.success) {
           setLoading(false);
           Toaster.success(res?.data?.message);

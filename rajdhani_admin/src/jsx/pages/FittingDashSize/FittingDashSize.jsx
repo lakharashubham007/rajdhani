@@ -15,6 +15,7 @@ import Select from "react-select";
 import {
   addFittingDashSizeApi,
   deleteFittingDashSizeApi,
+  fetchFilteredFittingDashSize,
   GetEditFittingDashSizeData,
   getFittingDashSizeApi,
   UpdateFittingDashSize,
@@ -28,9 +29,9 @@ import { getAllVariantListApi } from "../../../services/apis/Variants";
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
   // { heading: "Id", sortingVale: "_id" },
-  { heading: "Fitting Thread", sortingVale: "thread_type" },
+  { heading: "Fitting Thread Type", sortingVale: "thread_type" },
   { heading: "Hose Dash Size", sortingVale: "dash_code" },
-  { heading: "Fitting Dash Size", sortingVale: "dash_code" },
+  { heading: "Fitting Dash Size/Thread", sortingVale: "dash_code" },
   { heading: "Fitting Code", sortingVale: "thread" },
   { heading: "Description Code", sortingVale: "dsc_code" },
   { heading: "Created At", sortingVale: "created_at" },
@@ -61,18 +62,20 @@ const FittingDashSize = () => {
   const [test, settest] = useState(0);
   const [showDeleteMdl, setShowDeleteMdl] = useState(false);
   const [deleteTableDataId, setDeleteTableDataId] = useState("");
+  const [filterThreadValue,setFilterThreadValue] = useState("")
+  console.log("filterThreadValue",filterThreadValue)
   const [formData, setFormData] = useState({
-    thread_type:"",
-    dash_code:"",
-    variant:"",
+    thread_type: "",
+    dash_code: "",
+    variant: "",
     thread: "",
-    size : "",
+    size: "",
     dsc_code: "",
-    pipe_od:"",
-    metric_type:""
+    pipe_od: "",
+    metric_type: ""
   });
 
-  console.log("formData",formData);
+  console.log("formData", formData);
 
   const [HoseDashSizeOption, setHoseDashSizeOption] = useState(null);
   const [fittingDashSizeOption, setfittingDashSizeOption] = useState(
@@ -90,16 +93,16 @@ const FittingDashSize = () => {
   ]);
   const [variantOption, setVariantOption] = useState([
     { label: "Null", value: "null" },
-    { label: "Standard", value: "standard" },
+    { label: "Standard", value: "Standard" },
   ]);
   // selected
-  const [selectedhoseDashSizeOption, setSelectedHoseDashSizeOption] =useState(null);
-  const [selectedFittingDashSizeOption, setSelectedfittingDashSizeOption] =useState(null);
+  const [selectedhoseDashSizeOption, setSelectedHoseDashSizeOption] = useState(null);
+  const [selectedFittingDashSizeOption, setSelectedfittingDashSizeOption] = useState(null);
   const [selectedFittingThreadOption, setSelectedFittingThreadOption] = useState(null);
   const [selectedvariantOption, setSelectedvariantOption] = useState(null);
-  const [selectedmetricTypeOptions, setSelectedmetricTypeOptions] =useState(null);
+  const [selectedmetricTypeOptions, setSelectedmetricTypeOptions] = useState(null);
 
-  console.log("selectedhoseDashSizeOption",selectedhoseDashSizeOption)
+  console.log("selectedhoseDashSizeOption", selectedhoseDashSizeOption)
 
   const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
@@ -120,7 +123,7 @@ const FittingDashSize = () => {
       const res = await getAllFittingThreadApi();
       const resData = res?.data?.fittingThreads;
       const mappedData = resData?.map((val) => ({
-        label: `${val?.name} (${val?.code})`,
+        label: `${val?.name}`,
         value: val?.name,
       }));
       setfittingThreadOption(mappedData);
@@ -202,7 +205,8 @@ const FittingDashSize = () => {
         currentPage,
         sort,
         sortValue,
-        searchInputValue
+        searchInputValue,
+        filterThreadValue
       );
       setFittingDasjSizesList(res?.data?.fittingDashSizes);
       setUpdateCategory(false);
@@ -218,7 +222,7 @@ const FittingDashSize = () => {
 
   useEffect(() => {
     fetchFittingDashSize();
-  }, [UpdateCategory, currentPage, sort, debouncedSearchValue]);
+  }, [UpdateCategory, currentPage, sort, debouncedSearchValue,filterThreadValue]);
 
   const chageData = (frist, sec) => {
     for (var i = 0; i < data.length; ++i) {
@@ -259,29 +263,29 @@ const FittingDashSize = () => {
         });
 
         setSelectedHoseDashSizeOption({
-         value: data?.dash_code,
-         label: data?.dash_code
+          value: data?.dash_code,
+          label: data?.dash_code
         });
-      
+
         setSelectedvariantOption({
           value: data?.variant,
           label: data?.variant
         });
-        
+
         setSelectedmetricTypeOptions({
           value: data?.metric_type,
           label: data?.metric_type
         });
 
         setFormData({
-          thread_type:data?.thread_type,
-          dash_code:data?.dash_code?.replace(/"$/, ""),
-          variant:data?.variant,
+          thread_type: data?.thread_type,
+          dash_code: data?.dash_code?.replace(/"$/, ""),
+          variant: data?.variant,
           thread: data?.thread?.replace(/"$/, ""),
-          size : data?.size,
+          size: data?.size,
           dsc_code: data?.dsc_code?.replace(/"$/, ""),
           pipe_od: data?.pipe_od,
-          metric_type:data?.metric_type
+          metric_type: data?.metric_type
         });
         // setModalCentered(true);
         setIsEdit(true);
@@ -335,6 +339,28 @@ const FittingDashSize = () => {
     // console.log("newStatus",newStatus)
   };
 
+  const handleFilter = async (option) => {
+    if (!selectedFittingThreadOption) return;
+
+    console.log("selectedFittingThreadOption.value",option)
+  
+    try {
+      const res = await fetchFilteredFittingDashSize( 
+        option);
+  
+      if (res.status === 200) {
+        Toaster.success("Filter applied successfully!");
+        // setFilteredData(res.data.filteredEntries); // Assuming API returns filtered data
+      } else {
+        Toaster.error("Failed to apply filter. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error filtering entries:", error);
+      Toaster.error("Something went wrong while filtering.");
+    }
+  };
+  
+
   const handlePageClick = (selectedPage) => {
     setCurrentPage(selectedPage.selected + 1);
   };
@@ -353,14 +379,14 @@ const FittingDashSize = () => {
 
   const resetForm = () => {
     setFormData({
-     thread_type:"",
-     dash_code:"",
-     variant:"",
-     thread: "",
-     size : "",
-     dsc_code: "",
-     pipe_od:"",
-     metric_type:""
+      thread_type: "",
+      dash_code: "",
+      variant: "",
+      thread: "",
+      size: "",
+      dsc_code: "",
+      pipe_od: "",
+      metric_type: ""
     });
     setSelectedHoseDashSizeOption(null);
     setSelectedfittingDashSizeOption(null);
@@ -382,12 +408,12 @@ const FittingDashSize = () => {
     if (!formData.thread) newErrors.thread = "Fitting Code is required.";
 
     if (!formData.dsc_code) newErrors.dsc_code = "Description Code is required.";
-   
-    if(formData?.thread_type == "METRIC"){
+
+    if (formData?.thread_type == "METRIC") {
       if (!formData.metric_type) newErrors.metric_type = "Metric Type is required.";
 
       if (!formData.pipe_od) newErrors.pipe_od = "Pipe Od is required.";
-    }else{
+    } else {
       if (!formData.variant) newErrors.variant = "Variant is required.";
 
       // if (!formData.size) newErrors.size = "Size is required.";
@@ -436,12 +462,12 @@ const FittingDashSize = () => {
       handleUpdateSubmit();
     } else {
       setLoading(true);
-      const fData={
+      const fData = {
         ...formData,
-        thread_type:`${formData?.thread_type}`,
-        dash:`${formData?.hose_dash_code}`,
-        thread:`${formData?.size}\"`,
-        dsc_code:`${formData?.dsc_code}\"`,
+        thread_type: `${formData?.thread_type}`,
+        dash: `${formData?.hose_dash_code}`,
+        thread: `${formData?.size}\"`,
+        dsc_code: `${formData?.dsc_code}\"`,
         // size:`${formData?.size}\"`,
         variant: `${formData?.variant}`
       }
@@ -461,7 +487,7 @@ const FittingDashSize = () => {
         setLoading(false);
         Toaster.error(
           error.response?.data?.message ||
-            "An error occurred while processing your request"
+          "An error occurred while processing your request"
         );
       }
     }
@@ -491,7 +517,7 @@ const FittingDashSize = () => {
               <div>
                 <div className="mb-3 row">
                   <div className="col-md-3">
-                    <label className="col-form-label">Fitting Thread</label>
+                    <label className="col-form-label">Fitting Thread Type</label>
                     <Select
                       value={selectedFittingThreadOption}
                       onChange={(option) => {
@@ -551,22 +577,45 @@ const FittingDashSize = () => {
                     )}
                   </div>
 
-                 {selectedFittingThreadOption?.value !== "METRIC" &&
-                  <div className="col-md-3">
-                    <label className="col-form-label">Fitting Dash Size</label>
+                  {selectedFittingThreadOption?.value !== "METRIC" && 
+                  // selectedFittingThreadOption?.value !== "SAE 61" &&
+                  // selectedFittingThreadOption?.value !==  "SAE 62" &&
+                    <div className="col-md-3">
+                      <label className="col-form-label">Fitting Dash Size/Thread</label>
+                      <input
+                        name="size"
+                        value={formData?.size}
+                        onChange={handleChange}
+                        type="text"
+                        className="form-control"
+                        placeholder="Ex: 1/2"
+                      />
+                      {errors.size && (
+                        <span className="text-danger fs-12">{errors.size}</span>
+                      )}
+                    </div>
+                  }
+
+                  {/* {
+                     (selectedFittingThreadOption?.value === "SAE 61" ||
+                     selectedFittingThreadOption?.value ===  "SAE 62") &&
+                    <div className="col-md-3">
+                    <label className="col-form-label">Pipe OD</label>
                     <input
-                      name="size"
-                      value={formData?.size}
+                      name="pipe_od"
+                      value={formData.pipe_od}
                       onChange={handleChange}
                       type="text"
                       className="form-control"
-                      placeholder="Ex: 1/2"
+                      placeholder="Ex: 01"
                     />
-                    {errors.size && (
-                      <span className="text-danger fs-12">{errors.size}</span>
+                    {errors.pipe_od && (
+                      <span className="text-danger fs-12">
+                        {errors.pipe_od}
+                      </span>
                     )}
                   </div>
-                } 
+                  } */}
 
                   {selectedFittingThreadOption?.value !== "METRIC" ? (
                     <>
@@ -603,7 +652,7 @@ const FittingDashSize = () => {
                     </>
                   ) : (
                     <>
-                    
+
                       {/* Metric Type */}
                       <div className="col-md-3">
                         <label className="col-form-label">Metric Type</label>
@@ -655,24 +704,24 @@ const FittingDashSize = () => {
                     </>
                   )}
 
-                   <div className="col-md-3">
-                      <label className="col-form-label">
-                        Fitting Code
-                      </label>
-                      <input
-                        name="thread"
-                        value={formData.thread}
-                        onChange={handleChange}
-                        type="text"
-                        className="form-control"
-                        placeholder="Ex: 01"
-                      />
-                      {errors.thread && (
-                        <span className="text-danger fs-12">
-                          {errors.thread}
-                        </span>
-                      )}
-                    </div>
+                  <div className="col-md-3">
+                    <label className="col-form-label">
+                      Fitting Code
+                    </label>
+                    <input
+                      name="thread"
+                      value={formData.thread}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: 01"
+                    />
+                    {errors.thread && (
+                      <span className="text-danger fs-12">
+                        {errors.thread}
+                      </span>
+                    )}
+                  </div>
 
                   <div className="col-md-3">
                     <label className="col-form-label">Desciption Code</label>
@@ -691,8 +740,8 @@ const FittingDashSize = () => {
                     )}
                   </div>
 
-                
-              </div>
+
+                </div>
               </div>
               <div className="text-end">
                 <button
@@ -727,6 +776,8 @@ const FittingDashSize = () => {
               <div className="table-responsive">
                 <div id="holidayList" className="dataTables_wrapper no-footer">
                   <div className="justify-content-between d-sm-flex">
+
+                   
                     <div className="dataTables_length">
                       <label className="d-flex align-items-center">
                         Show
@@ -755,6 +806,59 @@ const FittingDashSize = () => {
                         entries
                       </label>
                     </div>
+
+
+                    <div className="" style={{ display: "flex", alignItems: "center", gap: "0px" }}>
+                      <label style={{ fontWeight: "", minWidth: "120px" }}>Fitting Thread</label>
+                      <Select
+                        value={selectedFittingThreadOption}
+                        onChange={(option) => {
+                          setSelectedFittingThreadOption(option);
+                          setFilterThreadValue(option.value)
+                          // handleFilter(option.value); // Call filter method on change
+                        }}
+                        // onChange={(option) => {
+                        //   setSelectedFittingThreadOption(option);
+                        //   setFormData({
+                        //     ...formData,
+                        //     thread_type: option.value,
+                        //   });
+                        //   setErrors({
+                        //     ...errors,
+                        //     thread_type: null,
+                        //   });
+                        // }}
+                        defaultValue={selectedFittingThreadOption}
+                        options={fittingThreadOption}
+                        styles={{
+                          control: (provided) => ({
+                            ...provided,
+                            minHeight: "30px", // Reduce select box height
+                            height: "45px",
+                            lineHeight: "30px",
+                            width: '250px'
+                          }),
+                          valueContainer: (provided) => ({
+                            ...provided,
+                            padding: "4px 6px -4px -2px",
+                          }),
+                          singleValue: (provided) => ({
+                            ...provided,
+                            color: "#7e7e7e",
+                          }),
+                        }}
+                      />
+                      {errors.thread_type && (
+                        <span className="text-danger fs-12">{errors.thread_type}</span>
+                      )}
+                    </div>
+                   
+                    
+
+                   
+
+                   
+
                     <div className="dataTables_filter">
                       <label>
                         Search :
@@ -766,7 +870,14 @@ const FittingDashSize = () => {
                         />
                       </label>
                     </div>
+
+
+                   
+
                   </div>
+
+
+
                   <table
                     id="example4"
                     className="display dataTable no-footer w-100"
@@ -820,11 +931,14 @@ const FittingDashSize = () => {
                           </td>
 
                           <td className="">{data?.thread_type}</td>
-                          <td className="">{data?.hose_dash_size}</td>
-                          <td className="">{data?.thread}</td>
-                          <td className="">{data?.hose_dash_code}</td>                          
-                          <td className="">{data?.dsc_code}</td>
-                          
+                          <td className="">{data?.hose_dash_code}</td>
+                          <td className="">{data?.thread === null ? "NULL" : data?.thread === "null\"" ? "NULL" : data?.thread}</td>
+
+
+                          {/* <td className="">{data?.thread}</td> */}
+                          <td className="">{data?.hose_dash_code}</td>
+                          <td className="">{data?.dsc_code === null ? "NULL" : data?.dsc_code === "null\"" ? "NULL" : data?.dsc_code}</td>
+
                           <td>
                             {moment(data?.created_at).format(
                               "DD MMM YYYY, h:mm:ss a"
