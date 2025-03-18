@@ -9,10 +9,7 @@ const ProductOptions = [
   { value: "Sleeve", label: "Sleeve" },
   { value: "Vinyl Cover", label: "Vinyl Cover" },
   { value: "Packing", label: "Packing" },
-  { value: "Tube Fittings", label: "Tube Fittings" },
-  { value: "Nut", label: "Nut" },
-  { value: "Nipple", label: "Nipple" },
-  { value: "Cap", label: "Cap" },
+  { value: "Tube Fittings", label: "Tube Fittings" }
 ];
 
 const PartOptions = [

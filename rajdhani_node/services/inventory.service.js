@@ -190,7 +190,7 @@ const checkProductInInventory = async (productId) => {
 const checkProductsInInventory = async (productIds) => {
   try {
     const products = await Inventory.find({ product_id: { $in: productIds } });
-    const productMap = new Map(products.map(product => [product.product_id.toString(), true]));
+    const productMap = new Map(products.map(product => [product?.product_id?.toString(), true]));
     return productIds.map(productId => ({
       product_id: productId,
       exists: productMap.has(productId.toString()),

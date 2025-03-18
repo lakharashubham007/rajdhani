@@ -62,8 +62,8 @@ const FittingDashSize = () => {
   const [test, settest] = useState(0);
   const [showDeleteMdl, setShowDeleteMdl] = useState(false);
   const [deleteTableDataId, setDeleteTableDataId] = useState("");
-  const [filterThreadValue,setFilterThreadValue] = useState("")
-  console.log("filterThreadValue",filterThreadValue)
+  const [filterThreadValue, setFilterThreadValue] = useState("")
+  console.log("filterThreadValue", filterThreadValue)
   const [formData, setFormData] = useState({
     thread_type: "",
     dash_code: "",
@@ -78,6 +78,31 @@ const FittingDashSize = () => {
   console.log("formData", formData);
 
   const [HoseDashSizeOption, setHoseDashSizeOption] = useState(null);
+
+  const HoseDashSizeOptions = [
+    { value: "06", label: "06", code: "06" },
+    { value: "08", label: "08", code: "08" },
+    { value: "10", label: "10", code: "10" },
+    { value: "12", label: "12", code: "12" },
+    { value: "14", label: "14", code: "14" },
+    { value: "15", label: "15", code: "15" },
+    { value: "16", label: "16", code: "16" },
+    { value: "18", label: "18", code: "18" },
+    { value: "20", label: "20", code: "20" },
+    { value: "22", label: "22", code: "22" },
+    { value: "24", label: "24", code: "24" },
+    { value: "25", label: "25", code: "25" },
+    { value: "28", label: "28", code: "28" },
+    { value: "30", label: "30", code: "30" },
+    { value: "35", label: "35", code: "35" },
+    { value: "38", label: "38", code: "38" },
+    { value: "42", label: "42", code: "42" },
+    //  {value: "35", label: "06" , code: "06"},
+    //  {value: "35", label: "06" , code: "06"}
+
+
+  ]
+
   const [fittingDashSizeOption, setfittingDashSizeOption] = useState(
     dropdownOptions?.fittingDashSizeOptions
   );
@@ -102,7 +127,7 @@ const FittingDashSize = () => {
   const [selectedvariantOption, setSelectedvariantOption] = useState(null);
   const [selectedmetricTypeOptions, setSelectedmetricTypeOptions] = useState(null);
 
-  console.log("selectedhoseDashSizeOption", selectedhoseDashSizeOption)
+  console.log("selectedhoseDashSizeOption", selectedFittingThreadOption, fittingThreadOption)
 
   const debouncedSearchValue = useDebounce(searchInputValue, 500);
 
@@ -222,7 +247,7 @@ const FittingDashSize = () => {
 
   useEffect(() => {
     fetchFittingDashSize();
-  }, [UpdateCategory, currentPage, sort, debouncedSearchValue,filterThreadValue]);
+  }, [UpdateCategory, currentPage, sort, debouncedSearchValue, filterThreadValue]);
 
   const chageData = (frist, sec) => {
     for (var i = 0; i < data.length; ++i) {
@@ -342,12 +367,12 @@ const FittingDashSize = () => {
   const handleFilter = async (option) => {
     if (!selectedFittingThreadOption) return;
 
-    console.log("selectedFittingThreadOption.value",option)
-  
+    console.log("selectedFittingThreadOption.value", option)
+
     try {
-      const res = await fetchFilteredFittingDashSize( 
+      const res = await fetchFilteredFittingDashSize(
         option);
-  
+
       if (res.status === 200) {
         Toaster.success("Filter applied successfully!");
         // setFilteredData(res.data.filteredEntries); // Assuming API returns filtered data
@@ -359,7 +384,7 @@ const FittingDashSize = () => {
       Toaster.error("Something went wrong while filtering.");
     }
   };
-  
+
 
   const handlePageClick = (selectedPage) => {
     setCurrentPage(selectedPage.selected + 1);
@@ -546,38 +571,89 @@ const FittingDashSize = () => {
                     )}
                   </div>
 
+                  {selectedFittingThreadOption?.value == "METRIC" || "METRIC THREAD ORFS" ?
+                    (
+                      <div className="col-md-3">
+                        <label className="col-form-label">Hose Dash Size</label>
+                        <Select
+                          value={selectedhoseDashSizeOption}
+                          onChange={(option) => {
+                            setSelectedHoseDashSizeOption(option);
+                            setFormData({
+                              ...formData,
+                              hose_dash_size: option.value,
+                              hose_dash_code: option.code,
+                            });
+                            setErrors({
+                              ...errors,
+                              dash_code: null,
+                            });
+                          }}
+                          defaultValue={selectedhoseDashSizeOption}
+                          options={HoseDashSizeOptions}
+                          style={{
+                            lineHeight: "40px",
+                            color: "#7e7e7e",
+                            paddingLeft: " 15px",
+                          }}
+                        />
+                        {errors.dash_code && (
+                          <span className="text-danger fs-12">
+                            {errors.dash_code}
+                          </span>
+                        )}
+                      </div>
+                    ) : (
+                      <div className="col-md-3">
+                        <label className="col-form-label">Hose Dash Size</label>
+                        <Select
+                          value={selectedhoseDashSizeOption}
+                          onChange={(option) => {
+                            setSelectedHoseDashSizeOption(option);
+                            setFormData({
+                              ...formData,
+                              hose_dash_size: option.value,
+                              hose_dash_code: option.code,
+                            });
+                            setErrors({
+                              ...errors,
+                              dash_code: null,
+                            });
+                          }}
+                          defaultValue={selectedhoseDashSizeOption}
+                          options={HoseDashSizeOption}
+                          style={{
+                            lineHeight: "40px",
+                            color: "#7e7e7e",
+                            paddingLeft: " 15px",
+                          }}
+                        />
+                        {errors.dash_code && (
+                          <span className="text-danger fs-12">
+                            {errors.dash_code}
+                          </span>
+                        )}
+                      </div>
+                    )
+
+                  }
+
                   <div className="col-md-3">
-                    <label className="col-form-label">Hose Dash Size</label>
-                    <Select
-                      value={selectedhoseDashSizeOption}
-                      onChange={(option) => {
-                        setSelectedHoseDashSizeOption(option);
-                        setFormData({
-                          ...formData,
-                          hose_dash_size: option.value,
-                          hose_dash_code: option.code,
-                        });
-                        setErrors({
-                          ...errors,
-                          dash_code: null,
-                        });
-                      }}
-                      defaultValue={selectedhoseDashSizeOption}
-                      options={HoseDashSizeOption}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
+                    <label className="col-form-label">Fitting Dash Size/Thread</label>
+                    <input
+                      name="size"
+                      value={formData?.size}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: 1/2"
                     />
-                    {errors.dash_code && (
-                      <span className="text-danger fs-12">
-                        {errors.dash_code}
-                      </span>
+                    {errors.size && (
+                      <span className="text-danger fs-12">{errors.size}</span>
                     )}
                   </div>
 
-                  {selectedFittingThreadOption?.value !== "METRIC" && 
+                  {/* {selectedFittingThreadOption?.value == "METRIC" && 
                   // selectedFittingThreadOption?.value !== "SAE 61" &&
                   // selectedFittingThreadOption?.value !==  "SAE 62" &&
                     <div className="col-md-3">
@@ -594,7 +670,7 @@ const FittingDashSize = () => {
                         <span className="text-danger fs-12">{errors.size}</span>
                       )}
                     </div>
-                  }
+                  } */}
 
                   {/* {
                      (selectedFittingThreadOption?.value === "SAE 61" ||
@@ -777,7 +853,7 @@ const FittingDashSize = () => {
                 <div id="holidayList" className="dataTables_wrapper no-footer">
                   <div className="justify-content-between d-sm-flex">
 
-                   
+
                     <div className="dataTables_length">
                       <label className="d-flex align-items-center">
                         Show
@@ -852,12 +928,12 @@ const FittingDashSize = () => {
                         <span className="text-danger fs-12">{errors.thread_type}</span>
                       )}
                     </div>
-                   
-                    
 
-                   
 
-                   
+
+
+
+
 
                     <div className="dataTables_filter">
                       <label>
@@ -872,7 +948,7 @@ const FittingDashSize = () => {
                     </div>
 
 
-                   
+
 
                   </div>
 

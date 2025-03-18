@@ -1766,7 +1766,7 @@ const VerifyPurchaseOrder = () => {
                                     }}
                                     onClick={toggleExpand}
                                   >
-                                    {data?.product_name}
+                                    {data?.product_code}
                                     {!isExpanded && (
                                       <span
                                         style={{
@@ -1785,7 +1785,7 @@ const VerifyPurchaseOrder = () => {
                                   </div>
                                 </td>
                                 {/* Product Code */}
-                                <td className="">{data?.product_code}</td>
+                                <td className="">{data?.code}</td>
                                 {/* Product Code */}
                                 <td className="">{data?.quantity}</td>
                                 {/* UOM */}
