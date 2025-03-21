@@ -128,6 +128,68 @@ const getAllProducts = async () => {
   }
 };
 
+const searchProducts = async (query) => {
+  try {
+      // Case-insensitive regex search for partial matches in desc_Code or product_code
+      const regexQuerys = { $regex: query, $options: "i" };
+
+      // Convert user input to uppercase and remove spaces/dashes
+    const normalizedQuery = query.toUpperCase().replace(/[\s-]+/g, "");
+
+    // Create a regex pattern that allows optional dashes
+    const regexPattern = normalizedQuery
+      .split(/(\d+)/) // Splits letters and numbers separately
+      .filter(Boolean) // Removes empty strings
+      .join("[-]*"); // Adds optional dashes between groups
+
+    const regexQuery = new RegExp(regexPattern, "i");
+
+      const products = await Products.find({
+          $or: [
+            { desc_Code: regexQuerys }, 
+            { product_code: regexQuerys },
+            { fitting_Code: { $regex: regexQuery } }
+          ],
+      })
+      .limit(10) // Return top 6 matched products
+      .sort({ product_code: 1 }); // Sort based on product_code
+
+      return products;
+  } catch (error) {
+      console.error("Error searching products:", error);
+      throw error;
+  }
+};
+
+
+//simi brands
+const findSimilarProducts = async (fittingCode) => {
+  console.log("fittingCode", fittingCode);
+  try {
+    if (!fittingCode) {
+      throw new Error("Fitting code is required");
+    }
+
+    // Extract everything after the first character (brand identifier)
+    const configWithoutBrand = fittingCode.slice(1); 
+
+    // Create a regex pattern that allows any first letter (brand)
+    const regexPattern = new RegExp(`^.${configWithoutBrand}$`, "i");
+
+    console.log("fittingCode regexPattern", regexPattern);
+
+    // Query the database for products with a matching configuration
+    const products = await Products.find({ fitting_Code: { $regex: regexPattern } });
+
+    console.log("Search result is --> fittingCode products", products);
+    return products;
+  } catch (error) {
+    console.error("Error finding similar products:", error);
+    throw error;
+  }
+};
+
+
 
 // Get all Products with pagination, sorting, and search
 const getProducts = async (page, limit, sort, search) => {
@@ -242,5 +304,7 @@ module.exports = {
   updateProduct,
   updateProductStatus,
   deleteProduct,
-  getAllProducts
+  getAllProducts,
+  searchProducts,
+  findSimilarProducts
 };

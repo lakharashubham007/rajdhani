@@ -139,10 +139,10 @@ const fittingDashSizeOptions = [
 
     // NPT
     { thread_type: "NPT", dash: "O4", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4\"", variant: "Standard" },
-    { thread_type: "NPT", dash: "O5", inch: "5/16\"", thread: null, dsc_code: null, variant: "Lower Jump" },
+    // { thread_type: "NPT", dash: "O5", inch: "5/16\"", thread: null, dsc_code: null, variant: "Lower Jump" },
     { thread_type: "NPT", dash: "O6", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8\"", variant: null },
     { thread_type: "NPT", dash: "O8", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2\"", variant: null },
-    { thread_type: "NPT", dash: "10", inch: "5/8\"", thread: null, dsc_code: null, variant: null },
+    // { thread_type: "NPT", dash: "10", inch: "5/8\"", thread: null, dsc_code: null, variant: null },
     { thread_type: "NPT", dash: "12", inch: "3/4\"", thread: "3/4\"", dsc_code: "3/4\"", variant: null },
     { thread_type: "NPT", dash: "16", inch: "1\"", thread: "1\"", dsc_code: "1\"", variant: null },
     { thread_type: "NPT", dash: "20", inch: "1-1/4\"", thread: "1-1/4\"", dsc_code: "1-1/4\"", variant: null },
@@ -165,20 +165,20 @@ const fittingDashSizeOptions = [
 
     // ORFS
     { thread_type: "ORFS", dash: "O4", inch: "1/4\"", thread: "9/16\"", variant: "Standard", dsc_code: "9/16\"" },
-    { thread_type: "ORFS", dash: "O5", inch: "5/16\"", thread: null, variant: null, dsc_code: null },
-    { thread_type: "ORFS", dash: "O6", inch: "3/8\"", thread: "11/16\"", variant: "Lower Jump", dsc_code: "11/16\"" },
-    { thread_type: "ORFS", dash: "O8", inch: "1/2\"", thread: "13/16\"", variant: null, dsc_code: "13/16\"" },
-    { thread_type: "ORFS", dash: "10", inch: "5/8\"", thread: "1\"", variant: null, dsc_code: "1\"" },
-    { thread_type: "ORFS", dash: "12", inch: "3/4\"", thread: "1-3/16\"", variant: null, dsc_code: "1-3/16\"" },
-    { thread_type: "ORFS", dash: "16", inch: "1\"", thread: "1-7/16\"", variant: null, dsc_code: "1-7/16\"" },
-    { thread_type: "ORFS", dash: "20", inch: "1-1/4\"", thread: "1-11/16\"", variant: "Upper Jump", dsc_code: "1-11/16\"" },
-    { thread_type: "ORFS", dash: "24", inch: "1-1/2\"", thread: "2\"", variant: "Upper Jump", dsc_code: "2\"" },
-    { thread_type: "ORFS", dash: "32", inch: "2\"", thread: null, variant: "Upper Jump", dsc_code: null },
+    // { thread_type: "ORFS", dash: "O5", inch: "5/16\"", thread: null, variant: null, dsc_code: null },
+    { thread_type: "ORFS", dash: "O6", inch: "3/8\"", thread: "11/16\"", variant: "Standard", dsc_code: "11/16\"" },
+    { thread_type: "ORFS", dash: "O8", inch: "1/2\"", thread: "13/16\"", variant: "Standard", dsc_code: "13/16\"" },
+    { thread_type: "ORFS", dash: "10", inch: "5/8\"", thread: "1\"", variant: "Standard", dsc_code: "1\"" },
+    { thread_type: "ORFS", dash: "12", inch: "3/4\"", thread: "1-3/16\"", variant: "Standard", dsc_code: "1-3/16\"" },
+    { thread_type: "ORFS", dash: "16", inch: "1\"", thread: "1-7/16\"", variant: "Standard", dsc_code: "1-7/16\"" },
+    { thread_type: "ORFS", dash: "20", inch: "1-1/4\"", thread: "1-11/16\"", variant: "Standard", dsc_code: "1-11/16\"" },
+    { thread_type: "ORFS", dash: "24", inch: "1-1/2\"", thread: "2\"", variant: "Standard", dsc_code: "2\"" },
+    // { thread_type: "ORFS", dash: "32", inch: "2\"", thread: null, variant: "Upper Jump", dsc_code: null },
 
 
     // KOMATSU
     { thread_type: "KOMATSU", dash: "O4", inch: "1/4\"", thread: "14X1.5", variant: "Standard", dsc_code: "14X1.5" },
-    { thread_type: "KOMATSU", dash: "O5", inch: "5/16\"", thread: null, variant: null, dsc_code: "5/16" },
+    // { thread_type: "KOMATSU", dash: "O5", inch: "5/16\"", thread: null, variant: null, dsc_code: "5/16" },
     { thread_type: "KOMATSU", dash: "O6", inch: "3/8\"", thread: "18X1.5", variant: "Lower Jump", dsc_code: "18X1.5" },
     { thread_type: "KOMATSU", dash: "O8", inch: "1/2\"", thread: "22X1.5", variant: null, dsc_code: "22X1.5" },
     { thread_type: "KOMATSU", dash: "10", inch: "5/8\"", thread: "24X1.5", variant: null, dsc_code: "24X1.5" },
@@ -186,24 +186,24 @@ const fittingDashSizeOptions = [
     { thread_type: "KOMATSU", dash: "16", inch: "1\"", thread: "33X1.5", variant: null, dsc_code: "33X1.5" },
     { thread_type: "KOMATSU", dash: "20", inch: "1-1/4\"", thread: "36X1.5", variant: "Upper Jump", dsc_code: "36X1.5" },
     { thread_type: "KOMATSU", dash: "24", inch: "1-1/2\"", thread: "42X1.5", variant: "Upper Jump", dsc_code: "42X1.5" },
-    { thread_type: "KOMATSU", dash: "32", inch: "2\"", thread: null, variant: "Upper Jump", dsc_code: "2" },
+    // { thread_type: "KOMATSU", dash: "32", inch: "2\"", thread: null, variant: "Upper Jump", dsc_code: "2" },
 
    // SAE 61
-    { thread_type: "SAE 61", dash: "08", thread: "30.3\"", inch: "30.3\"", variant: "Standard", dsc_code: "30.3\"" },
-    { thread_type: "SAE 61", dash: "12", thread: "38.1\"", inch: "38.1\"", variant: null, dsc_code: "38.1\"" },
-    { thread_type: "SAE 61", dash: "16", thread: "44.4\"", inch: "44.4\"", variant: null, dsc_code: "44.4\"" },
-    { thread_type: "SAE 61", dash: "20", thread: "50.8\"", inch: "50.8\"", variant: null, dsc_code: "50.8\"" },
-    { thread_type: "SAE 61", dash: "24", thread: "60.3\"", inch: "60.3\"", variant: null, dsc_code: "60.3\"" },
-    { thread_type: "SAE 61", dash: "32", thread: "71\"", inch: "71\"", variant: null, dsc_code: "71\"" },
+    { thread_type: "SAE 61", dash: "08", thread: "30.3", inch: "30.3\"", variant: "Standard", dsc_code: "30.3" },
+    { thread_type: "SAE 61", dash: "12", thread: "38.1", inch: "38.1\"", variant: null, dsc_code: "38.1" },
+    { thread_type: "SAE 61", dash: "16", thread: "44.4", inch: "44.4\"", variant: null, dsc_code: "44.4" },
+    { thread_type: "SAE 61", dash: "20", thread: "50.8", inch: "50.8\"", variant: null, dsc_code: "50.8" },
+    { thread_type: "SAE 61", dash: "24", thread: "60.3", inch: "60.3\"", variant: null, dsc_code: "60.3" },
+    { thread_type: "SAE 61", dash: "32", thread: "71", inch: "71\"", variant: null, dsc_code: "71" },
 
     // SAE 62
-    { thread_type: "SAE 62", dash: "08", thread: "32\"", inch: "32\"", variant: "Standard", dsc_code: "32\"" },
-    { thread_type: "SAE 62", dash: "10", thread: "34\"", inch: "34\"", variant: null, dsc_code: "34\"" },
-    { thread_type: "SAE 62", dash: "12", thread: "41.4\"", inch: "41.4\"", variant: null, dsc_code: "41.4\"" },
-    { thread_type: "SAE 62", dash: "16", thread: "47.4\"", inch: "47.4\"", variant: null, dsc_code: "47.4\"" },
-    { thread_type: "SAE 62", dash: "20", thread: "54\"", inch: "54\"", variant: null, dsc_code: "54\"" },
-    { thread_type: "SAE 62", dash: "24", thread: "63.5\"", inch: "63.5\"", variant: null, dsc_code: "63.5\"" },
-    { thread_type: "SAE 62", dash: "32", thread: "79.6\"", inch: "79.6\"", variant: null, dsc_code: "79.6\"" },
+    { thread_type: "SAE 62", dash: "08", thread: "32", inch: "32\"", variant: "Standard", dsc_code: "32" },
+    { thread_type: "SAE 62", dash: "10", thread: "34", inch: "34\"", variant: null, dsc_code: "34" },
+    { thread_type: "SAE 62", dash: "12", thread: "41.4", inch: "41.4\"", variant: null, dsc_code: "41.4" },
+    { thread_type: "SAE 62", dash: "16", thread: "47.4", inch: "47.4\"", variant: null, dsc_code: "47.4" },
+    { thread_type: "SAE 62", dash: "20", thread: "54", inch: "54\"", variant: null, dsc_code: "54" },
+    { thread_type: "SAE 62", dash: "24", thread: "63.5", inch: "63.5\"", variant: null, dsc_code: "63.5" },
+    { thread_type: "SAE 62", dash: "32", thread: "79.6", inch: "79.6\"", variant: null, dsc_code: "79.6" },
 
     // BANJO WITHOUT O 
     { thread_type: "BANJO WITHOUT O", dash: "10", inch:"10", thread: "10", variant: "Standard", dsc_code: "10" },
@@ -296,7 +296,7 @@ function getFittingDashSize(fittingThread, fittingDashSize, metricType, pipeOD) 
 
     // Match fitting thread type with dash size options
     for (const option of fittingDashSizeOptions) {
-        if (option.thread_type == fittingThread && option.inch == fittingDashSize) {
+        if (option.thread_type == fittingThread && option.thread == fittingDashSize) {
             return option.dash; // Return the corresponding dash size code
         }
         if(option.thread_type == fittingThread && option.pipe_od == pipeOD && option.thread == fittingDashSize && option.metric_type == metricType){
@@ -311,7 +311,7 @@ function getFittingDashSize(fittingThread, fittingDashSize, metricType, pipeOD) 
 function getFittingDashdscSize(fittingThread, fittingDashSize, metricType,pipeOD) {
     // Match fitting thread type with dash size options
     for (const option of fittingDashSizeOptions) {
-        if (option.thread_type == fittingThread && option.inch == fittingDashSize) {
+        if (option.thread_type == fittingThread && option.thread == fittingDashSize) {
             return option.dsc_code; // Return the corresponding dash size code
         }
        

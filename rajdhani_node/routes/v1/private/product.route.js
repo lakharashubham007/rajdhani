@@ -27,5 +27,8 @@ router.get("/get-products/:id", Authentication, Authorization, productsControlle
 router.patch("/edit-product/:id", upload, Authentication, Authorization, productsController.updateProduct);
 router.delete("/delete-product/:id", Authentication, Authorization, productsController.deleteProduct);
 router.patch("/update-product-status/:id", Authentication, productsController.updateProductStatus);
+router.get("/search",  productsController.searchProducts)
+router.get("/simibrands",  productsController.getSimilarProducts)
+
 
 module.exports = router;

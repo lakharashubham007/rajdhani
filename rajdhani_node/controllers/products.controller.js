@@ -24,6 +24,44 @@ const getAllProducts = async (req, res) => {
     }
 };
 
+// Controller to get all products
+const searchProducts = async (req, res) => {
+    try {
+        const { query } = req.query; // Get search query from request
+
+        if (!query) {
+            return res.status(400).json({ success: false, message: "Query parameter is required" });
+        }
+
+        // Fetch matching products from the service
+        const products = await productService.searchProducts(query);
+
+        res.json({ success: true, products });
+    } catch (error) {
+        console.error("Error searching products:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+// Controller to get all products with different brands but the same configuration
+const getSimilarProducts = async (req, res) => {
+    try {
+        const { fittingCode } = req.query; // Get fitting code from request
+
+        if (!fittingCode) {
+            return res.status(400).json({ success: false, message: "Fitting code is required" });
+        }
+
+        // Call service function to fetch similar products
+        const products = await productService.findSimilarProducts(fittingCode);
+
+        res.json({ success: true, products });
+    } catch (error) {
+        console.error("Error fetching similar products:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 // Get all Products with pagination, sorting, and search
 const getProducts = async (req, res) => {
     try {
@@ -205,5 +243,7 @@ module.exports = {
     updateProduct,
     deleteProduct,
     updateProductStatus,
-    getAllProducts
+    getAllProducts,
+    searchProducts,
+    getSimilarProducts
 };
