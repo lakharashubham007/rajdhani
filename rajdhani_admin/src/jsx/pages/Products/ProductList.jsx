@@ -26,13 +26,12 @@ import useDebounce from "../../components/common/Debounce";
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
+  { heading: "Code", sortingVale: "product_code" },
   { heading: "Image", sortingVale: "image" },
   { heading: "Product", sortingVale: "product" },
-  { heading: "Code", sortingVale: "product_code" },
   { heading: "Fitting Thread", sortingVale: "fitting_thread" },
   { heading: "Description", sortingVale: "description" },
   { heading: "Fitting Code", sortingVale: "Fitting Code" },
- 
   { heading: "Design", sortingVale: "design" },
   { heading: "Created At", sortingVale: "created_at" },
   { heading: "Status", sortingVale: "status" },
@@ -390,27 +389,7 @@ const AllProductList = () => {
                             <strong>{ind + 1}</strong>
                           </td>
 
-
-                          <td className="d-flex align-items-center gap-2">
-                            {data?.image ? (
-                              <img className='select-file-img' src={`https://api.i2rtest.in/v1/images/image/${data?.image}`} alt={data?.name} />
-                            ) : (
-                              ""
-
-                              // <span>No Image Available</span>
-                            )} {data?.name}
-                          </td>
-
-                          <td style={{
-                            whiteSpace: 'nowrap',
-                            overflow: 'hidden',
-
-                          }}>
-                            {data?.product_type}
-                          </td>
-
-
-                          {/* Product Code */}
+                           {/* Product Code */}
                          <td
                             style={{
                               whiteSpace: 'nowrap',
@@ -434,6 +413,28 @@ const AllProductList = () => {
                             </span>
                           </td>
 
+
+
+                          <td className="d-flex align-items-center gap-2">
+                            {data?.image ? (
+                              <img className='select-file-img' src={`https://api.i2rtest.in/v1/images/image/${data?.image}`} alt={data?.name} />
+                            ) : (
+                              ""
+
+                              // <span>No Image Available</span>
+                            )} {data?.name}
+                          </td>
+
+                          <td style={{
+                            whiteSpace: 'nowrap',
+                            overflow: 'hidden',
+
+                          }}>
+                            {data?.product_type}
+                          </td>
+
+
+                         
                          
 
 

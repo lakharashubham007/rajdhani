@@ -138,6 +138,8 @@ const apis = {
     updateProductStatus:`${BASE_URL}/private/products/update-product-status`,
 
     getAllProductList: `${BASE_URL}/private/products/get-all-products`,
+    searchProductForSuggestions: `${BASE_URL}/private/products/search`,
+    searchSimilarProducts: `${BASE_URL}/private/products/simibrands`,
    },
 
    variant:{

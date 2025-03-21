@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DatePicker } from "rsuite";
 import Select from "react-select";
 import PageTitle from "../../layouts/PageTitle";
@@ -13,6 +13,8 @@ import {
   getCityApi,
   getCountryApi,
   getStateApi,
+  SearchProductsApi,
+  SearchSimilarProductsApi,
 } from "../../../services/apis/Product";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
@@ -83,6 +85,9 @@ const AddSupplierPurchaseOrder = () => {
   const [openBillingMdl, setOpenBillingMdl] = useState(false);
   const [openShippingMdl, setOpenShippingMdl] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [selectedQuantity, setSelectedQuantity] = useState("");
+  const [selectedDiscount, setSelectedDiscount] = useState("");
+  console.log("selectedProduct is here 1", selectedProduct)
 
   const TodayDate = moment().format("YYYY-MM-DD");
 
@@ -173,20 +178,65 @@ const AddSupplierPurchaseOrder = () => {
   // Function to add a new row
   const addRow = () => {
     if (!selectedProduct) return; // Prevent adding empty rows
+
+    //calculation to add taxable amount 
+    const taxableAmount = (selectedProduct?.price - selectedDiscount) * selectedQuantity;
+    //  const gstAmount = 
+
+
+    let cgst = 0,
+      sgst = 0,
+      igst = 0;
+
+
+    if (formBillingData.state_name && formShippingData.state_name) {
+      const isInterState =
+        formBillingData.state_name !== formShippingData.state_name;
+
+      const taxableAmount = (selectedProduct?.price - selectedDiscount) * selectedQuantity;
+
+
+
+      if (isInterState) {
+        igst = (taxableAmount * selectedProduct?.gst) / 100; // Example IGST Rate: 18%
+        cgst = 0;
+        sgst = 0;
+      } else {
+        cgst = (taxableAmount * (selectedProduct?.gst / 2)) / 100;
+        sgst = (taxableAmount * (selectedProduct?.gst / 2)) / 100;
+        igst = 0;
+      }
+
+    }
+
+
+    const TotalAmount = taxableAmount + cgst + sgst + igst;
+
+
+
     const newRow = {
       ...selectedProduct,
       id: rows.length,
-      product_code: selectedProduct.value,
-      quantity: selectedProduct?.quantity,
+      product_name: selectedProduct.value,
+      product_code: selectedProduct.product_code,
+      quantity: selectedProduct?.quantity || selectedQuantity,
       uom: selectedProduct.uom || "",
       weight: selectedProduct.weight || "",
       price: selectedProduct.price || 0,
-      discount_per_unit: 0,
-      taxable_amount: selectedProduct.price || 0,
+      discount_per_unit: 0 || selectedDiscount,
+      taxable_amount: taxableAmount || 0,
       gst: selectedProduct.gst || 0,
+      cgst: cgst || 0,
+      sgst: sgst || 0,
+      igst: igst || 0,
+      total_amount: TotalAmount || 0,
+
+
     };
     setRows([...rows, newRow]);
     setSelectedProduct(null);
+    setSelectedDiscount("");
+    setSelectedQuantity("");
   };
 
   //Funciton to Delete Row
@@ -203,21 +253,22 @@ const AddSupplierPurchaseOrder = () => {
     if (field === "quantity" || field === "discount_per_unit") {
       const quantity = parseFloat(updatedRows[index].quantity || 0);
       const discountPerUnit = parseFloat(
-        updatedRows[index].discount_per_unit || 0
+        updatedRows[index].discount_per_unit || selectedDiscount || 0
       );
       updatedRows[index].total_discount = quantity * discountPerUnit;
     }
 
-    const quantity = parseFloat(updatedRows[index].quantity || 0);
+    const quantity = parseFloat(updatedRows[index].quantity || selectedQuantity || 0);
     const pricePerUnit = parseFloat(updatedRows[index].price_per_unit || 0);
-    const uomQty = parseFloat(updatedRows[index].uom_qty || 1); 
+    const uomQty = parseFloat(updatedRows[index].uom_qty || 1);
     const totalDiscount = parseFloat(updatedRows[index].total_discount || 0);
     const gstPercentage = parseFloat(updatedRows[index].gst) || 0;
 
 
     const price = parseFloat(updatedRows[index].price) || 0;
-    const discount = parseFloat(updatedRows[index].discount_per_unit) || 0;
+    const discount = parseFloat(updatedRows[index].discount_per_unit) || selectedDiscount || 0;
     const gst = parseFloat(updatedRows[index].gst) || 0;
+
 
     updatedRows[index].taxable_amount = (price - discount) * quantity;
 
@@ -241,10 +292,10 @@ const AddSupplierPurchaseOrder = () => {
 
     updatedRows[index].total_amount = parseFloat(
       updatedRows[index].taxable_amount +
-        updatedRows[index].cgst +
-        updatedRows[index].sgst +
-        updatedRows[index].igst +
-        updatedRows[index].cess
+      updatedRows[index].cgst +
+      updatedRows[index].sgst +
+      updatedRows[index].igst +
+      updatedRows[index].cess
     );
 
     setRows(updatedRows);
@@ -442,13 +493,14 @@ const AddSupplierPurchaseOrder = () => {
       // console.log("res dropdownProductList res",res)
       const dropdownProductList = res?.data?.products?.map((product) => ({
         value: product?.desc_Code,
-        label: product?.desc_Code,
+        label: `[${product?.product_code}] ${product?.desc_Code}`,
         id: product?._id,
         product_code: product?.product_code,
         uom: product?.uom,
         weight: product?.weight,
         price: product?.price,
         gst: product?.gst,
+        fitting_Code: product?.fitting_Code
       }));
       console.log(
         "dropdownProductList dropdownProductList dropdownProductList",
@@ -807,7 +859,7 @@ const AddSupplierPurchaseOrder = () => {
       // Handle any errors during API request
       Toaster.error(
         error.response?.data?.message ||
-          "An error occurred while processing your request"
+        "An error occurred while processing your request"
       );
       console.error("Error creating product:", error);
     }
@@ -880,7 +932,7 @@ const AddSupplierPurchaseOrder = () => {
       // Handle any errors during API request
       Toaster.error(
         error.response?.data?.message ||
-          "An error occurred while processing your request"
+        "An error occurred while processing your request"
       );
       console.error("Error creating product:", error);
     }
@@ -978,6 +1030,106 @@ const AddSupplierPurchaseOrder = () => {
     setSelectedProduct(selectedOption);
     setProductFormData(selectedOption);
   };
+
+  // Function to update selected row when selecting a product
+  const handleSelectProduct = (index) => {
+    handleChangeRow(index, "quantity", selectedQuantity);
+    handleChangeRow(index, "discount_per_unit", selectedDiscount);
+  };
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const debounceTimer = useRef(null);
+
+  const fetchProductSearchResults = async (query) => {
+    if (!query) return; // Prevent empty requests
+    // setLoading(true);
+
+    try {
+      const res = await SearchProductsApi(query); // API should support search
+      const dropdownProductList = res?.data?.products.map((product) => ({
+        value: product?.desc_Code,
+        label: `[${product?.product_code}]  [${product?.desc_Code}]  ⇨[${product?.fitting_Code}]`,
+        id: product?._id,
+        product_code: product?.product_code,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code
+      }));
+
+      setProductOption(dropdownProductList);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      Toaster.error("Failed to load products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // **Debounce Function (Delays API call until user stops typing)**
+  const debounceSearch = (query) => {
+    clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      fetchProductSearchResults(query);
+    }, 500); // 500ms delay
+  };
+
+  const handleSearch = (inputValue) => {
+    console.log("input value is here", inputValue)
+    setSearchTerm(inputValue);
+    if (inputValue.length > 1) {
+      debounceSearch(inputValue)
+      // fetchProductSearchResults(inputValue); // Fetch matching products
+    }
+  };
+
+  const [similarProducts, setSimilarProducts] = useState([]);
+  console.log("here are similarProducts", similarProducts)
+  const fetchSimilarProducts = async (fittingCode) => {
+    // setLoading(true);
+    try {
+      const res = await SearchSimilarProductsApi(fittingCode);
+      // Transform the API response into dropdown format
+      const dropdownProductList = res?.products.map((product) => ({
+        value: product?.desc_Code,
+        label: `[${product?.product_code}]  [${product?.desc_Code}]  ⇨[${product?.fitting_Code}]`,
+        id: product?._id,
+        product_code: product?.product_code,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+        desc_Code: product?.desc_Code
+      }));
+
+      setSimilarProducts(dropdownProductList);
+    } catch (error) {
+      console.error("Error fetching similar products:", error);
+      Toaster.error("Failed to load similar products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedProduct?.fitting_Code) {
+      fetchSimilarProducts(selectedProduct?.fitting_Code);
+    }
+    if (searchTerm == "") {
+      setSimilarProducts("")
+    }
+
+  }, [selectedProduct,searchTerm]);
+
+
+
+
+
+
+
 
   return (
     <>
@@ -1091,7 +1243,7 @@ const AddSupplierPurchaseOrder = () => {
                   </div>
                 </div>
 
-               {supplierDetail && Object.keys(supplierDetail).length !== 0 && (
+                {supplierDetail && Object.keys(supplierDetail).length !== 0 && (
                   <div className="mb-3 row">
                     <div className="col-sm-6 col-xl-4">
                       <div className="supplier-card">
@@ -1187,32 +1339,147 @@ const AddSupplierPurchaseOrder = () => {
 
               <hr className="w-100" />
 
-              <div>
+              <div >
                 <h4 className="card-title">Product Detail</h4>
                 <div className="row mt-3">
-                  <label className="col-form-label">Product</label>
+
                   <div className="col-md-6">
+                    <label className="col-form-label">Product</label>
+                    {/* Search Button */}
                     <Select
-                      options={productOption}
+                      options={searchTerm ? productOption : []}
+                      placeholder="Search product by name or code ..."
+                      isLoading={loading}
                       value={selectedProduct}
                       onChange={handleProductDataChange}
+                      onInputChange={handleSearch}
+                      noOptionsMessage={() => "No matching products found"}
+                      isClearable
+                      menuIsOpen={!!searchTerm}
                     />
-                   <button onClick={addRow} className="btn btn-primary mt-2">
-                     Add Product
-                   </button>
+                    {/* Qty and Discount */}
+                    <div className="row">
+                      <div className="col-md-6">
+                        <label className="col-form-label">Add Quantity</label>
+                        <input
+                          type="number"
+                          placeholder="Qty"
+                          value={selectedQuantity}
+                          onChange={(e) => setSelectedQuantity(e.target.value)}
+                          className="form-control row-input"
+                        />
+                      </div>
+
+                      <div className="col-md-6">
+                        <label className="col-form-label">Discount Per Unit</label>
+                        <input
+                          type="number"
+                          placeholder="Discount Per Unit"
+                          value={selectedDiscount}
+                          onChange={(e) => setSelectedDiscount(e.target.value)}
+                          className="form-control"
+                        />
+                      </div>
+                    </div>
+                    {/* Add button */}
+                    <button onClick={addRow} className="btn btn-primary mt-4">
+                      Add Product
+                    </button>
                   </div>
-                  
-                  <div className="col-md-6">
+
+                  {/* Result Search Box Brand Wise */}
+                  {/* <div className="col-md-6">
                     <div className="product-sidebox">
+                      
 
                     </div>
+                  </div> */}
+
+
+
+
+
+                  <div className="col-md-6">
+                    <label className="col-form-label  ">Select Similar Products by Brand</label>
+
+                    <div className="product-sidebox p-3 bg-white  rounded">
+                      {similarProducts.length === 0 ? (
+                        <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "200px" }}>
+                          <div
+                            style={{
+                              fontSize: "5rem",
+                              color: "#6c757d",
+                              animation: "bounce 1.5s infinite"
+                            }}
+                          >
+                            🔍
+                          </div>
+                          <p className="text-center text-muted fw-bold">
+                            No Data Found. Start Searching for a Product!
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="product-list" style={{ maxHeight: "300px", }}>
+                          {similarProducts.map((product) => (
+                            <div
+                              key={product._id}
+                              className="product-item p-2 mb-2 text-dark rounded cursor-pointer"
+                              onClick={() => setSelectedProduct(product)}
+                              style={{
+                                border: (selectedProduct?.id == product?.id) ? "3px solid #5b11e1" : "1px solid #ddd",
+                                backgroundColor: "#E0CFFF",
+                                cursor: "pointer"
+                              }}
+                            >
+
+                              {/* <strong>{product.product_code}</strong>
+                              <span> {product.desc_Code}</span>
+                              <br />
+                              <small className="text-muted">{product.fitting_Code}</small> */}
+                              <div className="col">
+                                <div className="d-flex justify-content-between">
+                                  <div className="w-80">
+                                    <strong>{product.product_code}</strong>
+                                    <span> {product.desc_Code}</span>
+                                    <br />
+                                    <small className="text-muted">{product.fitting_Code}</small>
+                                  </div>
+
+                                  {/* <div className="w-20">
+                                    <span>Quantity</span>
+                                    <br />
+                                    <small className="text-muted">0</small>
+                                  </div> */}
+                                 
+                                    <div className="w-20 d-flex align-items-center justify-content-center text-white rounded  px-3 py-1 shadow-sm" 
+                                      style={{ minWidth: "60px", fontSize: "12px",
+                                        // background: "#C3A4FC",
+                                        background: "linear-gradient(135deg, #C3A4FC, #C3A4FC , #9A67F8)" ,
+                                        border: "1px solid transparent", 
+                                        // borderImage: "linear-gradient(135deg, #9A67F8, #C3A4FC , #7B32FF) 1", // Gradient border
+                                     }}>
+                                    <span className="text-black font-bold">Qty:</span>
+                                    <span className="ms-1 text-black font-bold">0</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div>
+
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
+
+
+
                 </div>
 
-            
 
-                
-                  
+
+
+
 
                 {/* <div>
                 <div className="row mt-3">
@@ -1961,8 +2228,8 @@ const AddSupplierPurchaseOrder = () => {
                           <thead className="table-head">
                             <tr>
                               <th>SL</th>
-                              {/* <th>Product Name</th> */}
-                              <th>Product Code</th>
+                              <th>Product Name</th>
+                              <th>Code</th>
                               <th>Quantity</th>
                               <th>UOM</th>
                               <th>Weight(kg)</th>
@@ -1973,7 +2240,7 @@ const AddSupplierPurchaseOrder = () => {
                               <th>CGST</th>
                               <th>SGST</th>
                               <th>IGST</th>
-                              <th>Cess</th>
+                              {/* <th>Cess</th> */}
                               <th>Amount</th>
                               <th>Action</th>
                             </tr>
@@ -1982,12 +2249,12 @@ const AddSupplierPurchaseOrder = () => {
                           <tbody>
                             {rows?.map((row, index) => (
                               <tr key={row.id}
-                               draggable
-                               onDragStart={() => handleDragStart(index)}
-                               onDragOver={handleDragOver}
-                               onDrop={() => handleDrop(index)}
-                               style={{ cursor: "grab", background: "#f8f9fa" }}>
-                               <td>{row.id + 1}</td>
+                                draggable
+                                onDragStart={() => handleDragStart(index)}
+                                onDragOver={handleDragOver}
+                                onDrop={() => handleDrop(index)}
+                                style={{ cursor: "grab", background: "#f8f9fa" }}>
+                                <td>{row.id + 1}</td>
                                 {/* Product  */}
                                 {/* <td>
                                   <Select
@@ -2015,12 +2282,29 @@ const AddSupplierPurchaseOrder = () => {
                                     }}
                                     menuPortalTarget={document.body} // Ensures the dropdown is rendered in the body
                                   />
-                                </td> */}
-                                {/* Product Code */}
+                                </td>  */}
+                                {/* Product Name */}
                                 <td>
                                   <input
                                     type="text"
-                                    placeholder="Product Code"
+                                    placeholder="Product Name"
+                                    value={row?.product_name} // Auto-fill product code
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "product_code",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "300px" }}
+                                  />
+                                </td>
+                                {/* Product code */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="Code"
                                     value={row?.product_code} // Auto-fill product code
                                     onChange={(e) =>
                                       handleChangeRow(
@@ -2147,7 +2431,7 @@ const AddSupplierPurchaseOrder = () => {
                                     }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    // disabled={formBillingData.state_name !== formShippingData.state_name} // Disable for inter-state
+                                  // disabled={formBillingData.state_name !== formShippingData.state_name} // Disable for inter-state
                                   />
                                 </td>
                                 {/* CGST */}
@@ -2214,7 +2498,7 @@ const AddSupplierPurchaseOrder = () => {
                                   />
                                 </td>
                                 {/* Cess */}
-                                <td>
+                                {/* <td>
                                   <input
                                     type="text"
                                     placeholder="Cess"
@@ -2229,7 +2513,7 @@ const AddSupplierPurchaseOrder = () => {
                                     className="form-control"
                                     style={{ width: "70px" }}
                                   />
-                                </td>
+                                </td> */}
                                 {/* Total_amount */}
                                 <td>
                                   {row?.total_amount

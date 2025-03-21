@@ -152,6 +152,48 @@ export const GetAllProductList = async () => {
 }
 };
 
+export const SearchProductsApi = async (query) => {
+  const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+  try {
+    const response = await axios.get(`${apis.product.searchProductForSuggestions}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+      params: { query }, 
+    }
+  );
+  return response;
+} catch (error) {
+  console.error("Error creating facility:", error);
+  throw error;
+}
+};
+
+// Function to search for similar products across different brands
+export const SearchSimilarProductsApi = async (fittingCode) => {
+  const token = localStorage.getItem("token")?.replace(/^"(.*)"$/, "$1");
+
+  try {
+    const response = await axios.get(
+      `${apis.product.searchSimilarProducts}`, // Replace with actual API endpoint
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: { fittingCode }, // Pass fitting code as query parameter
+      }
+    );
+    return response.data; // Return response data
+  } catch (error) {
+    console.error("Error fetching similar products:", error);
+    throw error;
+  }
+};
+
+
 export const getCountryApi = async () => {
   const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
   try {
