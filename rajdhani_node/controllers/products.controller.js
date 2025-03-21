@@ -2,7 +2,7 @@ const { productService } = require("../services");
 
 // Create a new Product - Controller
 const createProduct = async (req, res) => {
-    
+
     try {
         const productData = req.body;
         const product = await productService.createProduct(productData, req.files);
@@ -140,9 +140,12 @@ const updateProduct = async (req, res) => {
     try {
         const productId = req.params.id;
 
+        console.log("inside is here step1", productId);
+
         // Fetch the existing product from the database
         const existingProduct = await productService.getProductById(productId);
-        
+
+        console.log("existingProduct", existingProduct);
         if (!existingProduct) {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
@@ -150,13 +153,18 @@ const updateProduct = async (req, res) => {
         // Initialize updateData object to track changes
         const updateData = {};
 
+       
+
         // Update fields directly from the request body
         const fieldsToUpdate = [
-            'name', 'description', 'price', 'category_id', 'subcategory_id',
-            'subsubcategory_id', 'brand', 'variant', 'material', 'fittingSize',
-            'thread_type', 'pressure_rating', 'temperature_range', 'connection_type',
-            'product_Type', 'product_id'
+            'product_type', 'product_code', 'uom', 'price', 'gst', 'design',
+            'wire_type', 'with_cap', 'fitting_piece', 'skive_type', 'hose_dash_size',
+            'fitting_dash_size', 'fitting_thread', 'fitting_type', 'straight_bend_angle',
+            'drop_length', 'neck_length', 'desc_Code', 'fitting_Code', 'status',
+            'image', 'gallery'
         ];
+
+        console.log("fieldsToUpdate fieldsToUpdate fieldsToUpdate", fieldsToUpdate);
 
         fieldsToUpdate.forEach(field => {
             if (req.body[field] !== undefined) {
@@ -164,13 +172,15 @@ const updateProduct = async (req, res) => {
             }
         });
 
+        console.log("updateData updateDataupdateData updateData", updateData);
+
         // Handle single image update
         if (req.files && req.files.image && req.files.image[0]) {
             console.log("Updating main image: ", req.files.image[0].originalname);
             updateData.image = req.files.image[0].originalname;
         }
 
-       
+
         // Handle gallery images update
         if (req.files && req.files.gallery && req.files.gallery.length > 0) {
             const newGalleryImages = req.files.gallery.map(file => file.filename);
