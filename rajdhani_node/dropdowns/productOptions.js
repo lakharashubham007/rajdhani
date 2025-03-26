@@ -40,15 +40,15 @@ const CapWithoutCapOptions = [
 ];
 
 const fittingPieceOptions = [
-  { value: "ONE PIECE", label: "ONE PIECE - 1", code: "1" },
-  { value: "TWO PIECE", label: "TWO PIECE - 2", code: "2" },
-  { value: "THREE PIECE", label: "THREE PIECE - 3", code: "3" },
+  { value: "One Piece", label: "ONE PIECE - 1", code: "1" },
+  { value: "Two Piece", label: "TWO PIECE - 2", code: "2" },
+  { value: "Three Piece", label: "THREE PIECE - 3", code: "3" },
 ];
 
 const skiveTypeOptions = [
-  { value: "SKIVE", label: "SKIVE (SK)", code: "SK", dsc_code: "(SKIVE)" },
-  { value: "NON-SKIVE", label: "NON-SKIVE (NS)", code: "NS", dsc_code: "(NON-SKIVE)" },
-  { value: "INNER-SKIVE", label: "INNER-SKIVE (IS)", code: "IS", dsc_code: "(INNER-SKIVE)" },
+  { value: "Skive", label: "SKIVE (SK)", code: "SK", dsc_code: "(SKIVE)" },
+  { value: "Non-Skive", label: "NON-SKIVE (NS)", code: "NS", dsc_code: "(NON-SKIVE)" },
+  { value: "Inner-Skive", label: "INNER-SKIVE (IS)", code: "IS", dsc_code: "(INNER-SKIVE)" },
 ];
 
 // const hoseDashSizeOptions = [

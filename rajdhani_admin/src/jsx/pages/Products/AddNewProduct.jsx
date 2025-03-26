@@ -378,7 +378,7 @@ const AddProduct = () => {
       }
       // Map the filtered options to the desired format
       return metricFilteredOptions.map((option) => ({
-        value: `${option.thread} (${option.dash})`,
+        value: `${option.thread}`,
         label: `${option.thread} (${option.dash})`,
         code: `${option.dash}`,
         dsc_code: `${option.dsc_code}`,
@@ -424,7 +424,7 @@ const AddProduct = () => {
 
       if (filteredOption.length > 0) {
         return filteredOption?.map((option) => ({
-          value: `${option.thread} (${option.dash_code})`,
+          value: `${option.thread}`,
           label: `${option.thread} (${option.dash_code})`,
           code: `${option.dash_code}`,
           dsc_code: `${option.dsc_code}`,
@@ -450,7 +450,7 @@ const AddProduct = () => {
 
     // Map the filtered options to the desired format
     return filteredOptions?.map((option) => ({
-      value: `${option.thread} ${option?.dash_code ? `(${option.dash_code})` : ""}`,
+      value: `${option.thread}`,
       label: `${option.thread} ${option?.dash_code ? `(${option.dash_code})` : ""}`,
       code: `${option.dash_code}`,
       dsc_code: `${option.dsc_code}`,

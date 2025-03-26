@@ -1275,7 +1275,7 @@ const EditProductData = () => {
     //Fitting Piece fitting Code and Description Set Prefilled
     if (formData?.fitting_piece) {
       const fittingPiece = dropdownOptions?.fittingPieceOptions?.find(
-        option => option?.value === (formData?.fitting_piece).toUpperCase()
+        option => option?.value === (formData?.fitting_piece)
       );
 
       if (fittingPiece) {
@@ -1290,7 +1290,7 @@ const EditProductData = () => {
     //Skive Type -> fitting Code and Description Set Prefilled
     if (formData?.skive_type) {
       const skiveType = dropdownOptions?.skiveTypeOptions?.find(
-        option => option?.value === (formData?.skive_type).toUpperCase()
+        option => option?.value === (formData?.skive_type)
       );
 
       if (skiveType) {
