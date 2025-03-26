@@ -21,7 +21,10 @@ const {
     PartOptions,
     MFCOptions,
     BrandLayLineOptions,
-    HoseTypeOptions
+    HoseTypeOptions,
+    springTypeOption,
+    dustCapColorsOption,
+    sleeveSizesOption
 } = require('../dropdowns/productOptions')
 
 
@@ -50,7 +53,10 @@ const getallOptions = async (req, res) => {
             PartOptions,
             MFCOptions,
             BrandLayLineOptions,
-            HoseTypeOptions 
+            HoseTypeOptions,
+            springTypeOption,
+            dustCapColorsOption,
+            sleeveSizesOption 
         }  });
     } catch (error) {
         console.error("Error fetching dropdown options:", error);

@@ -67,7 +67,7 @@ const getProducts = async (req, res) => {
     try {
         const page = parseInt(req.query.page) || 1;
         const limit = parseInt(req.query.limit) || 10;
-        const sort = req.query.sort || 'name';
+        const sort = req?.query?.sort;
         const search = req.query.search || '';
         const products = await productService.getProducts(page, limit, sort, search);
         res.json({ success: true, ...products });

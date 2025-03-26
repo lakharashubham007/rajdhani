@@ -40,15 +40,15 @@ const CapWithoutCapOptions = [
 ];
 
 const fittingPieceOptions = [
-  { value: "ONE PIECE - 1", label: "ONE PIECE - 1", code: "1" },
-  { value: "TWO PIECE - 2", label: "TWO PIECE - 2", code: "2" },
-  { value: "THREE PIECE - 3", label: "THREE PIECE - 3", code: "3" },
+  { value: "ONE PIECE", label: "ONE PIECE - 1", code: "1" },
+  { value: "TWO PIECE", label: "TWO PIECE - 2", code: "2" },
+  { value: "THREE PIECE", label: "THREE PIECE - 3", code: "3" },
 ];
 
 const skiveTypeOptions = [
-  { value: "SKIVE (SK)", label: "SKIVE (SK)", code: "SK", dsc_code: "(SKIVE)" },
-  { value: "NON-SKIVE (NS)", label: "NON-SKIVE (NS)", code: "NS", dsc_code: "(NON-SKIVE)" },
-  { value: "INNER-SKIVE (IS)", label: "INNER-SKIVE (IS)", code: "IS", dsc_code: "(INNER-SKIVE)" },
+  { value: "SKIVE", label: "SKIVE (SK)", code: "SK", dsc_code: "(SKIVE)" },
+  { value: "NON-SKIVE", label: "NON-SKIVE (NS)", code: "NS", dsc_code: "(NON-SKIVE)" },
+  { value: "INNER-SKIVE", label: "INNER-SKIVE (IS)", code: "IS", dsc_code: "(INNER-SKIVE)" },
 ];
 
 // const hoseDashSizeOptions = [
@@ -191,7 +191,7 @@ const fittingDashSizeOptions = [
 
   // ORFS
   { thread_type: "ORFS", dash: "04", inch: "1/4\"", thread: "9/16\"", variant: "Standard", dsc_code: "9/16\"" },
-  { thread_type: "ORFS", dash: "05", inch: "5/16\"", thread: null, variant: "Standard", dsc_code: "5/16\"" },
+  // { thread_type: "ORFS", dash: "05", inch: "5/16\"", thread: null, variant: "Standard", dsc_code: "5/16\"" },
   { thread_type: "ORFS", dash: "06", inch: "3/8\"", thread: "11/16\"", variant: "Standard", dsc_code: "11/16\"" },
   { thread_type: "ORFS", dash: "08", inch: "1/2\"", thread: "13/16\"", variant: "Standard", dsc_code: "13/16\"" },
   { thread_type: "ORFS", dash: "10", inch: "5/8\"", thread: "1\"", variant: "Standard", dsc_code: "1\"" },
@@ -199,7 +199,7 @@ const fittingDashSizeOptions = [
   { thread_type: "ORFS", dash: "16", inch: "1\"", thread: "1-7/16\"", variant: "Standard", dsc_code: "1-7/16\"" },
   { thread_type: "ORFS", dash: "20", inch: "1-1/4\"", thread: "1-11/16\"", variant: "Standard", dsc_code: "1-11/16\"" },
   { thread_type: "ORFS", dash: "24", inch: "1-1/2\"", thread: "2\"", variant: "Standard", dsc_code: "2\"" },
-  { thread_type: "ORFS", dash: "32", inch: "2\"", thread: null, variant: "Standard", dsc_code: "2\"" },
+  // { thread_type: "ORFS", dash: "32", inch: "2\"", thread: null, variant: "Standard", dsc_code: "2\"" },
 
   // KOMATSU
   { thread_type: "KOMATSU", dash: "04", inch: "1/4\"", thread: "14X1.5", variant: "Standard", dsc_code: "14X1.5" },
@@ -244,7 +244,7 @@ const fittingDashSizeOptions = [
   { thread_type: "BANJO WITH O", dash: "14", thread: "14", variant: "Standard", dsc_code: "14" },
   { thread_type: "BANJO WITH O", dash: "16", thread: "16", variant: "Standard", dsc_code: "16" },
   { thread_type: "BANJO WITH O", dash: "18", thread: "18", variant: "Standard", dsc_code: "18" },
-  { thread_type: "BANJO WITH O", dash: "22", thread: "22", variant: "Standard", dsc_code: "2" },
+  { thread_type: "BANJO WITH O", dash: "22", thread: "22", variant: "Standard", dsc_code: "22" },
 
 
   // Metric Light
@@ -503,6 +503,51 @@ const HoseTypeOptions = [
   { value: "Steam", label: "Steam", code: "ST", dsc_code: "Steam" }
 ];
 
+const springTypeOption = [
+  {value: "Compress", label: "Compress" ,dsc_code: "Compress"},
+  {value: "Normal", label: "Normal", dsc_code: ""}
+];
+
+const dustCapColorsOption = [
+  { value: "Red", label: "Red", dsc_code: "Red" },
+  { value: "Blue", label: "Blue", dsc_code: "Blue" },
+  { value: "Green", label: "Green", dsc_code: "Green" },
+  { value: "Yellow", label: "Yellow", dsc_code: "Yellow" },
+  { value: "Orange", label: "Orange", dsc_code: "Orange" },
+  { value: "Purple", label: "Purple", dsc_code: "Purple" },
+  { value: "Black", label: "Black", dsc_code: "Black" },
+  { value: "White", label: "White", dsc_code: "White" },
+  { value: "Brown", label: "Brown", dsc_code: "Brown" },
+  { value: "Gray", label: "Gray", dsc_code: "Gray" },
+  { value: "Pink", label: "Pink", dsc_code: "Pink" }
+];
+
+const sleeveSizesOption = [
+  { value: "3/16", label: "3/16\"", dsc_code: "3/16\"" },
+  { value: "1/4", label: "1/4\"", dsc_code: "1/4\"" },
+  { value: "5/16", label: "5/16\"", dsc_code: "5/16\"" },
+  { value: "3/8", label: "3/8\"", dsc_code: "3/8\"" },
+  { value: "1/2", label: "1/2\"", dsc_code: "1/2\"" },
+  { value: "5/8", label: "5/8\"", dsc_code: "5/8\"" },
+  { value: "3/4", label: "3/4\"", dsc_code: "3/4\"" },
+  { value: "1", label: "1\"", dsc_code: "1\"" },
+  { value: "1-1/4", label: "1-1/4\"", dsc_code: "1-1/4\"" },
+  { value: "1-1/2", label: "1-1/2\"", dsc_code: "1-1/2\"" },
+  { value: "2", label: "2\"", dsc_code: "2\"" },
+  { value: "2-1/2", label: "2-1/2\"", dsc_code: "2-1/2\"" },
+  { value: "3", label: "3\"", dsc_code: "3\"" },
+  { value: "3-1/2", label: "3-1/2\"", dsc_code: "3-1/2\"" },
+  { value: "4", label: "4\"", dsc_code: "4\"" },
+  { value: "4-1/2", label: "4-1/2\"", dsc_code: "4-1/2\"" },
+  { value: "5", label: "5\"", dsc_code: "5\"" },
+  { value: "13/32", label: "13/32\"", dsc_code: "13/32\"" },
+  { value: "7/8", label: "7/8\"", dsc_code: "7/8\"" },
+  { value: "1-1/8", label: "1-1/8\"", dsc_code: "1-1/8\"" },
+  { value: "1-3/8", label: "1-3/8\"", dsc_code: "1-3/8\"" },
+  { value: "1-13/16", label: "1-13/16\"", dsc_code: "1-13/16\"" },
+  { value: "2-3/8", label: "2-3/8\"", dsc_code: "2-3/8\"" }
+];
+
 
 
 module.exports = {
@@ -526,5 +571,8 @@ module.exports = {
   PartOptions,
   MFCOptions,
   BrandLayLineOptions,
-  HoseTypeOptions
+  HoseTypeOptions,
+  springTypeOption,
+  dustCapColorsOption,
+  sleeveSizesOption
 };

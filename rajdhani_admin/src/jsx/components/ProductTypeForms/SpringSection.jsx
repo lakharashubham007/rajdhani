@@ -7,11 +7,22 @@ import Select from "react-select";
 const SpringSection = (props) => {
   const {formData, 
     setFormData, 
-    errors ,
+    errors,
+    setErrors,
     springTypeOption, 
     setSpringTypeOption, 
     selectedSpringTypeOption, 
-    setSelectedSpringTypeOption} = props;
+    setSelectedSpringTypeOption,
+
+    //hose dash size
+    HoseDashSizeOption,
+    selectedhoseDashSizeOption,
+    setSelectedHoseDashSizeOption,
+
+    //Fitting and description code
+    fittingCode,
+    descCode,
+  } = props;
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -27,12 +38,60 @@ const SpringSection = (props) => {
       <div className="row">
         <div className="col-xl-12 col-lg-12">
           <div className="card">
-            <div className="card-header">
-              <h4 className="card-title">Spring Section</h4>
+            {/* Card Header part */}
+            <div className="mb-3 row">
+              <div className="col-md-12">
+                <div className="">
+                  <div className="card-header row">
+
+                    <div className="col-md-4">
+                      <div className="d-flex align-items-center">
+                        <h4 className="card-title">Spring</h4>
+                      </div>
+                    </div>
+
+                    {/* <div className="col-md-4">
+                      <div className="d-flex justify-content-center align-items-center">
+                        <span style={{
+                          backgroundColor: '#6a73fa',
+                          color: 'white',
+                          borderRadius: '12px',
+                          padding: '5px 10px',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          marginRight: '80px'
+                        }}>
+                          FittingCode :- {fittingCode}
+                        </span>
+                      </div>
+                    </div> */}
+
+
+                    <div className="col-md-4">
+                      <div className="d-flex justify-content-end">
+                        <span style={{
+                          backgroundColor: '#ff7a41',
+                          color: 'white',
+                          borderRadius: '12px',
+                          padding: '5px 10px',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          // whiteSpace: 'nowrap'
+                        }}>
+                          Description :- {descCode}
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
+                </div>
+              </div>
             </div>
+            {/* card Body */}
             <div className="card-body">
                 <div className="mb-3 row">
-                  <div className="col-md-4">
+                  {/* Spring inner diameter */}
+                  <div className="col-md-3">
                     <label className="col-form-label">Inner Diameter</label>
                     <input
                       name="inner_diameter"
@@ -46,8 +105,9 @@ const SpringSection = (props) => {
                       <span className="text-danger fs-12">{errors.inner_diameter}</span>
                     )}
                   </div>
-                  <div className="col-md-4">
-                    <label className="col-form-label">Spring Length</label>
+                  {/* Spring Length */}
+                  <div className="col-md-3">
+                    <label className="col-form-label">Spring Length*(in mm)</label>
                     <input
                       name="spring_length"
                       value={formData.spring_length}
@@ -60,8 +120,8 @@ const SpringSection = (props) => {
                       <span className="text-danger fs-12">{errors.spring_length}</span>
                     )}
                   </div>
-
-                  <div className="col-md-4">
+                  {/* Spring Type */}
+                  <div className="col-md-3">
                     <label className="col-form-label">Spring Type</label> 
                     <Select
                       value={selectedSpringTypeOption}
@@ -81,26 +141,37 @@ const SpringSection = (props) => {
                       </span>
                     )}
                   </div>
+                  {/* Hose Dash Size */}
+                  <div className="col-md-3">
+                  <label className="col-form-label">Hose Dash Size</label>
+                  <Select
+                    value={selectedhoseDashSizeOption}
+                    onChange={(option) => {
+                      setSelectedHoseDashSizeOption(option);
+                      setFormData({
+                        ...formData,
+                        hose_dash_size: option.value,
+                      });
+                      setErrors({
+                        ...errors,
+                        hose_dash_size: null
+                      })
+                    }}
+                    defaultValue={selectedhoseDashSizeOption}
+                    options={HoseDashSizeOption}
+                    style={{
+                      lineHeight: "40px",
+                      color: "#7e7e7e",
+                      paddingLeft: " 15px",
+                    }}
+                  />
+                  {errors.hose_dash_size && (
+                    <span className="text-danger fs-12">
+                      {errors.hose_dash_size}
+                    </span>
+                  )}
                 </div>
-             
-                <div className="mb-3 row">
-               
-
-                  <div className="col-md-4">
-                    <label className="col-form-label">Hose Size</label>
-                    <input
-                      name="hose_size"
-                      value={formData.hose_size}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter Hose Size"
-                    />
-                    {errors.hose_size && (
-                      <span className="text-danger fs-12">{errors.hose_size}</span>
-                    )}
-                  </div>
-                </div>
+              </div>  
             </div>
           </div>
         </div>

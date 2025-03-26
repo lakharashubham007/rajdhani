@@ -1,8 +1,8 @@
-const { Products ,ProductCodeCounter} = require('../models'); // Assuming the Products model is located here
+const { Products, ProductCodeCounter } = require('../models'); // Assuming the Products model is located here
 
 const generateCodes = (formData, options) => {
-  console.log('formData is herer0-=-=-=-=-=-=-',formData); 
-  console.log('options',options); 
+  console.log('formData is herer0-=-=-=-=-=-=-', formData);
+  console.log('options', options);
   const {
     selectedWireTypeOption,
     selectedFittingThreadOption,
@@ -21,81 +21,311 @@ const generateCodes = (formData, options) => {
   return { desc_Code, fitting_Code };
 };
 
+//create Spring
+// Function to handle Spring creation
+const springCreation = async (data, files) => {
+  try {
+    // Fetch last assigned product code for Spring
+    let productCounter = await ProductCodeCounter.findOne({ category: "Spring" });
+    if (!productCounter) {
+      throw new Error(`Product series not found for category: Spring`);
+    }
+
+    let newCode = productCounter.last_assigned_product_code + 1;
+
+    // Update last_assigned_product_code in productCounter table
+    await ProductCodeCounter.updateOne(
+      { category: "Spring" },
+      { last_assigned_product_code: newCode, updated_at: Date.now() }
+    );
+
+    console.log("Generated Product Code for Spring:", newCode);
+
+    const springData = {
+      ...data,
+      product_code: newCode,
+      image: files?.image ? files.image[0]?.originalname : "rajdhani_product.jpg",
+      gallery: files?.gallery ? files.gallery.map((file) => file.originalname) : [],
+    };
+
+    console.log("Processed Spring product data:", springData);
+
+    const springProduct = await Products.create(springData);
+    return springProduct;
+  } catch (error) {
+    console.error("Error in Spring Creation:", error);
+    throw error;
+  }
+};
+
+//Oring-creation
+const oringCreation = async (data, files) => {
+  try {
+    // Fetch last assigned product code for Spring
+    let productCounter = await ProductCodeCounter.findOne({ category: "O-ring" });
+    if (!productCounter) {
+      throw new Error(`Product series not found for category: O-ring`);
+    }
+
+    let newCode = productCounter.last_assigned_product_code + 1;
+
+    // Update last_assigned_product_code in productCounter table
+    await ProductCodeCounter.updateOne(
+      { category: "O-ring" },
+      { last_assigned_product_code: newCode, updated_at: Date.now() }
+    );
+
+    console.log("Generated Product Code for O-ring:", newCode);
+
+    const oringData = {
+      ...data,
+      product_code: newCode,
+      image: files?.image ? files.image[0]?.originalname : "rajdhani_product.jpg",
+      gallery: files?.gallery ? files.gallery.map((file) => file.originalname) : [],
+    };
+
+    console.log("Processed Spring product data:", oringData);
+
+    const oringProduct = await Products.create(oringData);
+    return oringProduct;
+  } catch (error) {
+    console.error("Error in Spring Creation:", error);
+    throw error;
+  }
+};
+
+//dustCapCreation
+const dustCapCreation = async (data, files) => {
+  try {
+    // Fetch last assigned product code for Spring
+    let productCounter = await ProductCodeCounter.findOne({ category: "Dust Cap" });
+    if (!productCounter) {
+      throw new Error(`Product series not found for category: Dust Cap`);
+    }
+
+    let newCode = productCounter.last_assigned_product_code + 1;
+
+    // Update last_assigned_product_code in productCounter table
+    await ProductCodeCounter.updateOne(
+      { category: "Dust Cap" },
+      { last_assigned_product_code: newCode, updated_at: Date.now() }
+    );
+
+    console.log("Generated Product Code forDust Cap:", newCode);
+
+    const dustCapData = {
+      ...data,
+      product_code: newCode,
+      image: files?.image ? files.image[0]?.originalname : "rajdhani_product.jpg",
+      gallery: files?.gallery ? files.gallery.map((file) => file.originalname) : [],
+    };
+
+    console.log("Processed Spring product data:", dustCapData);
+
+    const dustCapProduct = await Products.create(dustCapData);
+    return dustCapProduct;
+  } catch (error) {
+    console.error("Error in Spring Creation:", error);
+    throw error;
+  }
+};
+
+//sleeveCreation
+const sleeveCreation = async (data, files) => {
+  try {
+    // Fetch last assigned product code for Spring
+    let productCounter = await ProductCodeCounter.findOne({ category: "Sleeve" });
+    if (!productCounter) {
+      throw new Error(`Product series not found for category: Dust Cap`);
+    }
+
+    let newCode = productCounter.last_assigned_product_code + 1;
+
+    // Update last_assigned_product_code in productCounter table
+    await ProductCodeCounter.updateOne(
+      { category: "Sleeve" },
+      { last_assigned_product_code: newCode, updated_at: Date.now() }
+    );
+
+    console.log("Generated Product Code for Sleeve:", newCode);
+
+    const SleeveData = {
+      ...data,
+      product_code: newCode,
+      image: files?.image ? files.image[0]?.originalname : "rajdhani_product.jpg",
+      gallery: files?.gallery ? files.gallery.map((file) => file.originalname) : [],
+    };
+
+    console.log("Processed sleeve product data:", SleeveData);
+
+    const sleeveProduct = await Products.create(SleeveData);
+    return sleeveProduct;
+  } catch (error) {
+    console.error("Error in sleeve Creation:", error);
+    throw error;
+  }
+};
+
+//hosePipeCreation
+const hosePipeCreation = async (data, files) => {
+  try {
+    // Fetch last assigned product code for Spring
+    let productCounter = await ProductCodeCounter.findOne({ category: "Hose Pipe" });
+    if (!productCounter) {
+      throw new Error(`Product series not found for category: Hose Pipe`);
+    }
+
+    let newCode = productCounter.last_assigned_product_code + 1;
+
+    // Update last_assigned_product_code in productCounter table
+    await ProductCodeCounter.updateOne(
+      { category: "Sleeve" },
+      { last_assigned_product_code: newCode, updated_at: Date.now() }
+    );
+
+    console.log("Generated Product Code for Hose Pipe:", newCode);
+
+    const hosePipeData = {
+      ...data,
+      product_code: newCode,
+      image: files?.image ? files.image[0]?.originalname : "rajdhani_product.jpg",
+      gallery: files?.gallery ? files.gallery.map((file) => file.originalname) : [],
+    };
+
+    console.log("Processed sleeve product data:", hosePipeData);
+
+    const hosePipe = await Products.create(hosePipeData);
+    return hosePipe;
+  } catch (error) {
+    console.error("Error in Hose Pipe Creation:", error);
+    throw error;
+  }
+};
+
 // Create a new Product - Service
 const createProduct = async (data, files) => {
 
+  console.log("data is here in servide file ", data);
+
   try {
-  // Generate codes based on the data and options
-    //  const { desc_Code, fitting_Code } = generateCodes(data);
-    // console.log('desc_Code, fitting_Code files are here:', desc_Code, fitting_Code); 
 
-     // Parse the `parts` field if it's sent as a string
-     let parsedParts = [];
-     if (data.parts) {
-       if (typeof data.parts === 'string') {
-         try {
-           parsedParts = JSON.parse(data.parts.replace(/'/g, '"'));
-         } catch (error) {
-           console.error('Error parsing parts field:', error);
-           throw new Error('Invalid parts format. Please provide a valid JSON array.');
-         }
-       } else if (Array.isArray(data.parts)) {
-         parsedParts = data.parts;
-       } else {
-         console.warn('Unexpected format for parts field:', data.parts);
-       }
-     }
+    //Part creation
+    if (data?.part == "Nut" || data?.part == "Nipple" || data?.part == "Cap") {
 
-    //  // Determine the starting series based on wire_type
-    // let codePrefix = 20000; // Default to BRAIDED series
-    // if (data.wire_type.includes("SPIRAL")) {
-    //   codePrefix = 40000;
-    // }
-    // if (data.wire_type.includes("TEFLON")) {
-    //   codePrefix = 10000;
-    // }
+      // Determine the category series code based on part
+      let category = "";
+      if (data?.part?.includes("Nut")) {
+        category = "Nut";
+      } else if (data?.part?.includes("Nipple")) {
+        category = "Nipple";
+      } else if (data?.part?.includes("Cap")) {
+        category = "Cap";
+      }
 
-    // // Find the last assigned code in this series
-    // const lastProduct = await Products.findOne(
-    //   { wire_type: data.wire_type },
-    //   { product_code: 1 },
-    //   // {},
-    //   { sort: { product_code: -1 } }
-    // );
-    // console.log("lastProduct lastProduct ",lastProduct)
-    // let newCode = lastProduct ? Number(lastProduct.product_code) + 1 : codePrefix;
+      // Fetch last assigned product code from productCounter
+      let productCounter = await ProductCodeCounter.findOne({ category });
+      if (!productCounter) {
+        throw new Error(`Product series not found for category: ${category}`);
+      }
+
+      let newCode = productCounter.last_assigned_product_code + 1;
+
+      // Update last_assigned_product_code in productCounter table
+      await ProductCodeCounter.updateOne(
+        { category },
+        { last_assigned_product_code: newCode, updated_at: Date.now() }
+      );
+
+      console.log("Generated Product Code:", newCode);
+
+      const partData = {
+        ...data,
+        product_code: newCode,
+        image: files && files.image ? files.image[0]?.originalname : 'rajdhani_product.jpg',
+        gallery: files && files.gallery ? files.gallery.map(file => file.originalname) : [], // Process gallery images
+      };
+
+      console.log('Processed product data:', partData); // Log the processed data before saving
+
+      const part = await Products.create(partData);
+      return part;
+    }
+
+    // Spring creation logic
+    if (data?.product_type == "Spring") {
+      return await springCreation(data, files);
+    }
+
+    // Spring creation logic
+    if (data?.product_type == "O-ring") {
+      return await oringCreation(data, files);
+    }
+
+    // Dust Cap creation logic
+    if (data?.product_type == "Dust Cap") {
+      return await dustCapCreation(data, files);
+    }
+
+    //SLEEVE Sleeve
+    if (data?.product_type == "Sleeve") {
+      return await sleeveCreation(data, files);
+    }
+
+     //Hose Pipe
+     if (data?.product_type == "Hose Pipe") {
+      return await hosePipeCreation(data, files);
+    }
 
 
-    // console.log("newCode newCode newCode newCode newCode",newCode)
 
-     // Determine the category series code based on wire_type
-     let category = "";
-     if (data.wire_type.includes("Braided")) {
-       category = "Braided";
-     } else if (data.wire_type.includes("Spiral")) {
-       category = "Spiral";
-     } else if (data.wire_type.includes("TEFLON")) {
+
+    // Parse the `parts` field if it's sent as a string
+    let parsedParts = [];
+    if (data?.parts) {
+      if (typeof data.parts === 'string') {
+        try {
+          parsedParts = JSON.parse(data.parts.replace(/'/g, '"'));
+        } catch (error) {
+          console.error('Error parsing parts field:', error);
+          throw new Error('Invalid parts format. Please provide a valid JSON array.');
+        }
+      } else if (Array.isArray(data.parts)) {
+        parsedParts = data.parts;
+      } else {
+        console.warn('Unexpected format for parts field:', data.parts);
+      }
+    }
+
+
+
+    // Determine the category series code based on wire_type
+    let category = "";
+    if (data?.wire_type?.includes("Braided")) {
+      category = "Braided";
+    } else if (data?.wire_type?.includes("Spiral")) {
+      category = "Spiral";
+    } else if (data?.wire_type?.includes("TEFLON")) {
       category = "Teflon";
     }
 
-    console.log(data.wire_type, " category is here-=-=-==-=-=")
- 
-     // Fetch last assigned product code from productCounter
-     let productCounter = await ProductCodeCounter.findOne({ category });
-     if (!productCounter) {
-       throw new Error(`Product series not found for category: ${category}`);
-     }
- 
-     let newCode = productCounter.last_assigned_product_code + 1;
- 
-     // Update last_assigned_product_code in productCounter table
-     await ProductCodeCounter.updateOne(
-       { category },
-       { last_assigned_product_code: newCode, updated_at: Date.now() }
-     );
- 
-     console.log("Generated Product Code:", newCode);
- 
+    console.log(data?.wire_type, " category is here-=-=-==-=-=")
+
+    // Fetch last assigned product code from productCounter
+    let productCounter = await ProductCodeCounter.findOne({ category });
+    if (!productCounter) {
+      throw new Error(`Product series not found for category: ${category}`);
+    }
+
+    let newCode = productCounter.last_assigned_product_code + 1;
+
+    // Update last_assigned_product_code in productCounter table
+    await ProductCodeCounter.updateOne(
+      { category },
+      { last_assigned_product_code: newCode, updated_at: Date.now() }
+    );
+
+    console.log("Generated Product Code:", newCode);
+
 
     const productData = {
       ...data,
@@ -106,7 +336,7 @@ const createProduct = async (data, files) => {
 
     console.log('Processed product data:', productData); // Log the processed data before saving
 
-   
+
 
     const newProduct = await Products.create(productData);
     return newProduct;
@@ -120,23 +350,24 @@ const createProduct = async (data, files) => {
 // Service method to get all products
 const getAllProducts = async () => {
   try {
-      const products = await Products.find({});
-      return products; // Return all products
+    const products = await Products.find({});
+    return products; // Return all products
   } catch (error) {
-      console.error('Error fetching all products:', error);
-      throw error; // Throw error to be caught by the controller
+    console.error('Error fetching all products:', error);
+    throw error; // Throw error to be caught by the controller
   }
 };
 
 const searchProducts = async (query) => {
   try {
-      // Case-insensitive regex search for partial matches in desc_Code or product_code
-      const regexQuerys = { $regex: query, $options: "i" };
+    // Case-insensitive regex search for partial matches in desc_Code or product_code
+    const regexQuerys = { $regex: query, $options: "i" };
 
-      // Convert user input to uppercase and remove spaces/dashes
+    // Convert user input to uppercase and remove spaces/dashes
     const normalizedQuery = query.toUpperCase().replace(/[\s-]+/g, "");
 
     // Create a regex pattern that allows optional dashes
+
     const regexPattern = normalizedQuery
       .split(/(\d+)/) // Splits letters and numbers separately
       .filter(Boolean) // Removes empty strings
@@ -144,20 +375,22 @@ const searchProducts = async (query) => {
 
     const regexQuery = new RegExp(regexPattern, "i");
 
-      const products = await Products.find({
-          $or: [
-            { desc_Code: regexQuerys }, 
-            { product_code: regexQuerys },
-            { fitting_Code: { $regex: regexQuery } }
-          ],
-      })
+
+
+    const products = await Products.find({
+      $or: [
+        { desc_Code: regexQuerys },
+        { product_code: regexQuerys },
+        { fitting_Code: { $regex: regexQuery } }
+      ],
+    })
       .limit(10) // Return top 6 matched products
       .sort({ product_code: 1 }); // Sort based on product_code
 
-      return products;
+    return products;
   } catch (error) {
-      console.error("Error searching products:", error);
-      throw error;
+    console.error("Error searching products:", error);
+    throw error;
   }
 };
 
@@ -171,7 +404,7 @@ const findSimilarProducts = async (fittingCode) => {
     }
 
     // Extract everything after the first character (brand identifier)
-    const configWithoutBrand = fittingCode.slice(1); 
+    const configWithoutBrand = fittingCode.slice(1);
 
     // Create a regex pattern that allows any first letter (brand)
     const regexPattern = new RegExp(`^.${configWithoutBrand}$`, "i");
@@ -193,56 +426,58 @@ const findSimilarProducts = async (fittingCode) => {
 
 // Get all Products with pagination, sorting, and search
 const getProducts = async (page, limit, sort, search) => {
-    try {
-      const skip = (page - 1) * limit;
-  
-      // Build a dynamic filter for searching
-      const filter = search ? { 
-        $or: [
-          { fitting_thread: { $regex: search, $options: 'i' } },
-          { desc_Code: { $regex: search, $options: 'i' } }
-        ] 
-      } : {};
-  
-      // Parse the sort parameter
-      let sortOptions = {};
-      if (sort) {
-        const [field, order] = sort.split(':');
-        sortOptions[field] = (order === 'dsc') ? -1 : 1; // -1 for descending, 1 for ascending
-      } else {
-        sortOptions = { name: 1 }; // Default sort by name in ascending order if sort is not provided
-      }
-  
-      // Find products with applied filters, sorting, and pagination
-      const productList = await Products.find(filter)
-        //  .populate('category_id')
-        //  .populate('subcategory_id')
-        //  .populate('subsubcategory_id')
-        //  .populate('brand')
-        //  .populate('variant')
-        //  .populate('material')
-        //  .populate('fittingSize')
-        //  .populate('thread_type')
-        //  .populate('parts') 
-        .sort(sortOptions)
-        .skip(skip)
-        .limit(limit);
-  
-      // Get the total count of documents for pagination info
-      const totalProducts = await Products.countDocuments(filter);
-  
-      return {
-        products: productList,
-        totalProducts,
-        totalPages: Math.ceil(totalProducts / limit),
-        currentPage: page,
-        rowsPerPage: limit
-      };
-    } catch (error) {
-      console.error('Error fetching products:', error);
-      throw error;
+  try {
+    const skip = (page - 1) * limit;
+
+    // Build a dynamic filter for searching
+    const filter = search ? {
+      $or: [
+        { fitting_thread: { $regex: search, $options: 'i' } },
+        { desc_Code: { $regex: search, $options: 'i' } }
+      ]
+    } : {};
+
+    // Parse the sort parameter
+    let sortOptions = {};
+
+    console.log("sortsortsortsortsort", sort)
+    if (sort) {
+      const [field, order] = sort.split(':');
+      sortOptions[field] = (order === 'dsc') ? -1 : 1; // -1 for descending, 1 for ascending
+    } else {
+      sortOptions = { created_at: -1 };
     }
-  };
+
+    // Find products with applied filters, sorting, and pagination
+    const productList = await Products.find(filter)
+      //  .populate('category_id')
+      //  .populate('subcategory_id')
+      //  .populate('subsubcategory_id')
+      //  .populate('brand')
+      //  .populate('variant')
+      //  .populate('material')
+      //  .populate('fittingSize')
+      //  .populate('thread_type')
+      //  .populate('parts') 
+      .sort(sortOptions)
+      .skip(skip)
+      .limit(limit);
+
+    // Get the total count of documents for pagination info
+    const totalProducts = await Products.countDocuments(filter);
+
+    return {
+      products: productList,
+      totalProducts,
+      totalPages: Math.ceil(totalProducts / limit),
+      currentPage: page,
+      rowsPerPage: limit
+    };
+  } catch (error) {
+    console.error('Error fetching products:', error);
+    throw error;
+  }
+};
 
 // Get a Product by ID
 const getProductById = async (id) => {
@@ -257,13 +492,13 @@ const getProductById = async (id) => {
 
 // Update a Product by ID
 const updateProduct = async (id, updateData) => {
-    try {
-        const updatedProduct = await Products.findByIdAndUpdate(id, updateData, { new: true });
-        return updatedProduct;
-    } catch (error) {
-        console.error('Error updating product:', error);
-        throw error;
-    }
+  try {
+    const updatedProduct = await Products.findByIdAndUpdate(id, updateData, { new: true });
+    return updatedProduct;
+  } catch (error) {
+    console.error('Error updating product:', error);
+    throw error;
+  }
 };
 
 // Update the status of a Product by ID

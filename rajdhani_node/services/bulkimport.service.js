@@ -386,7 +386,7 @@ const bulkimport = async (filePath) => {
             const fittingType = row["fitting_type"] || "";
             const straightBendAngle = row["straight_bend_angle"] || "";
             const wireType = row["wire_type"] || "";
-            const withCap = row["with_cap"] || "";
+            const withCap = row["ferrule"] || "";
             const fittingPiece = row["fitting_piece"] || "";
             const skiveType = row["skive_type"] || "";
             const hoseDashSize = row["hose_dash_size"] || "";

@@ -409,7 +409,7 @@ const AllProductList = () => {
                                 border: "1px solid gray", // Black border
                               }}
                             >
-                              {data?.product_code}
+                              {data?.product_code ? data?.product_code : "N/A"}
                             </span>
                           </td>
 
@@ -477,7 +477,7 @@ const AllProductList = () => {
                                 display: "inline-block", // Works for the span
                               }}
                             >
-                              {["Cap", "Nipple", "Nut"].includes(data?.part) ? data?.part : data?.fitting_thread}
+                              {["Cap", "Nipple", "Nut"].includes(data?.part) ? data?.part : data?.fitting_thread || "N/A"}
                               {/* {data?.fitting_thread} */}
                             </span>
                           </td>
@@ -501,7 +501,7 @@ const AllProductList = () => {
                                 color: '#686D76'
                               }}
                             >
-                              {data?.desc_Code}
+                              {data?.desc_Code? data?.desc_Code : "N/A"} 
                             </span>
                           </td>
 
@@ -523,7 +523,7 @@ const AllProductList = () => {
                                 color: '#686D76'
                               }}
                             >
-                              {data?.fitting_Code}
+                              {data?.fitting_Code?data?.fitting_Code:"N/A"}
                             </span>
                           </td>
 
@@ -544,7 +544,7 @@ const AllProductList = () => {
                                 display: "inline-block", // Works for the span
                               }}
                             >
-                              {data?.design}
+                              {data?.design ? data?.design : "N/A"}
                             </span>
                           </td>
 

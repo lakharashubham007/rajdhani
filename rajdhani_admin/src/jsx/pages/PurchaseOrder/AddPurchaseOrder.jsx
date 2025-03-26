@@ -1049,7 +1049,7 @@ const AddSupplierPurchaseOrder = () => {
       const res = await SearchProductsApi(query); // API should support search
       const dropdownProductList = res?.data?.products.map((product) => ({
         value: product?.desc_Code,
-        label: `[${product?.product_code}]  [${product?.desc_Code}]  ⇨[${product?.fitting_Code}]`,
+        label: `[${product?.product_code}]  [${product?.desc_Code}]  ${product?.fitting_Code ? ` ⇨[${product?.fitting_Code}]` : ""}`,
         id: product?._id,
         product_code: product?.product_code,
         uom: product?.uom,

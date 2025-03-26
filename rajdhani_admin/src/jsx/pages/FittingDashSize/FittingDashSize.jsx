@@ -80,6 +80,7 @@ const FittingDashSize = () => {
   const [HoseDashSizeOption, setHoseDashSizeOption] = useState(null);
 
   const HoseDashSizeOptions = [
+    { value: "04", label: "04", code: "04" },
     { value: "06", label: "06", code: "06" },
     { value: "08", label: "08", code: "08" },
     { value: "10", label: "10", code: "10" },

@@ -1,16 +1,45 @@
+
 import React, { useState } from "react";
 import Select from "react-select";
 
 
 const DustCapSection = (props) => {
-  const {formData, 
-    setFormData, 
+  const {
+    formData,
+    setFormData,
     errors,
-    maleFemaleOption,
-    setmaleFemaleOption,
-    selectedMaleFemaleOption,
-    setSelectedMaleFemaleOption
-  }= props;
+    setErrors,
+
+    //colors
+    dustCapColorsOptions,
+    setDustCapColorOption,
+    selectedDustCapColorOption,
+    setSelectedDustCapColorOption,
+    //Fitting Thread
+    fittingThreadOption,
+    selectedFittingThreadOption,
+    setSelectedFittingThreadOption,
+    //Fitting Dash Size Option
+    fittingDashSizeOption,
+    selectedFittingDashSizeOption,
+    setSelectedfittingDashSizeOption,
+    //POD
+    pipeODOption,
+    setSelectpipeODOption,
+    selectedpipeODOption,
+    //Type
+    fittingTypeOption,
+    setfittingTypeOption,
+    selectedFittingTypeOption,
+    setSelectedFittingTypeOption,
+    
+
+
+    //Fitting and description code
+    fittingCode,
+    descCode,
+  } = props;
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -20,82 +49,235 @@ const DustCapSection = (props) => {
     });
   };
 
+
   return (
     <>
       <div className="row">
         <div className="col-xl-12 col-lg-12">
           <div className="card">
-            <div className="card-header">
-              <h4 className="card-title">Dust Cap</h4>
-            </div>
-            <div className="card-body">
-                <div className="mb-3 row">
-                  <div className="col-md-4">
-                    <label className="col-form-label">Thread Type</label>
-                    <input
-                      name="threadType"
-                      value={formData.threadType}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter Thread Type"
-                    />
-                    {errors.threadType && (
-                      <span className="text-danger fs-12">{errors.threadType}</span>
-                    )}
-                  </div>
-                  <div className="col-md-4">
-                    <label className="col-form-label">Size</label>
-                    <input
-                      name="size"
-                      value={formData.size}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter Size"
-                    />
-                    {errors.size && (
-                      <span className="text-danger fs-12">{errors.size}</span>
-                    )}
-                  </div>
+            {/* Card Header part */}
+            <div className="mb-3 row">
+              <div className="col-md-12">
+                <div className="">
+                  <div className="card-header row">
 
-                  <div className="col-md-4">
-                    <label className="col-form-label">Color</label>
-                    <input
-                      name="color"
-                      value={formData.color}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Enter Color"
-                    />
-                    {errors.color && (
-                      <span className="text-danger fs-12">{errors.color}</span>
-                    )}
-                  </div>
+                    <div className="col-md-4">
+                      <div className="d-flex align-items-center">
+                        <h4 className="card-title">Dust Cap</h4>
+                      </div>
+                    </div>
 
+                    <div className="col-md-4">
+                      <div className="d-flex justify-content-end">
+                        <span style={{
+                          backgroundColor: '#ff7a41',
+                          color: 'white',
+                          borderRadius: '12px',
+                          padding: '5px 10px',
+                          fontSize: '12px',
+                          fontWeight: 'bold',
+                          // whiteSpace: 'nowrap'
+                        }}>
+                          Description :- {descCode}
+                        </span>
+                      </div>
+                    </div>
+
+                  </div>
                 </div>
-                <div className="mb-3 row">
-                  <div className="col-md-4">
-                    <label className="col-form-label">Male/Female</label>
+              </div>
+            </div>
+            {/* Card Header Body */}
+            <div className="card-body">
+              {/* Thread and Size */}
+              <div className="mb-3 row">
+                {/**Thread */}
+                <div className="col-md-3">
+                  <label className="col-form-label">Thread Type</label>
+                  <Select
+                    value={selectedFittingThreadOption}
+                    onChange={(option) => {
+                      setSelectedFittingThreadOption(option);
+                      setFormData({
+                        ...formData,
+                        fitting_thread: option.value,
+                      });
+                      setErrors({
+                        ...errors,
+                        fitting_thread: null
+                      })
+                    }}
+                    defaultValue={selectedFittingThreadOption}
+                    options={fittingThreadOption}
+                    style={{
+                      lineHeight: "40px",
+                      color: "#7e7e7e",
+                      paddingLeft: " 15px",
+                    }}
+                  />
+                  {errors.fitting_thread && (
+                    <span className="text-danger fs-12">
+                      {errors.fitting_thread}
+                    </span>
+                  )}
+                </div>
+                {/**Size combo */}
+                {selectedFittingThreadOption?.value !== "METRIC" ?
+                  (<>
+                    {selectedFittingThreadOption?.value === "SAE 61" || selectedFittingThreadOption?.value === "SAE 62" ?
+                      (<>
+                        <div className="col-md-3">
+                          <label className="col-form-label">Thread Size*(POD)</label>
+                          <Select
+                            value={selectedFittingDashSizeOption}
+                            onChange={(option) => {
+                              setSelectedfittingDashSizeOption(option);
+                              setFormData({
+                                ...formData,
+                                size: option.value,
+                              });
+                              setErrors({
+                                ...errors,
+                                size: null
+                              })
+                            }}
+                            defaultValue={selectedFittingDashSizeOption}
+                            options={fittingDashSizeOption}
+                            style={{
+                              lineHeight: "40px",
+                              color: "#7e7e7e",
+                              paddingLeft: " 15px",
+                            }}
+                          />
+                          {errors.size && (
+                            <span className="text-danger fs-12">
+                              {errors.size}
+                            </span>
+                          )}
+                        </div>
+                      </>) : (<>
+                        <div className="col-md-3">
+                          <label className="col-form-label">Thread Size</label>
+                          <Select
+                            value={selectedFittingDashSizeOption}
+                            onChange={(option) => {
+                              setSelectedfittingDashSizeOption(option);
+                              setFormData({
+                                ...formData,
+                                size: option.value,
+
+                              });
+                              setErrors({
+                                ...errors,
+                                size: null
+                              })
+                            }}
+                            defaultValue={selectedFittingDashSizeOption}
+                            options={fittingDashSizeOption}
+                            style={{
+                              lineHeight: "40px",
+                              color: "#7e7e7e",
+                              paddingLeft: " 15px",
+                            }}
+                          />
+                          {errors.size && (
+                            <span className="text-danger fs-12">
+                              {errors.size}
+                            </span>
+                          )}
+                        </div>
+                      </>)
+                    }
+                  </>
+                  ) : (
+                    <>
+                      {/* POD */}
+                      <div className="col-md-3">
+                        <label className="col-form-label">Thread Size*(POD)</label>
+                        <Select
+                          value={selectedpipeODOption}
+                          onChange={(option) => {
+                            setSelectpipeODOption(option);
+                            setFormData({
+                              ...formData,
+                              size: option.value,
+                            });
+                            setErrors({
+                              ...errors,
+                              size: null
+                            })
+                          }}
+                          defaultValue={selectedpipeODOption}
+                          options={pipeODOption}
+                          style={{
+                            lineHeight: "40px",
+                            color: "#7e7e7e",
+                            paddingLeft: " 15px",
+                          }}
+                        />
+                        {errors.size && (
+                          <span className="text-danger fs-12">
+                            {errors.size}
+                          </span>
+                        )}
+                      </div>
+                    </>
+                  )
+                }
+                {/* Color Type */}
+                <div className="col-md-3">
+                    <label className="col-form-label">Color</label> 
                     <Select
-                      isMulti 
-                      value={selectedMaleFemaleOption}
-                      onChange={(selectedOptions) => {
-                        setSelectedMaleFemaleOption(selectedOptions); // Store the selected options
+                      value={selectedDustCapColorOption}
+                      onChange={(option) => {
+                        setSelectedDustCapColorOption(option);
                         setFormData({
                           ...formData,
-                          male_female: selectedOptions?.map(option => option.value), // Extract values from selected options
+                          dustcap_color: option.value,
                         });
                       }}
-                      defaultValue={selectedMaleFemaleOption}
-                      options={maleFemaleOption}
-                      />
-                    {errors.gender && (
-                      <span className="text-danger fs-12">{errors.gender}</span>
+                      defaultValue={selectedDustCapColorOption}
+                      options={dustCapColorsOptions}
+                    />
+                    {errors.dustcap_color && (
+                      <span className="text-danger fs-12">
+                        {errors.dustcap_color}
+                      </span>
                     )}
                   </div>
+
+
+                  <div className="col-md-3">
+                  <label className="col-form-label">Male/Female Type</label>
+                  <Select
+                    value={selectedFittingTypeOption}
+                    onChange={(option) => {
+                      setSelectedFittingTypeOption(option);
+                      setFormData({
+                        ...formData,
+                        cap_type: option.value,
+                      });
+                      setErrors({
+                        ...errors,
+                        cap_type: null
+                      })
+                    }}
+                    defaultValue={selectedFittingTypeOption}
+                    options={fittingTypeOption}
+                    style={{
+                      lineHeight: "40px",
+                      color: "#7e7e7e",
+                      paddingLeft: " 15px",
+                    }}
+                  />
+                  {errors.cap_type && (
+                    <span className="text-danger fs-12">
+                      {errors.cap_type}
+                    </span>
+                  )}
                 </div>
+
+              </div>
             </div>
           </div>
         </div>

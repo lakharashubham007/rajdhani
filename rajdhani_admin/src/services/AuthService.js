@@ -69,7 +69,7 @@ export function formatError(errorResponse) {
 }
 
 export function saveTokenInLocalStorage(tokenDetails) {
-    console.log(tokenDetails,"token details is here");
+    // console.log(tokenDetails,"token details is here");
     tokenDetails.expireDate = new Date(
         new Date().getTime() + tokenDetails.expiresIn * 1000,
     );
@@ -86,7 +86,7 @@ export function runLogoutTimer(dispatch, timer, navigate) {
 
 export function checkAutoLogin(dispatch, navigate) {
     const tokenDetailsString = localStorage.getItem('tokens');
-    console.log("tokenDetailsString", tokenDetailsString);
+    // console.log("tokenDetailsString", tokenDetailsString);
 
     if (!tokenDetailsString) {
         dispatch(Logout(navigate));
@@ -97,7 +97,7 @@ export function checkAutoLogin(dispatch, navigate) {
     try {
         tokenDetails = JSON.parse(tokenDetailsString); // Parse token details
     } catch (error) {
-        console.error("Failed to parse token details:", error);
+        // console.error("Failed to parse token details:", error);
         dispatch(Logout(navigate));
         return;
     }

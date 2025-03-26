@@ -87,7 +87,7 @@ const Nut = (props) => {
     const [loading, setLoading] = useState(false);
 
 
-    console.log("sselectpipeODOption", selectedpipeODOption)
+    console.log("sselectpipeODOption", selectedFittingDashSizeOption)
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -277,8 +277,7 @@ const Nut = (props) => {
                                             setSelectedfittingDashSizeOption(option);
                                             setFormData({
                                                 ...formData,
-                                                fitting_dash_size: option,
-
+                                                fitting_dash_size: option?.value,
                                             });
                                         }}
                                         defaultValue={selectedFittingDashSizeOption}

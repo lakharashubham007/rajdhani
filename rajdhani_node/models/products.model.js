@@ -50,12 +50,16 @@ const productSchema = new mongoose.Schema(
     ferrule_wire_type: { type: String, trim: true },
     ferrule_hose_dash_size: { type: String, trim: true },
 
-    // Hose Pipe
+
     brand: { type: String, trim: true },
+
+    // Hose Pipe
+    brand_lay_line: { type: String, trim: true },
+    hose_pipe_mfc: { type: String, trim: true },
+    hose_type: { type: String, trim: true },
 
     // Hose Assembly
     hose_brand: { type: String, trim: true },
-    hose_type: { type: String, trim: true },
     fitting_a: { type: String, trim: true },
     fitting_b: { type: String, trim: true },
     assembly_length: { type: String, trim: true },
@@ -63,24 +67,25 @@ const productSchema = new mongoose.Schema(
     cut_length: { type: String, trim: true },
     orientation_angle: { type: String, trim: true },
     hose_protection: { type: String, trim: true },
-    brand_lay_line: { type: String, trim: true },
 
     // Spring
     inner_diameter: { type: String, trim: true },
     spring_length: { type: String, trim: true },
     spring_type: { type: String, trim: true },
     hose_size: { type: String, trim: true },
+    spring_dsc: { type: String, trim: true },
+
 
     // O-ring
-    size: { type: String, trim: true },
-    o_ring_inner_diameter: { type: String, trim: true },
+    inner_diameter: { type: String, trim: true },
     thickness: { type: String, trim: true },
+    size: { type: String, trim: true },
     hardness: { type: String, trim: true },
 
     // Dust Cap
     thread_type: { type: String, trim: true },
-    colour: { type: String, trim: true },
-    male_female: { type: String, enum: ["Male", "Female"] },
+    cap_typ: { type: String, trim: true },
+    dustcap_color: { type: String, trim: true },
 
     // Sleeve
     sleeve_size: { type: String, trim: true },
