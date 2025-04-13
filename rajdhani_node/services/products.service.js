@@ -1,5 +1,7 @@
 const { Products, ProductCodeCounter, Inventory } = require('../models'); // Assuming the Products model is located here
 const QRCode = require('qrcode');
+const BaseURL = "https://www.i2rtest.in";
+const LocalURL = "http://localhost:3001";
 
 const generateCodes = (formData, options) => {
   console.log('formData is herer0-=-=-=-=-=-=-', formData);
@@ -52,7 +54,7 @@ const springCreation = async (data, files) => {
     console.log("Processed Spring product data:", springData);
 
     // Generate QR Code for the product
-    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
 
     // Add QR code to the product data
@@ -96,7 +98,7 @@ const oringCreation = async (data, files) => {
     console.log("Processed Spring product data:", oringData);
 
      // Generate QR Code for the product
-     const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+     const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
      const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
  
      // Add QR code to the product data
@@ -141,7 +143,7 @@ const dustCapCreation = async (data, files) => {
     console.log("Processed Spring product data:", dustCapData);
 
      // Generate QR Code for the product
-     const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+     const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
      const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
  
      // Add QR code to the product data
@@ -185,7 +187,7 @@ const sleeveCreation = async (data, files) => {
     console.log("Processed sleeve product data:", SleeveData);
 
     // Generate QR Code for the product
-    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
 
     // Add QR code to the product data
@@ -228,7 +230,7 @@ const hosePipeCreation = async (data, files) => {
 
     console.log("Processed sleeve product data:", hosePipeData);
     // Generate QR Code for the product
-    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
 
     // Add QR code to the product data
@@ -271,7 +273,7 @@ const tubeFittingsCreation = async (data, files) => {
 
     console.log("Processed tubeFittingsData product data:", tubeFittingsData);
     // Generate QR Code for the product
-    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
 
     // Add QR code to the product data
@@ -315,7 +317,7 @@ const vinylCoverCreation = async (data, files) => {
     console.log("Processed sleeve product data:",);
 
     // Generate QR Code for the product
-    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
 
     // Add QR code to the product data
@@ -361,7 +363,7 @@ const packingCreation = async (data, files) => {
     console.log("Processed packingData product data:", packingData);
 
      // Generate QR Code for the product
-     const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+     const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
      const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
  
      // Add QR code to the product data
@@ -409,7 +411,7 @@ const hoseAssembyCreation = async (data, files) => {
     console.log("Processed packingData product data:", hoseAssemblyData);
 
     // Generate QR Code for the product
-    const productUrl = `http://192.168.109.165:3001/productqr/${sanitizedPartNo}`; // This can be a link to the product's page
+    const productUrl = `${BaseURL}/productqr/${sanitizedPartNo}`; // This can be a link to the product's page
     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
 
     // Add QR code to the product data
@@ -470,7 +472,7 @@ const createProduct = async (data, files) => {
       };
 
       // Generate QR Code for the product
-      const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+      const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
       const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
 
       // Add QR code to the product data
@@ -591,7 +593,7 @@ const createProduct = async (data, files) => {
     };
 
     // Generate QR Code for the product
-    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
 
     // Add QR code to the product data
@@ -970,7 +972,7 @@ const generateQrForProduct = async (productId) => {
   const sanitizedPartNo = product?.product_code?.replace(/[^a-zA-Z0-9]/g, "-");
 
   // Customize the product URL logic as per your frontend route
-  const productUrl = `http://localhost:3001/productqr/${sanitizedPartNo}`;
+  const productUrl = `${BaseURL}/productqr/${sanitizedPartNo}`;
   const qrCodeUrl = await QRCode.toDataURL(productUrl);
 
   product.qr_code = qrCodeUrl;

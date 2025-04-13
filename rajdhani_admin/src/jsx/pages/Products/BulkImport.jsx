@@ -6,7 +6,6 @@ import Swal from "sweetalert2";
 // import axios from "axios";
 import { bulkImportApi } from "../../../services/apis/BulkImportApi";
 import { FaFileAlt } from 'react-icons/fa';
-import { CalendarProvider } from "rsuite/esm/Calendar/CalendarContext";
 
 
 const fittingThreadOptions = [
