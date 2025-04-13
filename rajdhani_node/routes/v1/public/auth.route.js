@@ -4,6 +4,7 @@ const authController = require("../../../controllers/auth.controller");
 
 
 const multer = require("multer");
+const { productsController } = require("../../../controllers");
 
 // Save Image
 const upload = multer({
@@ -29,6 +30,8 @@ router.post("/login-client", authController.loginClient);
 router.post("/logout", authController.logout);
 router.post("/login-restaurant", authController.loginRestaurant);
 router.post("/login-employee", authController.loginEmployee);
+router.get("/get-product-details/:id", productsController.getProductByQrScannerCode);
+
 
 
 module.exports = router; 

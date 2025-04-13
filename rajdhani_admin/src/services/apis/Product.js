@@ -115,7 +115,7 @@ export const GetEditProductData = async (id) => {
 
   //single prodcut details when user scan qr code
   export const GetProductDetailsQrScannerApi = async (id) => {
-    const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+    // const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
     try {
         const response = await axios.get(`${apis.product.getEditProductDetails}/${id}`,
       {
