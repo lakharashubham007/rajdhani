@@ -64,6 +64,20 @@ export function login(email, password) {
     return axios.post(apis.auth.login, postData)
 }
 
+// export function getRolePermissions(roleId) {
+//     return axios.get(`${apis.roles.getById}/${roleId}`);
+// }
+
+export function getRolePermissions(roleId) {
+    const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+
+    return axios.get(`${apis.roles.getById}/${roleId}`, {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+    });
+}
+
 export function loginRestaurant(email, password) {
     const postData = {
         email,

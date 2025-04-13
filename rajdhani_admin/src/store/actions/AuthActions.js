@@ -1,12 +1,11 @@
 import { Toaster } from '../../jsx/components/Toaster/Toster';
 import {
     formatError,
-    runLogoutTimer,
-    
+    runLogoutTimer,    
     signUp,
     // login,saveTokenInLocalStorage 
 } from '../../services/AuthService';
-import {login,loginRestaurant,saveTokenInLocalStorage } from '../../services/apis/AuthService';
+import {getRolePermissions, login,loginRestaurant,saveTokenInLocalStorage } from '../../services/apis/AuthService';
 import Swal from "sweetalert2";
 
 export const SIGNUP_CONFIRMED_ACTION = '[signup action] confirmed signup';  
@@ -20,7 +19,6 @@ export const NAVTOGGLE = 'NAVTOGGLE';
 
 
 export function signupAction(email, password, navigate) {
-	
     return (dispatch) => {
         signUp(email, password)
         .then((response) => {
@@ -54,14 +52,29 @@ export function Logout(navigate) {
 export function loginAction(email, password, navigate) {
     return (dispatch) => {
          login(email, password)
-            .then((response) => {
+            .then(async (response) => {
+                console.log("resonse is here",response)
+
+                const user = response.data?.user;
+            const token = response.data?.tokens?.token;
+            const expiresIn = response.data?.tokens?.expires;
+
                 saveTokenInLocalStorage(response.data);
                 // runLogoutTimer(
                 //     dispatch,
                 //     response.data.expiresIn * 1000,
                 //     navigate,
                 // );
-               dispatch(loginConfirmedAction(response.data));			              
+                 // Fetch role and permissions using role_id
+            const roleData = await getRolePermissions(user.role_id);
+
+            const payload = {
+                ...response.data,
+                role: roleData?.data?.roleById?.name || '',
+                permissions: roleData?.data?.roleById?.permissions || [],
+            };
+            dispatch(loginConfirmedAction(payload));
+            //    dispatch(loginConfirmedAction(response.data));			              
 			   navigate('/dashboard');  
                dispatch(loginFailedAction(""));              
             })

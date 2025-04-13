@@ -46,6 +46,10 @@ const SleeveSection = (props) => {
       ...formData,
       [name]: value,
     });
+    setErrors({
+      ...errors,
+      [name]: null
+    })
   };
 
 
@@ -100,11 +104,16 @@ const SleeveSection = (props) => {
                       setSelectedSleeveSizeOption(option);
                       setFormData({
                         ...formData,
-                        size: option.value,
+                        size: option?.value,
                       });
+                      setErrors({
+                        ...errors,
+                        size: null
+                      })
                     }}
                     defaultValue={selectedSleeveSizeOption}
                     options={sleeveSizeOptions}
+                    isClearable
                   />
                   {errors.size && (
                     <span className="text-danger fs-12">
@@ -114,36 +123,36 @@ const SleeveSection = (props) => {
                 </div>
 
                 {/**Inner Diameter(MM) */}
-                <div className="col-md-2">
+                <div className="col-md-3">
                   <label className="col-form-label">Inner Diameter*(in mm)</label>
                   <input
                     name="inner_diameter"
-                    value={formData.inner_diameter}
+                    value={formData?.inner_diameter}
                     onChange={handleChange}
                     type="text"
                     className="form-control"
                     placeholder="Enter Inner Diameter"
                   />
-                  {errors.inner_diameter && (
-                    <span className="text-danger fs-12">{errors.inner_diameter}</span>
+                  {errors?.inner_diameter && (
+                    <span className="text-danger fs-12">{errors?.inner_diameter}</span>
                   )}
                 </div>
-                {/**Thickness(MM) */}
-                <div className="col-md-2">
+                {/**Outer Diameter(MM) */}
+                <div className="col-md-3">
                   <label className="col-form-label">Outer Diameter*(in mm)</label>
                   <input
                     name="outer_diameter"
-                    value={formData.outer_diameter}
+                    value={formData?.outer_diameter}
                     onChange={handleChange}
                     type="text"
                     className="form-control"
                     placeholder="Enter Outer Diameter"
                   />
-                  {errors.outer_diameter && (
-                    <span className="text-danger fs-12">{errors.outer_diameter}</span>
+                  {errors?.outer_diameter && (
+                    <span className="text-danger fs-12">{errors?.outer_diameter}</span>
                   )}
                 </div>
-                {/**Length(Mtr) */}
+                {/* *Length(Mtr)
                 <div className="col-md-2">
                   <label className="col-form-label">Length (Mtr)</label>
                   <input
@@ -157,7 +166,7 @@ const SleeveSection = (props) => {
                   {errors.length && (
                     <span className="text-danger fs-12">{errors.length}</span>
                   )}
-                </div>
+                </div> */}
 
 
               </div>

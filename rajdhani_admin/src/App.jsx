@@ -2,18 +2,14 @@ import { lazy, Suspense, useEffect } from 'react';
 /// Components
 import Index from './jsx/router/index';
 import { connect, useDispatch } from 'react-redux';
-import { Route, Routes, useLocation, useNavigate, useParams } from 'react-router-dom';
+import { Route, Routes, useLocation, useNavigate, useParams ,Navigate} from 'react-router-dom';
 // action
 import { checkAutoLogin } from './services/AuthService';
 import { isAuthenticated } from './store/selectors/AuthSelectors';
-
-
 /// Style
 import 'rsuite/dist/rsuite-no-reset.min.css';
 import "./assets/css/style.css";
-import Home from './jsx/pages/dashboard/Home';
-import LoginRestaurant from './jsx/pages/authentication/LoginRestaurant';
-
+import ProductDetails from './jsx/pages/authentication/productDetails';
 
 
 const SignUp = lazy(() => import('./jsx/pages/authentication/Registration'));
@@ -22,6 +18,8 @@ const Login = lazy(() => {
         setTimeout(() => resolve(import('./jsx/pages/authentication/Login')), 500);
     });
 });
+
+
 
 function withRouter(Component) {
     function ComponentWithRouterProp(props) {
@@ -49,21 +47,19 @@ function App(props) {
         checkAutoLogin(dispatch, navigate);
     }, []);
 
-
-    // console.log(props.isAuthenticated,"props.isAuthenticated");
-
     let routeblog = (
         <Routes>
-            <Route path='/login' element={<Login />} />
-            <Route path='/login/res' element={<LoginRestaurant />} />
-
-            <Route path='/page-register' element={<SignUp />} />
+             <Route path="/login" element={<Login />} />
+             <Route path="" element={<Login />} />
+            <Route path="/page-register" element={<SignUp />} />
+            <Route path="/productqr/:id" element={<ProductDetails />} />
         </Routes>
     );
 
     
     if (props.isAuthenticated) {
         return (
+
             <>
                 <Suspense fallback={
                     <div id="preloader">

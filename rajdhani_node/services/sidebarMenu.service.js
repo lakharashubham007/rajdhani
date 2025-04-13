@@ -5,7 +5,7 @@ const getUserSidebarMenus = async (userId) => {
   try {
     const userdetails = await Admins.findById(userId).populate('role_id');
     const userCopy = JSON.parse(JSON.stringify(userdetails));
-    console.log(userCopy, "usercopy is here-------")
+    // console.log(userCopy, "usercopy is here-------")
     const sidebarMenus = await SideBarMenu.find({ _id: { $in: userCopy.role_id.sidebarMenus } });
     return sidebarMenus;
   } catch (error) {

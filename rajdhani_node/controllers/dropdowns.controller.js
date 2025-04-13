@@ -24,40 +24,64 @@ const {
     HoseTypeOptions,
     springTypeOption,
     dustCapColorsOption,
-    sleeveSizesOption
+    sleeveSizesOption,
+    vcSizesOption,
+    dustCapThreadType,
+    oRingThreadTypeOption,
+    dustCapMatricOption,
+    TuebeFittingsThreads,
+    TubeFittingsCategory,
+    uomOptions,
+    gstOption,
+    nutFittingThreadOptions,
+    nutFittingDashSize,
+    nippleFittingThreadOptions
 } = require('../dropdowns/productOptions')
 
 
 // Controller to fetch dropdown options
 const getallOptions = async (req, res) => {
     try {
-        res.json({ success: true,  data: { 
-            ProductOptions,
-            springTypeOptions,
-            WireTypeOptions,
-            CapWithoutCapOptions,
-            metricTypeOptions,
-            straightBendangleOptions,
-            pipeODOptions,
-            variantsOption,
-            fittingTypeOptions,
-            dropLengthOptions,
-            malefemaleOptions,
-            variantsOption,
-            fittingDashSizeOptions,
-            fittingThreadOptions,
-            hoseDashSizeOptions,
-            skiveTypeOptions,
-            fittingPieceOptions,
-            designOption,
-            PartOptions,
-            MFCOptions,
-            BrandLayLineOptions,
-            HoseTypeOptions,
-            springTypeOption,
-            dustCapColorsOption,
-            sleeveSizesOption 
-        }  });
+        res.json({
+            success: true, data: {
+                ProductOptions,
+                springTypeOptions,
+                WireTypeOptions,
+                CapWithoutCapOptions,
+                metricTypeOptions,
+                straightBendangleOptions,
+                pipeODOptions,
+                variantsOption,
+                fittingTypeOptions,
+                dropLengthOptions,
+                malefemaleOptions,
+                variantsOption,
+                fittingDashSizeOptions,
+                fittingThreadOptions,
+                hoseDashSizeOptions,
+                skiveTypeOptions,
+                fittingPieceOptions,
+                designOption,
+                PartOptions,
+                MFCOptions,
+                BrandLayLineOptions,
+                HoseTypeOptions,
+                springTypeOption,
+                dustCapColorsOption,
+                sleeveSizesOption,
+                vcSizesOption,
+                dustCapThreadType,
+                oRingThreadTypeOption,
+                dustCapMatricOption,
+                TuebeFittingsThreads,
+                TubeFittingsCategory,
+                uomOptions,
+                gstOption,
+                nutFittingThreadOptions,
+                nutFittingDashSize,
+                nippleFittingThreadOptions
+            }
+        });
     } catch (error) {
         console.error("Error fetching dropdown options:", error);
         res.status(500).json({ success: false, message: "Internal Server Error" });

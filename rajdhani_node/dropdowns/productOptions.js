@@ -13,17 +13,14 @@ const ProductOptions = [
 ];
 
 const PartOptions = [
-  { value: "Nut", label: "Nut" },
-  { value: "Nipple", label: "Nipple" },
-  { value: "Cap", label: "Cap" },
-  { value: "NA", label: "NA" },
+  { name: "Nut" },
+  { name: "Nipple" },
+  { name: "Cap" },
 ];
 
-// const WireTypeOptions = [
-//   { value: "BRAIDED (BR) - B", label: "BRAIDED (BR) - B", code: "B", dsc_code: "BR" },
-//   { value: "SPIRAL (SP) - S", label: "SPIRAL (SP) - S", code: "S", dsc_code: "SP" },
-//   { value: "TEFLON (TF) - T", label: "TEFLON (TF) - T", code: "T", dsc_code: "TF" }
-// ];
+
+
+
 
 const WireTypeOptions = [
   { value: "Braided", label: "BRAIDED (BR) - B", code: "B", dsc_code: "BR" },
@@ -504,8 +501,8 @@ const HoseTypeOptions = [
 ];
 
 const springTypeOption = [
-  {value: "Compress", label: "Compress" ,dsc_code: "Compress"},
-  {value: "Normal", label: "Normal", dsc_code: ""}
+  { value: "Compress", label: "Compress", dsc_code: "Compress" },
+  { value: "Normal", label: "Normal", dsc_code: "" }
 ];
 
 const dustCapColorsOption = [
@@ -548,6 +545,427 @@ const sleeveSizesOption = [
   { value: "2-3/8", label: "2-3/8\"", dsc_code: "2-3/8\"" }
 ];
 
+const vcSizesOption = [
+  { value: "3/16", label: "3/16\"", dsc_code: "3/16\"" },
+  { value: "1/4", label: "1/4\"", dsc_code: "1/4\"" },
+  { value: "5/16", label: "5/16\"", dsc_code: "5/16\"" },
+  { value: "3/8", label: "3/8\"", dsc_code: "3/8\"" },
+  { value: "1/2", label: "1/2\"", dsc_code: "1/2\"" },
+  { value: "5/8", label: "5/8\"", dsc_code: "5/8\"" },
+  { value: "3/4", label: "3/4\"", dsc_code: "3/4\"" },
+  { value: "1", label: "1\"", dsc_code: "1\"" },
+  { value: "1-1/4", label: "1-1/4\"", dsc_code: "1-1/4\"" },
+  { value: "1-1/2", label: "1-1/2\"", dsc_code: "1-1/2\"" },
+  { value: "2", label: "2\"", dsc_code: "2\"" },
+  { value: "2-1/2", label: "2-1/2\"", dsc_code: "2-1/2\"" },
+  { value: "3", label: "3\"", dsc_code: "3\"" },
+  { value: "3-1/2", label: "3-1/2\"", dsc_code: "3-1/2\"" },
+  { value: "4", label: "4\"", dsc_code: "4\"" },
+  { value: "4-1/2", label: "4-1/2\"", dsc_code: "4-1/2\"" },
+  { value: "5", label: "5\"", dsc_code: "5\"" },
+  { value: "13/32", label: "13/32\"", dsc_code: "13/32\"" },
+  { value: "7/8", label: "7/8\"", dsc_code: "7/8\"" },
+  { value: "1-1/8", label: "1-1/8\"", dsc_code: "1-1/8\"" },
+  { value: "1-3/8", label: "1-3/8\"", dsc_code: "1-3/8\"" },
+  { value: "1-13/16", label: "1-13/16\"", dsc_code: "1-13/16\"" },
+  { value: "2-3/8", label: "2-3/8\"", dsc_code: "2-3/8\"" }
+];
+
+const dustCapThreadType = [
+  { value: "BSP", label: "BSP", code: "B", dsc_code: "B" },
+  { value: "UNF", label: "UNF", code: "UNF", dsc_code: "UNF" },
+  { value: "Metric", label: "METRIC", code: "M", dsc_code: "M" },
+  { value: "Flange", label: "Flange", code: "Flange", dsc_code: "Flange" },
+];
+
+const oRingThreadTypeOption = [
+  { value: "BSP", label: "BSP", code: "B", dsc_code: "BSP" },
+  { value: "ORFS", label: "ORFS", code: "O", dsc_code: "ORFS" },
+  { value: "METRIC", label: "METRIC", code: "M", dsc_code: "" },
+  { value: "Flange", label: "Flange", code: "Flange", dsc_code: "Flange" },
+];
+
+const dustCapMatricOption = [
+  { thread_type: "METRIC", thread: "10X1", dsc_code: "10X1" },
+  { thread_type: "METRIC", thread: "12X1.5", dsc_code: "12X1.5" },
+  { thread_type: "METRIC", thread: "14X1.5", dsc_code: "14X1.5" },
+  { thread_type: "METRIC", thread: "16X1.5", dsc_code: "16X1.5" },
+  { thread_type: "METRIC", thread: "18X1.5", dsc_code: "18X1.5" },
+  { thread_type: "METRIC", thread: "20X1.5", dsc_code: "20X1.5" },
+  { thread_type: "METRIC", thread: "22X1.5", dsc_code: "22X1.5" },
+  { thread_type: "METRIC", thread: "24X1.5", dsc_code: "24X1.5" },
+  { thread_type: "METRIC", thread: "26X1.5", dsc_code: "26X1.5" },
+  { thread_type: "METRIC", thread: "30X1.5", dsc_code: "30X1.5" },
+  { thread_type: "METRIC", thread: "30X2", dsc_code: "30X2" },
+  { thread_type: "METRIC", thread: "33X1.5", dsc_code: "33X1.5" },
+  { thread_type: "METRIC", thread: "36X1.5", dsc_code: "36X1.5" },
+  { thread_type: "METRIC", thread: "36X2", dsc_code: "36X2" },
+  { thread_type: "METRIC", thread: "38X1.5", dsc_code: "38X1.5" },
+  { thread_type: "METRIC", thread: "42X1.5", dsc_code: "42X1.5" },
+  { thread_type: "METRIC", thread: "42X2", dsc_code: "42X2" },
+  { thread_type: "METRIC", thread: "45X1.5", dsc_code: "45X1.5" },
+  { thread_type: "METRIC", thread: "45X2", dsc_code: "45X2" },
+  { thread_type: "METRIC", thread: "52X1.5", dsc_code: "52X1.5" },
+  { thread_type: "METRIC", thread: "52X2", dsc_code: "52X2" },
+  { thread_type: "METRIC", thread: "65X2", dsc_code: "65X2" }
+];
+
+const TuebeFittingsThreads = [
+  { name: "DIN" },
+  { name: "Double Ferrule Compression Fitting" },
+  { name: "JIC Fitting" },
+  { name: "Oring Face Seal Fitting" }
+]
+
+const TubeFittingsCategory = [
+
+  //Din
+  { thread: "DIN", category: "Nut-N" },
+  { thread: "DIN", category: "Ferrule-F" },
+  { thread: "DIN", category: "Equal Straight Coupling-G" },
+  { thread: "DIN", category: "Equal Elbow Union-W" },
+  { thread: "DIN", category: "Equal Tee Union-T" },
+  { thread: "DIN", category: "Bulkhead Str. Coupling-SV" },
+  { thread: "DIN", category: "Bulkhead Union Elbow-WSV" },
+  { thread: "DIN", category: "Welding Connector-AS" },
+  { thread: "DIN", category: "Parallel Male Stud Coupling-GE-R" },
+  { thread: "DIN", category: "Parallel Male Stud Coupling-GE-M" },
+  { thread: "DIN", category: "Parallel Male Stud Coupling-GE-R-ED" },
+  { thread: "DIN", category: "Parallel Male Stud Coupling-GE-M-ED" },
+  { thread: "DIN", category: "Parallel Female Coupling-GAI-R" },
+  { thread: "DIN", category: "Parallel Female Coupling-GAI-M" },
+  { thread: "DIN", category: "Male Stud Elbow-WE-R" },
+  { thread: "DIN", category: "Swivel Elbow-EVW" },
+  { thread: "DIN", category: "Swivel Branch Tee-EVT" },
+  { thread: "DIN", category: "Swivel Run Tee-EVL" },
+  { thread: "DIN", category: "Swivel Nut Elbow-EW" },
+  { thread: "DIN", category: "Swivel Nut Branch Tee-ET" },
+  { thread: "DIN", category: "Swivel Nut Run Tee-EL" },
+  { thread: "DIN", category: "Swivel Connector-EGE-R" },
+  { thread: "DIN", category: "Swivel Connector-EGE-M" },
+  { thread: "DIN", category: "Stand Pipe Adaptor-EVGE-R" },
+  { thread: "DIN", category: "Stand Pipe Adaptor-EVGE-M" },
+  { thread: "DIN", category: "Stand Pipe Adaptor-EVGE-R-ED" },
+  { thread: "DIN", category: "Stand Pipe Adaptor-EVGE-M-ED" },
+  { thread: "DIN", category: "Hollow Hex Plug-VSTI-R" },
+  { thread: "DIN", category: "Hollow Hex Plug-VSTI-M" },
+  { thread: "DIN", category: "Blind Plugs-VKA" },
+  { thread: "DIN", category: "WELD NIPPLE-WN" },
+  { thread: "DIN", category: "Adjustable Elbow-WEE" },
+  { thread: "DIN", category: "BSPP-BSPP NIPPLE-HT9022 Series" },
+  { thread: "DIN", category: "BSPP-BSPP ELBOW-HT9222 Series" },
+  { thread: "DIN", category: "BSPP-BSPP TEE-HT9322 Series" },
+  { thread: "DIN", category: "Manometer Coupling-MAV" },
+  { thread: "DIN", category: "BSPED REDUCER-RI-ED" },
+  { thread: "DIN", category: "SAE SPLIT FLANGE-S205 3000 PSI" },
+  { thread: "DIN", category: "SAE SPLIT FLANGE-S206 6000 PSI" },
+  { thread: "DIN", category: "Banjo Coupling-S172" },
+
+  //Double Ferrule Compression Fitting
+  { thread: "Double Ferrule Compression Fitting", category: "Nut" },
+  { thread: "Double Ferrule Compression Fitting", category: "Back Ferrule" },
+  { thread: "Double Ferrule Compression Fitting", category: "Front Ferrule" },
+  { thread: "Double Ferrule Compression Fitting", category: "Union" },
+  { thread: "Double Ferrule Compression Fitting", category: "Male Connector" },
+  { thread: "Double Ferrule Compression Fitting", category: "Female Connector" },
+  { thread: "Double Ferrule Compression Fitting", category: "Reducer" },
+  { thread: "Double Ferrule Compression Fitting", category: "Union Elbow" },
+  { thread: "Double Ferrule Compression Fitting", category: "Male Elbow" },
+  { thread: "Double Ferrule Compression Fitting", category: "Female Elbow" },
+  { thread: "Double Ferrule Compression Fitting", category: "Union Tee" },
+  { thread: "Double Ferrule Compression Fitting", category: "Male Run Tee" },
+  { thread: "Double Ferrule Compression Fitting", category: "Female Run Tee" },
+  { thread: "Double Ferrule Compression Fitting", category: "Bulkhead Union" },
+
+  //JIC Fitting
+  { thread: "JIC Fitting", category: "Cap Nut- HT0304-C" },
+  { thread: "JIC Fitting", category: "BHLN Nut- HT0306" },
+  { thread: "JIC Fitting", category: "Tube Nut- HT0318" },
+  { thread: "JIC Fitting", category: "Tube Sleeve- HT0319" },
+  { thread: "JIC Fitting", category: "Bore-MJ Straight- HT0403" },
+  { thread: "JIC Fitting", category: "MP-FPS Straight- HT1404" },
+  { thread: "JIC Fitting", category: "FP-FPS Straight- HT1405" },
+  { thread: "JIC Fitting", category: "MP-FPS 90° Elbow- HT1501" },
+  { thread: "JIC Fitting", category: "MP-FPS 90° Elbow- HT1502" },
+  { thread: "JIC Fitting", category: "MP-FPS 45° Elbow- HT1503" },
+  { thread: "JIC Fitting", category: "MP-FPS-FPS Tee- HT1601" },
+  { thread: "JIC Fitting", category: "FPS-FPS-FPS Tee- HT1603" },
+  { thread: "JIC Fitting", category: "MJ-MJ Straight- HT2403" },
+  { thread: "JIC Fitting", category: "MJ-MP Straight- HT2404" },
+  { thread: "JIC Fitting", category: "MJ-FP Straight- HT2405" },
+  { thread: "JIC Fitting", category: "FJ-MJ Straight Reducer- HT2406" },
+  { thread: "JIC Fitting", category: "MJ Plug- HT2408" },
+  { thread: "JIC Fitting", category: "MJ-MJ 90° Elbow- HT2500" },
+  { thread: "JIC Fitting", category: "MJ-MP 90° Elbow- HT2501" },
+  { thread: "JIC Fitting", category: "MJ-FP 90° Elbow- HT2502" },
+  { thread: "JIC Fitting", category: "MJ-MP 45° Elbow- HT2503" },
+  { thread: "JIC Fitting", category: "MJ-MJ-MP Tee- HT2601" },
+  { thread: "JIC Fitting", category: "MJ-MJ-MJ Tee- HT2603" },
+  { thread: "JIC Fitting", category: "MJ-MJ Bulkhead- HT2700" },
+  { thread: "JIC Fitting", category: "MJ-MJ Bulkhead 90° Elbow- HT2701" },
+  { thread: "JIC Fitting", category: "MJ-MJ Bulkhead 45° Elbow- HT2702" },
+  { thread: "JIC Fitting", category: "MJ-MJ-MJ Bulkhead Branch Tee- HT2703" },
+  { thread: "JIC Fitting", category: "MJ-MJ-MJ Bulkhead Run Tee- HT2704" },
+  { thread: "JIC Fitting", category: "MP-MJ Bulkhead Straight- HT2706" },
+  { thread: "JIC Fitting", category: "HB-MAORB 90° Elbow- HT4601-NW0" },
+  { thread: "JIC Fitting", category: "HB-MAORB Straight- HT4604-0" },
+  { thread: "JIC Fitting", category: "FP-FP Straight- HT5000" },
+  { thread: "JIC Fitting", category: "MP-MP Straight- HT5404" },
+  { thread: "JIC Fitting", category: "MP-FP Straight Exp.- HT5405" },
+  { thread: "JIC Fitting", category: "MP-FP Reducer Bushing- HT5406" },
+  { thread: "JIC Fitting", category: "External HEX Pipe Plug- HT5406-P" },
+  { thread: "JIC Fitting", category: "MP-MP 90° Elbow- HT5500" },
+  { thread: "JIC Fitting", category: "MP-MP 45° Elbow- HT5501" },
+  { thread: "JIC Fitting", category: "MP-FP 90° Street Elbow- HT5502" },
+  { thread: "JIC Fitting", category: "MP-FP 45° Street Elbow- HT5503" },
+  { thread: "JIC Fitting", category: "FP-FP 90° Street Elbow- HT5504" },
+  { thread: "JIC Fitting", category: "FP-FP 45° Street Elbow- HT5505" },
+  { thread: "JIC Fitting", category: "MP-MP-MP Tee- HT5600" },
+  { thread: "JIC Fitting", category: "MP-FP-FP Street Tee- HT5602" },
+  { thread: "JIC Fitting", category: "MP-FP-MP Tee- HT5603" },
+  { thread: "JIC Fitting", category: "FP-FP-MP Branch Tee- HT5604" },
+  { thread: "JIC Fitting", category: "FP-FP-FP Tee- HT5605" },
+  { thread: "JIC Fitting", category: "FP-FP-FP-FP Cross- HT5652" },
+  { thread: "JIC Fitting", category: "MJ-MORB Straight- HT6400-O" },
+  { thread: "JIC Fitting", category: "MJ-MORB Straight Long- HT6400-L-O" },
+  { thread: "JIC Fitting", category: "MORB-MP Straight- HT6401-O" },
+  { thread: "JIC Fitting", category: "MORB-FJS Straight- HT6402" },
+  { thread: "JIC Fitting", category: "FORB-MP Straight- HT6404" },
+  { thread: "JIC Fitting", category: "FORB-FP Straight- HT6405" },
+  { thread: "JIC Fitting", category: "MORB Externalhex Plug- HT6408-O" },
+  { thread: "JIC Fitting", category: "MORB Hollow HEX Plug- HT6408-H-O" },
+  { thread: "JIC Fitting", category: "MORB-FORB Straight Reducer- HT6410" },
+  { thread: "JIC Fitting", category: "FORB-FORB Straight- HT6425" },
+  { thread: "JIC Fitting", category: "MJ-FJS 90° Elbow- HT6500" },
+  { thread: "JIC Fitting", category: "MP-FJS 90° Elbow- HT6501" },
+  { thread: "JIC Fitting", category: "MJ-FJS 45° Elbow- HT6502" },
+  { thread: "JIC Fitting", category: "MP-FJS Straight- HT6505" },
+  { thread: "JIC Fitting", category: "FP-FJS Straight- HT6506" },
+  { thread: "JIC Fitting", category: "FJS-FJS Straight- HT6565" },
+  { thread: "JIC Fitting", category: "MJ-MJ-FJS Tee- HT6600" },
+  { thread: "JIC Fitting", category: "MJ-FJS-MJ Tee- HT6602" },
+  { thread: "JIC Fitting", category: "FJS-FJS-FJS Tee- HT6606" },
+  { thread: "JIC Fitting", category: "MJ-MAORB 90° Elbow- HT6801" },
+  { thread: "JIC Fitting", category: "MJ-MAORB 90° Long- HT6801-L" },
+  { thread: "JIC Fitting", category: "MJ-MAORB 90° X-Long- HT6801-LL" },
+  { thread: "JIC Fitting", category: "MJ-MAORB 45° Elbow- HT6802" },
+  { thread: "JIC Fitting", category: "MJ-MJ-MAORB Branch Tee- HT6803" },
+  { thread: "JIC Fitting", category: "MJ-MAORB-MJ Run Tee- HT6804" },
+  { thread: "JIC Fitting", category: "MAORB-FP 90° Elbow- HT6805" },
+  { thread: "JIC Fitting", category: "MAORB-MP 90° Elbow- HT6806" },
+  { thread: "JIC Fitting", category: "MAORB-MAORB 90° Elbow- HT6807" },
+  { thread: "JIC Fitting", category: "MAORB-FJS 90° Elbow- HT6809" },
+  { thread: "JIC Fitting", category: "MAORB-FORB 90° Elbow- HT6815" },
+  { thread: "JIC Fitting", category: "FORB-FORB-MORB Tee- HT6835" },
+  { thread: "JIC Fitting", category: "MORB-FPS Straight- HT6900" },
+  { thread: "JIC Fitting", category: "MORB-FPS 90° Elbow- HT6901" },
+  { thread: "JIC Fitting", category: "Pipe Cap- HT5406-C" },
+  { thread: "JIC Fitting", category: "Ferrule- HTC0319" },
+  
+
+  //"Oring Face Seal Fitting
+  { thread: "Oring Face Seal Fitting", category: "Cap Assembly Insert- HTFS0304-C" },
+  { thread: "Oring Face Seal Fitting", category: "Bulkhead Lock Nut- HTFS0306" },
+  { thread: "Oring Face Seal Fitting", category: "Tube Nut- HTFS0318" },
+  { thread: "Oring Face Seal Fitting", category: "Tube Sleeve- HTFS0319" },
+  { thread: "Oring Face Seal Fitting", category: "Bore-MFS Straight- HTFS0403" },
+  { thread: "Oring Face Seal Fitting", category: "Bore-MFS Bulkhead- HTFS0406" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MFS Straight- HTFS2403" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MP Straight- HTFS2404" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-FP Straight- HTFS2405" },
+  { thread: "Oring Face Seal Fitting", category: "FFS-MFS Tube End Reducer- HTFS2406" },
+  { thread: "Oring Face Seal Fitting", category: "MFS Plug- HTFS2408" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MFS 90° Elbow- HTFS2500" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MP 90° Elbow- HTFS2501" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MP 45° Elbow- HTFS2503" },
+  { thread: "Oring Face Seal Fitting", category: "MFS--MFS-MP Tee- HTFS2601" },
+  { thread: "Oring Face Seal Fitting", category: "MFS--MFS-MFS Tee- HTFS2603" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MP-MFS Tee- HTFS2605" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MFS-MFS-MFS Cross- HTFS2650" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MFS Bulkhead Union- HTFS2700" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MFS Bulkhead 90°- HTFS2701" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MFS Bulkhead 45°- HTFS2702" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MFS-MFS Bulkhead Tee- HTFS2703" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MFS-MFS Bulkhead Tee- HTFS2704" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MORB Bulkhead Straight- HTFS2764" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MORB Straight- HTFS6400-O" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MORB Straight Long- HTFS6400-L-O" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-FJS Straight- HTFS6402" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MJ Straight- HTFS6403" },
+  { thread: "Oring Face Seal Fitting", category: "FORB-MFS Straight- HTFS6410" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-FFSS 90°- HTFS6500" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-FFSS 45°- HTFS6502" },
+  { thread: "Oring Face Seal Fitting", category: "FP-FFSS 90°- HTFS6503" },
+  { thread: "Oring Face Seal Fitting", category: "FFSS-MJ Straight- HTFS6504" },
+  { thread: "Oring Face Seal Fitting", category: "MP-FFSS Straight- HTFS6505" },
+  { thread: "Oring Face Seal Fitting", category: "FFSS-MORB Straight- HTFS6540" },
+  { thread: "Oring Face Seal Fitting", category: "FFSS-FFSS Straight- HTFS6565" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MFS-FFSS Branch Tee- HTFS6600" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-FFSS-MFS Run Tee- HTFS6602" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MAORB 90° Elbow- HTFS6801-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MAORB 90° Long Elbow- HTFS6801-L-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MAORB 90° X-Long- HTFS6801-LL-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MAORB 45° Elbow- HTFS6802-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS--MFS-MAORB Tee- HTFS6803-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MAORB-MFS Tee- HTFS6804-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "FFSS-MAORB-MFS 90° Elbow- HTFS6809-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MABSPP 90° Elbow- HTFS7202-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MMAORB 90° Elbow- HTFS7205-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MFS-MMAORB Tee- HTFS7210-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MMAORB-MFS Tee- HTFS7215-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MMAORB 45° Elbow- HTFS7300-NWO" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MMORB Straight- HTFS7640-O" },
+  { thread: "Oring Face Seal Fitting", category: "MFS-MMED Straight- HTFS7701" }
+];
+
+
+const uomOptions = [
+  { value: "pcs", label: "Pieces (pcs)" },
+  { value: "inch", label: "Inches (inch)" },
+  { value: "meter", label: "Meters (m)" },
+  { value: "pairs", label: "Pairs" },
+  { value: "Numbers", label: "NOS" },
+  { value: "set", label: "Sets" },
+];
+
+
+const gstOption = [
+  // { value: '', label: 'Select GST Rate' },
+  { value: "0", label: "0%" },
+  { value: "5", label: "5%" },
+  { value: "12", label: "12%" },
+  { value: "18", label: "18%" },
+  { value: "28", label: "28%" },
+];
+
+
+const nutFittingThreadOptions = [
+  { value: "BSP", label: "BSP (B)", code: "B", dsc_code: "BSP" },
+  { value: "JIC", label: "JIC (J)", code: "J", dsc_code: "JIC" },
+  { value: "ORFS", label: "ORFS (O)", code: "O", dsc_code: "ORFS" },
+  { value: "METRIC KOMATSU", label: "METRIC KOMATSU (MK)", code: "MK", dsc_code: "METRIC KOMATSU" },
+  { value: "METRIC LIGHT", label: "METRIC(LIGHT) (DL)", code: "DL", dsc_code: "METRIC LIGHT" },
+  { value: "METRIC HEAVY", label: "METRIC(HEAVY) (DH)", code: "DH", dsc_code: "METRIC HEAVY" },
+  { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "BJ", dsc_code: "JIS" }
+];
+
+const nutFittingDashSize = [
+// BSP
+{ thread_type: "BSP", dash: "04", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "05", inch: "5/16\"", thread: "5/16\"", dsc_code: "5/16\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "06", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "08", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "10", inch: "5/8\"", thread: "5/8\"", dsc_code: "5/8\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "12", inch: "3/4\"", thread: "3/4\"", dsc_code: "3/4\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "16", inch: "1\"", thread: "1\"", dsc_code: "1\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "20", inch: "1-1/4\"", thread: "1-1/4\"", dsc_code: "1-1/4\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "24", inch: "1-1/2\"", thread: "1-1/2\"", dsc_code: "1-1/2\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "32", inch: "2\"", thread: "2\"", dsc_code: "2\"", variant: "Standard" },
+
+
+ // JIC
+ { thread_type: "JIC", dash: "04", inch: "1/4\"", thread: "7/16\"", dsc_code: "7/16\"", variant: "Standard" },
+ { thread_type: "JIC", dash: "05", inch: "5/16\"", thread: "1/2\"", dsc_code: "1/2\"", variant: "Standard" },
+ { thread_type: "JIC", dash: "06", inch: "3/8\"", thread: "9/16\"", dsc_code: "9/16\"", variant: "Standard" },
+ { thread_type: "JIC", dash: "08", inch: "1/2\"", thread: "3/4\"", dsc_code: "3/4\"", variant: "Standard" },
+ { thread_type: "JIC", dash: "10", inch: "5/8\"", thread: "7/8\"", dsc_code: "7/8\"", variant: "Standard" },
+ { thread_type: "JIC", dash: "12", inch: "3/4\"", thread: "1-1/16\"", dsc_code: "1-1/16\"", variant: "Standard" },
+ { thread_type: "JIC", dash: "16", inch: "1\"", thread: "1-5/16\"", dsc_code: "1-5/16\"", variant: "Standard" },
+ { thread_type: "JIC", dash: "20", inch: "1-1/4\"", thread: "1-5/8\"", dsc_code: "1-5/8\"", variant: "Standard" },
+ { thread_type: "JIC", dash: "24", inch: "1-1/2\"", thread: "1-7/8\"", dsc_code: "1-7/8\"", variant: "Standard" },
+ { thread_type: "JIC", dash: "32", inch: "2\"", thread: "2-1/2\"", dsc_code: "2-1/2\"", variant: "Standard" },
+
+ // NPT
+ { thread_type: "NPT", dash: "04", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4\"", variant: "Standard" },
+//  { thread_type: "NPT", dash: "05", inch: "5/16\"", thread: "", dsc_code: "", variant: "Standard" },
+ { thread_type: "NPT", dash: "06", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "08", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2\"", variant: "Standard" },
+//  { thread_type: "NPT", dash: "10", inch: "5/8\"", thread: "", dsc_code: "", variant: "Standard" },
+ { thread_type: "NPT", dash: "12", inch: "3/4\"", thread: "3/4\"", dsc_code: "3/4\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "16", inch: "1\"", thread: "1\"", dsc_code: "1\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "20", inch: "1-1/4\"", thread: "1-1/4\"", dsc_code: "1-1/4\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "24", inch: "1-1/2\"", thread: "1-1/2\"", dsc_code: "1-1/2\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "32", inch: "2\"", thread: "2\"", dsc_code: "2\"", variant: "Standard" },
+
+ // JIS
+ { thread_type: "JIS", dash: "04", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4\"", variant: "Standard" },
+//  { thread_type: "JIS", dash: "05", inch: "5/16\"", thread: "", dsc_code: "", variant: "Standard" },
+ { thread_type: "JIS", dash: "06", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8\"", variant: "Standard" },
+ { thread_type: "JIS", dash: "08", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2\"", variant: "Standard" },
+ { thread_type: "JIS", dash: "10", inch: "5/8\"", thread: "5/8\"", dsc_code: "5/8\"", variant: "Standard" },
+ { thread_type: "JIS", dash: "12", inch: "3/4\"", thread: "3/4\"", dsc_code: "3/4\"", variant: "Standard" },
+ { thread_type: "JIS", dash: "16", inch: "1\"", thread: "1\"", dsc_code: "1\"", variant: "Standard" },
+ { thread_type: "JIS", dash: "20", inch: "1-1/4\"", thread: "1-1/4\"", dsc_code: "1-1/4\"", variant: "Standard" },
+ { thread_type: "JIS", dash: "24", inch: "1-1/2\"", thread: "1-1/2\"", dsc_code: "1-1/2\"", variant: "Standard" },
+ { thread_type: "JIS", dash: "32", inch: "2\"", thread: "2\"", dsc_code: "2\"", variant: "Standard" },
+
+ // ORFS
+ { thread_type: "ORFS", dash: "04", inch: "1/4\"", thread: "9/16\"", dsc_code: "9/16\"", variant: "Standard" },
+//  { thread_type: "ORFS", dash: "05", inch: "5/16\"", thread: "", dsc_code: "", variant: "Standard" },
+ { thread_type: "ORFS", dash: "06", inch: "3/8\"", thread: "11/16\"", dsc_code: "11/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "08", inch: "1/2\"", thread: "13/16\"", dsc_code: "13/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "10", inch: "5/8\"", thread: "1\"", dsc_code: "1\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "12", inch: "3/4\"", thread: "1-3/16\"", dsc_code: "1-3/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "16", inch: "1\"", thread: "1-7/16\"", dsc_code: "1-7/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "20", inch: "1-1/4\"", thread: "1-11/16\"", dsc_code: "1-11/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "24", inch: "1-1/2\"", thread: "2\"", dsc_code: "2\"", variant: "Standard" },
+//  { thread_type: "ORFS", dash: "32", inch: "2\"", thread: "", dsc_code: "", variant: "Standard" },
+
+// KOMATSU
+{ thread_type: "METRIC KOMATSU", dash: "04", inch: "1/4\"", thread: "14X1.5", dsc_code: "14X1.5", variant: "Standard" },
+// { thread_type: "KOMATSU", dash: "05", inch: "5/16\"", thread: "", dsc_code: "", variant: "Standard" },
+{ thread_type: "METRIC KOMATSU", dash: "06", inch: "3/8\"", thread: "18X1.5", dsc_code: "18X1.5", variant: "Standard" },
+{ thread_type: "METRIC KOMATSU", dash: "08", inch: "1/2\"", thread: "22X1.5", dsc_code: "22X1.5", variant: "Standard" },
+{ thread_type: "METRIC KOMATSU", dash: "10", inch: "5/8\"", thread: "24X1.5", dsc_code: "24X1.5", variant: "Standard" },
+{ thread_type: "METRIC KOMATSU", dash: "12", inch: "3/4\"", thread: "30X1.5", dsc_code: "30X1.5", variant: "Standard" },
+{ thread_type: "METRIC KOMATSU", dash: "16", inch: "1\"", thread: "33X1.5", dsc_code: "33X1.5", variant: "Standard" },
+{ thread_type: "METRIC KOMATSU", dash: "20", inch: "1-1/4\"", thread: "36X1.5", dsc_code: "36X1.5", variant: "Standard" },
+{ thread_type: "METRIC KOMATSU", dash: "24", inch: "1-1/2\"", thread: "42X1.5", dsc_code: "42X1.5", variant: "Standard" },
+// { thread_type: "KOMATSU", dash: "32", inch: "2\"", thread: "", dsc_code: "", variant: "Standard" },
+
+// Metric Light
+{ thread_type: "METRIC LIGHT", dash: "06", pipe_od: "06", thread: "M12X1.5", variant: null, dsc_code: "M12X1.5" },
+{ thread_type: "METRIC LIGHT", dash: "08", pipe_od: "08", thread: "M14X1.5", variant: null, dsc_code: "M14X1.5" },
+{ thread_type: "METRIC LIGHT", dash: "10", pipe_od: "10", thread: "M16X1.5", variant: null, dsc_code: "M16X1.5" },
+{ thread_type: "METRIC LIGHT", dash: "12", pipe_od: "12", thread: "M18X1.5", variant: null, dsc_code: "M18X1.5" },
+{ thread_type: "METRIC LIGHT", dash: "15", pipe_od: "15", thread: "M22X1.5", variant: null, dsc_code: "M22X1.5" },
+{ thread_type: "METRIC LIGHT", dash: "18", pipe_od: "18", thread: "M26X1.5", variant: null, dsc_code: "M26X1.5" },
+{ thread_type: "METRIC LIGHT", dash: "22", pipe_od: "22", thread: "M30X2.0", variant: null, dsc_code: "M30X2.0" },
+{ thread_type: "METRIC LIGHT", dash: "28", pipe_od: "28", thread: "M36X2.0", variant: null, dsc_code: "M36X2.0" },
+{ thread_type: "METRIC LIGHT", dash: "35", pipe_od: "35", thread: "M45X2.0", variant: null, dsc_code: "M45X2.0" },
+{ thread_type: "METRIC LIGHT", dash: "42", pipe_od: "42", thread: "M52X2.0", variant: null, dsc_code: "M52X2.0" },
+
+// Metric Heavy
+{ thread_type: "METRIC HEAVY", dash: "06", pipe_od: "06", thread: "M14X1.5", variant: null, dsc_code: "M14X1.5" },
+{ thread_type: "METRIC HEAVY", dash: "08", pipe_od: "08", thread: "M16X1.5", variant: null, dsc_code: "M16X1.5" },
+{ thread_type: "METRIC HEAVY", dash: "10", pipe_od: "10", thread: "M18X1.5", variant: null, dsc_code: "M18X1.5" },
+{ thread_type: "METRIC HEAVY", dash: "12", pipe_od: "12", thread: "M20X1.5", variant: null, dsc_code: "M20X1.5" },
+{ thread_type: "METRIC HEAVY", dash: "14", pipe_od: "14", thread: "M22X1.5", variant: null, dsc_code: "M22X1.5" },
+{ thread_type: "METRIC HEAVY", dash: "16", pipe_od: "16", thread: "M24X1.5", variant: null, dsc_code: "M24X1.5" },
+{ thread_type: "METRIC HEAVY", dash: "20", pipe_od: "20", thread: "M30X2.0", variant: null, dsc_code: "M30X2.0" },
+{ thread_type: "METRIC HEAVY", dash: "25", pipe_od: "25", thread: "M36X2.0", variant: null, dsc_code: "M36X2.0" },
+{ thread_type: "METRIC HEAVY", dash: "30", pipe_od: "30", thread: "M42X2.0", variant: null, dsc_code: "M42X2.0" },
+{ thread_type: "METRIC HEAVY", dash: "38", pipe_od: "38", thread: "M52X2.0", variant: null, dsc_code: "M52X2.0" },
+
+];
+
+const nippleFittingThreadOptions = [
+  { value: "BSP", label: "BSP (B)", code: "B", dsc_code: "BSP" },
+  { value: "BSP ORING", label: "BSP ORING (BO)", code: "BO", dsc_code: "BSP ORING" },
+  { value: "JIC", label: "JIC (J)", code: "J", dsc_code: "JIC" },
+  { value: "ORFS", label: "ORFS (O)", code: "O", dsc_code: "ORFS" },
+  { value: "METRIC KOMATSU", label: "METRIC KOMATSU (MK)", code: "MK", dsc_code: "METRIC KOMATSU" },
+  { value: "METRIC LIGHT", label: "METRIC(LIGHT) (DL)", code: "DL", dsc_code: "METRIC LIGHT" },
+  { value: "METRIC LIGHT WITH O", label: "METRIC(LIGHT) WITH O (DLO)", code: "DLO", dsc_code: "METRIC LIGHT WITH O" },
+  { value: "METRIC HEAVY", label: "METRIC(HEAVY) (DH)", code: "DH", dsc_code: "METRIC HEAVY" },
+  { value: "METRIC HEAVY WITH O", label: "METRIC(HEAVY) WITH O (DHO)", code: "DHO", dsc_code: "METRIC HEAVY WITH O" },
+  { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "BJ", dsc_code: "JIS" },
+  { value: "METRIC THREAD ORFS", label: "METRIC THREAD ORFS (MO)", code: "MO", dsc_code: "METRIC THREAD ORFS" }
+];
+
+
+
+
 
 
 module.exports = {
@@ -574,5 +992,17 @@ module.exports = {
   HoseTypeOptions,
   springTypeOption,
   dustCapColorsOption,
-  sleeveSizesOption
+  sleeveSizesOption,
+  vcSizesOption,
+  dustCapThreadType,
+  oRingThreadTypeOption,
+  dustCapMatricOption,
+  TuebeFittingsThreads,
+  TubeFittingsCategory,
+  uomOptions,
+  gstOption,
+  nutFittingThreadOptions,
+  nutFittingDashSize,
+  nippleFittingThreadOptions
+
 };

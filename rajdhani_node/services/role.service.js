@@ -22,7 +22,7 @@ const getRole = async () => {
 
 const getRoleById = async (Id) => {
   try {
-    const roleById = await adminRoles.findById(Id);
+    const roleById = await adminRoles.findById(Id).populate("permissions");
     if (!roleById) {
       throw new Error("Role not found");
     }

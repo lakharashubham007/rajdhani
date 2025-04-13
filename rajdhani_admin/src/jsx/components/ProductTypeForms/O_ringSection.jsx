@@ -10,7 +10,7 @@ const O_ringSection = (props) => {
     setErrors,
 
     //Fitting Thread
-    fittingThreadOption,
+    oRingThreadTypeOption,
     selectedFittingThreadOption,
     setSelectedFittingThreadOption,
   
@@ -36,6 +36,10 @@ const O_ringSection = (props) => {
     setFormData({
       ...formData,
       [name]: value,
+    });
+    setErrors({
+      ...errors,
+      [name]: null,
     });
   };
 
@@ -107,7 +111,7 @@ const O_ringSection = (props) => {
                       setSelectedFittingThreadOption(option);
                       setFormData({
                         ...formData,
-                        fitting_thread: option.value,
+                        fitting_thread: option?.value,
                       });
                       setErrors({
                         ...errors,
@@ -115,7 +119,8 @@ const O_ringSection = (props) => {
                       })
                     }}
                     defaultValue={selectedFittingThreadOption}
-                    options={fittingThreadOption}
+                    options={oRingThreadTypeOption}
+                    isClearable
                     style={{
                       lineHeight: "40px",
                       color: "#7e7e7e",
@@ -131,36 +136,6 @@ const O_ringSection = (props) => {
                 {/**Size combo */}
                 {selectedFittingThreadOption?.value !== "METRIC" ?
                   (<>
-                    {/* <div className="col-md-3">
-                      <label className="col-form-label">Variant</label>
-                      <Select
-                        value={selectedvariantOption}
-                        onChange={(option) => {
-                          setSelectedvariantOption(option);
-                          setFormData({
-                            ...formData,
-                            variant: option.value,
-                          });
-                          setErrors({
-                            ...errors,
-                            variant: null
-                          })
-                        }}
-                        defaultValue={selectedvariantOption}
-                        options={variantOption}
-                        style={{
-                          lineHeight: "40px",
-                          color: "#7e7e7e",
-                          paddingLeft: " 15px",
-                        }}
-                      />
-                      {errors.fitting_thread && (
-                        <span className="text-danger fs-12">
-                          {errors.fitting_thread}
-                        </span>
-                      )}
-                    </div> */}
-
                     {selectedFittingThreadOption?.value === "SAE 61" || selectedFittingThreadOption?.value === "SAE 62" ?
                       (<>
                         <div className="col-md-3">

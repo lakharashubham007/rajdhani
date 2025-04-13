@@ -5,6 +5,7 @@ import {
     loginConfirmedAction,
     Logout,
 } from '../store/actions/AuthActions';
+import { getRolePermissions } from './apis/AuthService';
 
 export function signUp(email, password) {
     //axios call
@@ -84,12 +85,12 @@ export function runLogoutTimer(dispatch, timer, navigate) {
     }, timer);
 }
 
-export function checkAutoLogin(dispatch, navigate) {
+export async function checkAutoLogin(dispatch, navigate) {
     const tokenDetailsString = localStorage.getItem('tokens');
     // console.log("tokenDetailsString", tokenDetailsString);
 
     if (!tokenDetailsString) {
-        dispatch(Logout(navigate));
+        // dispatch(Logout(navigate));
         return;
     }
 
@@ -110,7 +111,18 @@ export function checkAutoLogin(dispatch, navigate) {
         return;
     }
 
-    dispatch(loginConfirmedAction(tokenDetails));
+    const roleData = await getRolePermissions(tokenDetails?.user?.role_id);
+
+        const payload = {
+            ...tokenDetails,
+            role: roleData?.data?.roleById?.name || '',
+            permissions: roleData?.data?.roleById?.permissions || [],
+        };
+
+        dispatch(loginConfirmedAction(payload));
+
+
+    // dispatch(loginConfirmedAction(tokenDetails));
 
     const timer = expireDate.getTime() - todaysDate.getTime();
     runLogoutTimer(dispatch, timer, navigate);

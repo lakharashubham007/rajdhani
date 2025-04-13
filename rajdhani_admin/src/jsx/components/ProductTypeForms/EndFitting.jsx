@@ -88,7 +88,6 @@ const EndFittingForm = (props) => {
   const [loading, setLoading] = useState(false);
 
 
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
@@ -465,7 +464,9 @@ const EndFittingForm = (props) => {
                           });
                           setErrors({
                             ...errors,
-                            variant: null
+                            variant: null,
+                            fitting_dash_size: null,
+                            OD: null
                           })
                         }}
                         defaultValue={selectedvariantOption}
@@ -646,7 +647,7 @@ const EndFittingForm = (props) => {
                             setSelectedfittingDashSizeOption(option);
                             setFormData({
                               ...formData,
-                              fitting_dash_size: option,
+                              fitting_dash_size: option?.value,
 
                             });
                             setErrors({

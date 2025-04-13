@@ -37,10 +37,11 @@ export const addProductApi = async (formData) => {
 };
 
 
-export const getProductApi = async (currentPage,sort,sortValue,searchInputValue) => {
+export const getProductApi = async (currentPage,sort,sortValue,searchInputValue,productTypes = []) => {
+ console.log("productTypes",productTypes)
   const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
   try {
-      const response = await axios.get(`${apis.product.productList}?page=${currentPage}&limit=${sort}&sort=${sortValue?.value ? `${sortValue?.value}:`: ""}${sortValue?.type ? sortValue?.type : ""}&search=${searchInputValue}`,
+      const response = await axios.get(`${apis.product.productList}?page=${currentPage}&limit=${sort}&sort=${sortValue?.value ? `${sortValue?.value}:`: ""}${sortValue?.type ? sortValue?.type : ""}&search=${searchInputValue}&productTypes=${productTypes?.join(",")}`,
     {
       headers: {
         'Content-Type': 'application/json',
@@ -112,12 +113,47 @@ export const GetEditProductData = async (id) => {
   }
   };
 
+  //single prodcut details when user scan qr code
+  export const GetProductDetailsQrScannerApi = async (id) => {
+    const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+    try {
+        const response = await axios.get(`${apis.product.getEditProductDetails}/${id}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          // Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error creating facility:", error);
+    throw error;
+  }
+  };
+
+
 
   export const UpdateProduct = async (id,formData) => {
+    const form = new FormData();
+
+    for (const key in formData) {
+      if (key !== 'image' && key !== 'gallery' && formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+        form.append(key, formData[key]);
+      }
+    }
+    if (formData.image) {
+      form.append("image", formData.image);
+    }
+
+    formData?.gallery?.forEach((file) => {
+      form.append("gallery", file);
+    });
+   
     const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
     try {
         const response = await axios.patch(`${apis.product.updateProduct}/${id}`,
-            formData,
+          form,
       {
         headers: {
           // 'Content-Type': 'application/json',
@@ -248,6 +284,25 @@ export const getCityApi = async ( state_id) => {
         throw error;
     }
 };
+
+
+// utils/api.js or wherever your API functions are
+export const generateQrCodeForProduct = async (productId) => {
+  // const token = localStorage.getItem("token")?.replace(/^"(.*)"$/, "$1");
+
+  try {
+    const response = await axios.get(`${apis.product.generateQr}/${productId}`, {
+      headers: {
+        // Authorization: `Bearer ${token}`,
+      },
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error generating QR code:", error);
+    throw error;
+  }
+};
+
 
 
 

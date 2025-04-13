@@ -154,7 +154,7 @@ const AddSupplierPurchaseOrder = () => {
   //Rows Fields
   const [rows, setRows] = useState([]);
   const [draggedRow, setDraggedRow] = useState(null);
-  // console.log("row data is here : --------->", rows);
+  console.log("row data is here : --------->", rows);
 
   const handleDragStart = (index) => {
     setDraggedRow(index);
@@ -164,20 +164,37 @@ const AddSupplierPurchaseOrder = () => {
     event.preventDefault();
   };
 
+  // const handleDrop = (index) => {
+  //   if (draggedRow === null) return;
+
+  //   const newRows = [...rows];
+  //   const [movedRow] = newRows.splice(draggedRow, 1);
+  //   newRows.splice(index, 0, movedRow);
+
+  //   setRows(newRows);
+  //   setDraggedRow(null);
+  // };
+
+  // Function to add a new row
+  
   const handleDrop = (index) => {
     if (draggedRow === null) return;
-
-    const newRows = [...rows];
-    const [movedRow] = newRows.splice(draggedRow, 1);
-    newRows.splice(index, 0, movedRow);
-
-    setRows(newRows);
+  
+    // Reorder rows
+    const updatedRows = [...rows];
+    const draggedRows = updatedRows?.splice(draggedRow, 1)[0]; // Remove dragged row
+    updatedRows.splice(index, 0, draggedRows); // Insert at new position
+  
+    // Reassign sequence numbers
+    const reorderedRows = updatedRows.map((row, idx) => ({ ...row, id: idx }));
+  
+    setRows(reorderedRows);
     setDraggedRow(null);
   };
 
-  // Function to add a new row
   const addRow = () => {
     if (!selectedProduct) return; // Prevent adding empty rows
+    console.log(selectedProduct,"Selected Product is here");
 
     //calculation to add taxable amount 
     const taxableAmount = (selectedProduct?.price - selectedDiscount) * selectedQuantity;
@@ -230,6 +247,7 @@ const AddSupplierPurchaseOrder = () => {
       sgst: sgst || 0,
       igst: igst || 0,
       total_amount: TotalAmount || 0,
+      product_id: selectedProduct?.id
 
 
     };
@@ -818,7 +836,7 @@ const AddSupplierPurchaseOrder = () => {
       return {
         ...rest,
         po_id: PO_id,
-        // product_id: rest?.id
+        // product_id: id
         // cess: parseFloat(rest.cess || 0),
         // cgst: parseFloat(rest.cgst || 0),
         // discount_per_unit: parseFloat(rest.discount_per_unit || 0),
@@ -831,6 +849,8 @@ const AddSupplierPurchaseOrder = () => {
         // sgst: parseFloat(rest.sgst || 0),
       };
     });
+
+    console.log("fDataProducts fDataProducts -->",fDataProducts)
 
     try {
       const res = await createPoItemApi(fDataProducts);
@@ -1102,7 +1122,8 @@ const AddSupplierPurchaseOrder = () => {
         price: product?.price,
         gst: product?.gst,
         fitting_Code: product?.fitting_Code,
-        desc_Code: product?.desc_Code
+        desc_Code: product?.desc_Code,
+        quantity: product?.total_quantity
       }));
 
       setSimilarProducts(dropdownProductList);
@@ -1439,10 +1460,10 @@ const AddSupplierPurchaseOrder = () => {
                               <div className="col">
                                 <div className="d-flex justify-content-between">
                                   <div className="w-80">
-                                    <strong>{product.product_code}</strong>
-                                    <span> {product.desc_Code}</span>
+                                    <strong>{product?.product_code}</strong>
+                                    <span> {product?.desc_Code}</span>
                                     <br />
-                                    <small className="text-muted">{product.fitting_Code}</small>
+                                    <small className="text-muted">{product?.fitting_Code}</small>
                                   </div>
 
                                   {/* <div className="w-20">
@@ -1459,7 +1480,7 @@ const AddSupplierPurchaseOrder = () => {
                                         // borderImage: "linear-gradient(135deg, #9A67F8, #C3A4FC , #7B32FF) 1", // Gradient border
                                      }}>
                                     <span className="text-black font-bold">Qty:</span>
-                                    <span className="ms-1 text-black font-bold">0</span>
+                                    <span className="ms-1 text-black font-bold">{product?.quantity}</span>
                                   </div>
                                 </div>
                               </div>

@@ -13,6 +13,7 @@ const HosePipe = (props) => {
     formData,
     setFormData,
     errors,
+    setErrors,
     resetForm,
     wireTypeOption,
     setWireTypeOption,
@@ -154,13 +155,13 @@ const HosePipe = (props) => {
         {/* SECTION 1ST */}
         <div className="col-xl-12 col-lg-12">
           <div className="card">
-            
+
 
 
             <div className="mb-3 row">
               <div className="col-md-12">
                 <div className="">
-                  
+
                   <div className="card-header row">
 
                     <div className="col-md-4">
@@ -207,16 +208,12 @@ const HosePipe = (props) => {
               </div>
             </div>
 
-
-
-
-
             <div className="card-body">
               {/* SECTION 1ST Hose Pipe */}
               <div>
                 <div className="mb-3 row">
-                
-                   {/* MFC options */}
+
+                  {/* MFC options */}
                   <div className="col-md-3">
                     <label className="col-form-label">MFC</label>
                     <Select
@@ -225,8 +222,12 @@ const HosePipe = (props) => {
                         setSelectedHosePipeMFCOption(option);
                         setFormData({
                           ...formData,
-                          hose_pipe_mfc: option.value,
+                          hose_pipe_mfc: option?.value,
                         });
+                        setErrors({
+                          ...errors,
+                          hose_pipe_mfc: null
+                        })
                       }}
                       defaultValue={selectedHosePipeMFCOption}
                       options={HosePipeMFCOption}
@@ -236,13 +237,13 @@ const HosePipe = (props) => {
                         paddingLeft: " 15px",
                       }}
                     />
-                    {errors.hose_pipe_mfc && (
+                    {errors?.hose_pipe_mfc && (
                       <span className="text-danger fs-12">
-                        {errors.hose_pipe_mfc}
+                        {errors?.hose_pipe_mfc}
                       </span>
                     )}
                   </div>
-                   {/* BrandLayLineOption */}
+                  {/* BrandLayLineOption */}
                   <div className="col-md-3">
                     <label className="col-form-label">Brand Lay Line</label>
                     <Select
@@ -253,6 +254,10 @@ const HosePipe = (props) => {
                           ...formData,
                           brand_lay_line: option.value,
                         });
+                        setErrors({
+                          ...errors,
+                          brand_lay_line: null
+                        })
                       }}
                       defaultValue={selectedBrandLayLineOption}
                       options={BrandLayLineOption}
@@ -268,33 +273,37 @@ const HosePipe = (props) => {
                       </span>
                     )}
                   </div>
-                 {/* HoseDash size options */}
+                  {/* HoseDash size options */}
                   <div className="col-md-3">
-                  <label className="col-form-label">Hose Dash Size</label>
-                  <Select
-                    value={selectedhoseDashSizeOption}
-                    onChange={(option) => {
-                      setSelectedHoseDashSizeOption(option);
-                      setFormData({
-                        ...formData,
-                        hose_dash_size: option.value,
-                      });
-                    }}
-                    defaultValue={selectedhoseDashSizeOption}
-                    options={HoseDashSizeOption}
-                    style={{
-                      lineHeight: "40px",
-                      color: "#7e7e7e",
-                      paddingLeft: " 15px",
-                    }}
-                  />
-                  {errors.hose_dash_size && (
-                    <span className="text-danger fs-12">
-                      {errors.hose_dash_size}
-                    </span>
-                  )}
-                </div>
-                {/* Hose Type size options */}
+                    <label className="col-form-label">Hose Dash Size</label>
+                    <Select
+                      value={selectedhoseDashSizeOption}
+                      onChange={(option) => {
+                        setSelectedHoseDashSizeOption(option);
+                        setFormData({
+                          ...formData,
+                          hose_dash_size: option.value,
+                        });
+                        setErrors({
+                          ...errors,
+                          hose_dash_size: null
+                        })
+                      }}
+                      defaultValue={selectedhoseDashSizeOption}
+                      options={HoseDashSizeOption}
+                      style={{
+                        lineHeight: "40px",
+                        color: "#7e7e7e",
+                        paddingLeft: " 15px",
+                      }}
+                    />
+                    {errors.hose_dash_size && (
+                      <span className="text-danger fs-12">
+                        {errors.hose_dash_size}
+                      </span>
+                    )}
+                  </div>
+                  {/* Hose Type size options */}
                   <div className="col-md-3">
                     <label className="col-form-label">Hose Type</label>
                     <Select
@@ -305,6 +314,10 @@ const HosePipe = (props) => {
                           ...formData,
                           hose_type: option.value,
                         });
+                        setErrors({
+                          ...errors,
+                          hose_type: null
+                        })
                       }}
                       defaultValue={selectedHoseTypeOption}
                       options={HoseTypeOption}
@@ -323,15 +336,15 @@ const HosePipe = (props) => {
                 </div>
 
               </div>
-              
+
             </div>
-            
+
           </div>
-          
+
         </div>
       </div>
- {/* Section 2nd Location and additional field */}
- <div className="row">
+      {/* Section 2nd Location and additional field */}
+      <div className="row">
         <div className="col-xl-12 col-lg-12">
           <div className="card">
             <div className="card-header">
@@ -340,27 +353,27 @@ const HosePipe = (props) => {
             <div className="card-body">
               <div className="mb-3 row">
 
-                  <div className="col-md-6">
-                    <label className="col-form-label">Additional<small style={{ color: "grey" }} >(Optional Field)*</small></label>
-                    <input
-                      name="additional"
-                      value={formData.additional}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: Additional"
-                    />
-                    {errors.additional && (
-                      <span className="text-danger fs-12">{errors.additional}</span>
-                    )}
-                  </div>
+                <div className="col-md-6">
+                  <label className="col-form-label">Additional<small style={{ color: "grey" }} >(Optional Field)*</small></label>
+                  <input
+                    name="additional"
+                    value={formData.additional}
+                    onChange={handleChange}
+                    type="text"
+                    className="form-control"
+                    placeholder="Ex: Additional"
+                  />
+                  {errors.additional && (
+                    <span className="text-danger fs-12">{errors.additional}</span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
         </div>
-      </div> 
+      </div>
 
-     
+
 
     </>
   );

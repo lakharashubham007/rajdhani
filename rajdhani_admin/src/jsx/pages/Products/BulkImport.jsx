@@ -5,6 +5,8 @@ import * as XLSX from "xlsx";
 import Swal from "sweetalert2";
 // import axios from "axios";
 import { bulkImportApi } from "../../../services/apis/BulkImportApi";
+import { FaFileAlt } from 'react-icons/fa';
+import { CalendarProvider } from "rsuite/esm/Calendar/CalendarContext";
 
 
 const fittingThreadOptions = [
@@ -25,6 +27,9 @@ const fittingThreadOptions = [
 
 const ProductOptions = [
   { value: "End Fittings", label: "End Fittings" },
+  { value: "Nut", label: "Nut" },
+  { value: "Nipple", label: "Nipple" },
+  { value: "Cap", label: "Cap" },
   { value: "Hose Pipe", label: "Hose Pipe" },
   { value: "Hose Assembly", label: "Hose Assembly" },
   { value: "Spring", label: "Spring" },
@@ -34,12 +39,17 @@ const ProductOptions = [
   { value: "Vinyl Cover", label: "Vinyl Cover" },
   { value: "Packing", label: "Packing" },
   { value: "Tube Fittings", label: "Tube Fittings" },
+  
+
 ];
 
 const BulkImport = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedThread, setSelectedThread] = useState(null);
   const [uploadedFile, setUploadedFile] = useState(null);
+
+  console.log("selectedProduct",selectedProduct)
+  console.log("selectedThread",selectedThread)
 
   // Handle file selection
   const handleFileChange = (event) => {
@@ -555,7 +565,7 @@ const templateMapping = {
         "skive_type",
         "fitting_thread",
         "hose_dash_size",
-        "pipe_od",
+        "pipeOD",
         "metric_type",
         "fitting_dash_size",
         "fitting_type",
@@ -577,7 +587,7 @@ const templateMapping = {
             skive_type: "Non-Skive",
             fitting_thread: "METRIC",
             hose_dash_size: '1/4"',
-            pipe_od: '06',
+            pipeOD: '06',
             metric_type: "Light",
             fitting_dash_size: "M12X1.5",
             fitting_type: "Male",
@@ -634,13 +644,316 @@ const templateMapping = {
         },
       ],
     },
+    Nut: {
+      fields: [
+        "product_type",
+        "part",
+        "design",
+        "fitting_thread",
+        "fitting_dash_size",
+        "nut_hex",
+        "nut_length",
+        "additional",
+        "weight",
+        "uom",
+        "price",
+        "gst",
+        
+      ],
+      sampleData: [
+        {
+        product_type: "End Fittings",
+        part: "Nut",
+        design: "S",
+        fitting_thread: "BSP",
+        fitting_dash_size: '1/4"',
+        nut_hex: "15",
+        nut_length: "15",
+        additional: "addon",
+        weight: '1',
+        uom: "set",
+        price: "200",
+        gst: "18",
+        },
+      ],
+    },
+    Nipple: {
+      fields: [
+        "product_type",
+        "part",
+        "design",
+        "wire_type",
+        "skive_type",
+        "fitting_thread",
+        "hose_dash_size",
+        "weight",
+        "uom",
+        "price",
+        "gst",
+      ],
+      sampleData: [
+        {
+        product_type: "End Fittings",
+        part: "Nipple",
+        design: "S",
+        wire_type: "Spiral",
+        skive_type: "Non-Skive",
+        fitting_thread: "BSP",
+        hose_dash_size: '1/4"',
+        weight: '1',
+        uom: "set",
+        price: "200",
+        gst: "18",
+        },
+      ],
+    },
+    Cap: {
+      fields: [
+        "product_type",
+        "part",
+        "design",
+        "wire_type",
+        "skive_type",
+        "cap_size",
+        "big_bore",
+        "od",
+        "length",
+        "weight",
+        "uom",
+        "price",
+        "gst",
+      ],
+      sampleData: [
+        {
+        product_type: "End Fittings",
+        part: "Cap",
+        design: "S",
+        wire_type: "Spiral",
+        skive_type: "Non-Skive",
+        cap_size: '1/4"',
+        big_bore: "28",
+        length: "15",
+        od: "28",
+        additional: "4 Wire",
+        weight: '1',
+        uom: "set",
+        price: "200",
+        gst: "18",
+        },
+      ],
+    },
+    "Hose Pipe": {
+      fields: [
+        "product_type",
+        "hose_pipe_mfc",
+        "brand_lay_line",
+        "hose_dash_size",        
+        "hose_type",
+        "additional",
+        "weight",
+        "uom",
+        "price",
+        "gst",
+      ],
+      sampleData: [
+        {
+        product_type: "Hose Pipe",
+        hose_pipe_mfc: "BSR",
+        brand_lay_line: "PRO",
+        hose_dash_size: "5/16\"",
+        hose_type: "Airdrill",
+        additional: "addon",
+        weight: '1',
+        uom: "set",
+        price: "200",
+        gst: "18",
+        },
+      ],
+    },
+    "Spring": {
+      fields: [
+        "product_type",
+        "inner_diameter",
+        "spring_length",
+        "spring_type",        
+        "hose_size",
+        "weight",
+        "uom",
+        "price",
+        "gst",
+      ],
+      sampleData: [
+        {
+        product_type: "Spring",
+        inner_diameter: "20",
+        spring_length: "15",
+        spring_type: "Compress",
+        hose_size: '1/4"',  
+        weight: '1',
+        uom: "set",
+        price: "185",
+        gst: "18",
+        },
+      ],
+    },
+    "O-ring": {
+      fields: [
+        "product_type",
+        "fitting_thread",
+        "size",
+        "inner_diameter",
+        "thickness",        
+        "hardness",
+        "weight",
+        "uom",
+        "price",
+        "gst",
+      ],
+      sampleData: [
+        {
+        product_type: "O-ring",
+        fitting_thread: "BSP",
+        size: '1/4"',
+        inner_diameter: "15",
+        thickness: "35",
+        hardness: "25",
+        weight: '1',
+        uom: "set",
+        price: "185",
+        gst: "18",
+        },
+      ],
+    },
+    "Dust Cap": {
+      fields: [
+        "product_type",
+        "fitting_thread",
+        "size",
+        "dustcap_color",        
+        "male_female_type",
+        "weight",
+        "uom",
+        "price",
+        "gst",
+      ],
+      sampleData: [
+        {
+        product_type: "Dust Cap",
+        fitting_thread: "Metric",
+        size: '12X1.5',
+        dustcap_color: "Red",
+        male_female_type: "Male",
+        weight: '1',
+        uom: "set",
+        price: "185",
+        gst: "18",
+        },
+      ],
+    },
+    "Sleeve": {
+      fields: [
+        "product_type",
+        "size",
+        "inner_diameter",
+        "outer_diameter",
+        "weight",
+        "uom",
+        "price",
+        "gst",
+      ],
+      sampleData: [
+        {
+        product_type: "Sleeve",
+        size: '3/8"',
+        inner_diameter: "15",
+        outer_diameter: "15",
+        weight: '1',
+        uom: "set",
+        price: "185",
+        gst: "18",
+        },
+      ],
+    },
+    "Vinyl Cover": {
+      fields: [
+        "product_type",
+        "size",
+        "inner_diameter",
+        "outer_diameter",
+        "thickness",    
+        "weight",
+        "uom",
+        "price",
+        "gst",
+      ],
+      sampleData: [
+        {
+        product_type: "Vinyl Cover",
+        size: '3/4"',
+        inner_diameter: "15",
+        outer_diameter: "15",
+        thickness: "15",
+        weight: '1',
+        uom: "set",
+        price: "185",
+        gst: "18",
+        },
+      ],
+    },
+    "Packing": {
+      fields: [
+        "product_type",
+        "item_name",     
+        "weight",
+        "uom",
+        "price",
+        "gst",
+      ],
+      sampleData: [
+        {
+        product_type: "Packing",
+        item_name: "Silver tap",
+        weight: '1',
+        uom: "set",
+        price: "185",
+        gst: "18",
+        },
+      ],
+    },
+    "Tube Fittings": {
+      fields: [
+        "product_type",
+        "tube_fitting_thread",
+        "tube_fitting_category",
+        "part_code",
+        "part_description",
+        "weight",
+        "uom",
+        "price",
+        "gst",
+      ],
+      sampleData: [
+        {
+        product_type: "Tube Fittings",
+        tube_fitting_thread: "Double Ferrule Compression Fitting",
+        tube_fitting_category:  "Male Connector",
+        part_code: "123456ABC",
+        part_description: "Double Ferrule Compression Fitting Male Connector 123465ABC",
+        weight: '1',
+        uom: "set",
+        price: "185",
+        gst: "18",
+        },
+      ],
+    },
+
     // Add similar entries for the rest of the thread options...
   };
 
-  
+ 
+ 
 const handleDownload = (withSampleData) => {
-    if (!selectedThread) {
-    //   alert("Please select a fitting thread type before downloading.");
+    if (selectedProduct?.value === "End Fittings" && !selectedThread) {
       Swal.fire({
         icon: 'warning',
         title: 'Oops',
@@ -650,10 +963,9 @@ const handleDownload = (withSampleData) => {
     }
   
     // Get the selected thread's template details
-    const { fields, sampleData } = templateMapping[selectedThread.value] || {};
+    const { fields, sampleData } = templateMapping[selectedThread?.value]|| templateMapping[selectedProduct?.value] ||{};
   
     if (!fields) {
-    //   alert("No template available for the selected fitting thread type.");
       Swal.fire({
         icon: 'warning',
         title: 'Oops',
@@ -671,7 +983,7 @@ const handleDownload = (withSampleData) => {
     XLSX.utils.book_append_sheet(wb, ws, "Sheet1");
   
     // Generate the filename dynamically
-    const fileName = `${selectedThread.value}_template.xlsx`;
+    const fileName = `${selectedThread?.value ? selectedThread?.value : selectedProduct?.value}_template.xlsx`;
   
     // Create a download link and trigger the file download
     XLSX.writeFile(wb, fileName);
@@ -841,46 +1153,91 @@ console.log("uploadedFile uploadedFile uploadedFile",uploadedFile)
         </div>
       </div>
 
-      {/* File Upload Section */}
-      {/* <div className="upload-section">
-         <h2 className="upload-title">Excel File Upload</h2>
-         <div className="file-dropzone">
-          <p>Must be Excel files using our Excel template above</p>
-         </div>
-        <div className="action-buttons">
-          <button className="btn reset">Reset</button>
-          <button className="btn import">Import</button>
-        </div>
-      </div> */}
-       <div className="upload-section">
-        <h2 className="upload-title">Excel File Upload</h2>
-        <div
-          className="file-dropzone"
-          onDrop={handleDrop}
-          onDragOver={handleDragOver}
-          onClick={() => document.getElementById('file-input').click()}
-          style={{
-            border: '2px dashed #ccc',
-            padding: '20px',
-            textAlign: 'center',
-            cursor: 'pointer',
-          }}
-        >
-          <p>
-            Drag and drop your Excel file here, or click to select a file.
-            <br />
+  
+
+
+
+   
+
+
+
+
+
+
+      <div className="upload-section" style={{ padding: '30px', maxWidth: 'auto', margin: 'auto' }}>
+      <h2 style={{ textAlign: 'center' }}>Excel File Upload</h2>
+
+      <div
+        onDrop={handleDrop}
+        onDragOver={handleDragOver}
+        onClick={() => document.getElementById('file-input').click()}
+        style={{
+          border: '2px dashed #ccc',
+          padding: '30px',
+          textAlign: 'center',
+          cursor: 'pointer',
+          borderRadius: '12px',
+          backgroundColor: '#fafafa',
+          transition: '0.3s',
+          minHeight: '120px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+        }}
+      >
+        <input
+          id="file-input"
+          type="file"
+          accept=".xls,.xlsx"
+          style={{ display: 'none' }}
+          onChange={handleFileChange}
+        />
+
+        {!uploadedFile ? (
+          <p style={{ color: '#666', margin: 0 }}>
+            Drag and drop your Excel file here, or click to select a file.<br />
             Must be Excel files using our Excel template above.
           </p>
-          <input
-            id="file-input"
-            type="file"
-            accept=".xls,.xlsx"
-            style={{ display: 'none' }}
-            onChange={handleFileChange}
-          />
-        </div>
-        {uploadedFile && <p style={{ marginTop: '10px' }}>Uploaded File: {uploadedFile.name}</p>}
-        <div className="action-buttons" style={{ marginTop: '20px' }}>
+        ) : (
+          <div
+            style={{
+              display: 'inline-flex',
+              alignItems: 'center',
+              backgroundColor: '#e6f2ff',
+              borderRadius: '999px',
+              padding: '10px 18px',
+              fontSize: '14px',
+              color: '#005999',
+              boxShadow: '0 2px 5px rgba(0,0,0,0.1)',
+              maxWidth: '100%',
+              whiteSpace: 'nowrap',
+              overflow: 'hidden',
+              textOverflow: 'ellipsis',
+            }}
+          >
+            <span
+              style={{
+                flex: '1',
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+              }}
+            >
+              {uploadedFile.name}
+            </span>
+            <span
+              style={{
+                marginLeft: '10px',
+                display: 'flex',
+                alignItems: 'center',
+              }}
+            >
+              <FaFileAlt size={16} color="#0073e6" />
+            </span>
+          </div>
+        )}
+      </div>
+
+      <div className="action-buttons" style={{ marginTop: '20px', textAlign: 'center' }}>
           <button
             className="btn reset"
             onClick={() => setUploadedFile(null)}
@@ -895,7 +1252,7 @@ console.log("uploadedFile uploadedFile uploadedFile",uploadedFile)
             Submit
           </button>
         </div>
-      </div>
+    </div>
     </div>
   );
 };

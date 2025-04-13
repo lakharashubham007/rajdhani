@@ -16,7 +16,7 @@ const DustCapSection = (props) => {
     selectedDustCapColorOption,
     setSelectedDustCapColorOption,
     //Fitting Thread
-    fittingThreadOption,
+    dustCapThreadTypeOptions,
     selectedFittingThreadOption,
     setSelectedFittingThreadOption,
     //Fitting Dash Size Option
@@ -100,7 +100,7 @@ const DustCapSection = (props) => {
                       setSelectedFittingThreadOption(option);
                       setFormData({
                         ...formData,
-                        fitting_thread: option.value,
+                        fitting_thread: option?.value,
                       });
                       setErrors({
                         ...errors,
@@ -108,7 +108,8 @@ const DustCapSection = (props) => {
                       })
                     }}
                     defaultValue={selectedFittingThreadOption}
-                    options={fittingThreadOption}
+                    options={dustCapThreadTypeOptions}
+                    isClearable
                     style={{
                       lineHeight: "40px",
                       color: "#7e7e7e",
@@ -126,7 +127,7 @@ const DustCapSection = (props) => {
                   (<>
                     {selectedFittingThreadOption?.value === "SAE 61" || selectedFittingThreadOption?.value === "SAE 62" ?
                       (<>
-                        <div className="col-md-3">
+                         <div className="col-md-3">
                           <label className="col-form-label">Thread Size*(POD)</label>
                           <Select
                             value={selectedFittingDashSizeOption}
@@ -154,7 +155,8 @@ const DustCapSection = (props) => {
                               {errors.size}
                             </span>
                           )}
-                        </div>
+                        </div> 
+                       
                       </>) : (<>
                         <div className="col-md-3">
                           <label className="col-form-label">Thread Size</label>
@@ -192,7 +194,7 @@ const DustCapSection = (props) => {
                   ) : (
                     <>
                       {/* POD */}
-                      <div className="col-md-3">
+                      {/* <div className="col-md-3">
                         <label className="col-form-label">Thread Size*(POD)</label>
                         <Select
                           value={selectedpipeODOption}
@@ -220,7 +222,38 @@ const DustCapSection = (props) => {
                             {errors.size}
                           </span>
                         )}
-                      </div>
+                      </div> */}
+                        <div className="col-md-3">
+                          <label className="col-form-label">Thread Size</label>
+                          <Select
+                            value={selectedFittingDashSizeOption}
+                            onChange={(option) => {
+                              setSelectedfittingDashSizeOption(option);
+                              setFormData({
+                                ...formData,
+                                size: option?.value,
+
+                              });
+                              setErrors({
+                                ...errors,
+                                size: null
+                              })
+                            }}
+                            defaultValue={selectedFittingDashSizeOption}
+                            options={fittingDashSizeOption}
+                           
+                            style={{
+                              lineHeight: "40px",
+                              color: "#7e7e7e",
+                              paddingLeft: " 15px",
+                            }}
+                          />
+                          {errors.size && (
+                            <span className="text-danger fs-12">
+                              {errors.size}
+                            </span>
+                          )}
+                        </div>
                     </>
                   )
                 }
@@ -233,11 +266,12 @@ const DustCapSection = (props) => {
                         setSelectedDustCapColorOption(option);
                         setFormData({
                           ...formData,
-                          dustcap_color: option.value,
+                          dustcap_color: option?.value,
                         });
                       }}
                       defaultValue={selectedDustCapColorOption}
                       options={dustCapColorsOptions}
+                      isClearable
                     />
                     {errors.dustcap_color && (
                       <span className="text-danger fs-12">
@@ -246,7 +280,7 @@ const DustCapSection = (props) => {
                     )}
                   </div>
 
-
+                   {selectedFittingThreadOption?.value !== "Flange" &&
                   <div className="col-md-3">
                   <label className="col-form-label">Male/Female Type</label>
                   <Select
@@ -255,27 +289,29 @@ const DustCapSection = (props) => {
                       setSelectedFittingTypeOption(option);
                       setFormData({
                         ...formData,
-                        cap_type: option.value,
+                        male_female_type: option?.value,
                       });
                       setErrors({
                         ...errors,
-                        cap_type: null
+                        male_female_type: null
                       })
                     }}
                     defaultValue={selectedFittingTypeOption}
                     options={fittingTypeOption}
+                    isClearable
                     style={{
                       lineHeight: "40px",
                       color: "#7e7e7e",
                       paddingLeft: " 15px",
                     }}
                   />
-                  {errors.cap_type && (
+                  {errors.male_female_type && (
                     <span className="text-danger fs-12">
-                      {errors.cap_type}
+                      {errors.male_female_type}
                     </span>
                   )}
                 </div>
+                }
 
               </div>
             </div>

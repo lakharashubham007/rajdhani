@@ -216,7 +216,7 @@ const EmployeeList = () => {
         setLoading(true);
         try {
             const res = await getEmployeesApi();
-            console.log(res.data, "roles is here");
+            console.log(res, "roles is here");
             setEmployeeData(res.data?.admins)
             // setUpdateRoles(false)
         } catch (error) {
@@ -227,6 +227,7 @@ const EmployeeList = () => {
     }
 
     useEffect(()=> {
+       
         fetchEmployees()
     },[])
 

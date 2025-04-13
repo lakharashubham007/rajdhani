@@ -207,7 +207,8 @@ import AddSalesOrder from "../pages/SalesOrder/AddSalesOrder";
 import SaleOrderList from "../pages/SalesOrder/SaleOrderList";
 import SaleOrderView from "../pages/SalesOrder/SaleOrderView";
 import VerifySaleOrder from "../pages/SalesOrder/VerifySaleOrder";
-
+import ProductionManagement from "../pages/ProductionManagement/ProductionManagement";
+import ProductDetailsQR from "../pages/authentication/productDetails";
 
 // import Todo from './pages/Todo';
 
@@ -216,6 +217,9 @@ const Markup = () => {
   const allroutes = [
     /// Dashboard
     { url: "", component: <Home /> },
+    { url: "/productqr/:id", component: <ProductDetailsQR /> },
+
+   
     { url: "dashboard", component: <Home /> },
     { url: "dashboard/restaurant", component: <Dashboard2 /> },
 
@@ -285,6 +289,9 @@ const Markup = () => {
     { url: 'purchaseorderview/:id', component: <PurchaseOrderView /> },
     { url: 'verifyPurchaseOrder/:id', component: <VerifyPurchaseOrder/> },
     { url: 'billview/:id', component: <BillView/> },
+    
+    // Production Management
+    { url: 'production-sheet', component: <ProductionManagement/> },
 
     // Returns Order View
     { url: 'returnorderview/:id', component: <ReturnOrderView /> },

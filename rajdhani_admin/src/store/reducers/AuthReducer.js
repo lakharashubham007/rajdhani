@@ -31,8 +31,6 @@ export function AuthReducer(state = initialState, action) {
         };
     }
     if (action.type === LOGIN_CONFIRMED_ACTION) {
-        // console.log(action.payload, "action.payload is hrer in reducer file");
-
         return {
             ...state,
             auth: action.payload,

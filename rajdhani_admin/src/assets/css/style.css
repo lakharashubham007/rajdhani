@@ -23277,3 +23277,71 @@ Pagination CSS
   }
 } 
 
+.role-sidebar-head{
+  background-color: #e8e9ff;
+}
+
+.table-td-border{
+  border: solid 1px black !important;
+}
+
+.bill-img-fileupload-div{
+  border: solid 1px #e3e3e3;
+  padding: 12px;
+  border-radius: 8px;
+}
+
+.bill-image-div{
+ display: flex;
+ border: solid 1px #e3e3e3;
+ border-radius: 8px;
+ gap: 20px; 
+ margin-top: 20px;
+ width: 100%;
+ overflow-x:scroll;
+ padding: 10px;
+}
+
+.ril__outer {
+  z-index: 9999 !important;
+}
+/* Fix for react-photo-view */
+.photo-viewer-mask {
+  z-index: 9999 !important;
+}
+.photo-viewer-wrap {
+  z-index: 99999 !important;
+}
+
+
+.filter-drp-btn .dropdown-toggle{
+  background-color: transparent !important;
+  color: #212b36 !important;
+  box-shadow: rgba(0, 0, 0, 0.16) 0px 0px 0px !important;
+  border-radius: 4px !important;
+  border-color: #000000 !important;
+  transition: all 0.5s ease-in-out;
+  
+}
+
+.primary-selected {
+  background-color: #6a73fa !important;
+  color:#ffffff !important;
+  border-color: #6a73fa !important;
+}
+
+.primary-selected .dropdown-toggle {
+  color: white !important; 
+  border-color: #6a73fa !important;
+}
+
+.filter-drp-btn:hover, 
+.primary-selected:hover, 
+.filter-drp-btn:hover .dropdown-toggle, 
+.primary-selected:hover .dropdown-toggle {
+  background-color: #6a73fa !important;
+  color: white !important;
+  border-color: #6a73fa !important;
+  border-radius: 4px !important;
+  transition: all 0.5s ease-in-out;
+}

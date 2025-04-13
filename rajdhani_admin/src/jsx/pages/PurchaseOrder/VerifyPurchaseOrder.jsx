@@ -73,6 +73,7 @@ const VerifyPurchaseOrder = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [singleBillData, setSingleBillData] = useState({});
   const [contentModal, setContentModal] = useState(false);
+  const [verifyShowModal, setVerifyShowModal] = useState(false);
   const [productOption, setProductOption] = useState(null);
   const [isPressed, setIsPressed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -109,10 +110,13 @@ const VerifyPurchaseOrder = () => {
   console.log("formBillingData formBillingData==========>", formBillingData);
 
   const [isExpanded, setIsExpanded] = useState(false);
+  const [selectedRowData, setSelectedRowData] = useState();
+  console.log("selectedRowData selectedRowData selectedRowDataselectedRowData", selectedRowData)
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
+
 
   const handleBillingDetailChange = (e) => {
     const { name, value } = e.target;
@@ -227,6 +231,7 @@ const VerifyPurchaseOrder = () => {
   // };
 
   const prefillRows = (data) => {
+    console.log("data is here=========", data)
     return data
       .map((item, index) => {
         // Check the first condition: Exclude if ordered_quantity, received_quantity, and verified_quantity are equal
@@ -278,9 +283,10 @@ const VerifyPurchaseOrder = () => {
   // }, [purchaseOrderProdcutList, contentModal]);
 
   useEffect(() => {
-    // console.log("(purchaseOrderProdcutList.length > 0 && rows.length === 1",purchaseOrderProdcutList.length > 0 , rows.length === 1)
-    if (purchaseOrderProdcutList.length > 0 && rows.length === 1) {
+    console.log("(purchaseOrderProdcutList.length > 0 && rows.length === 1", purchaseOrderProdcutList.length > 0, rows.length >= 1)
+    if (purchaseOrderProdcutList.length > 0 && rows?.length >= 1) {
       const formattedRows = prefillRows(purchaseOrderProdcutList);
+      console.log("useEffect calls successsfullyy------------->", formattedRows);
       setRows(formattedRows);
     }
   }, [purchaseOrderProdcutList, contentModal]);
@@ -323,6 +329,7 @@ const VerifyPurchaseOrder = () => {
       {
         id: rows.length + 1,
         product_name: "",
+        product_code: "",
         sku: "",
         unit: "",
         variant: "",
@@ -352,29 +359,6 @@ const VerifyPurchaseOrder = () => {
     const updatedRows = [...rows];
     updatedRows[index][field] = value;
     setRows(updatedRows);
-
-
-
-    // Calculate total discount if quantity or discount_per_unit changes
-    // if (field === "quantity" || field === "discount_per_unit") {
-    //   const quantity = parseFloat(updatedRows[index].quantity || 0);
-    //   const discountPerUnit = parseFloat(
-    //     updatedRows[index].discount_per_unit || 0
-    //   );
-    //   updatedRows[index].total_discount = quantity * discountPerUnit;
-    // }
-
-    // // Calculate amount with discount applied
-    // const quantity = parseFloat(updatedRows[index].quantity || 0);
-    // const pricePerUnit = parseFloat(updatedRows[index].price_per_unit || 0);
-    // const uomQty = parseFloat(updatedRows[index].uom_qty || 1); // Default UOM Qty to 1
-    // const totalDiscount = parseFloat(updatedRows[index].total_discount || 0);
-
-    // Adjust the amount to subtract the total discount
-    // updatedRows[index].amount =
-    //   quantity * pricePerUnit * uomQty - totalDiscount;
-
-    // setRows(updatedRows);
 
   };
 
@@ -925,6 +909,7 @@ const VerifyPurchaseOrder = () => {
     e.preventDefault();
 
     try {
+      //step 1 Create Bill High Level
       const res = await addBillDetailsApi(formBillingData);
 
       if (res.data?.success) {
@@ -932,6 +917,7 @@ const VerifyPurchaseOrder = () => {
         const poId = params;
 
         // Update PO Items
+        //step 2 when bill created PO Items will updated with latest bill_id
         await updatePoItems(billId, poId);
 
         // ✅ Create Batch API
@@ -942,11 +928,13 @@ const VerifyPurchaseOrder = () => {
           bill_id: billId,
         };
 
+        //step 3 Batch Will create for a order
         const batchResponse = await createBatchApi(batchPayload);
 
         if (batchResponse.data?.success) {
           const batchId = batchResponse.data?.batch?._id;
 
+          //step 4 All Bill items Saved with bill id , and batch id
           // ✅ Create Bill Items, now including batchId
           const billitems = await createBillItems(billId, poId, batchId);
 
@@ -1333,6 +1321,23 @@ const VerifyPurchaseOrder = () => {
       setContentModal(true)
     }
   }
+
+  const handleVerifyClick = (row) => {
+    // setSelectedRowData(row);
+    setSelectedRowData({ ...row }); // Set selected row data
+    setVerifyShowModal(true);
+  };
+
+  const handleVerify = () => {
+    setRows((prevRows) =>
+      prevRows.map((row) =>
+        row.id === selectedRowData?.id
+          ? { ...row, received_quantity: selectedRowData.received_quantity, verified_quantity: selectedRowData.verified_quantity }
+          : row
+      )
+    );
+    setVerifyShowModal(false); // Close the modal
+  };
 
   return (
     <>
@@ -1766,7 +1771,7 @@ const VerifyPurchaseOrder = () => {
                                     }}
                                     onClick={toggleExpand}
                                   >
-                                    {data?.product_code}
+                                    {data?.product_name}
                                     {!isExpanded && (
                                       <span
                                         style={{
@@ -1785,7 +1790,7 @@ const VerifyPurchaseOrder = () => {
                                   </div>
                                 </td>
                                 {/* Product Code */}
-                                <td className="">{data?.code}</td>
+                                <td className="">{data?.product_code}</td>
                                 {/* Product Code */}
                                 <td className="">{data?.quantity}</td>
                                 {/* UOM */}
@@ -1933,7 +1938,7 @@ const VerifyPurchaseOrder = () => {
         </div>
       </div>
 
-      {/* <!-- Modal --> */}
+      {/* <!-- Modal Box Verify Bill Section--> */}
       <Modal className="fade card-body" show={contentModal} onHide={setContentModal} size="xl">
         <Modal.Header>
           <Modal.Title>Add Bill & Verify Bill Items</Modal.Title>
@@ -1944,8 +1949,8 @@ const VerifyPurchaseOrder = () => {
 
           </Button>
         </Modal.Header>
+        {/* <!-- Modal Box Body Verify Bill Section--> */}
         <Modal.Body>
-
           <div className="">
             {/* Header Section */}
             <div className="">
@@ -1960,143 +1965,13 @@ const VerifyPurchaseOrder = () => {
                 </div>
               </div>
             </div>
-
-            {/* First Two sections for bill */}
-            {/* <div className="row">
-            
-            <div className="col-xl-6 col-lg-6">
-              <div className="card">
-                <div className="card-header">
-                  <h4 className="card-title">Bill Info</h4>
-                </div>
-                <div className="card-body">
-                  <div>
-
-                    <div className="mb-3 row">
-                      <div className="col-sm-12">
-                        <label className="col-sm-3 col-form-label">
-                          Bill No.
-                        </label>
-                        <input
-                          name="bill_no"
-                          value={formBillingData?.bill_no || ''}
-                          onChange={handleBillingDetailChange}
-                          type="text"
-                          className="form-control"
-                          placeholder="Ex: B12345"
-                        />
-                        {errors.name && <span className="text-danger fs-12">{errors.name}</span>}
-                      </div>
-                    </div>
-                    <div className="mb-3 row">
-                      <div className="col-sm-12">
-                        <label className="col-sm-3 col-form-label">
-                          Bill Amount
-                        </label>
-                        <input
-                          name="bill_amount"
-                          value={formBillingData?.bill_amount || ''}
-                          onChange={handleBillingDetailChange}
-                          type="number"
-                          className="form-control"
-                          placeholder="Ex: 1000"
-                        />
-                        {errors.billing_bill_amount && (
-                          <span className="text-danger fs-12">{errors.billing_bill_amount}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="mb-3 row">
-                      <div className="col-sm-12">
-                        <label className="col-sm-3 col-form-label">
-                          Bill Date
-                        </label>
-                        <input
-                          name="bill_date"
-                          value={formBillingData?.bill_date || ''}  // Displays the selected date, or an empty string if not available
-                          onChange={handleBillingDetailChange}  // Updates the state when a new date is selected
-                          type="date"  // Specifies the input type as date, enabling the date picker
-                          className="form-control"
-                        />
-                        {errors.billing_bill_date && (
-                          <span className="text-danger fs-12">{errors.billing_bill_date}</span>
-                        )}
-                      </div>
-                    </div>
-
-                    <div className="mb-3 row">
-                      <div className="col-sm-12">
-                        <label className="col-sm-3 col-form-label">
-                          Note
-                        </label>
-                        
-                        <textarea
-                          name="note"
-                          className="form-control"
-                          rows="3"
-                          id="comment"
-                          placeholder="Ex: Add notes for bill"
-                          value={formBillingData?.note}
-                          onChange={handleBillingDetailChange}
-                        ></textarea>
-                        {errors.note && <span className="text-danger fs-12">{errors.note}</span>}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-
-           
-            <div className="col-xl-6 col-lg-6 flex ">
-              <div className="card">
-                <div className="card-header mb-4">
-                  <h4 className="card-title">Bill Image/File</h4>
-                </div>
-                <div className="col-sm-12" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
-                  <label className="col-form-label">Bill Image/File</label>
-                  <div style={styles.container}>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleLogoChange}
-                      style={{ display: 'none' }}
-                      id="logoUpload"
-                    />
-                    {logo ? (
-                      <>
-                        
-                        <div style={styles.deleteIcon} onClick={handleDeleteLogo}>
-                          ⛌
-                        </div>
-                        <img src={logo} alt="Logo" style={styles.img} />
-                      </>
-                    ) : (
-                      <label htmlFor="logoUpload" style={styles.placeholder}>
-                        <div style={styles.uploadIcon} className='flex flex-col cursor-pointer'>
-                          <img width="30" src={uplodIcon} alt="Upload Icon"></img>
-                          <p>Upload Image/File</p>
-                        </div>
-                      </label>
-                    )}
-                  </div>
-                  <p className='mt-2'>Image format - jpg png jpeg gif<br />Image Size - maximum size 2 MB<br />Image Ratio - 1:1</p>
-                  {errors.image && <span className="text-danger fs-12">{errors.image}</span>}
-                </div>
-
-
-              </div>
-            </div>
-
-          </div> */}
-
+            {/* Body Section for verify bill */}
             <div className="card">
               <div className="card-body p-3">
                 <div className="row">
                   {/* First Column: Bill Info Part 1 */}
                   <div className="col-xl-4">
+                    {/* Bill No. */}
                     <div className="mb-2">
                       <label className="form-label fs-6">Bill No.</label>
                       <input
@@ -2109,20 +1984,7 @@ const VerifyPurchaseOrder = () => {
                       />
                       {errors.name && <span className="text-danger fs-12">{errors.name}</span>}
                     </div>
-
-                    {/* <div className="mb-2">
-                    <label className="form-label fs-6">Bill Amount</label>
-                    <input
-                      name="bill_amount"
-                      value={formBillingData?.bill_amount || ''}
-                      onChange={handleBillingDetailChange}
-                      type="number"
-                      className="form-control form-control-sm"
-                      placeholder="Ex: 1000"
-                    />
-                    {errors.billing_bill_amount && <span className="text-danger fs-12">{errors.billing_bill_amount}</span>}
-                   </div> */}
-
+                    {/* Note */}
                     <div className="mb-2">
                       <label className="form-label fs-6">Note</label>
                       <textarea
@@ -2136,9 +1998,9 @@ const VerifyPurchaseOrder = () => {
                       {errors.note && <span className="text-danger fs-12">{errors.note}</span>}
                     </div>
                   </div>
-
                   {/* Second Column: Bill Info Part 2 */}
                   <div className="col-xl-4">
+                    {/* Bill Date */}
                     <div className="mb-2">
                       <label className="form-label fs-6">Bill Date</label>
                       <input
@@ -2150,22 +2012,7 @@ const VerifyPurchaseOrder = () => {
                       />
                       {errors.billing_bill_date && <span className="text-danger fs-12">{errors.billing_bill_date}</span>}
                     </div>
-                    {/* 
-                  <div className="mb-2">
-                    <label className="form-label fs-6">Note</label>
-                    <textarea
-                      name="note"
-                      className="form-control form-control-sm"
-                      rows="2"
-                      placeholder="Ex: Add notes for bill"
-                      value={formBillingData?.note}
-                      onChange={handleBillingDetailChange}
-                    ></textarea>
-                    {errors.note && <span className="text-danger fs-12">{errors.note}</span>}
                   </div>
-                   */}
-                  </div>
-
                   {/* Third Column: Bill Image/File in a Card */}
                   <div className="col-xl-4 mt-2">
                     <div className="mb-2 ">
@@ -2218,7 +2065,7 @@ const VerifyPurchaseOrder = () => {
                           <tr>
                             <th>SL</th>
                             <th>Product Name</th>
-                            <th>Product Code</th>
+                            <th>Code</th>
                             <th>UOM</th>
                             <th>Weight(Kg)</th>
                             <th>Quantity</th>
@@ -2227,7 +2074,6 @@ const VerifyPurchaseOrder = () => {
                             <th>CGST</th>
                             <th>SGST</th>
                             <th>IGST</th>
-                            <th>Cess</th>
                             <th>Amount</th>
                             <th>Ordered Quantity</th>
                             <th>Received Quantity</th>
@@ -2236,43 +2082,75 @@ const VerifyPurchaseOrder = () => {
                             <th>Action</th>
                           </tr>
                         </thead>
-                        <tbody>
+                        <tbody >
                           {rows?.map((row, index) => (
+                            console.log("Row ------------------>", row),
+                            <tr key={row.id}
+                              //  onClick={() => handleVerifyClick(row)} 
+                              onClick={(e) => {
+                                const target = e.target;
 
-                            <tr key={row.id}>
+                                // Prevent modal from opening when clicking on an active input or button
+                                if (target.tagName === "BUTTON") return;
+                                if (target.tagName === "INPUT" && !target.disabled) return;
+
+                                // Open modal if clicking on a disabled input or any other row area
+                                handleVerifyClick(row);
+                              }}
+                              style={{ cursor: "pointer" }}>
                               <td>{row.id}</td>
                               {/* product Name */}
-                              <td>
-                                <Select
-                                  //value={row.selectedOption}
-                                  // onChange={(selectedOption) =>
-                                  //   handleProductChange(selectedOption, index)
-                                  // }
-                                  // defaultValue={row.selectedOption}
-
-                                  value={row?.selectedOption} // Prefill selected option
-                                  onChange={(selectedOption) => handleProductChange(selectedOption, index)}
-
-                                  options={productOption} // Ensure productOption is properly defined
-                                  styles={{
-                                    control: (provided) => ({
-                                      ...provided,
-                                      width: '200px', // Adjust the width as needed
-                                      lineHeight: "20px",
-                                      color: "#7e7e7e",
-                                      paddingLeft: "15px",
-                                    }),
-                                    menuPortal: (provided) => ({
-                                      ...provided,
-                                      zIndex: 9999, // Ensures dropdown appears on top of other content
-                                    }),
-                                    menu: (provided) => ({
-                                      ...provided,
-                                      top: '-100%', // Positions the dropdown above the select input
-                                    }),
-                                  }}
-                                  menuPortalTarget={document.body}
+                              {/* <td>
+                                <input
+                                  type="text"
+                                  placeholder="Product Name"
+                                  value={row?.product_name}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "product_name",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control row-input"
+                                  style={{ width: "390px" }}
+                                  disabled
                                 />
+                              </td> */}
+                              <td>
+                                <div
+                                  style={{
+                                    whiteSpace: "nowrap",
+                                    width: isExpanded ? "100%" : "100%", // Expands width on toggle
+                                    overflow: "hidden",
+                                    textOverflow: "ellipsis",
+                                    padding: "4px 8px",
+                                    border: "1px solid #ddd",
+                                    borderRadius: "8px",
+                                    backgroundColor: "#f5f5f5",
+                                    textAlign: "start",
+                                    cursor: "pointer",
+                                    transition: "width 0.3s ease", // Smooth transition
+                                  }}
+                                  onClick={toggleExpand}
+                                >
+                                  {row?.product_name}
+                                  {!isExpanded && (
+                                    <span
+                                      style={{
+                                        position: "absolute",
+                                        right: "8px",
+                                        top: "50%",
+                                        transform: "translateY(-50%)",
+                                        color: "#007bff",
+                                        fontSize: "12px",
+                                        cursor: "pointer",
+                                      }}
+                                    >
+                                      ...
+                                    </span>
+                                  )}
+                                </div>
                               </td>
                               {/* product Code */}
                               <td>
@@ -2292,55 +2170,7 @@ const VerifyPurchaseOrder = () => {
                                 />
                               </td>
 
-                              {/* <td>
-                                <input
-                                  type="text"
-                                  placeholder="Unit"
-                                  value={row.unit}
-                                  onChange={(e) =>
-                                    handleChangeRow(
-                                      index,
-                                      "unit",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="form-control row-input"
-                                  style={{ width: "70px" }}
-                                />
-                              </td> */}
 
-                              {/* <td>
-                                <input
-                                  type="text"
-                                  placeholder="Variant"
-                                  value={row.variant}
-                                  onChange={(e) =>
-                                    handleChangeRow(
-                                      index,
-                                      "variant",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="form-control"
-                                  style={{ width: "120px" }}
-                                />
-                              </td> */}
-
-                              {/* <td>
-                                <input
-                                  type="text"
-                                  placeholder="Variant Type"
-                                  value={row.variant_type}
-                                  onChange={(e) =>
-                                    handleChangeRow(
-                                      index,
-                                      "variant_type",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="form-control"
-                                />
-                              </td> */}
                               {/* uom */}
                               <td>
                                 <input
@@ -2425,22 +2255,7 @@ const VerifyPurchaseOrder = () => {
                                 />
                               </td>
 
-                              {/* <td>
-                                <input
-                                  type="number"
-                                  placeholder="Total Discount"
-                                  value={row.total_discount}
-                                  onChange={(e) =>
-                                    handleChangeRow(
-                                      index,
-                                      "total_discount",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="form-control"
-                                  disabled
-                                />
-                              </td> */}
+
 
                               {/* cgst */}
                               <td>
@@ -2486,23 +2301,6 @@ const VerifyPurchaseOrder = () => {
                                     handleChangeRow(
                                       index,
                                       "igst",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="form-control"
-                                  style={{ width: "70px" }}
-                                />
-                              </td>
-                              {/* cess */}
-                              <td>
-                                <input
-                                  type="text"
-                                  placeholder="Cess"
-                                  value={row.cess}
-                                  onChange={(e) =>
-                                    handleChangeRow(
-                                      index,
-                                      "cess",
                                       e.target.value
                                     )
                                   }
@@ -2583,13 +2381,18 @@ const VerifyPurchaseOrder = () => {
                                 )}
                               </td>
                               <td>
-                                {index > 0 ? (
+                                <button
+                                  className="btn btn-primary mt-2 ms-2"
+                                  onClick={() => handleVerifyClick(row)}>
+                                  Verify
+                                </button>
+                                {/* {index > 0 ? (
                                   <button
                                     className="btn btn-danger mt-2"
                                     onClick={() => handleDeleteTableRow(row?.id)}>
                                     Delete
                                   </button>
-                                ) : null}
+                                ) : null} */}
                               </td>
                             </tr>
                           ))}
@@ -2597,9 +2400,9 @@ const VerifyPurchaseOrder = () => {
                       </table>
                     )}
                   </div>
-                  <button onClick={addRow} className="btn btn-primary mt-2">
+                  {/* <button onClick={addRow} className="btn btn-primary mt-2">
                     Add New Row
-                  </button>
+                  </button> */}
                 </div>
               </div>
             </div>
@@ -2757,6 +2560,91 @@ const VerifyPurchaseOrder = () => {
               Final Submission
             </button>
           </div>
+        </Modal.Footer>
+      </Modal>
+
+
+      {/* Verify Modal */}
+      <Modal
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.5)", // Dim background effect
+        }}
+        centered
+        show={verifyShowModal} onHide={() => setVerifyShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Verify Item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedRowData && (
+            <div
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0)", // Fully transparent background
+                borderRadius: "8px",
+                padding: "12px",
+                // boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                border: "1px solid rgba(255, 255, 255, 0.3)", // Semi-transparent border
+                width: "100%",
+                fontSize: "13px",
+                backdropFilter: "blur(5px)", // Optional: Glassmorphism effect
+              }}
+            >
+              <h6 style={{ fontWeight: "600", marginBottom: "8px", color: "#222", textAlign: "center" }}>
+                Product Details
+              </h6>
+
+              {/* Table-like Grid with Borders */}
+              <div style={{ display: "grid", gridTemplateColumns: "140px auto", fontSize: "13px", border: "1px solid #D3D3D3", borderRadius: "8px", padding: "5px", }}>
+                {[
+                  { label: "Product Name", value: selectedRowData?.product_name },
+                  { label: "Product Code", value: selectedRowData?.product_code },
+                  { label: "Ordered Qty", value: selectedRowData?.ordered_quantity },
+                  { label: "Weight", value: selectedRowData?.weight || "N/A" },
+                  { label: "UOM", value: selectedRowData?.uom || "N/A" },
+                ].map((item, index) => (
+                  <React.Fragment key={index}>
+                    <div style={{ fontWeight: "600", color: "#444", padding: "6px 0" }}>{item.label}:</div>
+                    <div style={{ color: "#666", padding: "6px 0", borderBottom: "1px dotted #ccc" }}>{item.value}</div>
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/* Inputs Row */}
+              <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+                {/* Received Quantity */}
+                <div style={{ flex: 1 }}>
+                  <label style={{ fontWeight: "600", fontSize: "13px", color: "#333" }}>Received Qty</label>
+                  <input
+                    type="number"
+                    placeholder="Received Quantity"
+                    value={selectedRowData?.received_quantity || ""}
+                    onChange={(e) => setSelectedRowData({ ...selectedRowData, received_quantity: e.target.value })}
+                    className="form-control row-input"
+                  />
+
+                </div>
+                <div style={{ flex: 1 }}>
+                  {/* Verify Quantity */}
+                  <label style={{ fontWeight: "600", fontSize: "13px", color: "#333" }}>Verified Qty</label>
+                  <input
+                    type="number"
+                    placeholder="Verify Quantity"
+                    value={selectedRowData?.verified_quantity || ""}
+                    onChange={(e) => setSelectedRowData({ ...selectedRowData, verified_quantity: e.target.value })}
+                    className="form-control row-input"
+                  />
+                </div>
+
+              </div>
+            </div>
+          )}
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => setVerifyShowModal(false)}>Close</Button>
+          <Button variant="success" onClick={() => handleVerify()}>Verify</Button>
         </Modal.Footer>
       </Modal>
     </>

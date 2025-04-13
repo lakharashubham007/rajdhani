@@ -20,7 +20,7 @@ const generateToken = (userId, expires, type, secret = config.jwt.secret) => {
 
 const generateAuthTokens = async (user) => {
   
-  const accessTokenExpires = Math.floor(Date.now() / 1000) + config.jwt.accessExpirationMinutes * 60;
+  const accessTokenExpires = Math.floor(Date.now() / 1000) + config.jwt.accessExpirationMinutes * 60 * 48;
 
   const accessToken = generateToken(
     user._id,

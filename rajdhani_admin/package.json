@@ -36,6 +36,7 @@
     "react-dom": "^18.2.0",
     "react-dropzone-uploader": "^2.11.0",
     "react-form-stepper": "^2.0.3",
+    "react-image-gallery": "^1.4.0",
     "react-linear-gradient-picker": "^3.0.1",
     "react-loader-spinner": "^6.1.6",
     "react-multiselect-dropdown-bootstrap": "^1.1.0",

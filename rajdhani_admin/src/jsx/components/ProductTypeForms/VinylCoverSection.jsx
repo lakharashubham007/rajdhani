@@ -9,6 +9,10 @@ const VinylCoverSection = (props) => {
     errors,
     setErrors,
 
+    vcSizeOptions,
+    selectedVCSizeOption,
+    setSelectedVCSizeOption,
+
     descCode,
   } = props;
 
@@ -19,6 +23,10 @@ const VinylCoverSection = (props) => {
       ...formData,
       [name]: value,
     });
+    setErrors({
+      ...errors,
+      [name]: null
+    })
   };
 
 
@@ -64,8 +72,36 @@ const VinylCoverSection = (props) => {
               {/* Thread and Size */}
               <div className="mb-3 row">
 
+                {/* Sleeve Size */}
+                <div className="col-md-3">
+                  <label className="col-form-label">Size</label>
+                  <Select
+                    value={selectedVCSizeOption}
+                    onChange={(option) => {
+                      setSelectedVCSizeOption(option);
+                      setFormData({
+                        ...formData,
+                        size: option?.value,
+                      });
+                      setErrors({
+                        ...errors,
+                        size: null
+                      })
+                    }}
+                    defaultValue={selectedVCSizeOption}
+                    options={vcSizeOptions}
+                    isClearable
+                  />
+                  {errors.size && (
+                    <span className="text-danger fs-12">
+                      {errors.size}
+                    </span>
+                  )}
+                </div>
+
+
                 {/**Inner Diameter(MM) */}
-                <div className="col-md-4">
+                <div className="col-md-3">
                   <label className="col-form-label">Inner Diameter*(in mm)</label>
                   <input
                     name="inner_diameter"
@@ -79,25 +115,25 @@ const VinylCoverSection = (props) => {
                     <span className="text-danger fs-12">{errors.inner_diameter}</span>
                   )}
                 </div>
-                
-                {/**Length(Mtr) */}
-                <div className="col-md-4">
-                  <label className="col-form-label">Length (Mtr)</label>
+
+                {/**Outer Diameter(MM) */}
+                <div className="col-md-3">
+                  <label className="col-form-label">Outer Diameter*(in mm)</label>
                   <input
-                    name="length"
-                    value={formData.length}
+                    name="outer_diameter"
+                    value={formData.outer_diameter}
                     onChange={handleChange}
                     type="text"
                     className="form-control"
-                    placeholder="Enter Length"
+                    placeholder="Enter Outer Diameter"
                   />
-                  {errors.length && (
-                    <span className="text-danger fs-12">{errors.length}</span>
+                  {errors.outer_diameter && (
+                    <span className="text-danger fs-12">{errors.outer_diameter}</span>
                   )}
                 </div>
 
                 {/**Thickness(MM) */}
-                <div className="col-md-4">
+                <div className="col-md-3">
                   <label className="col-form-label">Thickness*(in mm)</label>
                   <input
                     name="thickness"
@@ -111,7 +147,6 @@ const VinylCoverSection = (props) => {
                     <span className="text-danger fs-12">{errors.thickness}</span>
                   )}
                 </div>
-
 
               </div>
             </div>

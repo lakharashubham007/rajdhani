@@ -24,6 +24,18 @@ const getAllProducts = async (req, res) => {
     }
 };
 
+// Generate QR code for a single product
+const generateQrForProduct = async (req, res) => {
+    try {
+        const { id } = req.params;
+        const qrData = await productService.generateQrForProduct(id);
+        res.json({ success: true, ...qrData });
+    } catch (error) {
+        console.error('Error generating QR code:', error);
+        res.status(500).json({ success: false, message: 'QR generation failed' });
+    }
+};
+
 // Controller to get all products
 const searchProducts = async (req, res) => {
     try {
@@ -69,7 +81,8 @@ const getProducts = async (req, res) => {
         const limit = parseInt(req.query.limit) || 10;
         const sort = req?.query?.sort;
         const search = req.query.search || '';
-        const products = await productService.getProducts(page, limit, sort, search);
+        const prodctTypes = req?.query?.productTypes || '';
+        const products = await productService.getProducts(page, limit, sort, search, prodctTypes);
         res.json({ success: true, ...products });
     } catch (error) {
         console.error(error);
@@ -81,6 +94,24 @@ const getProducts = async (req, res) => {
 const getProductById = async (req, res) => {
     try {
         const product = await productService.getProductById(req.params.id);
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+        res.json({ success: true, product });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Internal Server Error' });
+    }
+};
+
+// Get a single Product by ID
+const getProductByQrScannerCode = async (req, res) => {
+    try {
+        const rawId = req.params.id;
+
+        // Replace the first '-' with '/'
+    const formattedId = rawId.replace('-', '/');
+        const product = await productService.getProductByQRScannerCode(formattedId);
         if (!product) {
             return res.status(404).json({ success: false, message: 'Product not found' });
         }
@@ -140,7 +171,7 @@ const updateProduct = async (req, res) => {
     try {
         const productId = req.params.id;
 
-        console.log("inside is here step1", productId);
+
 
         // Fetch the existing product from the database
         const existingProduct = await productService.getProductById(productId);
@@ -153,15 +184,19 @@ const updateProduct = async (req, res) => {
         // Initialize updateData object to track changes
         const updateData = {};
 
-       
+
 
         // Update fields directly from the request body
+        
         const fieldsToUpdate = [
             'product_type', 'product_code', 'uom', 'price', 'gst', 'design',
             'wire_type', 'with_cap', 'fitting_piece', 'skive_type', 'hose_dash_size',
             'fitting_dash_size', 'fitting_thread', 'fitting_type', 'straight_bend_angle',
             'drop_length', 'neck_length', 'desc_Code', 'fitting_Code', 'status',
-            'image', 'gallery'
+            'image', 'gallery', 'note', 'location', 'additional', "ferrule","metric_type", "pipeOD","tube_fitting_category"
+             ,"tube_fitting_thread","part_code","part_description","additional","hose_size","inner_diameter","spring_length",
+             "spring_type","size","outer_diameter", "thickness","item_name","hose","hose_fitting_Code","fitting_a_description","fitting_b_description",
+             "fitting_a_fitting_Code","fitting_b_fitting_Code", "guard","guard_type","assembly_length","cutting_length","fitting_length","oa","metric_type"
         ];
 
         console.log("fieldsToUpdate fieldsToUpdate fieldsToUpdate", fieldsToUpdate);
@@ -174,20 +209,60 @@ const updateProduct = async (req, res) => {
 
         console.log("updateData updateDataupdateData updateData", updateData);
 
+        console.log("req.files", req.files, req.files.gallery);
+
         // Handle single image update
         if (req.files && req.files.image && req.files.image[0]) {
             console.log("Updating main image: ", req.files.image[0].originalname);
             updateData.image = req.files.image[0].originalname;
         }
 
-
         // Handle gallery images update
-        if (req.files && req.files.gallery && req.files.gallery.length > 0) {
-            const newGalleryImages = req.files.gallery.map(file => file.filename);
-            updateData.gallery = newGalleryImages;
+        let finalGalleryImages = [];
+// Handle existing gallery filenames coming from frontend
+if (req.body.gallery) {
+    try {
+      let galleryFromClient = req.body.gallery;
+  
+      if (typeof galleryFromClient === "string") {
+        // Check if it's a JSON array string (e.g., '["img1.jpg","img2.png"]')
+        if (galleryFromClient.trim().startsWith("[")) {
+          const parsed = JSON.parse(galleryFromClient);
+          finalGalleryImages = Array.isArray(parsed) ? parsed : [parsed];
+        } else if (galleryFromClient.includes(",")) {
+          // Comma-separated string: "img1.jpg,img2.png"
+          finalGalleryImages = galleryFromClient.split(',').map(img => img.trim());
         } else {
-            updateData.gallery = existingProduct.gallery;
+          // Single string image
+          finalGalleryImages = [galleryFromClient.trim()];
         }
+      } else if (Array.isArray(galleryFromClient)) {
+        // Already an array (e.g., sent as form-data)
+        finalGalleryImages = [...galleryFromClient];
+      }
+    } catch (err) {
+      console.error('Error parsing gallery:', err);
+    }
+  }
+  
+ 
+        // Add newly uploaded gallery images to final list
+        if (req.files && req.files.gallery && req.files.gallery.length > 0) {
+            const newlyUploadedFiles = req.files.gallery.map(file => file.filename);
+            finalGalleryImages = [...finalGalleryImages, ...newlyUploadedFiles];
+        }
+
+        // Set final list in updateData
+        updateData.gallery = finalGalleryImages;
+
+
+        // // Handle gallery images update
+        // if (req.files && req.files.gallery && req.files.gallery.length > 0) {
+        //     const newGalleryImages = req.files.gallery.map(file => file.filename);
+        //     updateData.gallery = newGalleryImages;
+        // } else {
+        //     updateData.gallery = existingProduct.gallery;
+        // }
 
         // Handle parts array update
         if (req.body.parts) {
@@ -255,5 +330,7 @@ module.exports = {
     updateProductStatus,
     getAllProducts,
     searchProducts,
-    getSimilarProducts
+    getSimilarProducts,
+    getProductByQrScannerCode,
+    generateQrForProduct
 };

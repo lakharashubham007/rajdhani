@@ -71,13 +71,17 @@ const EditProductData = () => {
   const [dropdownOptions, setDropwonOptions] = useState();
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [fetchPrefillloading, setFetchPrefillLoading] = useState(false);
+
   const [errors, setErrors] = useState({});
 
   const [galleryImages, setGalleryImages] = useState([]);
+  // console.log("galleryImagesgalleryImages galleryImages galleryImagesgalleryImages", galleryImages)
   //drop option list
   const [productTypeOption, setProductTypeOption] = useState(
     dropdownOptions?.ProductOptions
   );
+  
   const [categoryOption, setCategoryOption] = useState(null);
   const [subCategoryOption, setSubCategoryOption] = useState(null);
   const [subSubCategoryOption, setSubSubCategoryOption] = useState(null);
@@ -109,6 +113,12 @@ const EditProductData = () => {
   const [selectedDesignOption, setSelectedDesignOption] = useState(null);
   const [selectedUOMOption, setSelectedUOMOption] = useState(null);
   const [selectedGSTOption, setSelectedGSTOption] = useState(null);
+  const [selectedVCSizeOption, setSelectedVCSizeOption] = useState(null);
+  const [vinylCoverDescription, setVinylCoverDescription] = useState(null);
+  const [packingDescription, setPackingDescription] = useState(null);
+  const [orientationAngle, setOrientationAngle] = useState(false);
+
+
   // Child Form
 
   const [wireTypeOption, setWireTypeOption] = useState(dropdownOptions?.WireTypeOptions);
@@ -117,6 +127,7 @@ const EditProductData = () => {
   const [skiveTypeOption, setSkiveTypeOption] = useState(dropdownOptions?.skiveTypeOptions);
   const [HoseDashSizeOption, setHoseDashSizeOption] = useState(null);
   const [fittingDashSizeOption, setfittingDashSizeOption] = useState(null);
+
   const [fittingThreadOption, setfittingThreadOption] = useState(null);
   const [fittingTypeOption, setfittingTypeOption] = useState(dropdownOptions?.fittingTypeOptions);
   const [straightBendangleOption, setStraightBendangleOption] = useState(null);
@@ -130,17 +141,15 @@ const EditProductData = () => {
 
   // selected
   const [selectedWireTypeOption, setSelectedWireTypeOption] = useState(null);
-  console.log("HoseDashSizeOption-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=", HoseDashSizeOption)
   const [selectedWithCapWithoutCapOption, setSelectedWithCapWithoutCapOption] = useState(null);
+
   const [selectedFittingPieceOption, setSelectedFittingPieceOption] = useState(null);
   const [selectedSkiveTypeOption, setSelectedSkiveTypeOption] = useState(null);
   const [selectedhoseDashSizeOption, setSelectedHoseDashSizeOption] = useState(null);
-  // console.log("selectedhoseDashSizeOption",selectedhoseDashSizeOption)
   const [selectedFittingDashSizeOption, setSelectedfittingDashSizeOption] = useState(null);
-  console.log("selectedFittingDashSizeOption", selectedFittingDashSizeOption)
+  // console.log("selectedWithCapWithoutCapOption", selectedFittingDashSizeOption)
   const [selectedFittingTypeOption, setSelectedFittingTypeOption] = useState(null);
   const [selectedFittingThreadOption, setSelectedFittingThreadOption] = useState(null);
-  // console.log("selectedFittingThreadOption",selectedFittingThreadOption)
   const [selectedStraightBendangleOption, setSelectedStraightBendangleOption] = useState(null);
   const [selectedDropLengthOption, setSelectedDropLengthOption] = useState(null);
   const [selectedNeckLengthOption, setselectedNeckLengthOption] = useState(null);
@@ -156,7 +165,7 @@ const EditProductData = () => {
     product_type: "",
     // with_cap:[]
   });
-  // console.log(formData,"formData is here")
+  console.log("------------------------------------->", formData, "formData is here")
   //code setup variables
   const [fittingCode, setFittingCode] = useState();
   const [descCode, setDescCode] = useState();
@@ -168,8 +177,55 @@ const EditProductData = () => {
   const [nippleDescCode, setNippleDescCode] = useState();
   const [isEdit, setIsEdit] = useState(true);
   const [showLogoImage, setShowLogoImage] = useState(false);
-
+  const [selectedSleeveSizeOption, setSelectedSleeveSizeOption] = useState(null);
+  const [sleeveDescription, setSleeveDescription] = useState(null);
+  const [springFittingCode, setSpringFittingCode] = useState(null);
+  const [springDescription, setSpringDescription] = useState(null);
+  const [oringDescription, setOringDescription] = useState(null);
+  const [dustCapDescription, setDustCapDescription] = useState(null);
+  const [dustCapColorOption, setDustCapColorOption] = useState();
+  const [selectedDustCapColorOption, setSelectedDustCapColorOption] = useState(null);
   // console.log("ffffffffffffffffffffffffffffffffffffff----fittingDashSizeOption",fittingDashSizeOption)
+
+  //tube fitting
+
+  const [tubeFittingsThreadOption, setTubeFittingsThreadOption] = useState();
+  const [tubeFittingsCategoryOption, setTubeFittingsCategoryOption] = useState();
+
+  const [selectedTubeFittingsThreadOption, setSelectedTubeFittingsThreadOption] = useState(null);
+  const [selectedTubeFittingsCategoryOption, setSelectedTubeFittingsCategoryOption] = useState(null);
+
+
+  // Hose Assembly
+  const [supplierOption, setSupplierOption] = useState(null);
+  const [allSupplier, setAllSupplier] = useState(null);
+  const [hoseOption, setHoseOption] = useState([]);
+  const [fittingAOption, setFittingAOption] = useState([]);
+  const [fittingBOption, setFittingBOption] = useState([]);
+  const [guardOption, setGuardOption] = useState([]);
+  const [selectedGuardOption, setSelectedGuardOption] = useState(null);
+  const [guardTypeOption, setGuardTypeOption] = useState([
+    {
+      value: "sleeve",
+      label: "Sleeve",
+    },
+    {
+      value: "spring",
+      label: "Spring",
+    },
+    {
+      value: "vinyl cover",
+      label: "Vinyl Cover",
+    }]);
+
+  const [selectedGuardTypeOption, setSelectedGuardTypeOption] = useState(null);
+  const [selectedBillingStateOption, setSelectedBillingStateOption] = useState(null);
+  const [selectedShippingStateOption, setSelectedShippingStateOption] = useState(null);
+  const [selectedHose, setSelectedHose] = useState(null);
+  const [selectedFittingA, setSelectedFittingA] = useState(null);
+  const [selectedFittingB, setSelectedFittingB] = useState(null);
+  const [selectedQuantity, setSelectedQuantity] = useState("");
+  const [selectedDiscount, setSelectedDiscount] = useState("");
 
   const fetchDesignOptions = async () => {
     setLoading(true);
@@ -184,7 +240,7 @@ const EditProductData = () => {
       // setfittingThreadOption(mappedData);
     } catch (error) {
       // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -225,7 +281,7 @@ const EditProductData = () => {
       setHoseDashSizeOption(mappedData);
     } catch (error) {
       // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -246,14 +302,16 @@ const EditProductData = () => {
         thread_type: val?.thread_type,
         thread: val?.thread,
         dash_code: val?.hose_dash_code,
-        variant: val?.variant
+        variant: val?.variant,
+        metric_type: val?.metric_type,
+        pipeOD: val?.pipe_od
       }));
       // console.log("resData ----------------------)))",resData)
       setfittingDashSizeOption(mappedData)
       // setHoseDashSizeOption(mappedData);
     } catch (error) {
       // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -273,7 +331,7 @@ const EditProductData = () => {
       setStraightBendangleOption(mappedData);
     } catch (error) {
       // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -293,7 +351,7 @@ const EditProductData = () => {
       setBrandLayLineOption(mappedData);
     } catch (error) {
       // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -313,7 +371,7 @@ const EditProductData = () => {
       setHoseTypeOption(mappedData);
     } catch (error) {
       // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -330,6 +388,133 @@ const EditProductData = () => {
   }, []);
 
   //Filter Fitting_Dash_Size_Options
+  // const filterFittingDashSizeOptions = () => {
+  //   // Basic filtering based on fitting_thread
+  //   const filteredOptions = fittingDashSizeOption?.filter(
+  //     (option) => {
+  //       return (
+  //         option.thread_type === formData?.fitting_thread && // Match the selected fitting_thread
+  //         option.thread !== null &&  // Exclude options with null threads
+  //         option.thread !== "null\""
+  //       );
+  //     }
+  //   );
+
+  //   // console.log("filteredOptions filteredOptions filteredOptions", filteredOptions)
+  //   if (formData?.fitting_thread === "METRIC") {
+  //     const selectedMetricType = formData?.metric_type;
+  //     const normalizedMetricType =
+  //       selectedMetricType === "Light With O"
+  //         ? "Light"
+  //         : selectedMetricType === "Heavy With O"
+  //           ? "Heavy"
+  //           : selectedMetricType;
+
+  //     const metricFilteredOptions =
+  //       dropdownOptions?.fittingDashSizeOptions?.filter((option) => {
+  //         // console.log("-=-=-=-=-=-=-", option, option.metric_type, formData?.metric_type, option.pipe_od, formData?.pipeOD)
+  //         return (
+  //           option.metric_type === normalizedMetricType && // Match the selected metric_type
+  //           option.pipe_od === formData?.pipeOD // Match the selected pipe_od
+  //         );
+  //       });
+  //     // console.log("-=-=-=-=-=-=-", metricFilteredOptions)
+
+  //     // If no matching options, return an empty array
+  //     if (metricFilteredOptions.length === 0) {
+  //       return [{ value: "Invalid", label: "Invalid" }];
+  //     }
+  //     // Map the filtered options to the desired format
+  //     return metricFilteredOptions?.map((option) => ({
+  //       value: `${option.thread}`,
+  //       label: `${option.thread} (${option.dash})`,
+  //       code: `${option.dash}`,
+  //       dsc_code: `${option.dsc_code}`,
+  //     }));
+  //   }
+
+  //   // // Special case for "upper join" and "lower join" - bind values without join
+  //   // if (formData?.variant && ["Standard", "Upper Jump", "Lower Jump"].includes(formData?.variant)) {
+  //   //   const variantOptions = dropdownOptions?.fittingDashSizeOptions.filter(
+  //   //     (option) =>
+  //   //       option.thread_type === formData?.fitting_thread &&
+  //   //       option.variant === formData?.variant &&
+  //   //       option.thread !== null // Exclude options with null threads
+  //   //   );
+
+  //   //   // Return the options for the selected variant
+  //   //   if (variantOptions.length > 0) {
+  //   //     return variantOptions?.map((option) => ({
+  //   //       value: `${option.thread} (${option.dash})`,
+  //   //       label: `${option.thread} (${option.dash})`,
+  //   //       code: `${option.dash}`,
+  //   //       dsc_code: `${option.dsc_code}`
+  //   //     }));
+  //   //   }
+  //   // }
+
+  //   const hoseDash = HoseDashSizeOption?.filter(
+  //     (option) => option?.value === formData?.hose_dash_size
+  //   );
+
+  //   // console.log(" dropdownOptions?.hoseDashSizeOptions", HoseDashSizeOption, formData?.hose_dash_size, formData?.variant, hoseDash[0]?.dash)
+
+  //   if (formData?.variant === "Standard" && hoseDash[0]?.dash) {
+  //     // console.log("909090909090909090909090909090", formData?.variant === "Standard", formData?.fitting_thread, hoseDash[0]?.dash, fittingDashSizeOption)
+  //     const filteredOption = fittingDashSizeOption?.filter(
+  //       (option) =>
+  //         option.thread_type === formData?.fitting_thread &&
+  //         option.dash_code === hoseDash[0]?.dash &&
+  //         option.variant === formData?.variant
+  //     );
+
+  //     // console.log("filteredOption filteredOption filteredOption ", filteredOption);
+
+  //     // If no matching options, return an empty array
+  //     if (filteredOption?.length === 0) {
+  //       return [{ value: "Invalid", label: "Invalid" }];
+  //     }
+
+  //     if (filteredOption.length > 0) {
+  //       return filteredOption?.map((option) => ({
+  //         value: `${option.thread}`,
+  //         label: `${option.thread} (${option.dash_code})`,
+  //         code: `${option.dash_code}`,
+  //         dsc_code: `${option.dsc_code}`,
+  //       }));
+  //     }
+  //     // const variantOptions = dropdownOptions?.fittingDashSizeOptions.filter(
+  //     //   (option) =>
+  //     //     option.thread_type === formData?.fitting_thread &&
+  //     //     option.variant === formData?.variant &&
+  //     //     option.thread !== null // Exclude options with null threads
+  //     // );
+
+  //     // // Return the options for the selected variant
+  //     // if (variantOptions.length > 0) {
+  //     //   return variantOptions?.map((option) => ({
+  //     //     value: `${option.thread} (${option.dash})`,
+  //     //     label: `${option.thread} (${option.dash})`,
+  //     //     code: `${option.dash}`,
+  //     //     dsc_code: `${option.dsc_code}`
+  //     //   }));
+  //     // }
+  //   }
+
+  //   // Map the filtered options to the desired format
+  //   return filteredOptions?.map((option) => ({
+  //     value: `${option.thread}`,
+  //     label: `${option.thread} (${option.dash_code})`,
+  //     code: `${option.dash_code}`,
+  //     dsc_code: `${option.dsc_code}`,
+  //   }));
+  // };
+
+
+
+
+
+  //Filter Fitting_Dash_Size_Options
   const filterFittingDashSizeOptions = () => {
     // Basic filtering based on fitting_thread
     const filteredOptions = fittingDashSizeOption?.filter(
@@ -342,9 +527,44 @@ const EditProductData = () => {
       }
     );
 
+    //Flenge fitting options bind
+    if (formData?.fitting_thread === "Flange") {
 
 
-    console.log("filteredOptions filteredOptions filteredOptions", filteredOptions)
+      /// Filter all SAE 61 and SAE 62 options into one
+      const flangeAllOption = fittingDashSizeOption.filter((option) => {
+        return option?.thread_type === "SAE 61" || option?.thread_type === "SAE 62";
+      });
+
+
+      // Map the filtered options to the desired format
+      return flangeAllOption.map((option) => ({
+        value: `${option.thread}`,
+        label: `${option.thread} (${option.dash_code})`,
+        code: `${option.dash_code}`,
+        dsc_code: `${option.dsc_code}`,
+      }));
+
+    }
+
+    //Dust cap all metric options only Metric options bind
+    if (formData?.fitting_thread === "Metric") {
+
+      const metricAllOption = dropdownOptions?.dustCapMatricOption.filter((option => {
+        return option?.thread_type === "METRIC"
+      }))
+
+      // Map the filtered options to the desired format
+      return metricAllOption.map((option) => ({
+        value: `${option.thread}`,
+        label: `${option.thread}`,
+        code: `${option.dash_code}`,
+        dsc_code: `${option.dsc_code}`,
+      }));
+
+    }
+
+    //Endfittting matric option 
     if (formData?.fitting_thread === "METRIC") {
       const selectedMetricType = formData?.metric_type;
       const normalizedMetricType =
@@ -355,7 +575,7 @@ const EditProductData = () => {
             : selectedMetricType;
 
       const metricFilteredOptions =
-        dropdownOptions?.fittingDashSizeOptions?.filter((option) => {
+        dropdownOptions?.fittingDashSizeOptions.filter((option) => {
           // console.log("-=-=-=-=-=-=-", option, option.metric_type, formData?.metric_type, option.pipe_od, formData?.pipeOD)
           return (
             option.metric_type === normalizedMetricType && // Match the selected metric_type
@@ -369,90 +589,53 @@ const EditProductData = () => {
         return [{ value: "Invalid", label: "Invalid" }];
       }
       // Map the filtered options to the desired format
-      return metricFilteredOptions?.map((option) => ({
-        value: `${option.thread} (${option.dash})`,
+      return metricFilteredOptions.map((option) => ({
+        value: `${option.thread}`,
         label: `${option.thread} (${option.dash})`,
         code: `${option.dash}`,
         dsc_code: `${option.dsc_code}`,
       }));
     }
 
-    // // Special case for "upper join" and "lower join" - bind values without join
-    // if (formData?.variant && ["Standard", "Upper Jump", "Lower Jump"].includes(formData?.variant)) {
-    //   const variantOptions = dropdownOptions?.fittingDashSizeOptions.filter(
-    //     (option) =>
-    //       option.thread_type === formData?.fitting_thread &&
-    //       option.variant === formData?.variant &&
-    //       option.thread !== null // Exclude options with null threads
-    //   );
-
-    //   // Return the options for the selected variant
-    //   if (variantOptions.length > 0) {
-    //     return variantOptions?.map((option) => ({
-    //       value: `${option.thread} (${option.dash})`,
-    //       label: `${option.thread} (${option.dash})`,
-    //       code: `${option.dash}`,
-    //       dsc_code: `${option.dsc_code}`
-    //     }));
-    //   }
-    // }
-
-    const hoseDash = HoseDashSizeOption?.filter(
+    const hoseDash = HoseDashSizeOption.filter(
       (option) => option?.value === formData?.hose_dash_size
     );
 
-    console.log(" dropdownOptions?.hoseDashSizeOptions", HoseDashSizeOption, formData?.hose_dash_size, formData?.variant, hoseDash[0]?.dash)
-
     if (formData?.variant === "Standard" && hoseDash[0]?.dash) {
-      console.log("909090909090909090909090909090", formData?.variant === "Standard", formData?.fitting_thread, hoseDash[0]?.dash, fittingDashSizeOption)
-      const filteredOption = fittingDashSizeOption?.filter(
+      const filteredOption = fittingDashSizeOption.filter(
         (option) =>
           option.thread_type === formData?.fitting_thread &&
           option.dash_code === hoseDash[0]?.dash &&
           option.variant === formData?.variant
       );
 
-      console.log("filteredOption filteredOption filteredOption ", filteredOption);
-
       // If no matching options, return an empty array
-      if (filteredOption?.length === 0) {
+      if (filteredOption.length === 0) {
         return [{ value: "Invalid", label: "Invalid" }];
       }
 
-      if (filteredOption?.length > 0) {
+      if (filteredOption.length > 0) {
         return filteredOption?.map((option) => ({
-          value: `${option?.thread} (${option.dash_code})`,
-          label: `${option?.thread} (${option.dash_code})`,
+          value: `${option.thread}`,
+          label: `${option.thread} (${option.dash_code})`,
           code: `${option.dash_code}`,
           dsc_code: `${option.dsc_code}`,
         }));
       }
-      // const variantOptions = dropdownOptions?.fittingDashSizeOptions.filter(
-      //   (option) =>
-      //     option.thread_type === formData?.fitting_thread &&
-      //     option.variant === formData?.variant &&
-      //     option.thread !== null // Exclude options with null threads
-      // );
 
-      // // Return the options for the selected variant
-      // if (variantOptions.length > 0) {
-      //   return variantOptions?.map((option) => ({
-      //     value: `${option.thread} (${option.dash})`,
-      //     label: `${option.thread} (${option.dash})`,
-      //     code: `${option.dash}`,
-      //     dsc_code: `${option.dsc_code}`
-      //   }));
-      // }
     }
+
+
 
     // Map the filtered options to the desired format
     return filteredOptions?.map((option) => ({
-      value: `${option.thread} (${option.dash_code})`,
-      label: `${option.thread} (${option.dash_code})`,
+      value: `${option.thread}`,
+      label: `${option.thread} ${option?.dash_code ? `(${option.dash_code})` : ""}`,
       code: `${option.dash_code}`,
       dsc_code: `${option.dsc_code}`,
     }));
   };
+
 
 
   // Filter fittingTypeOption
@@ -497,9 +680,10 @@ const EditProductData = () => {
     }
   }, [formData?.fitting_thread]);
 
+
   // Fitting Code and Description
   useEffect(() => {
-    console.log("Fitting code =-=-=-=-=-=-=-=-=-=-", selectedhoseDashSizeOption?.code, selectedFittingDashSizeOption?.code, selectedFittingThreadOption?.code)
+    // console.log("Fitting code =-=-=-=-=-=-=-=-=-=-", selectedhoseDashSizeOption?.code, selectedFittingDashSizeOption?.code, selectedFittingThreadOption?.code)
     const fitting_Code = `${formData?.design || ""}${selectedWireTypeOption?.code || ""
       }${selectedFittingPieceOption?.code
         ? selectedFittingPieceOption?.code + "-"
@@ -570,7 +754,7 @@ const EditProductData = () => {
   useEffect(() => {
     //Nut fitting code and description
     if (formData?.part === "Nut") {
-      const nut_fitting_code = `${"NUT-" + formData?.design || ""}${selectedFittingDashSizeOption?.code
+      const nut_fitting_code = `${formData?.design ? "NUT-" + formData?.design : ""}${selectedFittingDashSizeOption?.code
         ? selectedFittingDashSizeOption?.code
         : ""
         }${selectedFittingThreadOption?.code
@@ -599,7 +783,7 @@ const EditProductData = () => {
 
     //Nipple fitting code and description
     if (formData?.part === "Nipple") {
-      const nipple_fitting_code = `${formData?.design || ""}${selectedWireTypeOption?.code || ""
+      const nipple_fitting_code = `${formData?.design ? "Nipple-" + formData?.design : ""}${selectedWireTypeOption?.code || ""
         }${selectedSkiveTypeOption?.code ? "-" + selectedSkiveTypeOption?.code : ""
         }${selectedFittingThreadOption?.code
           ? "-" + selectedFittingThreadOption?.code + "-"
@@ -611,11 +795,11 @@ const EditProductData = () => {
         ? selectedFittingThreadOption?.dsc_code + " "
         : ""
         }${selectedhoseDashSizeOption ? selectedhoseDashSizeOption.dsc_code : ""
-        }${selectedWireTypeOption?.dsc_code
-          ? " " + selectedWireTypeOption?.dsc_code
+        }${selectedWireTypeOption?.value
+          ? " " + (selectedWireTypeOption?.value).toUpperCase()
           : ""
         }${selectedSkiveTypeOption?.dsc_code
-          ? " " + selectedSkiveTypeOption?.dsc_code
+          ? " " + "NIPPLE" + " " + selectedSkiveTypeOption?.dsc_code
           : ""
         }`;
       setNippleDescCode(desc_nipple_Code);
@@ -629,11 +813,8 @@ const EditProductData = () => {
 
     //cap fitting code and description
     if (formData?.part === "Cap") {
-      const cap_fitting_code = `${"Cap " + formData?.design || ""}${selectedWireTypeOption?.code || ""
-        }${formData?.cap_size
-          ? "-" + (formData?.cap_size).split(" ").pop().replace(/[()]/g, "")
-          : ""
-        }${selectedSkiveTypeOption?.code
+      const cap_fitting_code = `${"Cap-" + formData?.design || ""}${selectedWireTypeOption?.code || ""
+        }${selectedhoseDashSizeOption ? selectedhoseDashSizeOption.code : ""}${selectedSkiveTypeOption?.code
           ? "-" + selectedSkiveTypeOption?.code + "-"
           : ""
         }${formData?.od ? formData?.od : ""}${formData?.length ? "X" + formData?.length : ""
@@ -642,18 +823,19 @@ const EditProductData = () => {
           : ""
         }`;
       setCapFittingCode(cap_fitting_code);
-
-      const desc_cap_Code = `${formData?.cap_size
-        ? "Cap " + (formData?.cap_size).match(/^.*?(?=\s\()/)?.[0] + " "
-        : ""
-        }${formData?.od ? "(" + formData?.od : ""}${formData?.length ? "X" + formData?.length + ")" : ""
-        }${selectedWireTypeOption?.dsc_code
-          ? " " + selectedWireTypeOption?.dsc_code
+      const desc_cap_Code = `${
+        //.match(/^.*?(?=\s\()/)?.[0] + " "
+        formData?.cap_size
+          ? "Cap " + (formData?.cap_size)
+          : ""
+        }${formData?.od ? "(" + formData?.od + " " : ""}${formData?.length ? "X" + formData?.length + ")" : ""
+        }${selectedWireTypeOption?.value
+          ? " " + (selectedWireTypeOption?.value).toUpperCase()
           : ""
         }${selectedSkiveTypeOption?.dsc_code
           ? " " + selectedSkiveTypeOption?.dsc_code + " "
           : ""
-        }${formData?.big_bore ? "BIGBORE-" + formData?.big_bore : ""}${formData?.additional ? " " + formData?.additional : ""
+        }${formData?.big_bore ? "BIGBORE-" + formData?.big_bore : ""}${formData?.additional ? " " + formData?.additional?.replace(/\s+/g, '').toUpperCase() : ""
         }`;
       setCapDescCode(desc_cap_Code);
 
@@ -678,6 +860,8 @@ const EditProductData = () => {
     formData?.nut_length,
     selectedhoseDashSizeOption,
   ]);
+
+  // console.log("-------nutDescCode",descCode)
 
   const [hosepipeFittingCode, setHosePipeFittingCode] = useState(null);
   const [hosepipedescCode, setHosePipeDescCode] = useState(null);
@@ -749,6 +933,7 @@ const EditProductData = () => {
     }
   }, [selectpipeODOption]);
 
+
   useEffect(() => {
     // Check if both values are provided
     if (
@@ -757,7 +942,9 @@ const EditProductData = () => {
       formData?.hose_dash_size
     ) {
       const filteredOptions = filterFittingDashSizeOptions();
-      if (filteredOptions.length > 0 && !isEdit) {
+      setSelectedfittingDashSizeOption(filteredOptions[0]);
+
+      if (filteredOptions.length > 0) {
         setSelectedfittingDashSizeOption(filteredOptions[0]);
         setFormData({
           ...formData,
@@ -766,6 +953,7 @@ const EditProductData = () => {
       }
     }
   }, [formData?.fitting_thread, formData?.variant, formData?.hose_dash_size]);
+
 
   useEffect(() => {
     // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
@@ -824,6 +1012,145 @@ const EditProductData = () => {
       setSelectedfittingDashSizeOption(null);
     }
   }, [formData?.variant === "Manual"]);
+
+  //Sleeve Description
+  useEffect(() => {
+    if (formData?.product_type == "Sleeve") {
+      const sleev_Description = `${selectedSleeveSizeOption ? (selectedSleeveSizeOption ? "SLEEVE-" + selectedSleeveSizeOption?.dsc_code : "") : (formData?.size ? "SLEEVE-" + formData?.size : "")
+        }${(formData?.inner_diameter && formData?.outer_diameter) ? "(" + formData?.inner_diameter + "X" + formData?.outer_diameter + ")" : ""}${formData?.length ? formData?.length : ""}`.trim();
+
+      setSleeveDescription(sleev_Description);
+      setFormData((prevData) => ({
+        ...prevData,
+        desc_Code: sleev_Description, // Clear variant value in formData
+      }));
+    }
+  }, [
+    formData?.size,
+    formData?.inner_diameter,
+    formData?.outer_diameter,
+    formData?.length
+  ]);
+
+  //Vinyl cover Description
+  useEffect(() => {
+    if (formData?.product_type == "Vinyl Cover") {
+      const vc_Description = `${selectedVCSizeOption ? (selectedVCSizeOption ? selectedVCSizeOption?.dsc_code : "") : (formData?.size ? formData?.size : "")
+        }${(formData?.inner_diameter && formData?.outer_diameter) ? " VC " + "(" + formData?.inner_diameter + "X" + formData?.outer_diameter + ")" : ""}`.trim();
+
+      setVinylCoverDescription(vc_Description);
+      setFormData((prevData) => ({
+        ...prevData,
+        desc_Code: vc_Description, // Clear variant value in formData
+      }));
+    }
+  }, [
+    formData?.size,
+    formData?.inner_diameter,
+    formData?.outer_diameter,
+  ]);
+
+  useEffect(() => {
+    if (formData?.product_type == "Spring") {
+      const spring_fitting_Code = `${selectedhoseDashSizeOption ? "Spring-" + selectedhoseDashSizeOption?.dsc_code : ""
+        }${selectedSpringTypeOption ? " " + (selectedSpringTypeOption?.dsc_code).toUpperCase() + " " : ""}${formData?.spring_length ? "(" + formData?.spring_length + "mm" + ")" : ""}`.trim();
+      ;
+      // const fitting_Code = `${formData?.design || ''}${selectedWireTypeOption?.code || ''}${selectedFittingPieceOption?.code ? selectedFittingPieceOption?.code + '-' : ''}${selectedSkiveTypeOption?.code ? selectedSkiveTypeOption?.code + '-' : ''}${selectedhoseDashSizeOption?.code || ''}${selectedFittingDashSizeOption?.code ? selectedFittingDashSizeOption?.code + '-' : ''}${selectedFittingThreadOption?.code ? selectedFittingThreadOption?.code + '-' : ''}${selectedFittingTypeOption?.code || ''}${selectedStraightBendangleOption?.code || ''}${selectedWithCapWithoutCapOption?.code || ''}`;
+      setSpringFittingCode(spring_fitting_Code);
+      // const cap_fitting_code = `${}`
+
+      const spring_desc_Code = `${selectedhoseDashSizeOption ? "Spring-" + selectedhoseDashSizeOption?.dsc_code : ""
+        }${selectedSpringTypeOption ? " " + (selectedSpringTypeOption?.dsc_code).toUpperCase() + " " : ""}${formData?.spring_length ? "(" + formData?.spring_length + "mm" + ")" : ""}`.trim();
+
+      setSpringDescription(spring_desc_Code);
+      setFormData((prevData) => ({
+        ...prevData,
+        desc_Code: spring_desc_Code, // Clear variant value in formData
+        // fitting_Code: "N/A", // Clear fitting_dash_size value in formData
+      }));
+    }
+  }, [
+    selectedhoseDashSizeOption,
+    selectedSpringTypeOption,
+    formData?.spring_length,
+  ]);
+
+  //Oring ---> Fitting code and Description for O-Ring
+  useEffect(() => {
+    if (formData?.product_type == "O-ring") {
+      const oring_desc_Code = `${selectedFittingDashSizeOption ? (selectedFittingDashSizeOption ? "O-RING-" + selectedFittingDashSizeOption?.dsc_code : "") : (formData?.size ? "O-RING-" + formData?.size + " POD" : "")
+        }${selectedFittingThreadOption ? " " + selectedFittingThreadOption?.value + " " : ""}${(formData?.inner_diameter && formData?.thickness) ? "(" + formData?.inner_diameter + "X" + formData?.thickness + ")" : ""}`.trim();
+      setOringDescription(oring_desc_Code);
+      setFormData((prevData) => ({
+        ...prevData,
+        desc_Code: oring_desc_Code, // Clear variant value in formData
+      }));
+    }
+  }, [
+    selectedFittingDashSizeOption,
+    selectedFittingThreadOption,
+    formData?.inner_diameter,
+    formData?.thickness,
+    formData?.size
+  ]);
+
+  //Dust Cap Description
+  useEffect(() => {
+    if (formData?.product_type == "Dust Cap") {
+      const oring_desc_Code = `${selectedFittingDashSizeOption ? (selectedFittingDashSizeOption ? "DUST CAP-" + selectedFittingDashSizeOption?.dsc_code : "") : (formData?.size ? "DUST CAP-" + formData?.size : "")
+        }${selectedFittingThreadOption && selectedFittingThreadOption?.value !== "METRIC"
+          ? " " + selectedFittingThreadOption?.dsc_code + " "
+          : ""}${selectedFittingTypeOption ? selectedFittingTypeOption?.dsc_code : ""}`.trim();
+
+      setDustCapDescription(oring_desc_Code);
+      setFormData((prevData) => ({
+        ...prevData,
+        desc_Code: oring_desc_Code, // Clear variant value in formData
+      }));
+    }
+  }, [
+    selectedFittingDashSizeOption,
+    selectedFittingThreadOption,
+    selectedFittingTypeOption,
+    formData?.size
+  ]);
+
+  //Packing Description
+  useEffect(() => {
+    if (formData?.product_type == "Packing") {
+      const packing_Description = `${formData?.item_name ? formData?.item_name : ""}`.trim();
+
+      setPackingDescription(packing_Description);
+      setFormData((prevData) => ({
+        ...prevData,
+        desc_Code: packing_Description, // Clear variant value in formData
+      }));
+    }
+  }, [
+    formData?.item_name,
+  ]);
+
+  //Tube Fittings category to sub category reset hook
+  useEffect(() => {
+
+    //Evalute conditon and appy think for future
+    // if (selectedTubeFittingsThreadOption && !formData?.tube_fitting_category) {
+
+    //   setSelectedTubeFittingsCategoryOption(null);
+    //   setFormData({
+    //     ...formData,
+    //     tube_fitting_category: "",
+    //   });
+    // }
+    if (formData?.tube_fitting_thread === null) {
+      setSelectedTubeFittingsCategoryOption(null);
+      setFormData({
+        ...formData,
+        tube_fitting_category: "",
+      });
+    }
+  }, [selectedTubeFittingsThreadOption, formData?.tube_fitting_thread])
+
 
   const resetEndFittingForm = () => {
     setFormData({
@@ -889,9 +1216,15 @@ const EditProductData = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    console.log(name);
+    // console.log(name);
 
     setFormData({ ...formData, [name]: value });
+    if (errors[name]) {
+      setErrors({
+        ...errors,
+        [name]: null,
+      });
+    }
   };
 
   const handleSelectChange = (name) => (selectedOption) => {
@@ -993,35 +1326,59 @@ const EditProductData = () => {
     return Object.keys(newErrors).length === 0;
   };
 
+
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     const validationErrors = validateFormComponent(formData);
     setErrors(validationErrors);
 
     if (Object.keys(validationErrors).length > 0) {
-      console.log("validationErrors is available", validationErrors)
+      // console.log("validationErrors is available", validationErrors)
+      // Format field names into small pill tags
+      const missingFieldsTags = Object.keys(validationErrors)
+        .map((key) => `<small style="background:#f0f0f0; padding:4px 8px; margin:3px; border-radius:12px; display:inline-block; font-size:12px; color:#333;">${key.replace(/_/g, ' ')}</small>`)
+        .join(' ');
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Please fill all required fields',
+        html: `<div style="margin-top:10px;">${missingFieldsTags}</div>`,
+        confirmButtonText: 'Got it!',
+      });
       return
     }
+
     if (formData) {
       try {
+        // setLoading(true);
+        setFetchPrefillLoading(true)
         const res = await UpdateProduct(params, formData);
         if (res.data?.success) {
-          setLoading(false);
+          setFetchPrefillLoading(false);
+
+          // // resetForm();
           Swal.fire({
             icon: "success",
             title: "Product",
-            text: res.data?.message || "Product created successfully",
+            text: res?.data?.message,
             showConfirmButton: false,
-            timer: 1500,
+            timer: 600,
           });
-          resetForm();
-          navigate('/productlist');
+
+
+          setTimeout(() => {
+            navigate('/productlist');
+          }, 800)
+
+
+
         } else {
-          setLoading(false);
+          setFetchPrefillLoading(false);
           Toaster.error(res.data?.message || "Failed to create product");
         }
       } catch (error) {
-        setLoading(false);
+        setFetchPrefillLoading(false);
         Toaster.error(
           error.response?.data?.message ||
           "An error occurred while processing your request"
@@ -1075,10 +1432,12 @@ const EditProductData = () => {
 
   const [dataPrefilled, setDataPrefilled] = useState(false);
 
-
   const getEditDataApi = async () => {
+    setFetchPrefillLoading(true);
     try {
+
       const res = await GetEditProductData(params);
+
       if (res?.data?.success) {
         const data = res?.data?.product;
 
@@ -1092,151 +1451,29 @@ const EditProductData = () => {
           label: data?.design,
         });
 
-        // setSelectedWireTypeOption({
-        //   value: data?.wire_type,
-        //   label: data?.wire_type,
-        // })
 
-        // setSelectedWithCapWithoutCapOption({
-        //   value: data?.ferrule ? data?.ferrule : data?.with_cap,
-        //   label: data?.ferrule ? data?.ferrule : data?.with_cap,
-        //   code: ft_code[6], 
-        //   dsc_code: `${desc_code[7]} ${desc_code[8]}`,
-        // })
-
-        // setSelectedFittingPieceOption({
-        //   value: data?.fitting_piece,
-        //   label: data?.fitting_piece,
-        //   code:  char3
-        // })
-
-        // setSelectedSkiveTypeOption({
-        //   value: data?.skive_type,
-        //   label: data?.skive_type,
-        //   code: ft_code[1], 
-        //   dsc_code: desc_code[5]
-        // })
-
-        // setSelectedFittingThreadOption({
-        //   value: data?.fitting_thread,
-        //   label: data?.fitting_thread,
-        //   dsc_code:f_thread[1]
-        // });
-
-        // setSelectedHoseDashSizeOption({
-        //   value: data?.hose_dash_size,
-        //   label: data?.hose_dash_size,
-        //   code: code1, 
-        //   dash: code1,
-        //   dsc_code: desc_code[1],
-        // });
-
-        // setSelectedvariantOption({
-        //   value: data?.variant,
-        //   label: data?.variant,
-        // })
-
-        // setSelectedfittingDashSizeOption({
-        //   value: data?.fitting_dash_size,
-        //   label: data?.fitting_dash_size,
-        //   dsc_code: desc_code[2],
-        // })
-
-        // setSelectedFittingTypeOption({
-        //   value: data?.fitting_type,
-        //   label: data?.fitting_type,
-        //   dsc_code: desc_code[3],
-        // })
-
-        // setSelectedStraightBendangleOption({
-        //   value: data?.straight_bend_angle,
-        //   label: data?.straight_bend_angle,
-        //   dsc_code: desc_code[4],
-        // });
-
-        // setSelectedGSTOption({
-        //   value: data?.gst,
-        //   label: data?.gst,
-        // })
-
-        // setSelectedUOMOption({
-        //   value: data?.uom,
-        //   label: data?.uom,
-        // })
-
-        // setSelectedPartsOption({
-        //   value: data?.part,
-        //   label: data?.part,
-        // })
-        // setSelectedSkiveTypeOption(null);
-        // setSelectedDropLengthOption(null);
         setFormData({
           ...data,
-          // category_id: data?.category_id?._id,
-          // subcategory_id: data?.subcategory_id?._id,
-          // subsubcategory_id: data?.subsubcategory_id?._id,
-          // brand: data?.brand?._id,
-          // // connection_type:"",
-          // fittingSize: data?.fittingSize?._id,
-          // material: data?.material?._id,
-          // variant: data?.variant?._id,
-          // // thread_id:"",
-          // parts: data?.parts?.map((val) => val?._id),
-          // thread_type: data?.thread_type?._id,
-          // ferrule: data?.ferrule ? data?.ferrule : data?.with_cap
         });
 
-        // setSelectedCategoryOption({
-        //   value: data?.category_id?._id,
-        //   label: data?.category_id?.name,
-        // });
-        // setSelectedSubCategoryOption({
-        //   value: data?.subcategory_id?._id,
-        //   label: data?.subcategory_id?.name,
-        // });
-        // setSelectedSubSubCategoryOption({
-        //   value: data?.subsubcategory_id?._id,
-        //   label: data?.subsubcategory_id?.name,
-        // });
-        // setSelectedBrandOption({
-        //   value: data?.brand?._id,
-        //   label: data?.brand?.name,
-        // });
-        // setSelectedfittingSizeOption({
-        //   value: data?.fittingSize?._id,
-        //   label: data?.fittingSize?.size,
-        // });
-        // setSelectedmaterialOption({
-        //   value: data?.material?._id,
-        //   label: data?.material?.name,
-        // });
-        // // setSelectedvariantOption({
-        // //   value: data?.variant?._id,
-        // //   label: `${data?.variant?.variantType} ${data?.variant?.name}`,
-        // // });
-        // setSelectedThreadtypeOption({
-        //   value: data?.thread_type?.id,
-        //   label: `${data?.thread_type?.thread_type} ${data?.thread_type?.threadSize}`,
-        // });
-
-        // const formattedPartOptions = data?.parts?.map((item) => ({
-        //   value: item?._id, // 'id' is the unique identifier
-        //   label: item?.name, // 'name' is what will be displayed
-        // }));
-
-        // setSelectedPartOption(formattedPartOptions);
         setLogo(data?.image);
-        // setSelectedGalleryImages(data?.gallery);
+
+        const fullGalleryUrls = (data?.gallery || []).map(
+          (fileName) => `${fileName}`
+        );
+        setGalleryImages(fullGalleryUrls);
 
         setDataPrefilled(true);
 
       }
     } catch (err) {
       console.log(err);
+    } finally {
+      setFetchPrefillLoading(false);
     }
   };
 
-  console.log("----------------++++++++++++++++++formData", formData)
+  // console.log("----------------++++++++++++++++++formData", formData)
 
   useEffect(() => {
     getEditDataApi();
@@ -1244,7 +1481,13 @@ const EditProductData = () => {
 
   //Prefilled set(Fitting Code and Description) data when user comes for edit ----> Fitting Code and Description
   useEffect(() => {
+
     //Wire Type fitting Code and Description Set Prefilled
+    setSelectedPartsOption({
+      value: formData?.part,
+      label: formData?.part,
+    })
+
     if (formData?.wire_type) {
       const matchedWireType = dropdownOptions?.WireTypeOptions?.find(
         (option) => option?.value === formData?.wire_type
@@ -1258,7 +1501,7 @@ const EditProductData = () => {
     }
     //Ferrule fitting Code and Description Set Prefilled
     if (formData?.ferrule) {
-      console.log("ferrule ferrule",formData?.with_cap , formData?.ferrule)
+      // console.log("ferrule ferrule",formData?.with_cap , formData?.ferrule)
       const ferrule = dropdownOptions?.CapWithoutCapOptions?.find(
         option => option?.value === formData?.ferrule
       );
@@ -1287,6 +1530,7 @@ const EditProductData = () => {
         });
       }
     }
+
     //Skive Type -> fitting Code and Description Set Prefilled
     if (formData?.skive_type) {
       const skiveType = dropdownOptions?.skiveTypeOptions?.find(
@@ -1318,9 +1562,9 @@ const EditProductData = () => {
       }
     }
     //hoseDashSize fitting Code and Description Set Prefilled
-    if (formData?.hose_dash_size) {
+    if (formData?.hose_dash_size || formData?.cap_size) {
       const hoseDashSize = HoseDashSizeOption?.find(
-        option => option?.value === formData?.hose_dash_size
+        option => option?.value === formData?.hose_dash_size || formData?.cap_size
       );
 
       if (hoseDashSize) {
@@ -1336,8 +1580,8 @@ const EditProductData = () => {
     //Fitting_dash_size fitting Code and Description Set Prefilled
     if (formData?.fitting_thread && formData?.fitting_dash_size) {
       const filteredOption = fittingDashSizeOption
-        .filter(option => option?.thread_type === formData?.fitting_thread) // Filter by fitting_thread
-        .find(option => option?.thread === formData?.fitting_dash_size); // Find the exact match for fitting_dash_size
+        ?.filter(option => option?.thread_type === formData?.fitting_thread)
+        ?.find(option => option?.thread === formData?.fitting_dash_size);
 
       if (filteredOption) {
         setSelectedfittingDashSizeOption({
@@ -1347,6 +1591,34 @@ const EditProductData = () => {
           dsc_code: filteredOption.dsc_code,
         });
       }
+    }
+
+    //Fitting_dash_size fitting Code and Description Set Prefilled
+    if (formData?.pipeOD && formData?.fitting_thread) {
+      const filteredOption = fittingDashSizeOption
+        ?.filter(option => (option?.thread_type === formData?.fitting_thread))
+        // && (option?.metric_type === formData?.metric_type)
+        ?.find(option => option?.pipeOD === formData?.pipeOD);
+      // console.log("filtered option  is here =========================", filteredOption)
+      if (filteredOption) {
+        setSelectpipeODOption({
+          value: `${filteredOption?.pipeOD}`,
+          label: `${filteredOption?.pipeOD}`,
+          code: filteredOption?.dash_code,
+          dsc_code: filteredOption?.dsc_code,
+        });
+      }
+
+      //metric type option
+      if (filteredOption) {
+        setSelectedmetricTypeOptions({
+          value: `${filteredOption?.metric_type}`,
+          label: `${filteredOption?.metric_type}`,
+          code: filteredOption?.dash_code,
+          dsc_code: filteredOption?.dsc_code,
+        });
+      }
+
     }
     //Fitting Type -> fitting Code and Description Set Prefilled
     if (formData?.fitting_type) {
@@ -1363,8 +1635,8 @@ const EditProductData = () => {
         });
       }
     }
-     //Straigt and Bend Angle -> fitting Code and Description Set Prefilled
-     if (formData?.straight_bend_angle) {
+    //Straigt and Bend Angle -> fitting Code and Description Set Prefilled
+    if (formData?.straight_bend_angle) {
       const straightBendAngle = dropdownOptions?.straightBendangleOptions?.find(
         option => option?.label === (formData?.straight_bend_angle)
       );
@@ -1379,8 +1651,379 @@ const EditProductData = () => {
       }
     }
 
-  }, [dataPrefilled]);
+    // Hose Pipe
+    if (formData?.brand_lay_line) {
+      const brandLayLine = dropdownOptions?.BrandLayLineOptions?.find(
+        option => option?.label === formData?.brand_lay_line
+      );
 
+      if (brandLayLine) {
+        setSelectedBrandLayLineOption({
+          value: brandLayLine.value,
+          label: brandLayLine.label,
+          code: brandLayLine.code || "",
+          dsc_code: brandLayLine.dsc_code,
+        })
+      }
+    }
+
+    if (formData?.hose_type) {
+      const hoseType = dropdownOptions?.HoseTypeOptions?.find(
+        option => option?.label === formData?.hose_type
+      );
+
+      if (hoseType) {
+        setSelectedHoseTypeOption({
+          value: hoseType.value,
+          label: hoseType.label,
+          code: hoseType.code || "",
+          dsc_code: hoseType.dsc_code,
+        })
+      }
+    }
+
+    if (formData?.hose_pipe_mfc) {
+      const hosePipeMfc = dropdownOptions?.MFCOptions?.find(
+        option => option?.label === formData?.hose_pipe_mfc
+      );
+
+      if (hosePipeMfc) {
+        setSelectedHosePipeMFCOption({
+          value: hosePipeMfc.value,
+          label: hosePipeMfc.label,
+          code: hosePipeMfc.code || "",
+          dsc_code: hosePipeMfc.dsc_code,
+        })
+      }
+    }
+
+    // Sleeve
+    if (formData?.size) {
+      const sleeveSize = dropdownOptions?.sleeveSizesOption?.find(
+        option => option?.value === formData?.size);
+
+      if (sleeveSize) {
+        setSelectedSleeveSizeOption({
+          value: sleeveSize.value,
+          label: sleeveSize.label,
+          code: sleeveSize.code || "",
+          dsc_code: sleeveSize.dsc_code,
+        })
+      }
+    }
+
+    // Sleeve
+    if (formData?.size) {
+      const sleeveSize = dropdownOptions?.sleeveSizesOption?.find(
+        option => option?.value === formData?.size || formData?.size || formData?.size?.replace(/["']/g, ""));
+
+      if (sleeveSize) {
+        setSelectedSleeveSizeOption({
+          value: sleeveSize.value,
+          label: sleeveSize.label,
+          code: sleeveSize.code || "",
+          dsc_code: sleeveSize.dsc_code,
+        })
+      }
+    }
+
+    // Spring
+    if (formData?.spring_type) {
+      const springType = dropdownOptions?.springTypeOption?.find(
+        option => option?.value === formData?.spring_type);
+      if (springType) {
+        setSelectedSpringTypeOption({
+          value: springType.value,
+          label: springType.label,
+          code: springType.code || "",
+          dsc_code: springType.dsc_code
+        })
+      }
+    }
+    // Spring
+
+    //hose size for 
+    if (formData?.hose_size) {
+      const hoseDashSize = HoseDashSizeOption?.find(
+        option => option?.value === formData?.hose_size
+      );
+
+      if (hoseDashSize) {
+        setSelectedHoseDashSizeOption({
+          value: hoseDashSize.value,
+          label: hoseDashSize.label,
+          code: hoseDashSize.code || "",
+          dsc_code: hoseDashSize.dsc_code,
+          dash: hoseDashSize.dash || "",
+        });
+      }
+    }
+
+
+    //Oring
+    if (formData?.product_type == "O-ring") {
+      if (formData?.fitting_thread) {
+        const oringThreadOption = dropdownOptions?.oRingThreadTypeOption
+          .find(option => option.value === formData?.fitting_thread)
+        if (oringThreadOption) {
+          setSelectedFittingThreadOption({
+            value: `${oringThreadOption.value}`,
+            label: `${oringThreadOption.label}`,
+            code: oringThreadOption.dash_code,
+            dsc_code: oringThreadOption.dsc_code,
+          })
+        }
+      }
+      // if (formData?.size) {
+      //   const filteredOption = fittingDashSizeOption
+      //     ?.filter(option => option?.thread_type === formData?.fitting_thread)
+      //     ?.find(option => option?.thread === formData?.size);
+      //   if (filteredOption) {
+      //     setSelectedfittingDashSizeOption({
+      //       value: `${filteredOption.thread} (${filteredOption.dash_code})`,
+      //       label: `${filteredOption.thread} (${filteredOption.dash_code})`,
+      //       code: filteredOption.dash_code,
+      //       dsc_code: filteredOption.dsc_code,
+      //     });
+      //   }
+      // }
+
+      if (formData?.size) {
+        // Check for Flange thread type (which includes SAE 61 and SAE 62)
+        if (formData?.fitting_thread === "Flange") {
+          const filteredOption = fittingDashSizeOption
+            ?.filter(option =>
+              option?.thread_type === "SAE 61" || option?.thread_type === "SAE 62"
+            )
+            ?.find(option => option?.thread === formData?.size);
+
+          if (filteredOption) {
+            setSelectedfittingDashSizeOption({
+              value: `${filteredOption.thread} (${filteredOption.dash_code})`,
+              label: `${filteredOption.thread} (${filteredOption.dash_code})`,
+              code: filteredOption.dash_code,
+              dsc_code: filteredOption.dsc_code,
+            });
+          }
+        } else {
+          // Default case for other thread types
+          const filteredOption = fittingDashSizeOption
+            ?.filter(option => option?.thread_type === formData?.fitting_thread)
+            ?.find(option => option?.thread === formData?.size);
+
+          if (filteredOption) {
+            setSelectedfittingDashSizeOption({
+              value: `${filteredOption.thread} (${filteredOption.dash_code})`,
+              label: `${filteredOption.thread} (${filteredOption.dash_code})`,
+              code: filteredOption.dash_code,
+              dsc_code: filteredOption.dsc_code,
+            });
+          }
+        }
+      }
+
+
+    }
+
+
+    // Dust Cap Thread
+    if (formData?.product_type == "Dust Cap") {
+      if (formData?.fitting_thread) {
+
+        const filteredOption = dropdownOptions?.dustCapThreadType
+          ?.find(option => option?.value === formData?.fitting_thread)
+        // ?.find(option => option?.thread === formData?.size);
+
+        if (filteredOption) {
+          setSelectedFittingThreadOption({
+            value: `${filteredOption.value}`,
+            label: `${filteredOption.label}`,
+            code: filteredOption?.code,
+            dsc_code: filteredOption?.dsc_code,
+          });
+        }
+      }
+    }
+
+    // Dust Cap
+    if (formData?.product_type == "Dust Cap") {
+      if (formData?.size) {
+        if (formData?.fitting_thread == "Metric") {
+          const filterOption = dropdownOptions?.dustCapMatricOption
+            ?.filter(option => option?.thread_type === (formData?.fitting_thread).toUpperCase())
+            ?.find(option => option?.thread === formData?.size);
+          if (filterOption) {
+            setSelectedfittingDashSizeOption({
+              value: `${filterOption.thread}`,
+              label: `${filterOption.thread}`,
+              dsc_code: filterOption.dsc_code,
+            });
+          }
+        }
+        else {
+          const filteredOption = fittingDashSizeOption
+            ?.filter(option => option?.thread_type === formData?.fitting_thread)
+            ?.find(option => option?.thread === formData?.size);
+          if (filteredOption) {
+            setSelectedfittingDashSizeOption({
+              value: `${filteredOption.thread} (${filteredOption.dash_code})`,
+              label: `${filteredOption.thread} (${filteredOption.dash_code})`,
+              code: filteredOption.dash_code,
+              dsc_code: filteredOption.dsc_code,
+            });
+          }
+        }
+      }
+    }
+
+    if (formData?.dustcap_color) {
+      const dustCapColor = dropdownOptions?.dustCapColorsOption?.find(
+        option => option?.value === formData?.dustcap_color);
+      if (dustCapColor) {
+        setSelectedDustCapColorOption({
+          value: dustCapColor.value,
+          label: dustCapColor.label,
+          code: dustCapColor.code || "",
+          dsc_code: dustCapColor.dsc_code
+        })
+      }
+    }
+
+    if (formData?.male_female_type) {
+      const malefemaleOptions = dropdownOptions?.malefemaleOptions
+        .find(option => option?.value === formData?.male_female_type);
+      // console.log("malefemaleOptions",malefemaleOptions)
+      if (malefemaleOptions) {
+        setSelectedFittingTypeOption({
+          value: malefemaleOptions.value,
+          label: malefemaleOptions.value,
+          dsc_code: malefemaleOptions.value
+        })
+      }
+    }
+
+
+    //vcSizesOption
+    if (formData?.product_type == "Vinyl Cover") {
+      if (formData?.size) {
+        const filterOption = dropdownOptions?.vcSizesOption
+          ?.find(option => option?.value === formData?.size || formData?.size?.replace(/["']/g, ""));
+        if (filterOption) {
+          setSelectedVCSizeOption({
+            value: `${filterOption.value}`,
+            label: `${filterOption.label}`,
+            dsc_code: filterOption.dsc_code,
+          });
+        }
+      }
+    }
+
+
+
+
+    if (formData?.uom) {
+      const UOM = dropdownOptions?.uomOptions?.find(
+        option => option?.value === formData?.uom
+      );
+
+      if (UOM) {
+        setSelectedUOMOption({
+          value: UOM.value,
+          label: UOM.label,
+        })
+      }
+    }
+
+    if (formData?.gst) {
+      const GST = dropdownOptions?.gstOption?.find(
+        option => option?.value === formData?.gst
+      );
+
+      if (GST) {
+        setSelectedGSTOption({
+          value: GST.value,
+          label: GST.label,
+        })
+      }
+    }
+
+    //Tube Fitting
+    if (formData?.tube_fitting_thread) {
+      const selectedThread = dropdownOptions?.TuebeFittingsThreads?.find(
+        (thread) => thread?.name === formData?.tube_fitting_thread
+      );
+
+      if (selectedThread) {
+        setSelectedTubeFittingsThreadOption({
+          value: selectedThread.name,
+          label: selectedThread.name,
+        });
+      }
+    }
+
+    if (formData?.tube_fitting_category) {
+
+      const selectedCategory = dropdownOptions?.TubeFittingsCategory?.find(
+        (item) =>
+          item?.category === formData?.tube_fitting_category &&
+          item?.thread === formData?.tube_fitting_thread// Ensure it matches the selected thread
+      );
+
+      if (selectedCategory) {
+        setSelectedTubeFittingsCategoryOption({
+          value: selectedCategory?.category,
+          label: selectedCategory?.category,
+        });
+      }
+    }
+
+    //hose Assembly
+
+    if (formData.hose_label) {
+      setSelectedHose({
+        value: formData?.hose_label,
+        label: formData?.hose_label
+      })
+    }
+    if (formData.fitting_a_label) {
+      setSelectedFittingA({
+        value: formData?.fitting_a_label,
+        label: formData?.fitting_a_label
+      })
+    }
+
+    if (formData.fitting_b_label) {
+      setSelectedFittingB({
+        value: formData?.fitting_b_label,
+        label: formData?.fitting_b_label
+      })
+    }
+
+    if (formData.guard_label) {
+      setSelectedGuardOption({
+        value: formData?.guard_label,
+        label: formData?.guard_label
+      })
+    }
+
+    if (formData.oa) {
+      setOrientationAngle(true); // ✅ This triggers OA field in child
+    }
+
+    if(formData?.guard_type){
+      const guardType  = guardTypeOption?.find(
+        option => option?.value === formData?.guard_type
+      )
+      if(guardType){
+        setSelectedGuardTypeOption({
+          value: guardType?.value,
+          label: guardType?.label
+        })
+      }
+    }
+
+
+  }, [dataPrefilled]);
 
   const isBase64Image = (url) => url.startsWith('data:image/');
   // Inline styles
@@ -1461,6 +2104,7 @@ const EditProductData = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
             //code prefilled
             fittingCode={nutFittingCode}
             descCode={nutDescCode}
@@ -1828,6 +2472,7 @@ const EditProductData = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
             fittingCode={hosepipeFittingCode}
             descCode={hosepipedescCode}
             //hose dash size
@@ -1856,6 +2501,42 @@ const EditProductData = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
+            supplierOption={supplierOption}
+            setSupplierOption={setSupplierOption}
+            allSupplier={allSupplier}
+            setAllSupplier={setAllSupplier}
+            hoseOption={hoseOption}
+            setHoseOption={setHoseOption}
+            fittingAOption={fittingAOption}
+            setFittingAOption={setFittingAOption}
+            fittingBOption={fittingBOption}
+            setFittingBOption={setFittingBOption}
+            guardOption={guardOption}
+            setGuardOption={setGuardOption}
+            selectedGuardOption={selectedGuardOption}
+            setSelectedGuardOption={setSelectedGuardOption}
+            guardTypeOption={guardTypeOption}
+            setGuardTypeOption={setGuardTypeOption}
+            selectedGuardTypeOption={selectedGuardTypeOption}
+            setSelectedGuardTypeOption={setSelectedGuardTypeOption}
+            selectedBillingStateOption={selectedBillingStateOption}
+            setSelectedBillingStateOption={setSelectedBillingStateOption}
+            selectedShippingStateOption={selectedShippingStateOption}
+            setSelectedShippingStateOption={setSelectedShippingStateOption}
+            selectedHose={selectedHose}
+            setSelectedHose={setSelectedHose}
+            selectedFittingA={selectedFittingA}
+            setSelectedFittingA={setSelectedFittingA}
+            selectedFittingB={selectedFittingB}
+            setSelectedFittingB={setSelectedFittingB}
+            selectedQuantity={selectedQuantity}
+            setSelectedQuantity={setSelectedQuantity}
+            selectedDiscount={selectedDiscount}
+            setSelectedDiscount={setSelectedDiscount}
+
+            orientationAngleFromParent={orientationAngle}
+            // setOrientationAngle={setOrientationAngle}
           />
         );
 
@@ -1864,11 +2545,22 @@ const EditProductData = () => {
           <SpringSection
             formData={formData}
             setFormData={setFormData}
+            //Error
             errors={errors}
-            springTypeOption={springTypeOption}
+            setErrors={setErrors}
+            //Code
+            fittingCode={springFittingCode}
+            descCode={springDescription}
+            //Spring Type
+            springTypeOption={dropdownOptions?.springTypeOption}
             setSpringTypeOption={setSpringTypeOption}
             selectedSpringTypeOption={selectedSpringTypeOption}
             setSelectedSpringTypeOption={setSelectedSpringTypeOption}
+            //hose dash size
+            HoseDashSizeOption={HoseDashSizeOption}
+            setHoseDashSizeOption={setHoseDashSizeOption}
+            selectedhoseDashSizeOption={selectedhoseDashSizeOption}
+            setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
           />
         );
 
@@ -1878,6 +2570,38 @@ const EditProductData = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
+            //code prefilled
+            fittingCode={fittingCode}
+            descCode={oringDescription}
+
+            //variant
+            variantOption={dropdownOptions?.variantsOption}
+            setVariantOption={setVariantOption}
+            selectedvariantOption={selectedvariantOption}
+            setSelectedvariantOption={setSelectedvariantOption}
+            // fittingDashSizeOption={fittingDashSizeOption}
+            fittingDashSizeOption={filterFittingDashSizeOptions()}
+            setfittingDashSizeOption={setfittingDashSizeOption}
+            selectedFittingDashSizeOption={selectedFittingDashSizeOption}
+            setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
+            ///pipe OD options
+            pipeODOption={dropdownOptions?.pipeODOptions}
+            setpipeODOption={setpipeODOption}
+            selectedpipeODOption={selectpipeODOption}
+            setSelectpipeODOption={setSelectpipeODOption}
+            //metricType
+            matricTypeOption={dropdownOptions?.metricTypeOptions}
+            setMatricTypeOption={setMatricTypeOption}
+            selectedmetricTypeOptions={selectedmetricTypeOptions}
+            setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
+            //fitting thread
+            oRingThreadTypeOption={dropdownOptions?.oRingThreadTypeOption}
+
+            // fittingThreadOption={fittingThreadOption}
+            setfittingThreadOption={setfittingThreadOption}
+            selectedFittingThreadOption={selectedFittingThreadOption}
+            setSelectedFittingThreadOption={setSelectedFittingThreadOption}
           />
         );
 
@@ -1886,7 +2610,40 @@ const EditProductData = () => {
           <DustCapSection
             formData={formData}
             setFormData={setFormData}
+            //errors
             errors={errors}
+            setErrors={setErrors}
+            //setfiiting code
+
+            descCode={dustCapDescription}
+
+
+            //colors option
+            dustCapColorsOptions={dropdownOptions?.dustCapColorsOption}
+            setDustCapColorOption={setDustCapColorOption}
+            selectedDustCapColorOption={selectedDustCapColorOption}
+            setSelectedDustCapColorOption={setSelectedDustCapColorOption}
+            //fitting thread
+            dustCapThreadTypeOptions={dropdownOptions?.dustCapThreadType}
+            setfittingThreadOption={setfittingThreadOption}
+            selectedFittingThreadOption={selectedFittingThreadOption}
+            setSelectedFittingThreadOption={setSelectedFittingThreadOption}
+            // fittingDashSizeOption
+            fittingDashSizeOption={filterFittingDashSizeOptions()}
+            setfittingDashSizeOption={setfittingDashSizeOption}
+            selectedFittingDashSizeOption={selectedFittingDashSizeOption}
+            setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
+            ///pipe OD options
+            pipeODOption={dropdownOptions?.pipeODOptions}
+            setpipeODOption={setpipeODOption}
+            selectedpipeODOption={selectpipeODOption}
+            setSelectpipeODOption={setSelectpipeODOption}
+            //fitting type
+            fittingTypeOption={filterFittingTypeOptions()}
+            setfittingTypeOption={setfittingTypeOption}
+            selectedFittingTypeOption={selectedFittingTypeOption}
+            setSelectedFittingTypeOption={setSelectedFittingTypeOption}
+            //other options
             maleFemaleOption={maleFemaleOption}
             setmaleFemaleOption={setmaleFemaleOption}
             selectedMaleFemaleOption={selectedMaleFemaleOption}
@@ -1894,12 +2651,22 @@ const EditProductData = () => {
           />
         );
 
+
       case "Sleeve":
         return (
           <SleeveSection
             formData={formData}
             setFormData={setFormData}
+            //errors
             errors={errors}
+            setErrors={setErrors}
+
+            descCode={sleeveDescription}
+            //sleeveSizesOption option
+            sleeveSizeOptions={dropdownOptions?.sleeveSizesOption}
+            //  setDustCapColorOption={}
+            selectedSleeveSizeOption={selectedSleeveSizeOption}
+            setSelectedSleeveSizeOption={setSelectedSleeveSizeOption}
           />
         );
 
@@ -1909,8 +2676,18 @@ const EditProductData = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
+            descCode={vinylCoverDescription}
+
+            //sleeveSizesOption option
+            vcSizeOptions={dropdownOptions?.vcSizesOption}
+            selectedVCSizeOption={selectedVCSizeOption}
+            setSelectedVCSizeOption={setSelectedVCSizeOption}
+
+
           />
         );
+
 
       case "Packing":
         return (
@@ -1918,6 +2695,7 @@ const EditProductData = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            descCode={packingDescription}
           />
         );
 
@@ -1927,8 +2705,33 @@ const EditProductData = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
+            //Threads
+            tubeFittingsThreadOption={dropdownOptions?.TuebeFittingsThreads?.map((thread) => ({
+              value: thread.name,
+              label: thread.name,
+            }))}
+            setTubeFittingsThreadOption={setTubeFittingsThreadOption}
+            //Category
+            tubeFittingsCategoryOption={dropdownOptions?.TubeFittingsCategory
+              ?.filter((item) => item.thread === selectedTubeFittingsThreadOption?.value) // filter by selected category
+              ?.map((thread) => ({
+                value: thread.category,
+                label: thread.category,
+              }))}
+            setTubeFittingsCategoryOption={setTubeFittingsCategoryOption}
+
+
+
+            selectedTubeFittingsCategoryOption={selectedTubeFittingsCategoryOption}
+            setSelectedTubeFittingsCategoryOption={setSelectedTubeFittingsCategoryOption}
+
+            selectedTubeFittingsThreadOption={selectedTubeFittingsThreadOption}
+            setSelectedTubeFittingsThreadOption={setSelectedTubeFittingsThreadOption}
           />
         );
+
+
 
       default:
         return null;
@@ -1969,7 +2772,7 @@ const EditProductData = () => {
   return (
     <>
       <ToastContainer />
-      <Loader visible={loading} />
+      <Loader visible={fetchPrefillloading} />
       <PageTitle
         activeMenu={"Add Product"}
         motherMenu={"Home"}
@@ -2027,405 +2830,166 @@ const EditProductData = () => {
       {formData.product_type && formData?.part
         ? renderPartComponent()
         : renderComponent()}
-      {/* Basic Info */}
-      <div className="col-xl-12 col-lg-12">
-        <div className="card">
-          <div className="card-header">
-            <h4 className="card-title">Basic Info</h4>
-          </div>
-          <div className="card-body">
-            <div>
-              {/* Weight */}
-              {/* <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-3 col-form-label">Weight</label>
-                  <input
-                    name="Weight"
-                    value={formData.weight}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 100"
-                  />
-                  {errors.weight && (
-                    <span className="text-danger fs-12">{errors.weight}</span>
-                  )}
-                </div> */}
-
-              {/* UOM */}
-              {/* <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-6 col-form-label">Unit of Measurement</label>
-                  <input
-                    name="UOM"
-                    value={formData.uom}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 15 inch, meter, set..etc"
-                  />
-                  {errors.uom && (
-                    <span className="text-danger fs-12">{errors.uom}</span>
-                  )}
-                </div> */}
-
-              {/* Price and Rate */}
-              <div className="mb-3 row">
-                <div className="col-sm-3 col-xl-3">
-                  <label className="col-sm-3 col-form-label">Price<span className="text-danger">*</span></label>
-                  <input
-                    name="price"
-                    value={formData.price}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 2000 INR"
-                  />
-                  {errors.price && (
-                    <span className="text-danger fs-12">{errors.price}</span>
-                  )}
-                </div>
-
-                <div className="col-sm-3 col-xl-3">
-                  {/* <label className="col-sm-3 col-form-label">GST</label>
-                  <input
-                    name="Gst"
-                    value={formData.gst}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 15%"
-                  />
-                  {errors.gst && (
-                    <span className="text-danger fs-12">{errors.gst}</span>
-                  )} */}
-                  <label className="col-form-label">GST<span className="text-danger">*</span></label>
-                  <Select
-                    value={selectedGSTOption}
-                    onChange={(option) => {
-                      setSelectedGSTOption(option);
-                      setFormData({
-                        ...formData,
-                        gst: option.value,
-                      });
-                      setErrors({
-                        ...errors,
-                        gst: null,
-                      });
-                    }}
-                    defaultValue={selectedGSTOption}
-                    options={gstOption}
-                    style={{
-                      lineHeight: "40px",
-                      color: "#7e7e7e",
-                      paddingLeft: " 15px",
-                    }}
-                  />
-                  {errors.gst && (
-                    <span className="text-danger fs-12">{errors.gst}</span>
-                  )}
-                </div>
-
-                <div className="col-sm-3 col-xl-3">
-                  <label className="col-sm-3 col-form-label">Weight<span className="text-danger">*</span></label>
-                  <input
-                    name="weight"
-                    value={formData.weight}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 100"
-                  />
-                  {errors.weight && (
-                    <span className="text-danger fs-12">{errors.weight}</span>
-                  )}
-                </div>
-
-                <div className="col-sm-3 col-xl-3">
-                  {/* <label className="col-sm-12 col-form-label">Unit of Measurement</label>
-                  <input
-                    name="UOM"
-                    value={formData.uom}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 15 inch, meter, set..etc"
-                  />
-                  {errors.uom && (
-                    <span className="text-danger fs-12">{errors.uom}</span>
-                  )} */}
-                  <label className="col-sm-12 col-form-label">
-                    Unit of Measurement<span className="text-danger">*</span>
-                  </label>
-                  <Select
-                    value={selectedUOMOption}
-                    onChange={(option) => {
-                      setSelectedUOMOption(option);
-                      setFormData({
-                        ...formData,
-                        uom: option.value,
-                      });
-                      setErrors({
-                        ...errors,
-                        uom: null,
-                      });
-                    }}
-                    defaultValue={selectedUOMOption}
-                    options={uomOptions}
-                    style={{
-                      lineHeight: "40px",
-                      color: "#7e7e7e",
-                      paddingLeft: " 15px",
-                    }}
-                  />
-                  {errors.uom && (
-                    <span className="text-danger fs-12">{errors.uom}</span>
-                  )}
-                </div>
+      {/* Basic Info Section Genral to all */}
+      <div className="card">
+        <div className="card-header">
+          <h4 className="card-title">Basic Details</h4>
+        </div>
+        <div className="card-body">
+          <div>
+            {/* Row */}
+            <div className="mb-3 row">
+              {/* Weight  */}
+              <div className="col-sm-3 col-xl-3">
+                <label className="col-form-label">Weight</label>
+                <input
+                  name="weight"
+                  value={formData.weight}
+                  onChange={handleChange}
+                  type="text"
+                  className="form-control"
+                  placeholder="Ex: 100"
+                />
+                {errors.weight && (
+                  <span className="text-danger fs-12">{errors.weight}</span>
+                )}
               </div>
+              {/* UOM  */}
+              <div className="col-sm-3 col-xl-3">
+                <label className="col-form-label">
+                  Unit of Measurement
+                </label>
+                <Select
+                  value={selectedUOMOption}
+                  onChange={(option) => {
+                    setSelectedUOMOption(option);
+                    setFormData({
+                      ...formData,
+                      uom: option.value,
+                    });
+                    setErrors({
+                      ...errors,
+                      uom: null,
+                    });
+                  }}
+                  defaultValue={selectedUOMOption}
+                  options={uomOptions}
+                  style={{
+                    lineHeight: "40px",
+                    color: "#7e7e7e",
+                    paddingLeft: " 15px",
+                  }}
+                />
+                {errors.uom && (
+                  <span className="text-danger fs-12">{errors.uom}</span>
+                )}
+              </div>
+            
+              {/* Location */}
+              <div className="col-sm-6">
+                <label className="col-form-label">Location</label>
+                <textarea
+                  name="location"
+                  className="form-control"
+                  rows="2"
+                  id="comment"
+                  placeholder="Ex: Row-5, BucketNo.22, Rack-15"
+                  value={formData.location}
+                  onChange={handleChange}
+                ></textarea>
+                {errors.location && (
+                  <span className="text-danger fs-12">{errors.location}</span>
+                )}
+              </div>
+            </div>
 
-              {/* Inputs */}
-              <div className="mb-3 row">
-                {/* MFC INPUT */}
-                <div className="col-sm-6 col-xl-3">
-                  <label className="col-sm-3 col-form-label">MFC</label>
-                  <input
-                    name="mfc"
-                    value={formData.mfc}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 101"
-                  />
-                  {errors.mfc && (
-                    <span className="text-danger fs-12">{errors.mfc}</span>
-                  )}
-                </div>
-                {/* Fitting And Description code input */}
-                {formData?.product_type === "End Fittings" && (
-                  <>
-                    <div className="col-sm-6 col-xl-3">
-                      <label className="col-sm-12 col-form-label">
-                        Fitting Code
-                      </label>
-                      <input
-                        name="fitting_code"
-                        value={fittingCode}
-                        // onChange={handleChange}
-                        type="text"
-                        className="form-control"
-                        placeholder="Ex: RB1-NS-0404-B-FS"
-                        disabled
-                      />
-                      {errors.fitting_code && (
-                        <span className="text-danger fs-12">
-                          {errors.fitting_code}
-                        </span>
-                      )}
-                    </div>
-                    <div className="col-sm-6 col-xl-6">
-                      <label className="col-sm-3 col-form-label">
-                        Description
-                      </label>
-                      <input
-                        name="desc_code"
-                        value={descCode}
-                        // onChange={handleChange}
-                        type="text"
-                        className="form-control"
-                        placeholder="Ex: BR-BSP 1/4x1/4 FEMALE STRAIGHT (NON-SKIVE)"
-                        disabled
-                      />
-                      {errors.desc_code && (
-                        <span className="text-danger fs-12">
-                          {errors.desc_code}
-                        </span>
-                      )}
-                    </div>
-                    {/* <div className="col-sm-6 col-xl-4">
-                        <label className="col-sm-3 col-form-label">Description</label>
-                        <input
-                          name="description_code"
-                          value={descCode}
-                          // onChange={handleChange}
-                          type="text"
-                          className="form-control"
-                          placeholder="Ex: BR-BSP 1/4x1/4 FEMALE STRAIGHT (NON-SKIVE)"
-                          disabled
-                        />
-                        {errors.description_code && (
-                          <span className="text-danger fs-12">{errors.description_code}</span>
-                        )}
-                      </div> */}
-                  </>
+            {/* additional info */}
+            <div className="mb-3 row">
+             
+            </div>
+
+            {/* Note and Location */}
+            <div className="mb-3 row">
+              <div className="col-sm-8">
+                <label className="col-form-label">Note</label>
+                <textarea
+                  name="note"
+                  className="form-control"
+                  rows="6"
+                  id="comment"
+                  placeholder="Ex: (Optional) If any note write down here."
+                  value={formData?.note}
+                  onChange={handleChange}
+                ></textarea>
+                {errors.note && (
+                  <span className="text-danger fs-12">
+                    {errors.note}
+                  </span>
                 )}
               </div>
 
-              {/* Location and additional info */}
+            </div>
+          </div>
+        </div>
+      </div>
 
-              <div className="mb-3 row">
-                {/* <div className="col-md-6">
-                    <label className="col-form-label">Location<small style={{ color: "grey" }} ></small></label>
-                    <input
-                      name="location"
-                      value={formData.location}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: Row-5, BucketNo.22, Rack-15"
-                    />
-                    {errors.location && (
-                      <span className="text-danger fs-12">{errors.location}</span>
-                    )}
-                  </div> */}
-                {/* <div className="col-md-6">
-                    <label className="col-form-label">Additional<small style={{ color: "grey" }} >(Optional)*</small></label>
-                    <input
-                      name="additional"
-                      value={formData.additional}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: Additional"
-                    />
-                    {errors.additional && (
-                      <span className="text-danger fs-12">{errors.additional}</span>
-                    )}
-                  </div> */}
+      {/* Section Pricing and tax*/}
+      <div className="card">
+        <div className="card-header">
+          <h4 className="card-title">Price & Tax</h4>
+        </div>
+        <div className="card-body">
+          <div>
+            {/* Row */}
+            <div className="mb-3 row">
+              {/* Price  */}
+              <div className="col-sm-3 col-xl-5">
+                <label className="col-form-label">Price</label>
+                <input
+                  name="price"
+                  value={formData.price}
+                  onChange={handleChange}
+                  type="text"
+                  className="form-control"
+                  placeholder="Ex: 2000 INR"
+                />
+                {errors.price && (
+                  <span className="text-danger fs-12">{errors.price}</span>
+                )}
               </div>
-
-              {/* Note */}
-              <div className="mb-3 row">
-                <div className="col-sm-8">
-                  <label className="col-sm-3 col-form-label">Note</label>
-                  <textarea
-                    name="description"
-                    className="form-control"
-                    rows="6"
-                    id="comment"
-                    placeholder="Ex: (Optional) If any note write down here."
-                    value={formData.description}
-                    onChange={handleChange}
-                  ></textarea>
-                  {errors.description && (
-                    <span className="text-danger fs-12">
-                      {errors.description}
-                    </span>
-                  )}
-                </div>
-                {/* Location */}
-                <div className="col-sm-4">
-                  <label className="col-sm-3 col-form-label">Location</label>
-                  <textarea
-                    name="location"
-                    className="form-control"
-                    rows="3"
-                    id="comment"
-                    placeholder="Ex: Row-5, BucketNo.22, Rack-15"
-                    value={formData.location}
-                    onChange={handleChange}
-                  ></textarea>
-                  {errors.location && (
-                    <span className="text-danger fs-12">{errors.location}</span>
-                  )}
-                </div>
+              {/* GST  */}
+              <div className="col-sm-3 col-xl-5">
+                <label className="col-form-label">GST</label>
+                <Select
+                  value={selectedGSTOption}
+                  onChange={(option) => {
+                    setSelectedGSTOption(option);
+                    setFormData({
+                      ...formData,
+                      gst: option.value,
+                    });
+                    setErrors({
+                      ...errors,
+                      gst: null,
+                    });
+                  }}
+                  defaultValue={selectedGSTOption}
+                  options={gstOption}
+                  style={{
+                    lineHeight: "40px",
+                    color: "#7e7e7e",
+                    paddingLeft: " 15px",
+                  }}
+                />
+                {errors.gst && (
+                  <span className="text-danger fs-12">{errors.gst}</span>
+                )}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/*Weight & Measurement*/}
-      {/* <div className="col-xl-12 col-lg-12">
-        <div className="card">
-          <div className="card-header">
-            <h4 className="card-title">Weight & Measurement</h4>
-          </div>
-          <div className="card-body">
-            <div>
-              <div className="mb-3 row">
-                
-                <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-3 col-form-label">Weight</label>
-                  <input
-                    name="Weight"
-                    value={formData.weight}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 100"
-                  />
-                  {errors.weight && (
-                    <span className="text-danger fs-12">{errors.weight}</span>
-                  )}
-                </div>
-
-                <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-6 col-form-label">Unit of Measurement</label>
-                  <input
-                    name="UOM"
-                    value={formData.uom}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 15 inch, meter, set..etc"
-                  />
-                  {errors.uom && (
-                    <span className="text-danger fs-12">{errors.uom}</span>
-                  )}
-                </div>
-
-              </div>
-              
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* Price and GST */}
-      {/* <div className="col-xl-12 col-lg-12">
-        <div className="card">
-          <div className="card-header">
-            <h4 className="card-title">Price & Tax</h4>
-          </div>
-          <div className="card-body">
-            <div>
-              <div className="mb-3 row">
-                
-                <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-3 col-form-label">Rate</label>
-                  <input
-                    name="Rate"
-                    value={formData.rate}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 2000 INR"
-                  />
-                  {errors.rate && (
-                    <span className="text-danger fs-12">{errors.rate}</span>
-                  )}
-                </div>
-
-                <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-3 col-form-label">GST</label>
-                  <input
-                    name="Gst"
-                    value={formData.gst}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 15%"
-                  />
-                  {errors.gst && (
-                    <span className="text-danger fs-12">{errors.gst}</span>
-                  )}
-                </div>
-
-              </div>
-              
-            </div>
-          </div>
-        </div>
-      </div> */}
 
       {/* SECTION 3RD Image & Gallery*/}
       <div className="row">
@@ -2531,9 +3095,9 @@ const EditProductData = () => {
                     >
                       ⛌
                     </div>
+                    {/* || `http://localhost:8087/v1/images/image/${image} */}
                     <img
-                      src={image.url}
-                      alt={`Product ${index}`}
+                      src={image?.url ? image?.url : `http://localhost:8087/v1/images/image/${image}`}
                       style={{
                         width: "100%",
                         height: "100%",
@@ -2584,7 +3148,7 @@ const EditProductData = () => {
             type="submit"
             onClick={handleSubmit}
             className="btn btn-primary rounded-sm">
-            Save Information
+            Submit
           </button>
         </div>
       </div>

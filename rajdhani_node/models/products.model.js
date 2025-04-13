@@ -6,21 +6,21 @@ const productSchema = new mongoose.Schema(
     name: { type: String, trim: true }, // Optional field for product name
     description: { type: String, trim: true },
     mfc: { type: String, trim: true }, // Manufacturer or supplier code
-    product_type: { type: String, trim: true }, 
-    product_code: {type: String , trim: true},
-    product_unit: {type: String , trim: true},
-    uom: {type: String , trim: true},
-    weight: {type: String , trim: true},
-    part: { type: String, trim: true }, 
-    price: { type: String, trim: true }, 
-    gst: { type: String, trim: true }, 
+    product_type: { type: String, trim: true },
+    product_code: { type: String, trim: true },
+    product_unit: { type: String, trim: true },
+    uom: { type: String, trim: true },
+    weight: { type: String, trim: true },
+    part: { type: String, trim: true },
+    price: { type: String, trim: true },
+    gst: { type: String, trim: true },
 
 
     // End Fitting
     design: { type: String, trim: true },
     wire_type: { type: String, trim: true },
-    with_cap: { type: String, trim: true},
-    ferrule: { type: String, trim: true},
+    with_cap: { type: String, trim: true },
+    ferrule: { type: String, trim: true },
     fitting_piece: { type: String, trim: true },
     skive_type: { type: String, trim: true },
     hose_dash_size: { type: String, trim: true },
@@ -37,7 +37,7 @@ const productSchema = new mongoose.Schema(
     variant: { type: String, trim: true },
 
     //Part
-    nut_hex: { type: String, trim: true }, 
+    nut_hex: { type: String, trim: true },
     nut_length: { type: String, trim: true },
     cap_size: { type: String, trim: true },
     big_bore: { type: String, trim: true },
@@ -59,14 +59,36 @@ const productSchema = new mongoose.Schema(
     hose_type: { type: String, trim: true },
 
     // Hose Assembly
-    hose_brand: { type: String, trim: true },
-    fitting_a: { type: String, trim: true },
-    fitting_b: { type: String, trim: true },
+    part_no: { type: String, trim: true },
+    hose: { type: String, trim: true },
+    hose_product_Code: { type: String, trim: true },
+    hose_fitting_Code: { type: String, trim: true },
+    hose_label: { type: String, trim: true },
+
+    fitting_a_description: { type: String, trim: true },
+    fitting_a_fitting_Code: { type: String, trim: true },
+    fitting_a_product_Code: { type: String, trim: true },
+    fitting_a_label: { type: String, trim: true },
+
+    fitting_b_description: { type: String, trim: true },
+    fitting_b_fitting_Code: { type: String, trim: true },
+    fitting_b_product_Code: { type: String, trim: true },
+    fitting_b_label: { type: String, trim: true },
+
     assembly_length: { type: String, trim: true },
     fitting_length: { type: String, trim: true },
-    cut_length: { type: String, trim: true },
+    cutting_length: { type: String, trim: true },
+    oa: { type: String, trim: true },
+    guard_type: { type: String, trim: true },
+    guard: { type: String, trim: true },
+    guard_prodcut_code: { type: String, trim: true },
+    guard_label: { type: String, trim: true },
+    
     orientation_angle: { type: String, trim: true },
     hose_protection: { type: String, trim: true },
+
+
+   
 
     // Spring
     inner_diameter: { type: String, trim: true },
@@ -84,13 +106,14 @@ const productSchema = new mongoose.Schema(
 
     // Dust Cap
     thread_type: { type: String, trim: true },
-    cap_typ: { type: String, trim: true },
+    cap_type: { type: String, trim: true },
+    male_female_type: { type: String, trim: true },
     dustcap_color: { type: String, trim: true },
 
     // Sleeve
     sleeve_size: { type: String, trim: true },
     sleeve_inner_diameter: { type: String, trim: true },
-    sleeve_outer_diameter: { type: String, trim: true },
+    outer_diameter: { type: String, trim: true },
     sleeve_length: { type: String, trim: true },
 
     // Vinyl Cover
@@ -102,33 +125,50 @@ const productSchema = new mongoose.Schema(
     item_name: { type: String, trim: true },
 
     // Tube Fitting
-    fitting_type: { type: String, trim: true },
-    shape: { type: String, trim: true },
-    end: { type: String, trim: true },
-    tube_size: { type: String, trim: true },
-    material: { type: String, trim: true },
-    additional_process: { type: String, trim: true },
-    supply_colour: { type: String, trim: true },
-    dimensions: { type: String, trim: true },
+    tube_fitting_thread: { type: String, trim: true },
+    tube_fitting_category: { type: String, trim: true },
+    part_code: { type: String, trim: true },
+    part_description: { type: String, trim: true },
+    
 
     // Common optional fields
     part_no: { type: String, trim: true },
     status: { type: Boolean, default: true }, // Active status
 
+
+    note: {type: String, trim: true },
+    location: {type: String, trim: true },
+    additional:{type: String, trim: true },
+
     //image 
     image: {
-        type: String,
-        trim: true,
-        default: 'rajdhani_product.jpg', // Default image if none provided
+      type: String,
+      trim: true,
+      default: 'rajdhani_product.jpg', // Default image if none provided
     },
     gallery: [
-        {
-            type: String,
-            trim: true,
-        }
+      {
+        type: String,
+        trim: true,
+      }
     ],
+    qr_code: {
+      type: String,
+      trim: true,
+      default: '', // Empty by default, will be updated when product is created
+    },
+    qr_url: {
+      type: String,
+      trim: true,
+      default: '', // Empty by default, will be updated when product is created
+    },
+
+    isDeleted: {
+      type: Boolean,
+      default: false, // Marks the product as active by default
+    },
   },
-         
+
   {
     timestamps: { createdAt: "created_at", updatedAt: "updated_at" }, // Automatically adds createdAt and updatedAt fields
   }

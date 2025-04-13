@@ -81,6 +81,7 @@ export const deleteBrandsApi = async (id) => {
 };
 
 
+
 export const GetEditBrandData = async (id) => {
     const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
     try {

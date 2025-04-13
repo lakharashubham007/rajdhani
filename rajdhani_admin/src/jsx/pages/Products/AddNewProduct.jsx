@@ -46,9 +46,10 @@ import { getAllFittingDashSizeApi } from "../../../services/apis/FittingDashSize
 import { getAllBendAngleApi } from "../../../services/apis/BendAngle";
 import { getAllBrandLayLineApi } from "../../../services/apis/BrandLayLine";
 import { getAllHoseTypeApi } from "../../../services/apis/HoseType";
+import { useSelector } from 'react-redux';
+import { hasPermission } from "../../utils/permission";
 
 const gstOption = [
-  // { value: '', label: 'Select GST Rate' },
   { value: "0", label: "0%" },
   { value: "5", label: "5%" },
   { value: "12", label: "12%" },
@@ -66,12 +67,12 @@ const uomOptions = [
 ];
 
 const AddProduct = () => {
+  const authData = useSelector((state) => state.auth.auth);
   const navigate = useNavigate();
   const [dropdownOptions, setDropwonOptions] = useState();
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
-
   const [galleryImages, setGalleryImages] = useState([]);
   //drop option list
   const [productTypeOption, setProductTypeOption] = useState(
@@ -86,15 +87,9 @@ const AddProduct = () => {
   const [variantOption, setVariantOption] = useState(
     dropdownOptions?.variantsOption
   );
-  const [threadtypeOption, setThreadtypeOption] = useState(null);
-  const [partOption, setPartOption] = useState(null);
   // selected
   const [selectedProductTypeOption, setSelectedProductTypeOption] = useState(null);
-  console.log("selectedProductTypeOption selectedProductTypeOption",selectedProductTypeOption)
-  const [selectedPartsOption, setSelectedPartsOption] = useState({
-    value: "None",
-    label: "None",
-  });
+  const [selectedPartsOption, setSelectedPartsOption] = useState(null);
   const [selectedCategoryOption, setSelectedCategoryOption] = useState(null);
   const [selectedSubCategoryOption, setSelectedSubCategoryOption] = useState(null);
   const [selectedSubSubCategoryOption, setSelectedSubSubCategoryOption] = useState(null);
@@ -137,7 +132,6 @@ const AddProduct = () => {
   const [selectedSkiveTypeOption, setSelectedSkiveTypeOption] = useState(null);
   const [selectedhoseDashSizeOption, setSelectedHoseDashSizeOption] = useState(null);
   const [selectedFittingDashSizeOption, setSelectedfittingDashSizeOption] = useState(null);
-  console.log("selectedFittingDashSizeOption selectedFittingDashSizeOption ",selectedFittingDashSizeOption);
   const [selectedFittingTypeOption, setSelectedFittingTypeOption] = useState(null);
   const [selectedFittingThreadOption, setSelectedFittingThreadOption] = useState(null);
   const [selectedStraightBendangleOption, setSelectedStraightBendangleOption] = useState(null);
@@ -146,12 +140,23 @@ const AddProduct = () => {
   const [selectedSpringTypeOption, setSelectedSpringTypeOption] = useState(null);
   const [selectedDustCapColorOption, setSelectedDustCapColorOption] = useState(null);
   const [selectedSleeveSizeOption, setSelectedSleeveSizeOption] = useState(null);
+  const [selectedVCSizeOption, setSelectedVCSizeOption] = useState(null);
   const [maleFemaleOption, setmaleFemaleOption] = useState(null);
   const [selectedMaleFemaleOption, setSelectedMaleFemaleOption] = useState(null);
   //Hose Pipe
   const [selectedHosePipeMFCOption, setSelectedHosePipeMFCOption] = useState(null);
   const [selectedBrandLayLineOption, setSelectedBrandLayLineOption] = useState(null);
   const [selectedHoseTypeOption, setSelectedHoseTypeOption] = useState(null);
+  // Tube Fitting
+  const [selectedTubeFittingCategoryOption, setSelectedTubeFittingCategoryOption] = useState(null);
+  const [selectedTubeFittingSubCategoryOption, setSelectedTubeFittingSubCategoryOption] = useState(null);
+
+  const [tubeFittingsThreadOption, setTubeFittingsThreadOption] = useState();
+  const [tubeFittingsCategoryOption, setTubeFittingsCategoryOption] = useState();
+
+  const [selectedTubeFittingsThreadOption, setSelectedTubeFittingsThreadOption] = useState(null);
+  const [selectedTubeFittingsCategoryOption, setSelectedTubeFittingsCategoryOption] = useState(null);
+
 
   const [formData, setFormData] = useState({
     product_type: "",
@@ -178,6 +183,39 @@ const AddProduct = () => {
   const [dustCapDescription, setDustCapDescription] = useState(null);
   const [sleeveDescription, setSleeveDescription] = useState(null);
   const [vinylCoverDescription, setVinylCoverDescription] = useState(null);
+  const [packingDescription, setPackingDescription] = useState(null);
+
+  // Hose Assembly
+  const [supplierOption, setSupplierOption] = useState(null);
+  const [allSupplier, setAllSupplier] = useState(null);
+  const [hoseOption, setHoseOption] = useState([]);
+  const [fittingAOption, setFittingAOption] = useState([]);
+  const [fittingBOption, setFittingBOption] = useState([]);
+  const [guardOption, setGuardOption] = useState([]);
+  const [selectedGuardOption, setSelectedGuardOption] = useState(null);
+  const [guardTypeOption, setGuardTypeOption] = useState([
+    {
+      value: "sleeve",
+      label: "Sleeve",
+    },
+    {
+      value: "spring",
+      label: "Spring",
+    },
+    {
+      value: "vinyl cover",
+      label: "Vinyl Cover",
+    }]);
+
+  const [selectedGuardTypeOption, setSelectedGuardTypeOption] = useState(null);
+  const [selectedBillingStateOption, setSelectedBillingStateOption] = useState(null);
+  const [selectedShippingStateOption, setSelectedShippingStateOption] = useState(null);
+  const [selectedHose, setSelectedHose] = useState(null);
+  const [selectedFittingA, setSelectedFittingA] = useState(null);
+  const [selectedFittingB, setSelectedFittingB] = useState(null);
+  const [selectedQuantity, setSelectedQuantity] = useState("");
+  const [selectedDiscount, setSelectedDiscount] = useState("");
+
 
 
 
@@ -191,7 +229,6 @@ const AddProduct = () => {
         value: val?.name,
       }));
       setDesignOption(mappedData)
-      // setfittingThreadOption(mappedData);
     } catch (error) {
       // console.error("Error fetching cuisines:", error);
       Toaster.error("Failed to load cuisines. Please try again.");
@@ -329,6 +366,81 @@ const AddProduct = () => {
     }
   };
 
+  //Reset Form data when changes or shift from one product form to other. 
+  useEffect(() => {
+    if (formData?.product_type || formData?.part) {
+      setFormData(prev => ({
+        product_type: prev?.product_type || "",
+        part: prev?.part || "",
+        design: "",
+        desc_Code: "",
+        fitting_Code: "",
+        wire_type: "",
+        ferrule: "",
+        fitting_piece: "",
+        skive_type: "",
+        fitting_thread: "",
+        variant: "",
+        fitting_dash_size: "",
+        fitting_type: "",
+        OD: "",
+        pipeOD: "",
+        hose_dash_size: "",
+        metric_type: "",
+        straight_bend_angle: "",
+        neck_length: "",
+        drop_length: "",
+        weight: "",
+        uom: "",
+        location: "",
+        note: "",
+        price: "",
+        gst: "",
+      }));
+
+      setSelectedDesignOption(null);
+      setSelectedWireTypeOption(null);
+      setSelectedWithCapWithoutCapOption(null);
+      setSelectedFittingPieceOption(null);
+      setSelectedSkiveTypeOption(null);
+      setSelectedFittingThreadOption(null);
+      setSelectedHoseDashSizeOption(null);
+      setSelectedvariantOption(null);
+      setSelectedfittingDashSizeOption(null);
+      setSelectedFittingTypeOption(null);
+      setSelectedStraightBendangleOption(null);
+      setSelectedUOMOption(null);
+      setSelectedGSTOption(null);
+  
+      //End Fitting Description and Fitting Code
+      setFittingCode();
+      setDescCode();
+      //Nut Fitting Description and Fitting Code
+      setNutDescCode();
+      setNutFittingCode();
+      //Nipple
+      setNippleDescCode();
+      setNippleFittingCode();
+      //cap
+      setCapDescCode();
+      setCapFittingCode();
+     
+      setLogo(null);
+      setGalleryImages([]);
+      setErrors({});
+    }
+  }, [formData?.product_type, formData?.part]);
+  
+
+  //Reset Part input when select other product option
+  useEffect(() => {
+    setFormData({
+      ...formData,
+      part: ""
+    })
+    setSelectedPartsOption(null);
+  }, [formData?.product_type])
+
   useEffect(() => {
     fetchDesignOptions();
     fetchFittingThreadOptions();
@@ -342,7 +454,7 @@ const AddProduct = () => {
   //Filter Fitting_Dash_Size_Options
   const filterFittingDashSizeOptions = () => {
     // Basic filtering based on fitting_thread
-    const filteredOptions = fittingDashSizeOption.filter(
+    const filteredOptions = fittingDashSizeOption?.filter(
       (option) => {
         return (
           option.thread_type === formData?.fitting_thread && // Match the selected fitting_thread
@@ -352,7 +464,44 @@ const AddProduct = () => {
       }
     );
 
-    // console.log("filteredOptions filteredOptions filteredOptions",filteredOptions)
+    //Flenge fitting options bind
+    if (formData?.fitting_thread === "Flange") {
+
+
+      /// Filter all SAE 61 and SAE 62 options into one
+      const flangeAllOption = fittingDashSizeOption.filter((option) => {
+        return option?.thread_type === "SAE 61" || option?.thread_type === "SAE 62";
+      });
+
+
+      // Map the filtered options to the desired format
+      return flangeAllOption.map((option) => ({
+        value: `${option.thread}`,
+        label: `${option.thread} (${option.dash_code})`,
+        code: `${option.dash_code}`,
+        dsc_code: `${option.dsc_code}`,
+      }));
+
+    }
+
+    //Dust cap all metric options only Metric options bind
+    if (formData?.fitting_thread === "Metric") {
+
+      const metricAllOption = dropdownOptions?.dustCapMatricOption.filter((option => {
+        return option?.thread_type === "METRIC"
+      }))
+
+      // Map the filtered options to the desired format
+      return metricAllOption.map((option) => ({
+        value: `${option.thread}`,
+        label: `${option.thread}`,
+        code: `${option.dash_code}`,
+        dsc_code: `${option.dsc_code}`,
+      }));
+
+    }
+
+    //Endfittting matric option 
     if (formData?.fitting_thread === "METRIC") {
       const selectedMetricType = formData?.metric_type;
       const normalizedMetricType =
@@ -385,26 +534,6 @@ const AddProduct = () => {
       }));
     }
 
-    // // Special case for "upper join" and "lower join" - bind values without join
-    // if (formData?.variant && ["Standard", "Upper Jump", "Lower Jump"].includes(formData?.variant)) {
-    //   const variantOptions = dropdownOptions?.fittingDashSizeOptions.filter(
-    //     (option) =>
-    //       option.thread_type === formData?.fitting_thread &&
-    //       option.variant === formData?.variant &&
-    //       option.thread !== null // Exclude options with null threads
-    //   );
-
-    //   // Return the options for the selected variant
-    //   if (variantOptions.length > 0) {
-    //     return variantOptions?.map((option) => ({
-    //       value: `${option.thread} (${option.dash})`,
-    //       label: `${option.thread} (${option.dash})`,
-    //       code: `${option.dash}`,
-    //       dsc_code: `${option.dsc_code}`
-    //     }));
-    //   }
-    // }
-
     const hoseDash = HoseDashSizeOption.filter(
       (option) => option?.value === formData?.hose_dash_size
     );
@@ -430,23 +559,10 @@ const AddProduct = () => {
           dsc_code: `${option.dsc_code}`,
         }));
       }
-      // const variantOptions = dropdownOptions?.fittingDashSizeOptions.filter(
-      //   (option) =>
-      //     option.thread_type === formData?.fitting_thread &&
-      //     option.variant === formData?.variant &&
-      //     option.thread !== null // Exclude options with null threads
-      // );
 
-      // // Return the options for the selected variant
-      // if (variantOptions.length > 0) {
-      //   return variantOptions?.map((option) => ({
-      //     value: `${option.thread} (${option.dash})`,
-      //     label: `${option.thread} (${option.dash})`,
-      //     code: `${option.dash}`,
-      //     dsc_code: `${option.dsc_code}`
-      //   }));
-      // }
     }
+
+
 
     // Map the filtered options to the desired format
     return filteredOptions?.map((option) => ({
@@ -483,6 +599,130 @@ const AddProduct = () => {
       dsc_code: `${option.dsc_code}`,
     }));
   };
+
+  //Filter Fitting_Dash_Size_Options
+  const filterNutFittingDashSizeOptions = () => {
+    // Basic filtering based on fitting_thread
+    const filteredOptions = dropdownOptions?.nutFittingDashSize?.filter(
+      (option) => {
+        return (
+          option.thread_type === formData?.fitting_thread && // Match the selected fitting_thread
+          option.thread !== null &&  // Exclude options with null threads
+          option.thread !== "null\""
+        );
+      }
+    );
+
+    //Flenge fitting options bind
+    if (formData?.fitting_thread === "Flange") {
+
+
+      /// Filter all SAE 61 and SAE 62 options into one
+      const flangeAllOption = fittingDashSizeOption.filter((option) => {
+        return option?.thread_type === "SAE 61" || option?.thread_type === "SAE 62";
+      });
+
+
+      // Map the filtered options to the desired format
+      return flangeAllOption.map((option) => ({
+        value: `${option.thread}`,
+        label: `${option.thread} (${option.dash_code})`,
+        code: `${option.dash_code}`,
+        dsc_code: `${option.dsc_code}`,
+      }));
+
+    }
+
+    //Dust cap all metric options only Metric options bind
+    if (formData?.fitting_thread === "Metric") {
+
+      const metricAllOption = dropdownOptions?.dustCapMatricOption.filter((option => {
+        return option?.thread_type === "METRIC"
+      }))
+
+      // Map the filtered options to the desired format
+      return metricAllOption.map((option) => ({
+        value: `${option.thread}`,
+        label: `${option.thread}`,
+        code: `${option.dash}`,
+        dsc_code: `${option.dsc_code}`,
+      }));
+
+    }
+
+    //Endfittting matric option 
+    if (formData?.fitting_thread === "METRIC") {
+      const selectedMetricType = formData?.metric_type;
+      const normalizedMetricType =
+        selectedMetricType === "Light With O"
+          ? "Light"
+          : selectedMetricType === "Heavy With O"
+            ? "Heavy"
+            : selectedMetricType;
+
+      const metricFilteredOptions =
+        dropdownOptions?.fittingDashSizeOptions.filter((option) => {
+          // console.log("-=-=-=-=-=-=-", option, option.metric_type, formData?.metric_type, option.pipe_od, formData?.pipeOD)
+          return (
+            option.metric_type === normalizedMetricType && // Match the selected metric_type
+            option.pipe_od === formData?.pipeOD // Match the selected pipe_od
+          );
+        });
+      // console.log("-=-=-=-=-=-=-", metricFilteredOptions)
+
+      // If no matching options, return an empty array
+      if (metricFilteredOptions.length === 0) {
+        return [{ value: "Invalid", label: "Invalid" }];
+      }
+      // Map the filtered options to the desired format
+      return metricFilteredOptions.map((option) => ({
+        value: `${option.thread}`,
+        label: `${option.thread} (${option.dash})`,
+        code: `${option.dash}`,
+        dsc_code: `${option.dsc_code}`,
+      }));
+    }
+
+    const hoseDash = HoseDashSizeOption.filter(
+      (option) => option?.value === formData?.hose_dash_size
+    );
+
+    if (formData?.variant === "Standard" && hoseDash[0]?.dash) {
+      const filteredOption = fittingDashSizeOption.filter(
+        (option) =>
+          option.thread_type === formData?.fitting_thread &&
+          option.dash_code === hoseDash[0]?.dash &&
+          option.variant === formData?.variant
+      );
+
+      // If no matching options, return an empty array
+      if (filteredOption.length === 0) {
+        return [{ value: "Invalid", label: "Invalid" }];
+      }
+
+      if (filteredOption.length > 0) {
+        return filteredOption?.map((option) => ({
+          value: `${option.thread}`,
+          label: `${option.thread} (${option.dash_code})`,
+          code: `${option.dash_code}`,
+          dsc_code: `${option.dsc_code}`,
+        }));
+      }
+
+    }
+
+
+
+    // Map the filtered options to the desired format
+    return filteredOptions?.map((option) => ({
+      value: `${option.thread}`,
+      label: `${option.thread} ${option?.dash_code ? `(${option.dash_code})` : ""}`,
+      code: `${option.dash}`,
+      dsc_code: `${option.dsc_code}`,
+    }));
+  };
+
+
 
   // Set Dynamically -> fittingTypeOption
   useEffect(() => {
@@ -573,7 +813,7 @@ const AddProduct = () => {
   useEffect(() => {
     //Nut fitting code and description
     if (formData?.part === "Nut") {
-      const nut_fitting_code = `${"NUT-" + formData?.design || ""}${selectedFittingDashSizeOption?.code
+      const nut_fitting_code = `${formData?.design ? "NUT-" + formData?.design : ""}${selectedFittingDashSizeOption?.code
         ? selectedFittingDashSizeOption?.code
         : ""
         }${selectedFittingThreadOption?.code
@@ -602,7 +842,7 @@ const AddProduct = () => {
 
     //Nipple fitting code and description
     if (formData?.part === "Nipple") {
-      const nipple_fitting_code = `${formData?.design || ""}${selectedWireTypeOption?.code || ""
+      const nipple_fitting_code = `${formData?.design ? "Nipple-" + formData?.design : ""}${selectedWireTypeOption?.code || ""
         }${selectedSkiveTypeOption?.code ? "-" + selectedSkiveTypeOption?.code : ""
         }${selectedFittingThreadOption?.code
           ? "-" + selectedFittingThreadOption?.code + "-"
@@ -713,7 +953,7 @@ const AddProduct = () => {
   useEffect(() => {
     if (formData?.product_type == "O-ring") {
       const oring_desc_Code = `${selectedFittingDashSizeOption ? (selectedFittingDashSizeOption ? "O-RING-" + selectedFittingDashSizeOption?.dsc_code : "") : (formData?.size ? "O-RING-" + formData?.size + " POD" : "")
-        }${selectedFittingThreadOption ? " " + selectedFittingThreadOption?.value + " " : ""}${(formData?.inner_diameter && formData?.thickness) ? "(" + formData?.inner_diameter + "X" + formData?.thickness + ")" : ""}`.trim();
+        }${selectedFittingThreadOption ? " " + selectedFittingThreadOption?.dsc_code + " " : ""}${(formData?.inner_diameter && formData?.thickness) ? "(" + formData?.inner_diameter + "X" + formData?.thickness + ")" : ""}`.trim();
 
       setOringDescription(oring_desc_Code);
       setFormData((prevData) => ({
@@ -732,8 +972,10 @@ const AddProduct = () => {
   //Dust Cap Description
   useEffect(() => {
     if (formData?.product_type == "Dust Cap") {
-      const oring_desc_Code = `${selectedFittingDashSizeOption ? (selectedFittingDashSizeOption ? "DUST CAP-" + selectedFittingDashSizeOption?.dsc_code : "") : (formData?.size ? "DUST CAP-" + formData?.size + " POD" : "")
-        }${selectedFittingThreadOption ? " " + selectedFittingThreadOption?.value + " " : ""}${selectedFittingTypeOption ? selectedFittingTypeOption?.dsc_code : ""}`.trim();
+      const oring_desc_Code = `${selectedFittingDashSizeOption ? (selectedFittingDashSizeOption ? "DUST CAP-" + selectedFittingDashSizeOption?.dsc_code : "") : (formData?.size ? "DUST CAP-" + formData?.size : "")
+        }${selectedFittingThreadOption && selectedFittingThreadOption?.value !== "METRIC"
+          ? " " + selectedFittingThreadOption?.dsc_code + " "
+          : ""}${selectedFittingTypeOption ? selectedFittingTypeOption?.dsc_code : ""}`.trim();
 
       setDustCapDescription(oring_desc_Code);
       setFormData((prevData) => ({
@@ -751,8 +993,8 @@ const AddProduct = () => {
   //Sleeve Description
   useEffect(() => {
     if (formData?.product_type == "Sleeve") {
-      const sleev_Description = `${selectedSleeveSizeOption ? (selectedSleeveSizeOption ? "SLEEVE-" + selectedSleeveSizeOption?.dsc_code : "") : (formData?.size ? "SLEEVE-" + formData?.size : "")
-        }${(formData?.inner_diameter && formData?.outer_diameter) ? "(" + formData?.inner_diameter + "X" + formData?.outer_diameter + ")" : ""}${formData?.length ? formData?.length : ""}`.trim();
+      const sleev_Description = `${selectedSleeveSizeOption ? (selectedSleeveSizeOption ? selectedSleeveSizeOption?.dsc_code : "") : (formData?.size ? formData?.size : "")
+        }${(formData?.inner_diameter && formData?.outer_diameter) ? " SLEEVE " + "(" + formData?.inner_diameter + "X" + formData?.outer_diameter + ")" : ""}${formData?.length ? formData?.length : ""}`.trim();
 
       setSleeveDescription(sleev_Description);
       setFormData((prevData) => ({
@@ -764,69 +1006,75 @@ const AddProduct = () => {
     formData?.size,
     formData?.inner_diameter,
     formData?.outer_diameter,
-    formData?.length
   ]);
 
 
-   //Vinyl cover Description
-   useEffect(() => {
+  //Vinyl cover Description
+  useEffect(() => {
     if (formData?.product_type == "Vinyl Cover") {
-      const sleev_Description = `${selectedSleeveSizeOption ? (selectedSleeveSizeOption ? "SLEEVE-" + selectedSleeveSizeOption?.dsc_code : "") : (formData?.size ? "SLEEVE-" + formData?.size : "")
-        }${(formData?.inner_diameter && formData?.outer_diameter) ? "(" + formData?.inner_diameter + "X" + formData?.outer_diameter + ")" : ""}${formData?.length ? formData?.length : ""}`.trim();
+      const vc_Description = `${selectedVCSizeOption ? (selectedVCSizeOption ? selectedVCSizeOption?.dsc_code : "") : (formData?.size ? formData?.size : "")
+        }${(formData?.inner_diameter && formData?.outer_diameter) ? " VC " + "(" + formData?.inner_diameter + "X" + formData?.outer_diameter + ")" : ""}`.trim();
 
-      setSleeveDescription(sleev_Description);
+      setVinylCoverDescription(vc_Description);
       setFormData((prevData) => ({
         ...prevData,
-        desc_Code: sleev_Description, // Clear variant value in formData
+        desc_Code: vc_Description, // Clear variant value in formData
       }));
     }
   }, [
     formData?.size,
     formData?.inner_diameter,
     formData?.outer_diameter,
-    formData?.length
+  ]);
+
+
+  //Packing Description
+  useEffect(() => {
+    if (formData?.product_type == "Packing") {
+      const packing_Description = `${formData?.item_name ?  formData?.item_name  : ""}`.trim();
+
+      setPackingDescription(packing_Description);
+      setFormData((prevData) => ({
+        ...prevData,
+        desc_Code: packing_Description, // Clear variant value in formData
+      }));
+    }
+  }, [
+    formData?.item_name,
   ]);
 
   // Hose pipe fitting and description code
   useEffect(() => {
-    if(formData?.product_type == "Hose Pipe"){
-    const hosepipe_fitting_code = `${
-      selectedhoseDashSizeOption?.code ? selectedhoseDashSizeOption?.code : ""
-    }${
-      selectedHoseTypeOption?.code
-        ? "-" + selectedHoseTypeOption?.code + " "
-        : ""
-    }${
-      selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ""
-    }${
-      selectedHosePipeMFCOption?.code
-        ? " " + selectedHosePipeMFCOption?.code
-        : ""
-    }`;
-    setHosePipeFittingCode(hosepipe_fitting_code);
+    if (formData?.product_type == "Hose Pipe") {
+      const hosepipe_fitting_code = `${selectedhoseDashSizeOption?.code ? selectedhoseDashSizeOption?.code : ""
+        }${selectedHoseTypeOption?.code
+          ? "-" + selectedHoseTypeOption?.code + " "
+          : ""
+        }${selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ""
+        }${selectedHosePipeMFCOption?.code
+          ? " " + selectedHosePipeMFCOption?.code
+          : ""
+        }`;
+      setHosePipeFittingCode(hosepipe_fitting_code);
 
-    const desc_hosepipe_Code = `${
-      selectedhoseDashSizeOption?.dsc_code
+      const desc_hosepipe_Code = `${selectedhoseDashSizeOption?.dsc_code
         ? selectedhoseDashSizeOption?.dsc_code
         : ""
-    }${
-      selectedHoseTypeOption?.dsc_code
-        ? " " + selectedHoseTypeOption?.dsc_code + " "
-        : ""
-    }${
-      selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ""
-    }${
-      selectedHosePipeMFCOption?.dsc_code
-        ? " " + selectedHosePipeMFCOption?.dsc_code
-        : ""
-    }`;
-    setHosePipeDescCode(desc_hosepipe_Code);
+        }${selectedHoseTypeOption?.dsc_code
+          ? " " + selectedHoseTypeOption?.dsc_code + " "
+          : ""
+        }${selectedBrandLayLineOption?.value ? selectedBrandLayLineOption?.value : ""
+        }${selectedHosePipeMFCOption?.dsc_code
+          ? " " + selectedHosePipeMFCOption?.dsc_code
+          : ""
+        }`;
+      setHosePipeDescCode(desc_hosepipe_Code);
 
-    setFormData((prevData) => ({
-      ...prevData,
-      desc_Code: desc_hosepipe_Code,
-      fitting_Code: hosepipe_fitting_code,
-    }));
+      setFormData((prevData) => ({
+        ...prevData,
+        desc_Code: desc_hosepipe_Code,
+        fitting_Code: hosepipe_fitting_code,
+      }));
     }
   }, [
     selectedhoseDashSizeOption,
@@ -835,6 +1083,7 @@ const AddProduct = () => {
     selectedHosePipeMFCOption,
   ]);
 
+  //Filters the fitting dash size options based on Fitting thread or thread type selection
   useEffect(() => {
     // Check if required fields are provided
     if (formData?.fitting_thread && formData?.pipeOD && formData?.metric_type) {
@@ -847,6 +1096,7 @@ const AddProduct = () => {
     }
   }, [formData?.fitting_thread, formData?.pipeOD, formData?.metric_type]);
 
+  // For metric pipe od option select set fitting dash size ---> When fittingThreadOption is selected, reset variant and fitting_dash size inputs
   useEffect(() => {
     // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
     if (selectpipeODOption) {
@@ -868,18 +1118,24 @@ const AddProduct = () => {
       formData?.hose_dash_size
     ) {
       const filteredOptions = filterFittingDashSizeOptions();
+      setSelectedfittingDashSizeOption(filteredOptions[0]);
+
       if (filteredOptions.length > 0) {
         setSelectedfittingDashSizeOption(filteredOptions[0]);
         setFormData({
           ...formData,
           fitting_dash_size: filteredOptions[0].value,
         });
+        setFormData({
+          ...formData,
+          OD: filteredOptions[0].value,
+        });
       }
     }
   }, [formData?.fitting_thread, formData?.variant, formData?.hose_dash_size]);
 
+  // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
   useEffect(() => {
-    // When fittingThreadOption is selected, reset variant and fitting_dash size inputs
     if (selectedFittingThreadOption) {
       setFormData((prevData) => ({
         ...prevData,
@@ -927,12 +1183,33 @@ const AddProduct = () => {
   }, [selectedStraightBendangleOption]);
 
   useEffect(() => {
-    setFormData((prevData) => ({
-      ...prevData,
-      fitting_dash_size: "",
-    }));
-    setSelectedfittingDashSizeOption(null);
-  }, [formData?.variant === "Manual"]);
+    if (formData?.variant === "Manual") {
+      setFormData((prevData) => ({
+        ...prevData,
+        fitting_dash_size: "",
+      }));
+      setSelectedfittingDashSizeOption(null);
+    }
+  }, [formData?.variant]);
+
+  //Tube Fittings category to sub category reset hook
+  useEffect(() => {
+    if (selectedTubeFittingsThreadOption) {
+
+      setSelectedTubeFittingsCategoryOption(null);
+      setFormData({
+        ...formData,
+        tube_fitting_category: "",
+      });
+    }
+    if (formData?.tube_fitting_thread === null) {
+      setSelectedTubeFittingsCategoryOption(null);
+      setFormData({
+        ...formData,
+        tube_fitting_category: "",
+      });
+    }
+  }, [selectedTubeFittingsThreadOption, formData?.tube_fitting_thread])
 
   const resetEndFittingForm = () => {
     setFormData({
@@ -1000,6 +1277,14 @@ const AddProduct = () => {
     const { name, value } = e.target;
 
     setFormData({ ...formData, [name]: value });
+
+    // Clear error for that specific field
+    setErrors((prevErrors) => ({
+      ...prevErrors,
+      [name]: "",
+    }));
+
+
   };
 
   const handleSelectChange = (name) => (selectedOption) => {
@@ -1027,26 +1312,34 @@ const AddProduct = () => {
 
   const resetForm = () => {
     setFormData({
-      name: "",
-      description: "",
-      image: "",
-      category_id: "",
-      subcategory_id: "",
-      subsubcategory_id: "",
-      brand: "",
-      connection_type: "",
-      Flare: "",
-      status: "",
-      price: "",
-      fittingSize: "",
-      material: "",
+      //End Fittings and Parts
+      product_type: "",
+      part: "",
+      design: "",
+      desc_Code: "",
+      fitting_Code: "",
+      wire_type: "",
+      ferrule: "",
+      fitting_piece: "",
+      skive_type: "",
+      fitting_thread: "",
       variant: "",
-      parts: [],
-      thread_type: "",
-      pressure_rating: "",
-      temperature_range: "",
-      product_id: "",
-      product_Type: "",
+      fitting_dash_size: "",
+      fitting_type: "",
+      OD: "",
+      pipeOD: "",
+      hose_dash_size: "",
+      metric_type: "",
+      straight_bend_angle: "",
+      neck_length: "",
+      drop_length: "",
+      weight: "",
+      uom: "",
+      location: "",
+      note: "",
+      price: "",
+      gst: "",
+
     });
     setLogo(null);
     setGalleryImages([]);
@@ -1064,55 +1357,33 @@ const AddProduct = () => {
     setLoading(false);
   };
 
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.name) newErrors.name = "Food name is required.";
-    if (!formData.description)
-      newErrors.description = "Description is required.";
-    if (!formData.product_id) newErrors.product_id = "Product Id is required.";
-    if (!formData.product_Type)
-      newErrors.product_Type = "Product Type is required.";
 
-    if (!formData.image) newErrors.image = "Image is required.";
-
-    if (!formData.category_id) newErrors.category_id = "Category is required.";
-    if (!formData.subcategory_id)
-      newErrors.subcategory_id = "Sub Category is required.";
-    if (!formData.subsubcategory_id)
-      newErrors.subsubcategory_id = "Sub Sub Category is required.";
-
-    if (!formData.brand) newErrors.brand = "Brand is required.";
-    if (!formData.variant) newErrors.variant = "Variant is required.";
-    if (!formData.fittingSize)
-      newErrors.fittingSize = "fittingSize is required.";
-    if (!formData.thread_type)
-      newErrors.thread_type = "Thread Type is required.";
-    if (!formData.material) newErrors.material = "Material is required.";
-    if (!formData.pressure_rating)
-      newErrors.pressure_rating = "Pressure Rating is required.";
-    if (!formData.temperature_range)
-      newErrors.temperature_range = "Temperature Range Rating is required.";
-    if (!formData.price) newErrors.price = "Price is required.";
-    else if (formData.price && isNaN(formData.price))
-      newErrors.price = "Price must be a numeric value.";
-
-    setErrors(newErrors);
-
-    return Object.keys(newErrors).length === 0;
-  };
 
   const handleSubmit = async (e) => {
+
     e.preventDefault();
-    const validationErrors = validateFormComponent(formData);
+    const validationErrors = validateFormComponent(formData, authData?.permissions);
     setErrors(validationErrors);
 
-    // if(Object.keys(validationErrors).length > 0){
-    //   console.log("validationErrors is available",validationErrors )
-    //   return
-    // }
+    if (Object.keys(validationErrors).length > 0) {
+      console.log("validationErrors is available", validationErrors)
+      // Format field names into small pill tags
+      const missingFieldsTags = Object.keys(validationErrors)
+        .map((key) => `<small style="background:#f0f0f0; padding:4px 8px; margin:3px; border-radius:12px; display:inline-block; font-size:12px; color:#333;">${key.replace(/_/g, ' ')}</small>`)
+        .join(' ');
+
+      Swal.fire({
+        icon: 'warning',
+        title: 'Please fill all required fields',
+        html: `<div style="margin-top:10px;">${missingFieldsTags}</div>`,
+        confirmButtonText: 'Got it!',
+      });
+      return
+    }
 
     if (formData) {
       try {
+        setLoading(true);
         const res = await addProductApi(formData);
         if (res.data?.success) {
           setLoading(false);
@@ -1134,7 +1405,9 @@ const AddProduct = () => {
         Toaster.error(
           error.response?.data?.message ||
           "An error occurred while processing your request"
-        );
+        )
+      } finally {
+        setLoading(false);
       }
     }
   };
@@ -1156,10 +1429,10 @@ const AddProduct = () => {
     }
   };
 
+  //Fetch all option stored in json formate from backend
   useEffect(() => {
     fetchAllOptions();
   }, []);
-
 
   // Handle the logo image change
   const handleLogoChange = (e) => {
@@ -1259,88 +1532,28 @@ const AddProduct = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
             //code prefilled
             fittingCode={nutFittingCode}
             descCode={nutDescCode}
+            //fitting thread
+            fittingThreadOption={dropdownOptions?.nutFittingThreadOptions}
+            setfittingThreadOption={setfittingThreadOption}
+            selectedFittingThreadOption={selectedFittingThreadOption}
+            setSelectedFittingThreadOption={setSelectedFittingThreadOption}
             //design
             setSelectedDesignOption={setSelectedDesignOption}
             selectedDesignOption={selectedDesignOption}
             designOption={designOption}
-            //variant
-            variantOption={dropdownOptions?.variantsOption}
-            setVariantOption={setVariantOption}
-            selectedvariantOption={selectedvariantOption}
-            setSelectedvariantOption={setSelectedvariantOption}
+
             //Fitting Dash Size  input
             // fittingDashSizeOption={fittingDashSizeOption}
-            fittingDashSizeOption={filterFittingDashSizeOptions()}
+            fittingDashSizeOption={filterNutFittingDashSizeOptions()}
             setfittingDashSizeOption={setfittingDashSizeOption}
             selectedFittingDashSizeOption={selectedFittingDashSizeOption}
             setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
-            ///pipe OD options
-            pipeODOption={dropdownOptions?.pipeODOptions}
-            setpipeODOption={setpipeODOption}
-            selectedpipeODOption={selectpipeODOption}
-            setSelectpipeODOption={setSelectpipeODOption}
-            //metricType
-            matricTypeOption={dropdownOptions?.metricTypeOptions}
-            setMatricTypeOption={setMatricTypeOption}
-            selectedmetricTypeOptions={selectedmetricTypeOptions}
-            setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
-            //wire type option
-            wireTypeOption={dropdownOptions?.WireTypeOptions}
-            setWireTypeOption={setWireTypeOption}
-            selectedWireTypeOption={selectedWireTypeOption}
-            setSelectedWireTypeOption={setSelectedWireTypeOption}
-            //with and without cap option
-            withCapWithoutCapOption={dropdownOptions?.CapWithoutCapOptions}
-            setWithCapWithoutCapOption={setWithCapWithoutCapOption}
-            selectedWithCapWithoutCapOption={selectedWithCapWithoutCapOption}
-            setSelectedWithCapWithoutCapOption={
-              setSelectedWithCapWithoutCapOption
-            }
-            //fitting piece
-            fittingPieceOption={dropdownOptions?.fittingPieceOptions}
-            setFittingPieceOption={setFittingPieceOption}
-            selectedFittingPieceOption={selectedFittingPieceOption}
-            setSelectedFittingPieceOption={setSelectedFittingPieceOption}
-            //skive type
-            skiveTypeOption={dropdownOptions?.skiveTypeOptions}
-            setSkiveTypeOption={setSkiveTypeOption}
-            selectedSkiveTypeOption={selectedSkiveTypeOption}
-            setSelectedSkiveTypeOption={setSelectedSkiveTypeOption}
-            //hose dash size
-            HoseDashSizeOption={HoseDashSizeOption}
-            setHoseDashSizeOption={setHoseDashSizeOption}
-            selectedhoseDashSizeOption={selectedhoseDashSizeOption}
-            setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
-            //fitting thread
-            fittingThreadOption={fittingThreadOption}
-            setfittingThreadOption={setfittingThreadOption}
-            selectedFittingThreadOption={selectedFittingThreadOption}
-            setSelectedFittingThreadOption={setSelectedFittingThreadOption}
-            //fitting type
-            fittingTypeOption={filterFittingTypeOptions()}
-            setfittingTypeOption={setfittingTypeOption}
-            selectedFittingTypeOption={selectedFittingTypeOption}
-            setSelectedFittingTypeOption={setSelectedFittingTypeOption}
-            //steight and bend
-            straightBendangleOption={straightBendangleOption}
-            setStraightBendangleOption={setStraightBendangleOption}
-            selectedStraightBendangleOption={selectedStraightBendangleOption}
-            setSelectedStraightBendangleOption={
-              setSelectedStraightBendangleOption
-            }
-            //drop
-            dropLengthOption={dropdownOptions?.dropLengthOptions}
-            setDropLengthOption={setDropLengthOption}
-            selectedDropLengthOption={selectedDropLengthOption}
-            setSelectedDropLengthOption={setSelectedDropLengthOption}
-            //neck
-            neckLengthOption={dropdownOptions?.neckLengthOptions}
-            setNeckLengthOption={setNeckLengthOption}
-            selectedNeckLengthOption={selectedNeckLengthOption}
-            setselectedNeckLengthOption={setselectedNeckLengthOption}
+
+
           />
         );
       case "Nipple":
@@ -1405,7 +1618,7 @@ const AddProduct = () => {
             selectedhoseDashSizeOption={selectedhoseDashSizeOption}
             setSelectedHoseDashSizeOption={setSelectedHoseDashSizeOption}
             //fitting thread
-            fittingThreadOption={fittingThreadOption}
+            fittingThreadOption={dropdownOptions?.nippleFittingThreadOptions}
             setfittingThreadOption={setfittingThreadOption}
             selectedFittingThreadOption={selectedFittingThreadOption}
             setSelectedFittingThreadOption={setSelectedFittingThreadOption}
@@ -1625,6 +1838,7 @@ const AddProduct = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
             fittingCode={hosepipeFittingCode}
             descCode={hosepipedescCode}
             //hose dash size
@@ -1653,6 +1867,39 @@ const AddProduct = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
+            supplierOption={supplierOption}
+            setSupplierOption={setSupplierOption}
+            allSupplier={allSupplier}
+            setAllSupplier={setAllSupplier}
+            hoseOption={hoseOption}
+            setHoseOption={setHoseOption}
+            fittingAOption={fittingAOption}
+            setFittingAOption={setFittingAOption}
+            fittingBOption={fittingBOption}
+            setFittingBOption={setFittingBOption}
+            guardOption={guardOption}
+            setGuardOption={setGuardOption}
+            selectedGuardOption={selectedGuardOption}
+            setSelectedGuardOption={setSelectedGuardOption}
+            guardTypeOption={guardTypeOption}
+            setGuardTypeOption={setGuardTypeOption}
+            selectedGuardTypeOption={selectedGuardTypeOption}
+            setSelectedGuardTypeOption={setSelectedGuardTypeOption}
+            selectedBillingStateOption={selectedBillingStateOption}
+            setSelectedBillingStateOption={setSelectedBillingStateOption}
+            selectedShippingStateOption={selectedShippingStateOption}
+            setSelectedShippingStateOption={setSelectedShippingStateOption}
+            selectedHose={selectedHose}
+            setSelectedHose={setSelectedHose}
+            selectedFittingA={selectedFittingA}
+            setSelectedFittingA={setSelectedFittingA}
+            selectedFittingB={selectedFittingB}
+            setSelectedFittingB={setSelectedFittingB}
+            selectedQuantity={selectedQuantity}
+            setSelectedQuantity={setSelectedQuantity}
+            selectedDiscount={selectedDiscount}
+            setSelectedDiscount={setSelectedDiscount}
           />
         );
 
@@ -1713,7 +1960,7 @@ const AddProduct = () => {
             selectedmetricTypeOptions={selectedmetricTypeOptions}
             setSelectedmetricTypeOptions={setSelectedmetricTypeOptions}
             //fitting thread
-            fittingThreadOption={fittingThreadOption}
+            oRingThreadTypeOption={dropdownOptions?.oRingThreadTypeOption}
             setfittingThreadOption={setfittingThreadOption}
             selectedFittingThreadOption={selectedFittingThreadOption}
             setSelectedFittingThreadOption={setSelectedFittingThreadOption}
@@ -1739,7 +1986,7 @@ const AddProduct = () => {
             selectedDustCapColorOption={selectedDustCapColorOption}
             setSelectedDustCapColorOption={setSelectedDustCapColorOption}
             //fitting thread
-            fittingThreadOption={fittingThreadOption}
+            dustCapThreadTypeOptions={dropdownOptions?.dustCapThreadType}
             setfittingThreadOption={setfittingThreadOption}
             selectedFittingThreadOption={selectedFittingThreadOption}
             setSelectedFittingThreadOption={setSelectedFittingThreadOption}
@@ -1774,7 +2021,7 @@ const AddProduct = () => {
             //errors
             errors={errors}
             setErrors={setErrors}
-          
+
             descCode={sleeveDescription}
             //sleeveSizesOption option
             sleeveSizeOptions={dropdownOptions?.sleeveSizesOption}
@@ -1790,6 +2037,13 @@ const AddProduct = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
+            descCode={vinylCoverDescription}
+
+            //sleeveSizesOption option
+            vcSizeOptions={dropdownOptions?.vcSizesOption}
+            selectedVCSizeOption={selectedVCSizeOption}
+            setSelectedVCSizeOption={setSelectedVCSizeOption}
 
 
           />
@@ -1801,6 +2055,7 @@ const AddProduct = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            descCode={packingDescription}
           />
         );
 
@@ -1810,6 +2065,29 @@ const AddProduct = () => {
             formData={formData}
             setFormData={setFormData}
             errors={errors}
+            setErrors={setErrors}
+            //Threads
+            tubeFittingsThreadOption={dropdownOptions?.TuebeFittingsThreads?.map((thread) => ({
+              value: thread.name,
+              label: thread.name,
+            }))}
+            setTubeFittingsThreadOption={setTubeFittingsThreadOption}
+            //Category
+            tubeFittingsCategoryOption={dropdownOptions?.TubeFittingsCategory
+              ?.filter((item) => item.thread === selectedTubeFittingsThreadOption?.value) // filter by selected category
+              ?.map((thread) => ({
+                value: thread.category,
+                label: thread.category,
+              }))}
+            setTubeFittingsCategoryOption={setTubeFittingsCategoryOption}
+
+
+
+            selectedTubeFittingsCategoryOption={selectedTubeFittingsCategoryOption}
+            setSelectedTubeFittingsCategoryOption={setSelectedTubeFittingsCategoryOption}
+
+            selectedTubeFittingsThreadOption={selectedTubeFittingsThreadOption}
+            setSelectedTubeFittingsThreadOption={setSelectedTubeFittingsThreadOption}
           />
         );
 
@@ -1821,7 +2099,10 @@ const AddProduct = () => {
   const handleProductDropChange = (option) => {
     setSelectedProductTypeOption(option);
 
-    setFormData({ product_type: option.value });
+    setFormData((data) => ({
+      ...data,
+      product_type: option ? option.value : ""
+    }));
 
     setSelectedWireTypeOption(null);
     setSelectedWithCapWithoutCapOption(null);
@@ -1842,12 +2123,15 @@ const AddProduct = () => {
 
   const handlePartsDropChange = (option) => {
     setSelectedPartsOption(option);
+
     setFormData((data) => ({
-      ...data, // Spread existing data to retain other fields
-      part: option.value, // Update only the `part` field
+      ...data,
+      part: option ? option.value : "", // Safe check before accessing `.value`
     }));
+
     setErrors({});
   };
+
 
   return (
     <>
@@ -1867,6 +2151,7 @@ const AddProduct = () => {
             </div>
             <div className="card-body">
               <div>
+                {/* Product and part options */}
                 <div className="mb-3 row">
                   <div className="col-sm-6">
                     <label className="col-form-label">Product</label>
@@ -1875,6 +2160,7 @@ const AddProduct = () => {
                       onChange={handleProductDropChange}
                       defaultValue={selectedProductTypeOption}
                       options={dropdownOptions?.ProductOptions}
+                      isClearable
                     />
                     {errors.product_type && (
                       <span className="text-danger fs-12">
@@ -1890,8 +2176,14 @@ const AddProduct = () => {
                         value={selectedPartsOption}
                         onChange={handlePartsDropChange}
                         defaultValue={selectedPartsOption}
-                        // defaultValue={{ value: "None", label: "None" }}
-                        options={dropdownOptions?.PartOptions}
+                        options={
+                          dropdownOptions?.PartOptions?.map((part) => ({
+                            value: part.name,
+                            label: part.name,
+                          }))
+                        }
+                        isClearable
+                        placeholder="Select Part"
                       />
                       {errors.parts && (
                         <span className="text-danger fs-12">
@@ -1910,50 +2202,190 @@ const AddProduct = () => {
       {formData.product_type && formData?.part
         ? renderPartComponent()
         : renderComponent()}
-      {/* Basic Info */}
-      <div className="col-xl-12 col-lg-12">
+      {/* Basic Info Section Genral to all */}
+      <div className="card">
+        <div className="card-header">
+          <h4 className="card-title">Basic Details</h4>
+        </div>
+        <div className="card-body">
+          <div>
+            {/* Row */}
+            <div className="mb-3 row">
+              {/* Weight  */}
+              <div className="col-sm-3 col-xl-3">
+                <label className="col-form-label">Weight</label>
+                <input
+                  name="weight"
+                  value={formData.weight}
+                  onChange={handleChange}
+                  type="text"
+                  className="form-control"
+                  placeholder="Ex: 100"
+                />
+                {errors.weight && (
+                  <span className="text-danger fs-12">{errors.weight}</span>
+                )}
+              </div>
+              {/* UOM  */}
+              <div className="col-sm-3 col-xl-3">
+                <label className="col-form-label">
+                  Unit of Measurement
+                </label>
+                <Select
+                  value={selectedUOMOption}
+                  onChange={(option) => {
+                    setSelectedUOMOption(option);
+                    setFormData({
+                      ...formData,
+                      uom: option.value,
+                    });
+                    setErrors({
+                      ...errors,
+                      uom: null,
+                    });
+                  }}
+                  defaultValue={selectedUOMOption}
+                  options={uomOptions}
+                  style={{
+                    lineHeight: "40px",
+                    color: "#7e7e7e",
+                    paddingLeft: " 15px",
+                  }}
+                />
+                {errors.uom && (
+                  <span className="text-danger fs-12">{errors.uom}</span>
+                )}
+              </div>
+              {/* {formData?.product_type === "End Fittings" && (
+                <>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-sm-12 col-form-label">
+                      Fitting Code
+                    </label>
+                    <input
+                      name="fitting_code"
+                      value={fittingCode}
+                      // onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: RB1-NS-0404-B-FS"
+                      disabled
+                    />
+                    {errors.fitting_code && (
+                      <span className="text-danger fs-12">
+                        {errors.fitting_code}
+                      </span>
+                    )}
+                  </div>
+                  <div className="col-sm-6 col-xl-3">
+                    <label className="col-sm-3 col-form-label text-nowrap">
+                      Description
+                    </label>
+                    <input
+                      name="desc_code"
+                      value={descCode}
+                      // onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: BR-BSP 1/4x1/4 FEMALE STRAIGHT (NON-SKIVE)"
+                      disabled
+                    />
+                    {errors.desc_code && (
+                      <span className="text-danger fs-12">
+                        {errors.desc_code}
+                      </span>
+                    )}
+                  </div>
+                </>
+              )} */}
+              {/* Location */}
+              <div className="col-sm-6">
+                <label className="col-form-label">Location</label>
+                <textarea
+                  name="location"
+                  className="form-control"
+                  rows="2"
+                  id="comment"
+                  placeholder="Ex: Row-5, BucketNo.22, Rack-15"
+                  value={formData.location}
+                  onChange={handleChange}
+                ></textarea>
+                {errors.location && (
+                  <span className="text-danger fs-12">{errors.location}</span>
+                )}
+              </div>
+            </div>
+
+            {/* additional info */}
+            <div className="mb-3 row">
+              {/* <div className="col-md-6">
+                    <label className="col-form-label">Location<small style={{ color: "grey" }} ></small></label>
+                    <input
+                      name="location"
+                      value={formData.location}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: Row-5, BucketNo.22, Rack-15"
+                    />
+                    {errors.location && (
+                      <span className="text-danger fs-12">{errors.location}</span>
+                    )}
+                  </div> */}
+              {/* <div className="col-md-6">
+                    <label className="col-form-label">Additional<small style={{ color: "grey" }} >(Optional)*</small></label>
+                    <input
+                      name="additional"
+                      value={formData.additional}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: Additional"
+                    />
+                    {errors.additional && (
+                      <span className="text-danger fs-12">{errors.additional}</span>
+                    )}
+                  </div> */}
+            </div>
+
+            {/* Note and Location */}
+            <div className="mb-3 row">
+              <div className="col-sm-8">
+                <label className="col-form-label">Note</label>
+                <textarea
+                  name="note"
+                  className="form-control"
+                  rows="6"
+                  id="comment"
+                  placeholder="Ex: (Optional) If any note write down here."
+                  value={formData?.note}
+                  onChange={handleChange}
+                ></textarea>
+                {errors?.note && (
+                  <span className="text-danger fs-12">
+                    {errors?.note}
+                  </span>
+                )}
+              </div>
+
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Section Pricing and tax*/}
+      {hasPermission(authData?.permissions, 'Product', 'Create Price&Tax') && (
         <div className="card">
           <div className="card-header">
-            <h4 className="card-title">Basic Info</h4>
+            <h4 className="card-title">Price & Tax</h4>
           </div>
           <div className="card-body">
             <div>
-              {/* Weight */}
-              {/* <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-3 col-form-label">Weight</label>
-                  <input
-                    name="Weight"
-                    value={formData.weight}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 100"
-                  />
-                  {errors.weight && (
-                    <span className="text-danger fs-12">{errors.weight}</span>
-                  )}
-                </div> */}
-
-              {/* UOM */}
-              {/* <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-6 col-form-label">Unit of Measurement</label>
-                  <input
-                    name="UOM"
-                    value={formData.uom}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 15 inch, meter, set..etc"
-                  />
-                  {errors.uom && (
-                    <span className="text-danger fs-12">{errors.uom}</span>
-                  )}
-                </div> */}
-
-              {/* Price and Rate */}
+              {/* Row */}
               <div className="mb-3 row">
-                <div className="col-sm-3 col-xl-3">
-                  <label className="col-sm-3 col-form-label">Price</label>
+                {/* Price  */}
+                <div className="col-sm-3 col-xl-5">
+                  <label className="col-form-label">Price</label>
                   <input
                     name="price"
                     value={formData.price}
@@ -1966,20 +2398,8 @@ const AddProduct = () => {
                     <span className="text-danger fs-12">{errors.price}</span>
                   )}
                 </div>
-
-                <div className="col-sm-3 col-xl-3">
-                  {/* <label className="col-sm-3 col-form-label">GST</label>
-                  <input
-                    name="Gst"
-                    value={formData.gst}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 15%"
-                  />
-                  {errors.gst && (
-                    <span className="text-danger fs-12">{errors.gst}</span>
-                  )} */}
+                {/* GST  */}
+                <div className="col-sm-3 col-xl-5">
                   <label className="col-form-label">GST</label>
                   <Select
                     value={selectedGSTOption}
@@ -2006,311 +2426,14 @@ const AddProduct = () => {
                     <span className="text-danger fs-12">{errors.gst}</span>
                   )}
                 </div>
-
-                <div className="col-sm-3 col-xl-3">
-                  <label className="col-sm-3 col-form-label">Weight</label>
-                  <input
-                    name="Weight"
-                    value={formData.weight}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 100"
-                  />
-                  {errors.weight && (
-                    <span className="text-danger fs-12">{errors.weight}</span>
-                  )}
-                </div>
-
-                <div className="col-sm-3 col-xl-3">
-                  {/* <label className="col-sm-12 col-form-label">Unit of Measurement</label>
-                  <input
-                    name="UOM"
-                    value={formData.uom}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 15 inch, meter, set..etc"
-                  />
-                  {errors.uom && (
-                    <span className="text-danger fs-12">{errors.uom}</span>
-                  )} */}
-                  <label className="col-sm-12 col-form-label">
-                    Unit of Measurement
-                  </label>
-                  <Select
-                    value={selectedUOMOption}
-                    onChange={(option) => {
-                      setSelectedUOMOption(option);
-                      setFormData({
-                        ...formData,
-                        uom: option.value,
-                      });
-                      setErrors({
-                        ...errors,
-                        uom: null,
-                      });
-                    }}
-                    defaultValue={selectedUOMOption}
-                    options={uomOptions}
-                    style={{
-                      lineHeight: "40px",
-                      color: "#7e7e7e",
-                      paddingLeft: " 15px",
-                    }}
-                  />
-                  {errors.uom && (
-                    <span className="text-danger fs-12">{errors.uom}</span>
-                  )}
-                </div>
-              </div>
-
-              {/* Inputs */}
-              <div className="mb-3 row">
-                {/* MFC INPUT */}
-                <div className="col-sm-6 col-xl-3">
-                  <label className="col-sm-3 col-form-label">MFC</label>
-                  <input
-                    name="mfc"
-                    value={formData.mfc}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 101"
-                  />
-                  {errors.mfc && (
-                    <span className="text-danger fs-12">{errors.mfc}</span>
-                  )}
-                </div>
-                {/* Fitting And Description code input */}
-                {formData?.product_type === "End Fittings" && (
-                  <>
-                    <div className="col-sm-6 col-xl-3">
-                      <label className="col-sm-12 col-form-label">
-                        Fitting Code
-                      </label>
-                      <input
-                        name="fitting_code"
-                        value={fittingCode}
-                        // onChange={handleChange}
-                        type="text"
-                        className="form-control"
-                        placeholder="Ex: RB1-NS-0404-B-FS"
-                        disabled
-                      />
-                      {errors.fitting_code && (
-                        <span className="text-danger fs-12">
-                          {errors.fitting_code}
-                        </span>
-                      )}
-                    </div>
-                    <div className="col-sm-6 col-xl-6">
-                      <label className="col-sm-3 col-form-label">
-                        Description
-                      </label>
-                      <input
-                        name="desc_code"
-                        value={descCode}
-                        // onChange={handleChange}
-                        type="text"
-                        className="form-control"
-                        placeholder="Ex: BR-BSP 1/4x1/4 FEMALE STRAIGHT (NON-SKIVE)"
-                        disabled
-                      />
-                      {errors.desc_code && (
-                        <span className="text-danger fs-12">
-                          {errors.desc_code}
-                        </span>
-                      )}
-                    </div>
-                    {/* <div className="col-sm-6 col-xl-4">
-                        <label className="col-sm-3 col-form-label">Description</label>
-                        <input
-                          name="description_code"
-                          value={descCode}
-                          // onChange={handleChange}
-                          type="text"
-                          className="form-control"
-                          placeholder="Ex: BR-BSP 1/4x1/4 FEMALE STRAIGHT (NON-SKIVE)"
-                          disabled
-                        />
-                        {errors.description_code && (
-                          <span className="text-danger fs-12">{errors.description_code}</span>
-                        )}
-                      </div> */}
-                  </>
-                )}
-              </div>
-
-              {/* Location and additional info */}
-
-              <div className="mb-3 row">
-                {/* <div className="col-md-6">
-                    <label className="col-form-label">Location<small style={{ color: "grey" }} ></small></label>
-                    <input
-                      name="location"
-                      value={formData.location}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: Row-5, BucketNo.22, Rack-15"
-                    />
-                    {errors.location && (
-                      <span className="text-danger fs-12">{errors.location}</span>
-                    )}
-                  </div> */}
-                {/* <div className="col-md-6">
-                    <label className="col-form-label">Additional<small style={{ color: "grey" }} >(Optional)*</small></label>
-                    <input
-                      name="additional"
-                      value={formData.additional}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: Additional"
-                    />
-                    {errors.additional && (
-                      <span className="text-danger fs-12">{errors.additional}</span>
-                    )}
-                  </div> */}
-              </div>
-
-              {/* Note */}
-              <div className="mb-3 row">
-                <div className="col-sm-8">
-                  <label className="col-sm-3 col-form-label">Note</label>
-                  <textarea
-                    name="description"
-                    className="form-control"
-                    rows="6"
-                    id="comment"
-                    placeholder="Ex: (Optional) If any note write down here."
-                    value={formData.description}
-                    onChange={handleChange}
-                  ></textarea>
-                  {errors.description && (
-                    <span className="text-danger fs-12">
-                      {errors.description}
-                    </span>
-                  )}
-                </div>
-                {/* Location */}
-                <div className="col-sm-4">
-                  <label className="col-sm-3 col-form-label">Location</label>
-                  <textarea
-                    name="location"
-                    className="form-control"
-                    rows="3"
-                    id="comment"
-                    placeholder="Ex: Row-5, BucketNo.22, Rack-15"
-                    value={formData.location}
-                    onChange={handleChange}
-                  ></textarea>
-                  {errors.location && (
-                    <span className="text-danger fs-12">{errors.location}</span>
-                  )}
-                </div>
               </div>
             </div>
           </div>
         </div>
-      </div>
 
-      {/*Weight & Measurement*/}
-      {/* <div className="col-xl-12 col-lg-12">
-        <div className="card">
-          <div className="card-header">
-            <h4 className="card-title">Weight & Measurement</h4>
-          </div>
-          <div className="card-body">
-            <div>
-              <div className="mb-3 row">
-                
-                <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-3 col-form-label">Weight</label>
-                  <input
-                    name="Weight"
-                    value={formData.weight}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 100"
-                  />
-                  {errors.weight && (
-                    <span className="text-danger fs-12">{errors.weight}</span>
-                  )}
-                </div>
+      )}
 
-                <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-6 col-form-label">Unit of Measurement</label>
-                  <input
-                    name="UOM"
-                    value={formData.uom}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 15 inch, meter, set..etc"
-                  />
-                  {errors.uom && (
-                    <span className="text-danger fs-12">{errors.uom}</span>
-                  )}
-                </div>
-
-              </div>
-              
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* Price and GST */}
-      {/* <div className="col-xl-12 col-lg-12">
-        <div className="card">
-          <div className="card-header">
-            <h4 className="card-title">Price & Tax</h4>
-          </div>
-          <div className="card-body">
-            <div>
-              <div className="mb-3 row">
-                
-                <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-3 col-form-label">Rate</label>
-                  <input
-                    name="Rate"
-                    value={formData.rate}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 2000 INR"
-                  />
-                  {errors.rate && (
-                    <span className="text-danger fs-12">{errors.rate}</span>
-                  )}
-                </div>
-
-                <div className="col-sm-6 col-xl-4">
-                  <label className="col-sm-3 col-form-label">GST</label>
-                  <input
-                    name="Gst"
-                    value={formData.gst}
-                    onChange={handleChange}
-                    type="text"
-                    className="form-control"
-                    placeholder="Ex: 15%"
-                  />
-                  {errors.gst && (
-                    <span className="text-danger fs-12">{errors.gst}</span>
-                  )}
-                </div>
-
-              </div>
-              
-            </div>
-          </div>
-        </div>
-      </div> */}
-
-      {/* SECTION 3RD Image & Gallery*/}
+      {/* Section Image & Gallery*/}
       <div className="row">
         <div className="col-xl-3 col-lg-3 flex ">
           <div className="card">

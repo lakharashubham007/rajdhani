@@ -1,8 +1,8 @@
 /* Container Styles */
 .bulkcontainer {
-    max-width: 1200px;
+    max-width: auto;
     margin: 0 auto;
-    padding: 20px;
+    padding: 35px;
     font-family: Arial, sans-serif;
     background-color: #fff;
 }

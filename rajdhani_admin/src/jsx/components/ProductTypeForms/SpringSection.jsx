@@ -30,6 +30,11 @@ const SpringSection = (props) => {
       ...formData,
       [name]: value,
     });
+
+    setErrors({
+      ...errors,
+      [name]: null
+    })
   };
   //   hose_size:
 
@@ -131,6 +136,10 @@ const SpringSection = (props) => {
                           ...formData,
                           spring_type: option.value,
                         });
+                        setErrors({
+                          ...errors,
+                          spring_type: null
+                        })
                       }}
                       defaultValue={selectedSpringTypeOption}
                       options={springTypeOption}
@@ -150,11 +159,11 @@ const SpringSection = (props) => {
                       setSelectedHoseDashSizeOption(option);
                       setFormData({
                         ...formData,
-                        hose_dash_size: option.value,
+                        hose_size: option.value,
                       });
                       setErrors({
                         ...errors,
-                        hose_dash_size: null
+                        hose_size: null
                       })
                     }}
                     defaultValue={selectedhoseDashSizeOption}
@@ -165,9 +174,9 @@ const SpringSection = (props) => {
                       paddingLeft: " 15px",
                     }}
                   />
-                  {errors.hose_dash_size && (
+                  {errors.hose_size && (
                     <span className="text-danger fs-12">
-                      {errors.hose_dash_size}
+                      {errors.hose_size}
                     </span>
                   )}
                 </div>

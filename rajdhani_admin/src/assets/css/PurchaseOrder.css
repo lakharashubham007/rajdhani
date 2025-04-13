@@ -87,3 +87,10 @@
     border-radius: 4px;
     overflow:auto;
   }
+  .hose-sidebox{
+    height: 450px;
+    width: 100%;
+    border: solid 1px rgb(218, 218, 218);
+    border-radius: 4px;
+    overflow:auto;
+  }

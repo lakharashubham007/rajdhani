@@ -1,8 +1,8 @@
 import { signUp } from "../AuthService"; // Load environment variables
 
 // Define the base URL for the API from .env
-// const BASE_URL = 'https://api.i2rtest.in/v1';
-const BASE_URL = 'http://localhost:8087/v1';
+const BASE_URL = 'https://api.i2rtest.in/v1';
+// const BASE_URL = 'http://localhost:8087/v1';
 
 // Define the base URL for the API
 // const BASE_URL = 'http://localhost:8087/v1';
@@ -21,7 +21,8 @@ const apis = {
     permission: { permission: `${BASE_URL}/permission/permissions` },
     roles: {
         role: `${BASE_URL}/private/role/create-role`,
-        rolesList: `${BASE_URL}/private/role/roles-list`
+        rolesList: `${BASE_URL}/private/role/roles-list`,
+        getById: `${BASE_URL}/public/role/roles-list`
     },
     zones: {
         AddZone: `${BASE_URL}/zones/add/zone`,
@@ -136,10 +137,11 @@ const apis = {
     getEditProductData: `${BASE_URL}/private/products/get-products`,
     updateProduct: `${BASE_URL}/private/products/edit-product`,
     updateProductStatus:`${BASE_URL}/private/products/update-product-status`,
-
+    getEditProductDetails: `${BASE_URL}/private/products/get-product-details`,
     getAllProductList: `${BASE_URL}/private/products/get-all-products`,
     searchProductForSuggestions: `${BASE_URL}/private/products/search`,
     searchSimilarProducts: `${BASE_URL}/private/products/simibrands`,
+    generateQr: `${BASE_URL}/private/products/generateqr`,
    },
 
    variant:{

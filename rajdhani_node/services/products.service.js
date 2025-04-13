@@ -1,4 +1,5 @@
-const { Products, ProductCodeCounter } = require('../models'); // Assuming the Products model is located here
+const { Products, ProductCodeCounter, Inventory } = require('../models'); // Assuming the Products model is located here
+const QRCode = require('qrcode');
 
 const generateCodes = (formData, options) => {
   console.log('formData is herer0-=-=-=-=-=-=-', formData);
@@ -50,6 +51,14 @@ const springCreation = async (data, files) => {
 
     console.log("Processed Spring product data:", springData);
 
+    // Generate QR Code for the product
+    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+    // Add QR code to the product data
+    springData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    springData.qr_url = productUrl;
+
     const springProduct = await Products.create(springData);
     return springProduct;
   } catch (error) {
@@ -85,6 +94,15 @@ const oringCreation = async (data, files) => {
     };
 
     console.log("Processed Spring product data:", oringData);
+
+     // Generate QR Code for the product
+     const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+ 
+     // Add QR code to the product data
+     oringData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+     oringData.qr_url = productUrl;
+ 
 
     const oringProduct = await Products.create(oringData);
     return oringProduct;
@@ -122,6 +140,14 @@ const dustCapCreation = async (data, files) => {
 
     console.log("Processed Spring product data:", dustCapData);
 
+     // Generate QR Code for the product
+     const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+ 
+     // Add QR code to the product data
+     dustCapData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+     dustCapData.qr_url = productUrl;
+
     const dustCapProduct = await Products.create(dustCapData);
     return dustCapProduct;
   } catch (error) {
@@ -158,6 +184,14 @@ const sleeveCreation = async (data, files) => {
 
     console.log("Processed sleeve product data:", SleeveData);
 
+    // Generate QR Code for the product
+    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+    // Add QR code to the product data
+    SleeveData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    SleeveData.qr_url = productUrl;
+
     const sleeveProduct = await Products.create(SleeveData);
     return sleeveProduct;
   } catch (error) {
@@ -179,7 +213,7 @@ const hosePipeCreation = async (data, files) => {
 
     // Update last_assigned_product_code in productCounter table
     await ProductCodeCounter.updateOne(
-      { category: "Sleeve" },
+      { category: "Hose Pipe" },
       { last_assigned_product_code: newCode, updated_at: Date.now() }
     );
 
@@ -193,11 +227,201 @@ const hosePipeCreation = async (data, files) => {
     };
 
     console.log("Processed sleeve product data:", hosePipeData);
+    // Generate QR Code for the product
+    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+    // Add QR code to the product data
+    hosePipeData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    hosePipeData.qr_url = productUrl;
 
     const hosePipe = await Products.create(hosePipeData);
     return hosePipe;
   } catch (error) {
     console.error("Error in Hose Pipe Creation:", error);
+    throw error;
+  }
+};
+
+//tubeFittingsCreation
+const tubeFittingsCreation = async (data, files) => {
+  try {
+    // Fetch last assigned product code for Spring
+    let productCounter = await ProductCodeCounter.findOne({ category: "Tube Fittings" });
+    if (!productCounter) {
+      throw new Error(`Product series not found for category: Tube Fittings`);
+    }
+
+    let newCode = productCounter.last_assigned_product_code + 1;
+
+    // Update last_assigned_product_code in productCounter table
+    await ProductCodeCounter.updateOne(
+      { category: "Tube Fittings" },
+      { last_assigned_product_code: newCode, updated_at: Date.now() }
+    );
+
+    console.log("Generated Product Code for Tube Fittings:", newCode);
+
+    const tubeFittingsData = {
+      ...data,
+      product_code: newCode,
+      image: files?.image ? files.image[0]?.originalname : "rajdhani_product.jpg",
+      gallery: files?.gallery ? files.gallery.map((file) => file.originalname) : [],
+    };
+
+    console.log("Processed tubeFittingsData product data:", tubeFittingsData);
+    // Generate QR Code for the product
+    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+    // Add QR code to the product data
+    tubeFittingsData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    tubeFittingsData.qr_url = productUrl;
+
+    const tubeFittings = await Products.create(tubeFittingsData);
+    return tubeFittings;
+  } catch (error) {
+    console.error("Error in Hose Pipe Creation:", error);
+    throw error;
+  }
+};
+
+//vinylCoverCreation
+const vinylCoverCreation = async (data, files) => {
+  try {
+    // Fetch last assigned product code for Spring
+    let productCounter = await ProductCodeCounter.findOne({ category: "Vinyl Cover" });
+    if (!productCounter) {
+      throw new Error(`Product series not found for category: Hose Pipe`);
+    }
+
+    let newCode = productCounter.last_assigned_product_code + 1;
+
+    // Update last_assigned_product_code in productCounter table
+    await ProductCodeCounter.updateOne(
+      { category: "Vinyl Cover" },
+      { last_assigned_product_code: newCode, updated_at: Date.now() }
+    );
+
+    console.log("Generated Product Code for Vinyl Cover:", newCode);
+
+    const vinylCoverData = {
+      ...data,
+      product_code: newCode,
+      image: files?.image ? files.image[0]?.originalname : "rajdhani_product.jpg",
+      gallery: files?.gallery ? files.gallery.map((file) => file.originalname) : [],
+    };
+
+    console.log("Processed sleeve product data:",);
+
+    // Generate QR Code for the product
+    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+    // Add QR code to the product data
+    vinylCoverData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    vinylCoverData.qr_url = productUrl;
+
+
+    const vinylCover = await Products.create(vinylCoverData);
+    return vinylCover;
+  } catch (error) {
+    console.error("Error in Hose Pipe Creation:", error);
+    throw error;
+  }
+};
+
+
+//packingCreation
+const packingCreation = async (data, files) => {
+  try {
+    // Fetch last assigned product code for Spring
+    let productCounter = await ProductCodeCounter.findOne({ category: "Packing" });
+    if (!productCounter) {
+      throw new Error(`Product series not found for category: Packing`);
+    }
+
+    let newCode = productCounter.last_assigned_product_code + 1;
+
+    // Update last_assigned_product_code in productCounter table
+    await ProductCodeCounter.updateOne(
+      { category: "Packing" },
+      { last_assigned_product_code: newCode, updated_at: Date.now() }
+    );
+
+    console.log("Generated Product Code for Packing:", newCode);
+
+    const packingData = {
+      ...data,
+      product_code: newCode,
+      image: files?.image ? files.image[0]?.originalname : "rajdhani_product.jpg",
+      gallery: files?.gallery ? files.gallery.map((file) => file.originalname) : [],
+    };
+
+    console.log("Processed packingData product data:", packingData);
+
+     // Generate QR Code for the product
+     const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+ 
+     // Add QR code to the product data
+     packingData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+     packingData.qr_url = productUrl;
+
+    const packing = await Products.create(packingData);
+    return packing;
+  } catch (error) {
+    console.error("Error in packing Creation:", error);
+    throw error;
+  }
+};
+
+
+//hoseAssembyCreation
+const hoseAssembyCreation = async (data, files) => {
+  try {
+    // // Fetch last assigned product code for Spring
+    // let productCounter = await ProductCodeCounter.findOne({ category: "Hose Assembly" });
+    // if (!productCounter) {
+    //   throw new Error(`Product series not found for category: Hose Assembly`);
+    // }
+
+    // let newCode = productCounter.last_assigned_product_code + 1;
+
+    // // Update last_assigned_product_code in productCounter table
+    // await ProductCodeCounter.updateOne(
+    //   { category: "Hose Assembly" },
+    //   { last_assigned_product_code: newCode, updated_at: Date.now() }
+    // );
+
+    // console.log("Generated Product Code for Packing:", newCode);
+
+    const sanitizedPartNo = data?.part_no?.replace(/[^a-zA-Z0-9]/g, "-");
+
+
+    const hoseAssemblyData = {
+      ...data,
+      product_code: data?.part_no,
+      image: files?.image ? files.image[0]?.originalname : "rajdhani_product.jpg",
+      gallery: files?.gallery ? files.gallery.map((file) => file.originalname) : [],
+    };
+
+    console.log("Processed packingData product data:", hoseAssemblyData);
+
+    // Generate QR Code for the product
+    const productUrl = `http://192.168.109.165:3001/productqr/${sanitizedPartNo}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+    // Add QR code to the product data
+    hoseAssemblyData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    hoseAssemblyData.qr_url = productUrl;
+
+
+
+    const hoseAssembly = await Products.create(hoseAssemblyData);
+    return hoseAssembly;
+  } catch (error) {
+    console.error("Error in hoseAssembly Creation:", error);
     throw error;
   }
 };
@@ -245,6 +469,15 @@ const createProduct = async (data, files) => {
         gallery: files && files.gallery ? files.gallery.map(file => file.originalname) : [], // Process gallery images
       };
 
+      // Generate QR Code for the product
+      const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+      const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+      // Add QR code to the product data
+      partData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+      partData.qr_url = productUrl;
+
+
       console.log('Processed product data:', partData); // Log the processed data before saving
 
       const part = await Products.create(partData);
@@ -271,10 +504,33 @@ const createProduct = async (data, files) => {
       return await sleeveCreation(data, files);
     }
 
-     //Hose Pipe
-     if (data?.product_type == "Hose Pipe") {
+    //Hose Pipe
+    if (data?.product_type == "Hose Pipe") {
       return await hosePipeCreation(data, files);
     }
+
+    //Vinyl Cover
+    if (data?.product_type == "Vinyl Cover") {
+      return await vinylCoverCreation(data, files);
+    }
+
+
+    //Packing
+    if (data?.product_type == "Packing") {
+      return await packingCreation(data, files);
+    }
+
+    //Hose Assembly
+    if (data?.product_type == "Hose Assembly") {
+      return await hoseAssembyCreation(data, files);
+    }
+
+     //Tube Fittings
+     if (data?.product_type == "Tube Fittings") {
+      return await tubeFittingsCreation(data, files);
+    }
+
+
 
 
 
@@ -304,7 +560,7 @@ const createProduct = async (data, files) => {
       category = "Braided";
     } else if (data?.wire_type?.includes("Spiral")) {
       category = "Spiral";
-    } else if (data?.wire_type?.includes("TEFLON")) {
+    } else if (data?.wire_type?.includes("Teflon")) {
       category = "Teflon";
     }
 
@@ -334,8 +590,13 @@ const createProduct = async (data, files) => {
       gallery: files && files.gallery ? files.gallery.map(file => file.originalname) : [], // Process gallery images
     };
 
-    console.log('Processed product data:', productData); // Log the processed data before saving
+    // Generate QR Code for the product
+    const productUrl = `http://192.168.109.165:3001/productqr/${newCode}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
 
+    // Add QR code to the product data
+    productData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    productData.qr_url = productUrl;
 
 
     const newProduct = await Products.create(productData);
@@ -414,8 +675,36 @@ const findSimilarProducts = async (fittingCode) => {
     // Query the database for products with a matching configuration
     const products = await Products.find({ fitting_Code: { $regex: regexPattern } });
 
-    console.log("Search result is --> fittingCode products", products);
-    return products;
+
+
+    // console.log("Search result is --> fittingCode products", products);
+
+    // Step 2: Extract product IDs from the found products
+    const productIds = products.map((product) => product._id);
+
+    // Step 3: Find inventory for those product IDs
+    const inventoryData = await Inventory.find({
+      product_id: { $in: productIds }
+    });
+
+
+    // Step 4: Attach quantity data to the products
+    const productsWithQuantity = products.map((product) => {
+      const inventoryItem = inventoryData.find((item) =>
+        item.product_id.toString() === product._id.toString()
+      );
+
+      return {
+        ...product._doc,  // Include product data
+        total_quantity: inventoryItem ? inventoryItem.total_quantity : 0, // Default to 0 if not found
+      };
+    });
+
+    // console.log("Final Result with Quantity:", productsWithQuantity);
+
+    return productsWithQuantity;
+
+    // return products;
   } catch (error) {
     console.error("Error finding similar products:", error);
     throw error;
@@ -425,45 +714,160 @@ const findSimilarProducts = async (fittingCode) => {
 
 
 // Get all Products with pagination, sorting, and search
-const getProducts = async (page, limit, sort, search) => {
+// const getProducts = async (page, limit, sort, search,prodctTypes) => {
+//   console.log("prodctTypes",prodctTypes)
+//   try {
+//     const skip = (page - 1) * limit;
+
+//     // Build a dynamic filter for searching
+//     const filter = search ? {
+//       $or: [
+//         { fitting_thread: { $regex: search, $options: 'i' } },
+//         { desc_Code: { $regex: search, $options: 'i' } }
+//       ]
+//     } : {};
+
+//     // Parse the sort parameter
+//     let sortOptions = {};
+
+//     if (sort) {
+//       const [field, order] = sort.split(':');
+//       sortOptions[field] = (order === 'dsc') ? -1 : 1; // -1 for descending, 1 for ascending
+//     } else {
+//       sortOptions = { created_at: -1 };
+//     }
+
+//     // Find products with applied filters, sorting, and pagination
+//     const productList = await Products.find(filter)
+//       .sort(sortOptions)
+//       .skip(skip)
+//       .limit(limit);
+
+//     // Get the total count of documents for pagination info
+//     const totalProducts = await Products.countDocuments(filter);
+
+//     return {
+//       products: productList,
+//       totalProducts,
+//       totalPages: Math.ceil(totalProducts / limit),
+//       currentPage: page,
+//       rowsPerPage: limit
+//     };
+//   } catch (error) {
+//     console.error('Error fetching products:', error);
+//     throw error;
+//   }
+// };
+
+// const getProducts = async (page, limit, sort, search, prodctTypes) => {
+//   try {
+//     const skip = (page - 1) * limit;
+
+//     // Step 1: Convert comma-separated string to array
+//     const productTypeArray = prodctTypes
+//       ? prodctTypes.split(',').map(type => decodeURIComponent(type.trim()))
+//       : [];
+
+//     // Step 2: Build dynamic filter
+//     let filter = {};
+
+//     // If search exists, include regex conditions
+//     if (search) {
+//       filter.$or = [
+//         { fitting_thread: { $regex: search, $options: 'i' } },
+//         { desc_Code: { $regex: search, $options: 'i' } }
+//       ];
+//     }
+
+//     // If product types exist, add another $or to filter by product_type or part
+//     if (productTypeArray.length > 0) {
+//       filter.$and = filter.$and || [];
+//       filter.$and.push({
+//         $or: [
+//           { product_type: { $in: productTypeArray } },
+//           { part: { $in: productTypeArray } }
+//         ]
+//       });
+//     }
+
+//     // Step 3: Parse sort value
+//     let sortOptions = {};
+//     if (sort) {
+//       const [field, order] = sort.split(':');
+//       sortOptions[field] = order === 'dsc' ? -1 : 1;
+//     } else {
+//       sortOptions = { created_at: -1 }; // default latest
+//     }
+
+//     // Step 4: Query with filter, sort, skip, limit
+//     const productList = await Products.find(filter)
+//       .sort(sortOptions)
+//       .skip(skip)
+//       .limit(limit);
+
+//     const totalProducts = await Products.countDocuments(filter);
+
+//     return {
+//       products: productList,
+//       totalProducts,
+//       totalPages: Math.ceil(totalProducts / limit),
+//       currentPage: page,
+//       rowsPerPage: limit
+//     };
+//   } catch (error) {
+//     console.error('Error fetching products:', error);
+//     throw error;
+//   }
+// };
+
+const getProducts = async (page, limit, sort, search, prodctTypes) => {
   try {
     const skip = (page - 1) * limit;
 
-    // Build a dynamic filter for searching
-    const filter = search ? {
-      $or: [
+    // Step 1: Convert comma-separated string to array
+    const productTypeArray = prodctTypes
+      ? prodctTypes.split(',').map(type => decodeURIComponent(type.trim()))
+      : [];
+
+    // Step 2: Build dynamic filter
+    let filter = {
+      isDeleted: false // Always exclude soft-deleted products
+    };
+
+    // If search exists, include regex conditions
+    if (search) {
+      filter.$or = [
         { fitting_thread: { $regex: search, $options: 'i' } },
         { desc_Code: { $regex: search, $options: 'i' } }
-      ]
-    } : {};
-
-    // Parse the sort parameter
-    let sortOptions = {};
-
-    console.log("sortsortsortsortsort", sort)
-    if (sort) {
-      const [field, order] = sort.split(':');
-      sortOptions[field] = (order === 'dsc') ? -1 : 1; // -1 for descending, 1 for ascending
-    } else {
-      sortOptions = { created_at: -1 };
+      ];
     }
 
-    // Find products with applied filters, sorting, and pagination
+    // If product types exist, add another $or to filter by product_type or part
+    if (productTypeArray.length > 0) {
+      filter.$and = filter.$and || [];
+      filter.$and.push({
+        $or: [
+          { product_type: { $in: productTypeArray } },
+          { part: { $in: productTypeArray } }
+        ]
+      });
+    }
+
+    // Step 3: Parse sort value
+    let sortOptions = {};
+    if (sort) {
+      const [field, order] = sort.split(':');
+      sortOptions[field] = order === 'dsc' ? -1 : 1;
+    } else {
+      sortOptions = { created_at: -1 }; // default latest
+    }
+
+    // Step 4: Query with filter, sort, skip, limit
     const productList = await Products.find(filter)
-      //  .populate('category_id')
-      //  .populate('subcategory_id')
-      //  .populate('subsubcategory_id')
-      //  .populate('brand')
-      //  .populate('variant')
-      //  .populate('material')
-      //  .populate('fittingSize')
-      //  .populate('thread_type')
-      //  .populate('parts') 
       .sort(sortOptions)
       .skip(skip)
       .limit(limit);
 
-    // Get the total count of documents for pagination info
     const totalProducts = await Products.countDocuments(filter);
 
     return {
@@ -479,7 +883,10 @@ const getProducts = async (page, limit, sort, search) => {
   }
 };
 
+
+
 // Get a Product by ID
+
 const getProductById = async (id) => {
   try {
     const product = await Products.findById(id);
@@ -489,6 +896,19 @@ const getProductById = async (id) => {
     throw error;
   }
 };
+
+// Get a Product when user scan Qr code by ID
+const getProductByQRScannerCode = async (code) => {
+  console.log("code is here", code)
+  try {
+    const product = await Products.findOne({ product_code: code });
+    return product;
+  } catch (error) {
+    console.error('Error fetching product by ID:', error);
+    throw error;
+  }
+};
+
 
 // Update a Product by ID
 const updateProduct = async (id, updateData) => {
@@ -512,15 +932,52 @@ const updateProductStatus = async (id, status) => {
   }
 };
 
-// Delete a Product by ID
+// // Delete a Product by ID
+// const deleteProduct = async (id) => {
+//   try {
+//     const product = await Products.findByIdAndDelete(id);
+//     return product;
+//   } catch (error) {
+//     console.error('Error deleting product:', error);
+//     throw error;
+//   }
+// };
+
 const deleteProduct = async (id) => {
   try {
-    const product = await Products.findByIdAndDelete(id);
-    return product;
+    // const { id } = req.params;
+
+    const deleted = await Products.findByIdAndUpdate(id, {
+      isDeleted: true,
+    });
+
+   
+
+   return deleted;
   } catch (error) {
     console.error('Error deleting product:', error);
-    throw error;
   }
+};
+
+const generateQrForProduct = async (productId) => {
+  const product = await Products.findById(productId);
+  if (!product) throw new Error('Product not found');
+
+  // Already has QR
+  if (product.qr_code && product.qr_url) {
+      return { qr_code: product.qr_code, qr_url: product.qr_url };
+  }
+  const sanitizedPartNo = product?.product_code?.replace(/[^a-zA-Z0-9]/g, "-");
+
+  // Customize the product URL logic as per your frontend route
+  const productUrl = `http://localhost:3001/productqr/${sanitizedPartNo}`;
+  const qrCodeUrl = await QRCode.toDataURL(productUrl);
+
+  product.qr_code = qrCodeUrl;
+  product.qr_url = productUrl;
+  await product.save();
+
+  return { qr_code: qrCodeUrl, qr_url: productUrl };
 };
 
 module.exports = {
@@ -532,5 +989,7 @@ module.exports = {
   deleteProduct,
   getAllProducts,
   searchProducts,
-  findSimilarProducts
+  findSimilarProducts,
+  getProductByQRScannerCode,
+  generateQrForProduct
 };

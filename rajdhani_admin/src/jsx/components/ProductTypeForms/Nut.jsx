@@ -13,66 +13,32 @@ const Nut = (props) => {
         formData,
         setFormData,
         errors,
+        setErrors,
         resetForm,
-        wireTypeOption,
-        setWireTypeOption,
-        selectedWireTypeOption,
+      
+
         setSelectedWireTypeOption,
-        withCapWithoutCapOption,
-        setWithCapWithoutCapOption,
-        selectedWithCapWithoutCapOption,
+ 
         setSelectedWithCapWithoutCapOption,
-        fittingPieceOption,
-        setFittingPieceOption,
-        selectedFittingPieceOption,
+ 
         setSelectedFittingPieceOption,
-        skiveTypeOption,
-        setSkiveTypeOption,
-        selectedSkiveTypeOption,
+
         setSelectedSkiveTypeOption,
-        HoseDashSizeOption,
-        setHoseDashSizeOption,
-        selectedhoseDashSizeOption,
+
         setSelectedHoseDashSizeOption,
         fittingDashSizeOption,
-        setfittingDashSizeOption,
+
         selectedFittingDashSizeOption,
         setSelectedfittingDashSizeOption,
         fittingThreadOption,
-        setfittingThreadOption,
-        variantOption,
-        setVariantOption,
-        selectedvariantOption,
-        setSelectedvariantOption,
+       
         selectedFittingThreadOption,
         setSelectedFittingThreadOption,
-        fittingTypeOption,
-        setfittingTypeOption,
-        selectedFittingTypeOption,
-        setSelectedFittingTypeOption,
-        straightBendangleOption,
-        setStraightBendangleOption,
-        selectedStraightBendangleOption,
+    
         setSelectedStraightBendangleOption,
-        dropLengthOption,
-        setDropLengthOption,
-        selectedDropLengthOption,
+       
         setSelectedDropLengthOption,
-        neckLengthOption,
-        setNeckLengthOption,
-        selectedNeckLengthOption,
-        setselectedNeckLengthOption,
-
-        pipeODOption,
-        setpipeODOption,
-        selectpipeODOption,
-        setSelectpipeODOption,
-        selectedpipeODOption,
-
-        matricTypeOption,
-        setMatricTypeOption,
-        selectedmetricTypeOptions,
-        setSelectedmetricTypeOptions,
+        
 
         fittingCode,
         descCode,
@@ -87,17 +53,16 @@ const Nut = (props) => {
     const [loading, setLoading] = useState(false);
 
 
-    console.log("sselectpipeODOption", selectedFittingDashSizeOption)
 
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData({ ...formData, [name]: value });
-        // if(errors[name]) {
-        //   setErrors({
-        //     ...errors,
-        //     [name]: null,
-        //   });
-        // }
+        if(errors[name]) {
+          setErrors({
+            ...errors,
+            [name]: null,
+          });
+        }
     };
 
     const resetEndFittingForm = () => {
@@ -144,7 +109,6 @@ const Nut = (props) => {
                         <div className="mb-3 row">
                             <div className="col-md-12">
                                 <div className="">
-                                    {/* <h4 className="card-title">End Fitting</h4> */}
                                     <div className="card-header row">
                                         <div className="col-md-4">
                                             <div className="d-flex align-items-center">
@@ -198,6 +162,10 @@ const Nut = (props) => {
                                                     ...formData,
                                                     design: option.value,
                                                 });
+                                                setErrors({
+                                                    ...errors,
+                                                    design: null,
+                                                  });
                                             }}
                                             defaultValue={selectedDesignOption}
                                             options={designOption}
@@ -252,6 +220,10 @@ const Nut = (props) => {
                                                 ...formData,
                                                 fitting_thread: option.value,
                                             });
+                                            setErrors({
+                                                ...errors,
+                                                fitting_thread: null
+                                              })
                                         }}
                                         defaultValue={selectedFittingThreadOption}
                                         options={fittingThreadOption}
@@ -279,6 +251,10 @@ const Nut = (props) => {
                                                 ...formData,
                                                 fitting_dash_size: option?.value,
                                             });
+                                            setErrors({
+                                                ...errors,
+                                                fitting_dash_size: null
+                                              })
                                         }}
                                         defaultValue={selectedFittingDashSizeOption}
                                         options={fittingDashSizeOption}
@@ -302,7 +278,7 @@ const Nut = (props) => {
                                     </label>
                                     <input
                                         name="nut_hex"
-                                        value={formData.neck_length}
+                                        value={formData.nut_hex}
                                         onChange={handleChange}
                                         type="text"
                                         className="form-control"
