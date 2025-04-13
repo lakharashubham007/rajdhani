@@ -111,6 +111,7 @@ const buttons = [
 ];
 
 const AllProductList = () => {
+  const BASEURL = `https://api.i2rtest.in/v1`;
   const [galleryVisible, setGalleryVisible] = useState(false);
   const [galleryItems, setGalleryItems] = useState([]);
 
@@ -1018,7 +1019,6 @@ const AllProductList = () => {
                                 </td>
 
                                 {/* Product Code */}
-
                                 <td
                                   // onClick={()=>{setShowProductDetailModal(true); setShowProductDetailData(data)}}
 
@@ -1041,9 +1041,6 @@ const AllProductList = () => {
                                     {data?.product_code ? data?.product_code : "N/A"}
                                   </span>
                                 </td>
-
-
-
                                 {/* Qr Code */}
                                 <td
                                   onClick={(e) => {
@@ -1125,7 +1122,6 @@ const AllProductList = () => {
                                     )}
                                   </div>
                                 </td>
-
                                 {/**Product Image */}
                                 <td className="d-flex align-items-center gap-2">
                                   {data?.image && (
@@ -1134,14 +1130,14 @@ const AllProductList = () => {
                                         e.stopPropagation();
 
                                         const mainImage = {
-                                          original: `http://localhost:8087/v1/images/image/${data?.image}`,
-                                          thumbnail: `http://localhost:8087/v1/images/image/${data?.image}`,
+                                          original: `${BASEURL}/images/image/${data?.image}`,
+                                          thumbnail: `${BASEURL}/images/image/${data?.image}`,
                                         };
 
                                         const galleryImages =
                                           data?.gallery?.map((img) => ({
-                                            original: `http://localhost:8087/v1/images/image/${img}`,
-                                            thumbnail: `http://localhost:8087/v1/images/image/${img}`,
+                                            original: `${BASEURL}/images/image/${img}`,
+                                            thumbnail: `${BASEURL}/images/image/${img}`,
                                           })) || [];
 
                                         const allImages = [mainImage, ...galleryImages];
@@ -1153,7 +1149,7 @@ const AllProductList = () => {
                                     >
                                       <img
                                         className="select-file-img"
-                                        src={`http://localhost:8087/v1/images/image/${data?.image}`}
+                                        src={`${BASEURL}/images/image/${data?.image}`}
                                         alt={data?.name}
                                         style={{
                                           // height: 50,
@@ -1169,8 +1165,7 @@ const AllProductList = () => {
                                   )}
                                   {data?.name}
                                 </td>
-
-
+                                {/* product_type */}
                                 <td
                                   // onClick={()=>{setShowProductDetailModal(true); setShowProductDetailData(data)}}
                                   style={{
@@ -1180,7 +1175,7 @@ const AllProductList = () => {
                                   }}>
                                   {data?.product_type}
                                 </td>
-
+                                {/* fitting_thread */}
                                 <td
                                   style={{
                                     textAlign: "center", // Horizontally center the content
@@ -1204,8 +1199,7 @@ const AllProductList = () => {
                                     {/* {data?.fitting_thread} */}
                                   </span>
                                 </td>
-
-
+                                {/* desc_Code */}
                                 <td
                                   style={{
                                     whiteSpace: 'nowrap',
@@ -1225,7 +1219,7 @@ const AllProductList = () => {
                                     {data?.desc_Code ? data?.desc_Code : "N/A"}
                                   </span>
                                 </td>
-
+                                {/* fitting_Code */}
                                 <td
                                   style={{
                                     whiteSpace: 'nowrap',
@@ -1245,7 +1239,7 @@ const AllProductList = () => {
                                     {data?.fitting_Code ? data?.fitting_Code : "N/A"}
                                   </span>
                                 </td>
-
+                                {/* design */}
                                 <td style={{
                                   textAlign: 'center', // Horizontally center the content
                                   verticalAlign: 'middle', // Vertically center the content
@@ -1263,12 +1257,13 @@ const AllProductList = () => {
                                     {data?.design ? data?.design : "N/A"}
                                   </span>
                                 </td>
-
+                                {/* created_at */}
                                 <td>
                                   {moment(data?.created_at).format(
                                     "DD MMM YYYY, h:mm:ss a"
                                   )}
                                 </td>
+                                {/* status */}
                                 <td>
                                   <div onClick={(e) => e.stopPropagation()}>
                                     <Switch
@@ -1285,6 +1280,7 @@ const AllProductList = () => {
                                     />
                                   </div>
                                 </td>
+                                {/* Edit and Delete */}
                                 <td>
                                   <button className="btn btn-xs sharp btn-primary me-1"
                                     // onClick={() => handleEditThread(data?._id)}
@@ -1493,7 +1489,6 @@ const AllProductList = () => {
                                     )}
                                   </div>
                                 </td>
-
                                 {/**Product Image */}
                                 <td
                                   style={{
@@ -1513,14 +1508,14 @@ const AllProductList = () => {
                                         e.stopPropagation();
 
                                         const mainImage = {
-                                          original: `http://localhost:8087/v1/images/image/${data?.image}`,
-                                          thumbnail: `http://localhost:8087/v1/images/image/${data?.image}`,
+                                          original: `${BASEURL}/images/image/${data?.image}`,
+                                          thumbnail: `${BASEURL}/images/image/${data?.image}`,
                                         };
 
                                         const galleryImages =
                                           data?.gallery?.map((img) => ({
-                                            original: `http://localhost:8087/v1/images/image/${img}`,
-                                            thumbnail: `http://localhost:8087/v1/images/image/${img}`,
+                                            original: `${BASEURL}/images/image/${img}`,
+                                            thumbnail: `${BASEURL}/images/image/${img}`,
                                           })) || [];
 
                                         const allImages = [mainImage, ...galleryImages];
@@ -1532,7 +1527,7 @@ const AllProductList = () => {
                                     >
                                       <img
                                         className="select-file-img"
-                                        src={`http://localhost:8087/v1/images/image/${data?.image}`}
+                                        src={`${BASEURL}/images/image/${data?.image}`}
                                         alt={data?.name}
                                         style={{
                                           // height: 50,
@@ -2027,14 +2022,14 @@ const AllProductList = () => {
                                         e.stopPropagation();
 
                                         const mainImage = {
-                                          original: `http://localhost:8087/v1/images/image/${data?.image}`,
-                                          thumbnail: `http://localhost:8087/v1/images/image/${data?.image}`,
+                                          original: `${BASEURL}/images/image/${data?.image}`,
+                                          thumbnail: `${BASEURL}/images/image/${data?.image}`,
                                         };
 
                                         const galleryImages =
                                           data?.gallery?.map((img) => ({
-                                            original: `http://localhost:8087/v1/images/image/${img}`,
-                                            thumbnail: `http://localhost:8087/v1/images/image/${img}`,
+                                            original: `${BASEURL}/images/image/${img}`,
+                                            thumbnail: `${BASEURL}/images/image/${img}`,
                                           })) || [];
 
                                         const allImages = [mainImage, ...galleryImages];
@@ -2046,7 +2041,7 @@ const AllProductList = () => {
                                     >
                                       <img
                                         className="select-file-img"
-                                        src={`http://localhost:8087/v1/images/image/${data?.image}`}
+                                        src={`${BASEURL}/images/image/${data?.image}`}
                                         alt={data?.name}
                                         style={{
                                           // height: 50,
@@ -2359,14 +2354,14 @@ const AllProductList = () => {
                                         e.stopPropagation();
 
                                         const mainImage = {
-                                          original: `http://localhost:8087/v1/images/image/${data?.image}`,
-                                          thumbnail: `http://localhost:8087/v1/images/image/${data?.image}`,
+                                          original: `${BASEURL}/images/image/${data?.image}`,
+                                          thumbnail: `${BASEURL}/images/image/${data?.image}`,
                                         };
 
                                         const galleryImages =
                                           data?.gallery?.map((img) => ({
-                                            original: `http://localhost:8087/v1/images/image/${img}`,
-                                            thumbnail: `http://localhost:8087/v1/images/image/${img}`,
+                                            original: `${BASEURL}/images/image/${img}`,
+                                            thumbnail: `${BASEURL}/images/image/${img}`,
                                           })) || [];
 
                                         const allImages = [mainImage, ...galleryImages];
@@ -2378,7 +2373,7 @@ const AllProductList = () => {
                                     >
                                       <img
                                         className="select-file-img"
-                                        src={`http://localhost:8087/v1/images/image/${data?.image}`}
+                                        src={`${BASEURL}/images/image/${data?.image}`}
                                         alt={data?.name}
                                         style={{
                                           // height: 50,
