@@ -54,7 +54,7 @@ const ProductDetails = () => {
     const GetProductDetailsQrScannerApi = async (id) => {
         // const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
         try {
-            const response = await axios.get(`${BASE_URL}/auth/get-product-details/${id}`, {
+            const response = await axios.get(`${BASE_URL}/private/products/get-product-details/${id}`, {
                 headers: {
                     'Content-Type': 'application/json',
                     // Authorization: `Bearer ${token}`,
