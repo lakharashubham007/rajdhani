@@ -40,7 +40,7 @@ import { wrap } from "lodash";
 import ImageGallery from "react-image-gallery";
 import "react-image-gallery/styles/css/image-gallery.css";
 import dummyQR from '../../../assets/images/dummyQR.png'; // use a local dummy image
-
+//updated
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
