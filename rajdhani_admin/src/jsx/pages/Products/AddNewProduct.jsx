@@ -722,8 +722,6 @@ const AddProduct = () => {
     }));
   };
 
-
-
   // Set Dynamically -> fittingTypeOption
   useEffect(() => {
     // Check if required fields are provided
