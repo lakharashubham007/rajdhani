@@ -33,19 +33,13 @@ const theadData = [
     { heading: "Product", sortingVale: "product" },
     { heading: "Description", sortingVale: "description" },
     { heading: "Fitting Code", sortingVale: "Fitting Code" },
-
     { heading: "Product Code", sortingVale: "product_code" },
-    { heading: "Wire Type", sortingVale: "wire_type" },
-    { heading: "Fitting Thread", sortingVale: "fitting_thread" },
-    // { heading: "Ring Type", sortingVale: "ring_type" },
-    { heading: "Skive Type", sortingVale: "skive_type" },
-    { heading: "Bend Angle", sortingVale: "bend_angle" },
-
-
-
-    { heading: "Design", sortingVale: "design" },
     { heading: "Total Qantity", sortingVale: "total_quantity" },
-    { heading: "Product Unit", sortingVale: "product_unit" },
+    { heading: "PO Due QTY", sortingVale: "po_due_qty" },
+    { heading: "SO Due QTY", sortingVale: "so_due_qty" },
+    { heading: "Minimum Required Qty", sortingVale: "minimum_required_qty" },
+    { heading: "Sales (last 90 Days Avg)", sortingVale: "sales_last_90_days_avg" },
+    { heading: "Rejected Qty", sortingVale: "rejected_qty" },
     { heading: "Created At", sortingVale: "created_at" },
     { heading: "Status", sortingVale: "status" },
     { heading: "Action", sortingVale: "action" },
@@ -68,7 +62,7 @@ const Inventory = () => {
     const [UpdateCategory, setUpdateCategory] = useState(false);
     const [productList, setProductList] = useState([]);
     const [analyticsData, setAnalyticsData] = useState();
-    console.log("analyticsData",analyticsData)
+    console.log("analyticsData", analyticsData)
     const [isEdit, setIsEdit] = useState(false);
     const [editCategoryId, setEditCategoryId] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -121,7 +115,7 @@ const Inventory = () => {
     // API Call on search
     const handleSearch = async () => {
         try {
-           
+
 
             // Construct query parameters
             const queryParams = new URLSearchParams();
@@ -129,9 +123,9 @@ const Inventory = () => {
             if (wireType) queryParams.append("wire_type", wireType);
 
             const response = await filterInventoryItemApi(queryParams);
-            console.log(response?.data?.data,"response")
+            console.log(response?.data?.data, "response")
 
-            console.log(response?.data?.data,"response")
+            console.log(response?.data?.data, "response")
             setProductList(response?.data?.data);
             setAnalyticsData(response?.data)
             // const response = await axios.get(`/api/inventories?${queryParams.toString()}`);
@@ -378,10 +372,10 @@ const Inventory = () => {
                             {/* Analytics Badge Boxes */}
                             <div class="d-flex flex-wrap gap-2 mt-2">
                                 <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#e7f3ff" }}>
-                                   Total Quantity: {analyticsData?.total_quantity ? analyticsData?.total_quantity : 0}
+                                    Total Quantity: {analyticsData?.total_quantity ? analyticsData?.total_quantity : 0}
                                 </div>
                                 <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#e8f5e9" }}>
-                                    Total Amount: {analyticsData?.total_amount? analyticsData?.total_amount : 0} INR
+                                    Total Amount: {analyticsData?.total_amount ? analyticsData?.total_amount : 0} INR
                                 </div>
                                 {/* <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#fff8e1" }} >
                                     Total Weight: 500 tons
@@ -674,29 +668,23 @@ const Inventory = () => {
                                                             {data?.product_id?.product_code}
                                                         </span>
                                                     </td>
-                                                    {/* Wire type  */}
+                                                    {/* Total QTY       */}
                                                     <td style={{
                                                         whiteSpace: 'nowrap',
                                                         overflow: 'hidden',
 
                                                     }}>
-                                                        {data?.wire_type}
+                                                        {data?.total_quantity ? data?.total_quantity : 100}
                                                     </td>
-                                                    {/* Thread type  */}
-                                                    <td
-                                                        style={{
-                                                            textAlign: "center", // Horizontally center the content
-                                                            verticalAlign: "middle", // Vertically center the content
-                                                        }}
-                                                    >
+                                                    {/* "PO Due QTY" */}
+                                                    <td style={{
+                                                        textAlign: 'center', // Horizontally center the content
+                                                        verticalAlign: 'middle', // Vertically center the content
+                                                    }}>
                                                         <span
                                                             style={{
-                                                                // backgroundColor: fittingThreadColors[data?.fitting_thread] || "#f5f5f5", // Default to light gray if no match
-                                                                backgroundColor:
-                                                                    fittingThreadColors[data?.part] || // Check for `Cap`, `Nipple`, `Nut`
-                                                                    fittingThreadColors[data?.thread_type] || // Check for fitting_thread
-                                                                    "#f5f5f5", // Default to light gray if no match
-                                                                color: "#000", // Black text color for better contrast
+                                                                backgroundColor: "#f0f4ff", // Light blue background
+                                                                color: "black", // Text color
                                                                 padding: "5px 10px", // Padding inside the badge
                                                                 borderRadius: "12px", // Rounded corners
                                                                 fontWeight: "bold", // Bold text
@@ -704,28 +692,48 @@ const Inventory = () => {
                                                                 display: "inline-block", // Works for the span
                                                             }}
                                                         >
-                                                            {["Cap", "Nipple", "Nut"].includes(data?.part) ? data?.part : data?.thread_type}
-                                                            {/* {data?.fitting_thread} */}
+                                                            {data?.po_due_qty ? data?.po_due_qty : "N/A"}
                                                         </span>
                                                     </td>
-
+                                                    {/* SO Due QTY */}
                                                     <td style={{
-                                                        whiteSpace: 'nowrap',
-                                                        overflow: 'hidden',
-
+                                                        textAlign: 'center', // Horizontally center the content
+                                                        verticalAlign: 'middle', // Vertically center the content
                                                     }}>
-                                                        {data?.skive_type}
+                                                        <span
+                                                            style={{
+                                                                backgroundColor: "#f0f4ff", // Light blue background
+                                                                color: "black", // Text color
+                                                                padding: "5px 10px", // Padding inside the badge
+                                                                borderRadius: "12px", // Rounded corners
+                                                                fontWeight: "bold", // Bold text
+                                                                textAlign: "center", // Centered text
+                                                                display: "inline-block", // Works for the span
+                                                            }}
+                                                        >
+                                                            {data?.so_due_qty ? data?.so_due_qty : "N/A"}
+                                                        </span>
                                                     </td>
-
+                                                    {/* Minimum Required Qty"  */}
                                                     <td style={{
-                                                        whiteSpace: 'nowrap',
-                                                        overflow: 'hidden',
-
+                                                        textAlign: 'center', // Horizontally center the content
+                                                        verticalAlign: 'middle', // Vertically center the content
                                                     }}>
-                                                        {data?.bendangle}
+                                                        <span
+                                                            style={{
+                                                                backgroundColor: "#f0f4ff", // Light blue background
+                                                                color: "black", // Text color
+                                                                padding: "5px 10px", // Padding inside the badge
+                                                                borderRadius: "12px", // Rounded corners
+                                                                fontWeight: "bold", // Bold text
+                                                                textAlign: "center", // Centered text
+                                                                display: "inline-block", // Works for the span
+                                                            }}
+                                                        >
+                                                            {data?.minimum_required_qty ? data?.minimum_required_qty : "N/A"}
+                                                        </span>
                                                     </td>
-
-
+                                                    {/* Sales last 90 days Avg  */}
                                                     <td style={{
                                                         textAlign: 'center', // Horizontally center the content
                                                         verticalAlign: 'middle', // Vertically center the content
@@ -741,36 +749,24 @@ const Inventory = () => {
                                                                 display: "inline-block", // Works for the span
                                                             }}
                                                         >
-                                                            {data?.product_id?.design}
+                                                            {data?.sales_last_90_days_avg ? data?.sales_last_90_days_avg : "N/A"}
                                                         </span>
                                                     </td>
-
+                                                    {/* Rejected Qty       */}
                                                     <td style={{
                                                         whiteSpace: 'nowrap',
                                                         overflow: 'hidden',
 
                                                     }}>
-
-
-                                                        {data?.total_quantity ? data?.total_quantity : 100}
+                                                        {data?.rejected_qty ? data?.rejected_qty : "N/A"}
                                                     </td>
-
-
-                                                    <td style={{
-                                                        whiteSpace: 'nowrap',
-                                                        overflow: 'hidden',
-
-                                                    }}>
-                                                        {data?.product_id?.uom}
-                                                    </td>
-
-
+                                                    {/* created_at */}
                                                     <td>
                                                         {moment(data?.created_at).format(
                                                             "DD MMM YYYY, h:mm:ss a"
                                                         )}
                                                     </td>
-
+                                                    {/* status */}
                                                     <td>
                                                         <Switch
                                                             checked={data?.status}
@@ -785,6 +781,7 @@ const Inventory = () => {
                                                             height={20} // Adjust height of the switch
                                                         />
                                                     </td>
+                                                    {/* Actions Edit and Delete */}
                                                     <td>
                                                         <button className="btn btn-xs sharp btn-primary me-1"
                                                             onClick={() => handleEditThread(data?._id)}>

@@ -1156,9 +1156,9 @@ const AllProductList = () => {
                                           // width: 50,
                                           borderRadius: 6,
                                           objectFit: 'cover',
-                                          transition: 'transform 0.3s ease',
+                                          transition: 'transform 0.2s ease',
                                         }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.4)')}
+                                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.3)')}
                                         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                                       />
                                     </div>
@@ -1363,7 +1363,7 @@ const AllProductList = () => {
                       </thead>
                       <tbody>
                         {
-                          endFittingsProductList?.products?.length > 0 ? (
+                          hoseAssemblyProductList?.products?.length > 0 ? (
                             hoseAssemblyProductList?.products?.map((data, ind) => (
                               <tr key={ind}
                                 onClick={(e) => {
@@ -1534,9 +1534,9 @@ const AllProductList = () => {
                                           // width: 50,
                                           borderRadius: 6,
                                           objectFit: 'cover',
-                                          transition: 'transform 0.3s ease',
+                                          transition: 'transform 0.2s ease',
                                         }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.4)')}
+                                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.3)')}
                                         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                                       />
                                     </div>
@@ -2048,9 +2048,9 @@ const AllProductList = () => {
                                           // width: 50,
                                           borderRadius: 6,
                                           objectFit: 'cover',
-                                          transition: 'transform 0.3s ease',
+                                          transition: 'transform 0.2s ease',
                                         }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.4)')}
+                                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.3)')}
                                         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                                       />
                                     </div>
@@ -2380,9 +2380,9 @@ const AllProductList = () => {
                                           // width: 50,
                                           borderRadius: 6,
                                           objectFit: 'cover',
-                                          transition: 'transform 0.3s ease',
+                                          transition: 'transform 0.2s ease',
                                         }}
-                                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.4)')}
+                                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.3)')}
                                         onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
                                       />
                                     </div>
@@ -2563,8 +2563,6 @@ const AllProductList = () => {
 
                     </table>
                   )}
-
-
 
                   <div>
                     {/* {brandList?.data?.length < brandList?.total && ( */}

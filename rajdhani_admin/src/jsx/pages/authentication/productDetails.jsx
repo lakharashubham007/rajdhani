@@ -114,7 +114,10 @@ const ProductDetails = () => {
 
                         <div className="col-md-8 row border-end">
 
-                            <div className="card-header px-0 mb-2">
+                            <div className="card-header px-0 mb-2" style={{
+                                display: 'flex', justifyContent:'center'
+                            }
+                            }>
                                 <h4 className="card-title">Product Details</h4>
                             </div>
 
