@@ -60,9 +60,9 @@ export const validateFormComponent = (formData, permissions) => {
     if (!formData.fitting_type) newErrors.fitting_type = "Fitting type is required.";
     if (!formData.straight_bend_angle) newErrors.straight_bend_angle = "Straight bend angle is required.";
     if (formData.straight_bend_angle !== "Straight") {
-      if (!formData.drop_length) newErrors.drop_length = "Drop length is required.";
+      // if (!formData.drop_length) newErrors.drop_length = "Drop length is required.";
     }
-    if (!formData.neck_length) newErrors.neck_length = "Neck length is required.";
+    // if (!formData.neck_length) newErrors.neck_length = "Neck length is required.";
  
   } 
   //Parts Validation NUT
