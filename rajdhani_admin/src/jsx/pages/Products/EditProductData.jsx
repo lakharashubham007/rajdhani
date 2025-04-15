@@ -728,6 +728,7 @@ const EditProductData = () => {
       }`.trim();
 
     setDescCode(desc_Code);
+    console.log("desc code is here",desc_Code)
     setFormData((prevData) => ({
       ...prevData,
       desc_Code: desc_Code, // Clear variant value in formData
@@ -1453,9 +1454,9 @@ const EditProductData = () => {
 
 
         setFormData({
-          ...data,
+          ...formData,  // keeps existing data
+          ...data       // updates with new values
         });
-
         setLogo(data?.image);
 
         const fullGalleryUrls = (data?.gallery || []).map(
