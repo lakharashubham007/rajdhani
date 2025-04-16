@@ -90,7 +90,9 @@ const getallOptions = async (req, res) => {
 
 
 const {
-    baseAddress
+    baseAddress,
+    genralbillingDetails,
+    genralshippingDetails
 } = require('../dropdowns/baseAddress')
 
 
@@ -100,6 +102,8 @@ const getBasicDetails = async (req, res) => {
         res.json({
             success: true, data: {
                 baseAddress,  
+                genralbillingDetails,
+                genralshippingDetails
             }
         });
     } catch (error) {

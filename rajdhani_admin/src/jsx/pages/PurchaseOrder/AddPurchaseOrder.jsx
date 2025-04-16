@@ -456,7 +456,7 @@ const AddSupplierPurchaseOrder = () => {
       // setLoading(true);
       const res = await getBaseAddress();
       const data = res?.data?.data;
-      setBaseAddress(data)
+      setBaseAddress(data?.baseAddress[0])
     } catch (error) {
       Toaster.error("Failed to load data. Please try again.");
     } finally {
