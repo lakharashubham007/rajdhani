@@ -997,27 +997,43 @@ const AllProductList = () => {
                       <tbody>
                         {
                           endFittingsProductList?.products?.length > 0 ? (
-
                             endFittingsProductList?.products?.map((data, ind) => (
                               <tr key={ind}
-                                onClick={(e) => {
+
+                                onClick={async (e) => {
                                   const target = e.target;
-                                  // Prevent modal from opening when clicking on an active button or input    
                                   if (target.tagName === "BUTTON") return; // Prevent if it's a button
                                   if (target.tagName === "INPUT" && !target.disabled) return; // Prevent if it's an input (and not disabled)
+                                  if (!data?.qr_code) {
+                                    try {
+                                      setLoading(true); // Optional: show a loader
+                                      const result = await generateQrCodeForProduct(data._id);
+                                      if (result.qr_code) {
+                                        data.qr_code = result.qr_code;
+                                        data.qr_url = result.qr_url;
 
+                                        // setShowProductQrDetailModal(true); // Show the modal with QR info
+                                        setShowProductDetailData(data);
+                                      }
+                                    } catch (err) {
+                                      console.error("QR Code generation failed", err);
+                                    } finally {
+                                      setLoading(false);
+                                    }
+                                  }
                                   // Open modal if clicking on any other part of the row
                                   setShowProductDetailModal(true);
                                   setShowProductDetailData(data);
                                 }}
+
                                 style={{
                                   cursor: "pointer"
                                 }}
+
                               >
                                 <td>
                                   <strong>{ind + 1}</strong>
                                 </td>
-
                                 {/* Product Code */}
                                 <td
                                   // onClick={()=>{setShowProductDetailModal(true); setShowProductDetailData(data)}}
@@ -1366,16 +1382,33 @@ const AllProductList = () => {
                           hoseAssemblyProductList?.products?.length > 0 ? (
                             hoseAssemblyProductList?.products?.map((data, ind) => (
                               <tr key={ind}
-                                onClick={(e) => {
+
+                                onClick={async (e) => {
                                   const target = e.target;
-                                  // Prevent modal from opening when clicking on an active button or input    
                                   if (target.tagName === "BUTTON") return; // Prevent if it's a button
                                   if (target.tagName === "INPUT" && !target.disabled) return; // Prevent if it's an input (and not disabled)
+                                  if (!data?.qr_code) {
+                                    try {
+                                      setLoading(true); // Optional: show a loader
+                                      const result = await generateQrCodeForProduct(data._id);
+                                      if (result.qr_code) {
+                                        data.qr_code = result.qr_code;
+                                        data.qr_url = result.qr_url;
 
+                                        // setShowProductQrDetailModal(true); // Show the modal with QR info
+                                        setShowProductDetailData(data);
+                                      }
+                                    } catch (err) {
+                                      console.error("QR Code generation failed", err);
+                                    } finally {
+                                      setLoading(false);
+                                    }
+                                  }
                                   // Open modal if clicking on any other part of the row
                                   setShowProductDetailModal(true);
                                   setShowProductDetailData(data);
                                 }}
+
                                 style={{
                                   cursor: "pointer"
                                 }}
@@ -1878,16 +1911,32 @@ const AllProductList = () => {
                           fittingAccessoriesProductList?.products?.length > 0 ? (
                             fittingAccessoriesProductList?.products?.map((data, ind) => (
                               <tr key={ind}
-                                onClick={(e) => {
+                                onClick={async (e) => {
                                   const target = e.target;
-                                  // Prevent modal from opening when clicking on an active button or input    
                                   if (target.tagName === "BUTTON") return; // Prevent if it's a button
                                   if (target.tagName === "INPUT" && !target.disabled) return; // Prevent if it's an input (and not disabled)
+                                  if (!data?.qr_code) {
+                                    try {
+                                      setLoading(true); // Optional: show a loader
+                                      const result = await generateQrCodeForProduct(data._id);
+                                      if (result.qr_code) {
+                                        data.qr_code = result.qr_code;
+                                        data.qr_url = result.qr_url;
 
+                                        // setShowProductQrDetailModal(true); // Show the modal with QR info
+                                        setShowProductDetailData(data);
+                                      }
+                                    } catch (err) {
+                                      console.error("QR Code generation failed", err);
+                                    } finally {
+                                      setLoading(false);
+                                    }
+                                  }
                                   // Open modal if clicking on any other part of the row
                                   setShowProductDetailModal(true);
                                   setShowProductDetailData(data);
                                 }}
+
                                 style={{
                                   cursor: "pointer"
                                 }}
@@ -1921,7 +1970,7 @@ const AllProductList = () => {
                                   </span>
                                 </td>
                                 {/* QR Code */}
-                               
+
                                 <td
                                   onClick={(e) => {
                                     // Prevent opening the QR detail modal if clicking on the QR code cell itself
@@ -2209,16 +2258,32 @@ const AllProductList = () => {
                           tubeFittingsProductList?.products?.length > 0 ? (
                             tubeFittingsProductList?.products?.map((data, ind) => (
                               <tr key={ind}
-                                onClick={(e) => {
+                                onClick={async (e) => {
                                   const target = e.target;
-                                  // Prevent modal from opening when clicking on an active button or input    
                                   if (target.tagName === "BUTTON") return; // Prevent if it's a button
                                   if (target.tagName === "INPUT" && !target.disabled) return; // Prevent if it's an input (and not disabled)
+                                  if (!data?.qr_code) {
+                                    try {
+                                      setLoading(true); // Optional: show a loader
+                                      const result = await generateQrCodeForProduct(data._id);
+                                      if (result.qr_code) {
+                                        data.qr_code = result.qr_code;
+                                        data.qr_url = result.qr_url;
 
+                                        // setShowProductQrDetailModal(true); // Show the modal with QR info
+                                        setShowProductDetailData(data);
+                                      }
+                                    } catch (err) {
+                                      console.error("QR Code generation failed", err);
+                                    } finally {
+                                      setLoading(false);
+                                    }
+                                  }
                                   // Open modal if clicking on any other part of the row
                                   setShowProductDetailModal(true);
                                   setShowProductDetailData(data);
                                 }}
+
                                 style={{
                                   cursor: "pointer"
                                 }}
@@ -2590,21 +2655,17 @@ const AllProductList = () => {
           </div>
         </Col>
       </Row>
-
+      {/* gallery View */}
       <>
         {galleryVisible && (
           <>
             <style>
               {`
                  .image-gallery-left-nav .image-gallery-svg, .image-gallery-right-nav .image-gallery-svg {
-    height: 80px;
-    width: 60px;
-}
+                  height: 80px;
+                  width: 60px;}
               `}
-
             </style>
-
-
             <div
               style={{
                 position: "fixed",
@@ -2624,10 +2685,7 @@ const AllProductList = () => {
                 onClick={(e) => e.stopPropagation()}
                 style={{
                   background: "#fff",
-                  // padding: "10px",
                   borderRadius: "10px",
-                  // maxWidth: "1200px",
-                  // maxHeight: "800px",
                   overflow: "auto",
                 }}
               >
@@ -2646,8 +2704,6 @@ const AllProductList = () => {
           </>
         )}
       </>
-
-
     </>
   );
 };

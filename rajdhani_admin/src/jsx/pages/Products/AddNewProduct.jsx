@@ -1090,6 +1090,11 @@ const AddProduct = () => {
       if (filteredOptions.length > 0) {
         // Update the selected fitting dash size option
         setSelectedfittingDashSizeOption(filteredOptions[0]);
+        setFormData({
+          ...formData,
+          fitting_dash_size: filteredOptions[0].value,
+        });
+
       }
     }
   }, [formData?.fitting_thread, formData?.pipeOD, formData?.metric_type]);

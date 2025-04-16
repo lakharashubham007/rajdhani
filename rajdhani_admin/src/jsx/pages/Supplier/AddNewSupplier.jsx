@@ -152,8 +152,8 @@ const AddNewSupplier = () => {
 
     } catch (error) {
       // Catch and handle errors
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching cuisines:", error);
+      // Toaster.error("Failed to load cuisines. Please try again.");
     }
   }
 

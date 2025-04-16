@@ -38,10 +38,11 @@ const ProductionManagement = () => {
     created_by: "",
     order_no: "",
     order_date: "",
-    part_name: "",
+    party_name: "",
     address: "",
     note: "",
   });
+  console.log("FormData is here: ---",formData)
   
   const [productionSheetData,setProductionSheetData]=useState({});
   const [isEdit,setIsEdit]=useState(false);
@@ -761,7 +762,7 @@ const ProductionManagement = () => {
                         />
                       </div>
 
-                      <div className="col-md-6">
+                      {/* <div className="col-md-6">
                         <label className="col-form-label">
                           Discount Per Unit
                         </label>
@@ -772,11 +773,11 @@ const ProductionManagement = () => {
                           onChange={(e) => setSelectedDiscount(e.target.value)}
                           className="form-control"
                         />
-                      </div>
+                      </div> */}
                     </div>
                     {/* Add button */}
                     <button onClick={addRow} className="btn btn-primary mt-4">
-                      Add Production
+                      Add
                     </button>
                   </div>
 

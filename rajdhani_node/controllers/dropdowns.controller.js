@@ -88,6 +88,28 @@ const getallOptions = async (req, res) => {
     }
 };
 
+
+const {
+    baseAddress
+} = require('../dropdowns/baseAddress')
+
+
+// Controller to fetch dropdown options
+const getBasicDetails = async (req, res) => {
+    try {
+        res.json({
+            success: true, data: {
+                baseAddress,  
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching basic details:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
+
 module.exports = {
     getallOptions,
+    getBasicDetails
 };

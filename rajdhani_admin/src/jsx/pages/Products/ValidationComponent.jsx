@@ -42,7 +42,10 @@ export const validateFormComponent = (formData, permissions) => {
     if (!formData.hose_dash_size) newErrors.hose_dash_size = "Hose dash size is required.";
     // if (!formData.fitting_dash_size) newErrors.fitting_dash_size = "Fitting dash size is required.";
 
-    if (formData.fitting_thread !== "SAE 61" && formData.fitting_thread !== "SAE 62" && formData.fitting_thread !== "METRIC THREAD ORFS") {
+    if (formData.fitting_thread !== "SAE 61" && formData.fitting_thread !== "SAE 62" && formData.fitting_thread !== "METRIC THREAD ORFS"
+      && formData.fitting_thread !== "BANJO WITHOUT O" && formData.fitting_thread !== "BANJO WITH O"  && formData.fitting_thread !== "BANJO WITH O"
+      // && formData?.fitting_thread !== "METRIC"
+    ) {
       if (!formData.fitting_dash_size ) newErrors.fitting_dash_size = "Fitting dash size is required.";
     } else {
       if (!formData.OD) newErrors.OD = "OD is required.";

@@ -33,6 +33,9 @@ import BillingDetail from "../../components/PurchaseOrder/BillingDetail";
 import ShippingDetail from "../../components/PurchaseOrder/Shippingdetail";
 import BillingDetailFormMdl from "../../components/PurchaseOrder/BillingDetailFormMdl";
 import ShippingDetailFormMdl from "../../components/PurchaseOrder/ShippingDetailFormMdl";
+import { getBaseAddress } from "../../../services/apis/options";
+
+
 
 const options = [
   { value: "veg", label: "Veg" },
@@ -58,37 +61,22 @@ const AddSupplierPurchaseOrder = () => {
   const [countryOption, setCountryOption] = useState(null);
   const [selectedSupplierOption, setSelectedSupplierOption] = useState(null);
   const [selectedProductOption, setSelectedProductOption] = useState(null);
-
-  // const [selectedShippingStateOption, setSelectedShippingStateOption] = useState(null);
-
-  const [selectedBillingCountryOption, setSelectedBillingCountryOption] =
-    useState();
-  const [selectedBillingStateOption, setSelectedBillingStateOption] =
-    useState(null);
-  const [selectedBillingCityOption, setSelectedBillingCityOption] =
-    useState(null);
-
-  const [selectedShippingCountryOption, setSelectedShippingCountryOption] =
-    useState();
-  const [selectedShippingStateOption, setSelectedShippingStateOption] =
-    useState(null);
-  const [selectedShippingCityOption, setSelectedShippingCityOption] =
-    useState(null);
-
+  const [selectedBillingCountryOption, setSelectedBillingCountryOption] = useState();
+  const [selectedBillingStateOption, setSelectedBillingStateOption] = useState(null);
+  const [selectedBillingCityOption, setSelectedBillingCityOption] = useState(null);
+  const [selectedShippingCountryOption, setSelectedShippingCountryOption] = useState();
+  const [selectedShippingStateOption, setSelectedShippingStateOption] = useState(null);
+  const [selectedShippingCityOption, setSelectedShippingCityOption] = useState(null);
   const [stateTIN, setStateTIN] = useState();
-  // console.log("stateTIN",stateTIN)
   const [countriesList, setCountriesList] = useState();
   const [stateList, setStateList] = useState();
   const [cityList, setCityList] = useState();
   const [supplierDetail, setSupplierDetail] = useState({});
-
   const [openBillingMdl, setOpenBillingMdl] = useState(false);
   const [openShippingMdl, setOpenShippingMdl] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState("");
   const [selectedDiscount, setSelectedDiscount] = useState("");
-  console.log("selectedProduct is here 1", selectedProduct)
-
   const TodayDate = moment().format("YYYY-MM-DD");
 
   //All Form Data is here
@@ -98,6 +86,7 @@ const AddSupplierPurchaseOrder = () => {
     due_date: "",
     note: "",
   });
+  console.log(formData, "FormData is here")
 
   //Billing Form Details Fields
   const [formBillingData, setBillingFormData] = useState({
@@ -113,8 +102,6 @@ const AddSupplierPurchaseOrder = () => {
     gstin: "",
     pin_code: "",
   });
-
-  // console.log("Billing Form", formBillingData)
 
   //Shipping Form Details Fields
   const [formShippingData, setShippingFormData] = useState({
@@ -145,16 +132,10 @@ const AddSupplierPurchaseOrder = () => {
     cess: "",
     amount: "",
   });
-  // console.log("Shipping Form", formShippingData)
-
-  // console.log(formBillingData.state_name)
-  // console.log(formShippingData.state_name)
-  // console.log(formBillingData.state_name === formShippingData.state_name)
 
   //Rows Fields
   const [rows, setRows] = useState([]);
   const [draggedRow, setDraggedRow] = useState(null);
-  console.log("row data is here : --------->", rows);
 
   const handleDragStart = (index) => {
     setDraggedRow(index);
@@ -164,41 +145,27 @@ const AddSupplierPurchaseOrder = () => {
     event.preventDefault();
   };
 
-  // const handleDrop = (index) => {
-  //   if (draggedRow === null) return;
-
-  //   const newRows = [...rows];
-  //   const [movedRow] = newRows.splice(draggedRow, 1);
-  //   newRows.splice(index, 0, movedRow);
-
-  //   setRows(newRows);
-  //   setDraggedRow(null);
-  // };
-
-  // Function to add a new row
-  
   const handleDrop = (index) => {
     if (draggedRow === null) return;
-  
+
     // Reorder rows
     const updatedRows = [...rows];
     const draggedRows = updatedRows?.splice(draggedRow, 1)[0]; // Remove dragged row
     updatedRows.splice(index, 0, draggedRows); // Insert at new position
-  
+
     // Reassign sequence numbers
     const reorderedRows = updatedRows.map((row, idx) => ({ ...row, id: idx }));
-  
+
     setRows(reorderedRows);
     setDraggedRow(null);
   };
 
   const addRow = () => {
     if (!selectedProduct) return; // Prevent adding empty rows
-    console.log(selectedProduct,"Selected Product is here");
+
 
     //calculation to add taxable amount 
     const taxableAmount = (selectedProduct?.price - selectedDiscount) * selectedQuantity;
-    //  const gstAmount = 
 
 
     let cgst = 0,
@@ -414,7 +381,7 @@ const AddSupplierPurchaseOrder = () => {
     const newErrors = {};
     // Required field validation
     if (!formData.supplier_id) newErrors.supplier_id = "Supplier is required.";
-    if (!formData.note) newErrors.note = "Note is required.";
+    // if (!formData.note) newErrors.note = "Note is required.";
     if (!formData.due_date) newErrors.due_date = "Due Date Id is required.";
 
     // Validate Billing Details
@@ -481,11 +448,25 @@ const AddSupplierPurchaseOrder = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  // console.log("errors",errors)
-  const handleDeleteLogo = () => {
-    setLogo(null);
-    document.getElementById("logoUpload").value = "";
+  const [baseAddress,setBaseAddress] = useState();
+  console.log("base address is here", baseAddress);
+
+  const fetchBaseAddress = async () => {
+    try {
+      // setLoading(true);
+      const res = await getBaseAddress();
+      const data = res?.data?.data;
+      setBaseAddress(data)
+    } catch (error) {
+      Toaster.error("Failed to load data. Please try again.");
+    } finally {
+      // setLoading(false);
+    }
   };
+
+  useEffect(()=>{
+    fetchBaseAddress();
+  },[])
 
   const fetchSupplierAllList = async () => {
     setLoading(true);
@@ -668,7 +649,7 @@ const AddSupplierPurchaseOrder = () => {
     }
   }, [selectedShippingCountryOption, selectedShippingStateOption]);
 
-  //  console.log("selectedShippingCountryOption",selectedShippingCountryOption)
+
   // Handle the logo image change
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
@@ -850,7 +831,7 @@ const AddSupplierPurchaseOrder = () => {
       };
     });
 
-    console.log("fDataProducts fDataProducts -->",fDataProducts)
+    console.log("fDataProducts fDataProducts -->", fDataProducts)
 
     try {
       const res = await createPoItemApi(fDataProducts);
@@ -885,78 +866,6 @@ const AddSupplierPurchaseOrder = () => {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    if (!validateForm()) {
-      return;
-    }
-    setLoading(true);
-
-    const fData = {
-      supplier_id: formData?.supplier_id,
-      order_details: {
-        date: formData?.date,
-        due_date: formData?.due_date,
-        note: formData?.note,
-      },
-      billing_details: {
-        name: formBillingData?.name,
-        email: formBillingData?.email,
-        mobile_no1: formBillingData?.mobile_no1,
-        mobile_no2: formBillingData?.mobile_no2,
-        country: formBillingData?.country,
-        state_name: formBillingData?.state_name,
-        city: formBillingData?.city,
-        state_tin_code: formBillingData?.state_tin_code,
-        address: formBillingData?.address,
-        gstin: formBillingData?.gstin,
-      },
-      shipping_details: {
-        name: formShippingData?.name,
-        email: formShippingData?.email,
-        mobile_no1: formShippingData?.mobile_no1,
-        mobile_no2: formShippingData?.mobile_no2,
-        country: formShippingData?.country,
-        state_name: formShippingData?.state_name,
-        city: formShippingData?.city,
-        state_tin_code: formShippingData?.state_tin_code,
-        address: formShippingData?.address,
-        gstin: formShippingData?.gstin,
-      },
-      summary: summary,
-    };
-
-    try {
-      const res = await addSupplierPurchaseOrderApi(fData);
-      if (res.data?.success) {
-        setLoading(false);
-
-        CreatePoItem(res?.data?.purchaseOrder?._id);
-        Swal.fire({
-          icon: "success",
-          title: "Purchase Order",
-          text: res.data?.message || "PurchaseOrder created successfully",
-          showConfirmButton: false,
-          timer: 1500,
-        });
-        // resetForm(); // Reset form after success
-        // navigate('/productlist');
-      } else {
-        setLoading(false);
-        Toaster.error(res.data?.message || "Failed to create product");
-        console.error("Product creation error:", res);
-      }
-    } catch (error) {
-      setLoading(false);
-      // Handle any errors during API request
-      Toaster.error(
-        error.response?.data?.message ||
-        "An error occurred while processing your request"
-      );
-      console.error("Error creating product:", error);
-    }
-  };
 
   const handleBillingDetailChange = (e) => {
     const { name, value } = e.target; // Destructure the input's name and value
@@ -1106,7 +1015,7 @@ const AddSupplierPurchaseOrder = () => {
   };
 
   const [similarProducts, setSimilarProducts] = useState([]);
-  console.log("here are similarProducts", similarProducts)
+
   const fetchSimilarProducts = async (fittingCode) => {
     // setLoading(true);
     try {
@@ -1143,14 +1052,80 @@ const AddSupplierPurchaseOrder = () => {
       setSimilarProducts("")
     }
 
-  }, [selectedProduct,searchTerm]);
+  }, [selectedProduct, searchTerm]);
 
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
+    if (!validateForm()) {
+      return;
+    }
+    setLoading(true);
 
+    const fData = {
+      supplier_id: formData?.supplier_id,
+      order_details: {
+        date: formData?.date,
+        due_date: formData?.due_date,
+        note: formData?.note,
+      },
+      billing_details: {
+        name: formBillingData?.name,
+        email: formBillingData?.email,
+        mobile_no1: formBillingData?.mobile_no1,
+        mobile_no2: formBillingData?.mobile_no2,
+        country: formBillingData?.country,
+        state_name: formBillingData?.state_name,
+        city: formBillingData?.city,
+        state_tin_code: formBillingData?.state_tin_code,
+        address: formBillingData?.address,
+        gstin: formBillingData?.gstin,
+      },
+      shipping_details: {
+        name: formShippingData?.name,
+        email: formShippingData?.email,
+        mobile_no1: formShippingData?.mobile_no1,
+        mobile_no2: formShippingData?.mobile_no2,
+        country: formShippingData?.country,
+        state_name: formShippingData?.state_name,
+        city: formShippingData?.city,
+        state_tin_code: formShippingData?.state_tin_code,
+        address: formShippingData?.address,
+        gstin: formShippingData?.gstin,
+      },
+      summary: summary,
+    };
 
+    try {
+      const res = await addSupplierPurchaseOrderApi(fData);
+      if (res.data?.success) {
+        setLoading(false);
 
-
-
+        CreatePoItem(res?.data?.purchaseOrder?._id);
+        Swal.fire({
+          icon: "success",
+          title: "Purchase Order",
+          text: res.data?.message || "PurchaseOrder created successfully",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        // resetForm(); // Reset form after success
+        // navigate('/productlist');
+      } else {
+        setLoading(false);
+        Toaster.error(res.data?.message || "Failed to create product");
+        console.error("Product creation error:", res);
+      }
+    } catch (error) {
+      setLoading(false);
+      // Handle any errors during API request
+      Toaster.error(
+        error.response?.data?.message ||
+        "An error occurred while processing your request"
+      );
+      console.error("Error creating product:", error);
+    }
+  };
 
   return (
     <>
@@ -1244,24 +1219,24 @@ const AddSupplierPurchaseOrder = () => {
                       <span className="text-danger fs-12">{errors.date}</span>
                     )}
                   </div>
-
-                  <div className="col-sm-6 col-xl-4">
-                    <label className="col-form-label">Due Date<span className="text-danger">*</span></label>
+                  <div className="col-md-3">
+                    <label className="col-form-label">Due Date</label>
                     <input
                       name="due_date"
                       value={formData?.due_date}
                       onChange={handleChange}
+                      onClick={(e) => e.target.showPicker()}
                       type="date"
                       className="form-control"
-                      placeholder="Ex: ABC"
+                      placeholder="Enter Date"
                     />
-
-                    {errors.due_date && (
+                    {errors?.due_date && (
                       <span className="text-danger fs-12">
-                        {errors.due_date}
+                        {errors?.due_date}
                       </span>
                     )}
                   </div>
+          
                 </div>
 
                 {supplierDetail && Object.keys(supplierDetail).length !== 0 && (
@@ -1421,7 +1396,7 @@ const AddSupplierPurchaseOrder = () => {
 
 
                   <div className="col-md-6">
-                    <label className="col-form-label  ">Select Similar Products by Brand</label>
+                    <label className="col-form-label ">Select Similar Products by Brand</label>
 
                     <div className="product-sidebox p-3 bg-white  rounded">
                       {similarProducts.length === 0 ? (
@@ -1471,14 +1446,15 @@ const AddSupplierPurchaseOrder = () => {
                                     <br />
                                     <small className="text-muted">0</small>
                                   </div> */}
-                                 
-                                    <div className="w-20 d-flex align-items-center justify-content-center text-white rounded  px-3 py-1 shadow-sm" 
-                                      style={{ minWidth: "60px", fontSize: "12px",
-                                        // background: "#C3A4FC",
-                                        background: "linear-gradient(135deg, #C3A4FC, #C3A4FC , #9A67F8)" ,
-                                        border: "1px solid transparent", 
-                                        // borderImage: "linear-gradient(135deg, #9A67F8, #C3A4FC , #7B32FF) 1", // Gradient border
-                                     }}>
+
+                                  <div className="w-20 d-flex align-items-center justify-content-center text-white rounded  px-3 py-1 shadow-sm"
+                                    style={{
+                                      minWidth: "60px", fontSize: "12px",
+                                      // background: "#C3A4FC",
+                                      background: "linear-gradient(135deg, #C3A4FC, #C3A4FC , #9A67F8)",
+                                      border: "1px solid transparent",
+                                      // borderImage: "linear-gradient(135deg, #9A67F8, #C3A4FC , #7B32FF) 1", // Gradient border
+                                    }}>
                                     <span className="text-black font-bold">Qty:</span>
                                     <span className="ms-1 text-black font-bold">{product?.quantity}</span>
                                   </div>
@@ -1691,550 +1667,7 @@ const AddSupplierPurchaseOrder = () => {
                </div> */}
               </div>
 
-              {/* Billing Details */}
-              {/* <div className="mb-3">
-                <h4 className="card-title">Billing Detail</h4>
-                <div className="row mb-3">
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Name</label>
-                    <input
-                      name="name"
-                      value={formBillingData?.name}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.billing_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Email</label>
-                    <input
-                      name="email"
-                      value={formBillingData?.email}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC@gmail.com"
-                    />
-
-                    {errors.billing_email && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_email}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Mobile No.1</label>
-                    <input
-                      name="mobile_no1"
-                      value={formBillingData?.mobile_no1}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: +91 9876-555-555"
-                    />
-
-                    {errors.billing_mobile_no1 && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_mobile_no1}
-                      </span>
-                    )}
-                  </div> 
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Mobile No.2</label>
-                    <input
-                      name="mobile_no2"
-                      value={formBillingData?.mobile_no2}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex:  +91 9876-555-555"
-                    />
-
-                    {errors.billing_mobile_no2 && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_mobile_no2}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">Country</label>
-                    <Select
-                      value={selectedBillingCountryOption}
-                      onChange={handleBillingDetailCountryChange}
-                      defaultValue={selectedBillingCountryOption}
-                      options={countriesList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.country && (
-                      <span className="text-danger fs-12">
-                        {errors.country}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">State</label>
-                    <Select
-                      value={selectedBillingStateOption}
-                      onChange={handleBillingDetailStateChange}
-                      defaultValue={selectedBillingStateOption}
-                      options={stateList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.billing_state_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_state_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">City</label>
-                    <Select
-                      value={selectedBillingCityOption}
-                      onChange={handleBillingDetailCityChange}
-                      defaultValue={selectedBillingCityOption}
-                      options={cityList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.billing_state_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_state_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-2">
-                    <label className="col-form-label">Pincode</label>
-                    <input
-                      name="pin_code"
-                      value={formBillingData?.pin_code}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 313001"
-                    />
-
-                    {errors.billing_pin_code && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_pin_code}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-1">
-                    <label className="col-form-label flex-wrap">TIN</label>
-                    <input
-                      name="state_code"
-                      value={formBillingData?.state_tin_code}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 12"
-                      disabled
-                    />
-
-                    {errors.billings_state_code && (
-                      <span className="text-danger fs-12">
-                        {errors.billings_state_code}
-                      </span>
-                    )}
-                  </div>
-
-                </div>
-                <div className="row mb-3">
-                  <div className="col-xl-6">
-                    <label className="col-sm-3 col-form-label">Address</label>
-                    <input
-                      name="address"
-                      value={formBillingData?.address}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.billing_address && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_address}
-                      </span>
-                    )}
-                  </div>
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">GSTIN</label>
-                    <input
-                      name="gstin"
-                      value={formBillingData?.gstin}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 22AAAAA0000A1Z5"
-                    />
-
-                    {errors.billing_gstin && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_gstin}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-              </div> */}
-
-              {/* <hr className="w-100" /> */}
-              {/* Shipping Details */}
-              {/* <div className="mb-3">
-                <h4 className="card-title">Shipping Detail</h4>
-                <div className="row mb-3">
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Name</label>
-                    <input
-                      name="name"
-                      value={formShippingData?.name}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.billing_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Email</label>
-                    <input
-                      name="email"
-                      value={formShippingData?.email}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC@gmail.com"
-                    />
-
-                    {errors.billing_email && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_email}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Mobile No.1</label>
-                    <input
-                      name="mobile_no1"
-                      value={formShippingData?.mobile_no1}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: +91 9876-555-555"
-                    />
-
-                    {errors.shipping_mobile_no1 && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_mobile_no1}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Mobile No.2</label>
-                    <input
-                      name="mobile_no2"
-                      value={formShippingData?.mobile_no2}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex:  +91 9876-555-555"
-                    />
-
-                    {errors.shipping_mobile_no2 && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_mobile_no2}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">Country</label>
-                    <Select
-                      value={selectedShippingCountryOption}
-                      onChange={handleShippingDetailCountryChange}
-                      defaultValue={selectedShippingCountryOption}
-                      options={countriesList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.country && (
-                      <span className="text-danger fs-12">
-                        {errors.country}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">State</label>
-                    <Select
-                      value={selectedShippingStateOption}
-                      onChange={handleShippingDetailStateChange}
-                      defaultValue={selectedShippingStateOption}
-                      options={stateList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.billing_state_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_state_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">City</label>
-                    <Select
-                      value={selectedShippingCityOption}
-                      onChange={handleShippingDetailCityChange}
-                      defaultValue={selectedShippingCityOption}
-                      options={cityList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.billing_state_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_state_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-2">
-                    <label className="col-form-label">Pincode</label>
-                    <input
-                      name="pin_code"
-                      value={formShippingData?.pin_code}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 313001"
-                    />
-
-                    {errors.billing_pin_code && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_pin_code}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-1">
-                    <label className="col-form-label">TIN</label>
-                    <input
-                      name="state_code"
-                      value={formShippingData?.state_tin_code}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 08"
-                      disabled
-                    />
-
-                    {errors.shipping_state_code && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_state_code}
-                      </span>
-                    )}
-                  </div>
-
-
-
-                </div>
-                <div className="row mb-3">
-                  <div className="col-xl-6">
-                    <label className="col-sm-3 col-form-label">Address</label>
-                    <input
-                      name="address"
-                      value={formShippingData?.address}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.billing_address && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_address}
-                      </span>
-                    )}
-                  </div>
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">GSTIN</label>
-                    <input
-                      name="gstin"
-                      value={formShippingData?.gstin}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 22AAAAA0000A1Z5"
-                    />
-
-                    {errors.billing_gstin && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_gstin}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-              </div> */}
-
-              {/* <div className="">
-                <h4 className="card-title">Shipping Detail</h4>
-                <div className="row mb-3">
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">Name</label>
-                    <input
-                      name="name"
-                      value={formShippingData?.name}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-                    {errors.shipping_name && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">Email</label>
-                    <input
-                      name="email"
-                      value={formShippingData?.email}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC@gmail.com"
-                    />
-                    {errors.shipping_email && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_email}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">State Name</label>
-                    <Select
-                      value={selectedShippingStateOption}
-                      onChange={handleShippingDetailStateChange}
-                      defaultValue={selectedShippingStateOption}
-                      options={statesOption}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.shipping_state_name && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_state_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">State Code</label>
-                    <input
-                      name="state_code"
-                      value={formShippingData?.state_code}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.shipping_state_code && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_state_code}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="row mb-3">
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Address</label>
-                    <input
-                      name="address"
-                      value={formShippingData?.address}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.shipping_address && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_address}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">GSTIN</label>
-                    <input
-                      name="gstin"
-                      value={formShippingData?.gstin}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 22AAAAA0000A1Z5"
-                    />
-
-                    {errors.shipping_gstin && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_gstin}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div> */}
+              
 
               {/* Table  */}
               <div className="col-xl-12 col-lg-12 mt-5">
@@ -2566,10 +1999,10 @@ const AddSupplierPurchaseOrder = () => {
               </div>
 
               {/* summary */}
-              <div className="row justify-content-end ">
+              <div className="row justify-content-end mt-4">
                 <div className="summary-section col-md-5">
                   <table className="table table-bordered ">
-                    <h3>Summary</h3>
+                    <h3 className="p-2">Summary</h3>
 
                     <tbody>
                       <tr>
@@ -2601,6 +2034,7 @@ const AddSupplierPurchaseOrder = () => {
                               })
                             }
                             className="form-control"
+                            style={{ height: "25px", fontSize: "10px" }}
                           />
                         </td>
                       </tr>

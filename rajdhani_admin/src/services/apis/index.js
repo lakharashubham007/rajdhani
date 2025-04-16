@@ -304,7 +304,8 @@ const apis = {
 
 
    options: {
-    dropwons: `${BASE_URL}/public/options/all`
+    dropwons: `${BASE_URL}/public/options/all`,
+    baseAddress: `${BASE_URL}/public/options/base-address`
    },
 
    batch: {
