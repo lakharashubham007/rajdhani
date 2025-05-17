@@ -207,6 +207,7 @@ export const SearchProductsApi = async (query) => {
 }
 };
 
+
 // Function to search for similar products across different brands
 export const SearchSimilarProductsApi = async (fittingCode) => {
   const token = localStorage.getItem("token")?.replace(/^"(.*)"$/, "$1");
@@ -220,6 +221,28 @@ export const SearchSimilarProductsApi = async (fittingCode) => {
           Authorization: `Bearer ${token}`,
         },
         params: { fittingCode }, // Pass fitting code as query parameter
+      }
+    );
+    return response.data; // Return response data
+  } catch (error) {
+    console.error("Error fetching similar products:", error);
+    throw error;
+  }
+};
+
+// Function to search for similar products across different brands
+export const SearchSimilarHoseAssemblyApi = async (product_code) => {
+  const token = localStorage.getItem("token")?.replace(/^"(.*)"$/, "$1");
+
+  try {
+    const response = await axios.get(
+      `${apis.product.searchSimilarHoseAssembly}`, // Replace with actual API endpoint
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        params: { product_code }, // Pass fitting code as query parameter
       }
     );
     return response.data; // Return response data

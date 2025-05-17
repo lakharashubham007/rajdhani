@@ -76,8 +76,8 @@ const HoseType = () => {
       setHoseTypeList(res?.data?.hoseTypes);
       setUpdateCategory(false);
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       // Always set loading to false when the API call is done (whether successful or failed)
       setLoading(false);

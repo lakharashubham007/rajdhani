@@ -26,12 +26,7 @@ import "../../../assets/css/PurchaseOrder.css";
 import { createBatchApi } from "../../../services/apis/BatchApi";
 import { addProductsInInvntory, checkProductsInInventoryApi } from "../../../services/apis/InventoryApi";
 import { addEntryInStock } from "../../../services/apis/StockMentainenaceApi";
-import pdfIcon from "../../../assets/images/Icon_pdf_file.svg.png";
-import PdfViewer from "./PdfViewer";
-import { FaFilePdf, FaFileWord, FaFileExcel, FaFileAlt, FaFileCsv } from "react-icons/fa"; // Icons from react-icons
-import ImageViewer from "./ImageViewer";
-import PdfView from "./PdfViewer";
-import * as XLSX from "xlsx";
+import { GetSaleOrderItemsData, GetSaleOrderViewData, verifySalesOrderApi } from "../../../services/apis/salesOrderApi";
 
 
 const billtheadData = [
@@ -46,30 +41,32 @@ const billtheadData = [
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
   { heading: "Product Name", sortingVale: "name" },
-  { heading: "Product Code", sortingVale: "product_code" },
-  { heading: "Quantity", sortingVale: "quantity" },
+  { heading: "Fitting Code", sortingVale: "fitting_code" },
+  { heading: "Code", sortingVale: "product_code" },
   { heading: "UOM", sortingVale: "uom" },
   { heading: "Weight(kg)", sortingVale: "weight" },
+  { heading: "Quantity", sortingVale: "quantity" },
   { heading: "Price", sortingVale: "price" },
   { heading: "Discount Per Unit", sortingVale: "discount_per_unit" },
   { heading: "CGST", sortingVale: "cgst" },
   { heading: "SGST", sortingVale: "sgst" },
   { heading: "IGST", sortingVale: "igst" },
-  { heading: "Cess", sortingVale: "Cess" },
   { heading: "Amount", sortingVale: "amount" },
-  { heading: "Created At", sortingVale: "created_at" },
+  { heading: "Authorize", sortingVale: "authorize" },
+  // { heading: "Created At", sortingVale: "created_at" },
   // { heading: "Status", sortingVale: "status" },
   // { heading: "Action", sortingVale: "action" },
 ];
 
-const VerifyPurchaseOrder = () => {
+
+const AuthorizeSaleOrder = () => {
   const params = useParams()?.id;
   const navigate = useNavigate();
   const billTableRef = useRef(null);
   const [sort, setSortata] = useState(10);
   const [purchaseOrderData, setPurchaseOrderData] = useState([]);
   const [purchaseOrderProdcutList, setPurchaseOrderProdcutList] = useState([]);
-  // console.log("purchaseOrderProdcutList", purchaseOrderProdcutList)
+  console.log("purchaseOrderProdcutList", purchaseOrderProdcutList)
   const [billData, setBillData] = useState([]);
   const [errors, setErrors] = useState({});
   const [formBillingData, setFormBillingData] = useState({});
@@ -85,7 +82,16 @@ const VerifyPurchaseOrder = () => {
   const [logo, setLogo] = useState(null);
   const [apiSuccess, setApiSuccess] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
-  
+  const [verifyShowModal, setVerifyShowModal] = useState(false);
+  const [focusedInputIndex, setFocusedInputIndex] = useState(null);
+  const [selectedRowData, setSelectedRowData] = useState();
+  console.log("selected row data", selectedRowData)
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+
+
+
+
   const [rows, setRows] = useState([
     {
       id: 1,
@@ -112,26 +118,8 @@ const VerifyPurchaseOrder = () => {
       is_short_close: ""
     },
   ]);
-  const [files, setFiles] = useState([]);
-  const [pdfSrc, setPdfSrc] = useState(null);
-  const [isOpen, setIsOpen] = useState(false);
-  const [currentImageIndex, setCurrentImageIndex] = useState(0);
-  const [images, setImages] = useState([]);
-  const [fileType, setFileType] = useState("");
-  const[openPdfModal,setOpenPdfModal]=useState(false);
-  const [excelData, setExcelData] = useState([]);
-
-  useEffect(() => {
-    if (files && files.length > 0) {
-      const imageUrls = files?.map(file => {
-        return file?.type?.startsWith("image") ? (file.url || URL.createObjectURL(file.file)) : null;
-      }).filter(Boolean); // Remove null values
-  
-      setImages(imageUrls);
-      console.log("Final Images in State:", imageUrls);
-    }
-  }, [files]);
-  
+  console.log("rows rows rows rows ==========>", rows);
+  console.log("formBillingData formBillingData==========>", formBillingData);
 
   const [isExpanded, setIsExpanded] = useState(false);
 
@@ -159,8 +147,8 @@ const VerifyPurchaseOrder = () => {
       }));
       setProductOption(dropdownProductList);
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -416,8 +404,8 @@ const VerifyPurchaseOrder = () => {
 
   const fetchPurchaseOrderViewData = async () => {
     try {
-      const res = await GetPurchaseOrderViewData(params);
-      const data = res?.data?.purchaseOrder;
+      const res = await GetSaleOrderViewData(params);
+      const data = res?.data?.saleOrder;
       setPurchaseOrderData(data);
     } catch (err) {
       console.log("errror", err);
@@ -426,7 +414,7 @@ const VerifyPurchaseOrder = () => {
 
   const fetchPurchaseOrderItemsData = async () => {
     try {
-      const res = await GetPurchaseOrderItemsData(params);
+      const res = await GetSaleOrderItemsData(params);
       const data = res?.data?.item;
       setPurchaseOrderProdcutList(data);
       // console.log("daaata",data)
@@ -542,7 +530,9 @@ const VerifyPurchaseOrder = () => {
       verify: "Verify Order Note",
     },
     footer: {
-      preparedBy: "Malviya Nagar",
+      preparedBy: "Mahesh Kumar",
+      authorizedBy: "Pankaj Suthar",
+      verifiedBy: "Kushal Kumar",
       terms: [
         "Delivery quantity should be as per SO only.",
         "Goods delivered beyond the expiry date will not be accepted.",
@@ -556,142 +546,75 @@ const VerifyPurchaseOrder = () => {
     setCurrentPage(selectedPage.selected + 1);
   };
 
-  const handleGetBillData = (id) => {
-    const getBillData = billData?.find((val) => val?._id == id)
-    // singleBillData,
-    setSingleBillData(getBillData);
-    console.log("getBillData", getBillData)
 
-    if (billTableRef.current) {
-      billTableRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }
 
   // Inline styles
-  // const styles = {
-  //   container: {
-  //     border: "2px dashed #ccc",
-  //     borderRadius: "8px",
-  //     width: "150px", 
-  //     height: "150px",
-  //     display: "flex",
-  //     justifyContent: "center",
-  //     alignItems: "center",
-  //     cursor: "pointer",
-  //     backgroundColor: "#f9f9f9",
-  //     position: "relative",
-  //     textAlign: "center",
-  //     overflow: "hidden",
-  //   },
-  //   coverContainer: {
-  //     border: "2px dashed #ccc",
-  //     borderRadius: "8px",
-  //     width: "250px", 
-  //     height: "150px",
-  //     display: "flex",
-  //     justifyContent: "center",
-  //     alignItems: "center",
-  //     cursor: "pointer",
-  //     backgroundColor: "#f9f9f9",
-  //     position: "relative",
-  //     textAlign: "center",
-  //     overflow: "hidden",
-  //   },
-  //   placeholder: {
-  //     width: "100%",
-  //     height: "100%",
-  //     display: "flex",
-  //     justifyContent: "center",
-  //     alignItems: "center",
-  //     position: "relative",
-  //     textAlign: "center",
-  //   },
-  //   img: {
-  //     width: "100%",
-  //     height: "100%",
-  //     objectFit: "cover",
-  //     borderRadius: "8px",
-  //   },
-  //   hover: {
-  //     borderColor: "#007bff",
-  //     backgroundColor: "#e9f4ff",
-  //   },
-  //   uploadIcon: {
-  //     color: "#888",
-  //     fontSize: "16px",
-  //     fontWeight: "bold",
-  //   },
-  //   deleteIcon: {
-  //     position: "absolute",
-  //     top: "0px",
-  //     right: "0px",
-  //     backgroundColor: "#FF6D6D",
-  //     color: "white",
-  //     borderRadius: "100%",
-  //     padding: "5px 10px",
-  //     cursor: "pointer",
-  //     zIndex: 2,
-  //     fontSize: "10px",
-  //     fontWeight: "bold",
-  //   },
-  // };
-
   const styles = {
     container: {
-      border: '2px dashed #ccc',
-      borderRadius: '8px',
-      width: '100%', // Size for image/file preview
-      height: '70px',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      cursor: 'pointer',
-      backgroundColor: '#f9f9f9',
-      position: 'relative',
-      textAlign: 'center',
-      overflow: 'hidden',
+      border: "2px dashed #ccc",
+      borderRadius: "8px",
+      width: "150px", // Logo size
+      height: "150px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      cursor: "pointer",
+      backgroundColor: "#f9f9f9",
+      position: "relative",
+      textAlign: "center",
+      overflow: "hidden",
+      // marginLeft: '110px'
+    },
+    coverContainer: {
+      border: "2px dashed #ccc",
+      borderRadius: "8px",
+      width: "250px", // Cover size (2:1 ratio)
+      height: "150px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      cursor: "pointer",
+      backgroundColor: "#f9f9f9",
+      position: "relative",
+      textAlign: "center",
+      overflow: "hidden",
     },
     placeholder: {
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-      position: 'relative',
-      textAlign: 'center',
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      position: "relative",
+      textAlign: "center",
     },
     img: {
-      width: '100%',
-      height: '100%',
-      objectFit: 'cover',
-      borderRadius: '8px',
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "8px",
     },
-    filePreview: {
-      textAlign: 'center',
-      color: '#888',
-      position: 'relative',
-      marginBottom: '10px',
-    },
-    previewContainer: {
-      marginTop: '15px',
+    hover: {
+      borderColor: "#007bff",
+      backgroundColor: "#e9f4ff",
     },
     uploadIcon: {
-      color: '#888',
-      fontSize: '13px',
-      fontWeight: 'semibold',
+      color: "#888",
+      fontSize: "16px",
+      fontWeight: "bold",
     },
     deleteIcon: {
-      position: 'absolute',
-      top: '0px',
-      right: '0px',
-      backgroundColor: '#FF6D6D',
-      color: 'white',
-      borderRadius: '100%',
-      padding: '4px 6px',
-      cursor: 'pointer',
+      position: "absolute",
+      top: "0px",
+      right: "0px",
+      backgroundColor: "#FF6D6D",
+      color: "white",
+      borderRadius: "100%",
+      padding: "5px 10px",
+      cursor: "pointer",
       zIndex: 2,
-      fontSize: '8px',
-      fontWeight: 'bold',
+      fontSize: "10px",
+      fontWeight: "bold",
     },
   };
 
@@ -721,155 +644,6 @@ const VerifyPurchaseOrder = () => {
   };
 
 
-  //    //update purchase order item
-  //   const UpdatePoItems = async(Bill_id,PO_ID)=>{
-
-  //     const po_items_updated = rows?.map(({ id, selectedOption, ...rest }) => {
-  //     return {
-  //       ...rest,
-  //       po_id: PO_ID,
-  //       cess: parseFloat(rest.cess || 0),
-  //       cgst: parseFloat(rest.cgst || 0),
-  //       discount_per_unit: parseFloat(rest.discount_per_unit || 0),
-  //       igst: parseFloat(rest.igst || 0),
-  //       price_per_unit: parseFloat(rest.price_per_unit || 0),
-  //       uom_qty: parseFloat(rest.uom_qty || 0),
-  //       quantity: parseFloat(rest.quantity || 0),
-  //       total_discount: parseFloat(rest.total_discount || 0),
-  //       amount: parseFloat(rest.amount || 0),
-  //       sgst: parseFloat(rest.sgst || 0),
-  //     };
-  //    });
-  //      console.log("fDataProducts item for poi nd pobi" ,po_items_updated)
-  //     try {
-  //       const res = await updatePoItemForBillsApi(params, po_items_updated);
-  //       console.log(res, "response is here");
-  //       if (res.data?.success) {
-  //         setLoading(false);
-  //         // Show success message from backend
-  //         // Toaster.success(res?.data?.message);
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Updated PO Items",
-  //           text: res.data?.message,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //         // resetForm(); 
-  //         // Reset form after success
-  //         // navigate('/productlist');
-  //       } else {
-  //         setLoading(false);
-  //         Toaster.error(res.data?.message || "Failed to create PO Items");
-  //         console.error("PO items creation error:", res);
-  //       }
-  //     } catch (error) {
-  //       // setLoading(false);
-  //       // // Handle any errors during API request
-  //       // Toaster.error(
-  //       //   error.response?.data?.message ||
-  //       //     "An error occurred while processing your request"
-  //       // );
-  //       // console.error("Error creating product:", error);
-  //     }
-  //   }
-
-  //   //CreateBillItems
-  // const CreateBillItems = async(Bill_id,PO_ID)=>{
-
-  //     const bill_items_updated = rows?.map(({ id, selectedOption, ...rest }) => {
-  //     return {
-  //       ...rest,
-  //       bill_id: Bill_id,
-  //       po_id: PO_ID,
-  //       cess: parseFloat(rest.cess || 0),
-  //       cgst: parseFloat(rest.cgst || 0),
-  //       discount_per_unit: parseFloat(rest.discount_per_unit || 0),
-  //       igst: parseFloat(rest.igst || 0),
-  //       price_per_unit: parseFloat(rest.price_per_unit || 0),
-  //       uom_qty: parseFloat(rest.uom_qty || 0),
-  //       quantity: parseFloat(rest.quantity || 0),
-  //       total_discount: parseFloat(rest.total_discount || 0),
-  //       amount: parseFloat(rest.amount || 0),
-  //       sgst: parseFloat(rest.sgst || 0),
-  //     };
-  //    });
-  //     //  console.log("fDataProducts item for poi nd pobi" ,bill_items_updated)
-  //     try {
-  //       const res = await createBillItemsApi(bill_items_updated);
-  //       console.log(res, "response is here");
-  //       if (res.data?.success) {
-  //         setLoading(false);
-  //         // Show success message from backend
-  //         // Toaster.success(res?.data?.message);
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Bill Items Added Successflly!!!",
-  //           text: res.data?.message,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //         // resetForm(); 
-  //         // Reset form after success
-  //         // navigate('/productlist');
-  //       } else {
-  //         setLoading(false);
-  //         Toaster.error(res.data?.message);
-  //       }
-  //     } catch (error) {
-  //       // setLoading(false);
-  //       // // Handle any errors during API request
-  //       // Toaster.error(
-  //       //   error.response?.data?.message ||
-  //       //     "An error occurred while processing your request"
-  //       // );
-  //       // console.error("Error creating product:", error);
-  //     }
-  //   }
-  //   const handleSubmit = async (e) => {
-  //     e.preventDefault();
-
-  //     // if (!validateForm()) {
-  //     //   return;
-  //     // }
-  //     // setLoading(true);
-  //     try {
-  //       const res = await addBillDetailsApi(formBillingData);
-  //       if (res.data?.success) {
-  //         setLoading(false);
-  //         console.log("ress?.data",res?.data?.bill?._id);
-
-  //         UpdatePoItems(res?.data?.bill?._id,params)
-  //         CreateBillItems(res?.data?.bill)
-
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Bill",
-  //           text: res.data?.message,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //         // resetForm(); // Reset form after success
-  //         // navigate('/productlist');
-  //       } else {
-  //         setLoading(false);
-  //         // Toaster.error(res.data?.message || "Failed to create product");
-  //         console.error("Product creation error:", res);
-  //       }
-  //     } catch (error) {
-  //       setLoading(false);
-  //       // Handle any errors during API request
-  //       // Toaster.error(
-  //       //   error.response?.data?.message ||
-  //       //     "An error occurred while processing your request"
-  //       // );
-  //       console.error("Error creating product:", error);
-  //     }
-  //   };
-
-
-
-  // Helper function to parse numeric fields
   const parseFields = (item, additionalFields = {}) => ({
     ...item,
     ...additionalFields,
@@ -922,88 +696,42 @@ const VerifyPurchaseOrder = () => {
     }
   };
 
-  // Handle Form Submission
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
+  // Create Bill Items
+  const verifySOItems = async () => {
+    const products = purchaseOrderProdcutList?.map((item) => ({
+      so_id: item?.so_id,
+      product_id: item?.product_id,
+      quantity: item?.quantity,
+      order_type_ref: "SalesOrder",
+      order_type: "SO",
 
-  //   try {
-  //     const res = await addBillDetailsApi(formBillingData);
+    }));
+    console.log("verify products are here=--=-=-=-=-=-=-=,,,,,,,,,", products)
+    try {
+      const res = await verifySalesOrderApi(products);
+      // if (!res.data?.success) {
+      //   throw new Error(res.data?.message || "Failed to create Bill Items");
+      // }
+      // setApiSuccess(true);
+      return res; // ✅ Return the API response
+    } catch (error) {
+      console.error("Error creating Bill items:", error);
+      throw error; // Propagate the error
+    }
+  };
 
-  //     if (res.data?.success) {
-  //       const billId = res?.data?.bill?._id;
-  //       const poId = params;
 
-  //       // Update PO Items and Create Bill Items
-  //       await updatePoItems(billId, poId);
-  //       await createBillItems(billId, poId);
 
-  //       // Show success alert only for Bill creation
-  //       Swal.fire({
-  //         icon: "success",
-  //         title: "Bill Created Successfully",
-  //         text: res.data?.message,
-  //         showConfirmButton: false,
-  //         timer: 1500,
-  //       });
-  //       setContentModal(false);
-  //     } else {
-  //       throw new Error(res.data?.message || "Failed to create Bill");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during form submission:", error);
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Error",
-  //       text: error.message || "An error occurred while processing your request.",
-  //     });
-  //   }
-  // };
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await verifySOItems();
+      console.log(response);
+    } catch (error) {
 
-  // const handleSubmitDraft = async (e) => {
-  //   e.preventDefault();
+    }
+  }
 
-  //   const result = await Swal.fire({
-  //     title: "Are you sure?",
-  //     text: "You are about to save this as a draft.",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Yes, save as draft",
-  //     cancelButtonText: "Cancel",
-  //   });
-
-  //   if (result.isConfirmed) {
-  //     const payload = { status: "In Pending" };
-
-  //     try {
-  //       const poId = params; // Replace `params` with the actual PO ID
-  //       // First, submit the form (handleSubmit)
-  //       const res = await handleSubmit(e); // Ensure it runs correctly
-
-  //       const response = await updatePurchaseOrderStatusApi(poId, payload);
-
-  //       if (response.data?.success) {
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Saved as Draft",
-  //           text: response.data?.message,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //       } else {
-  //         throw new Error(response.data?.message || "Failed to save as draft");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error saving as draft:", error);
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Error",
-  //         text: error.message || "An error occurred while saving as draft.",
-  //       });
-  //     }
-  //   }
-  // };
-
-  // Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -1066,24 +794,6 @@ const VerifyPurchaseOrder = () => {
             );
             const addProductsInInventory = await addProductsInInvntory(filteredBillItems);
             console.log("Added to Inventory:", addProductsInInventory);
-
-            const stockEntries = filteredBillItems.map(item => ({
-              batch_id: item?.batch_id,
-              lot_id: item?.batch_id, // Assuming lot_id is same as batch_id, update if needed
-              product_id: item?.product_id,
-              bill_id: item?.bill_id,
-              po_so_id: item?.po_id, // Replace with actual value
-              order_type_ref: "PurchaseOrder",
-              order_type: "PO",
-              original_quantity: item?.quantity || 0,
-              used_qty: 0,
-              remaining_qty: item?.quantity || 0,
-            }));
-
-            console.log("Stock Entries Payload:", stockEntries);
-
-            const res = await addEntryInStock(stockEntries);
-            console.log("Stock Updated:", res);
           }
 
 
@@ -1193,58 +903,16 @@ const VerifyPurchaseOrder = () => {
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
 
-  //   try {
-  //     const res = await addBillDetailsApi(formBillingData);
-
-
-  //     if (res.data?.success) {
-  //       const billId = res?.data?.bill?._id;
-  //       const poId = params;
-
-  //       // Update PO Items and Create Bill Items
-  //       await updatePoItems(billId, poId);
-
-  //       await createBillItems(billId, poId);
-
-  //       // Show success alert only for Bill creation
-  //       Swal.fire({
-  //         icon: "success",
-  //         title: "Bill Created Successfully",
-  //         text: res.data?.message,
-  //         showConfirmButton: false,
-  //         timer: 1500,
-  //       });
-  //       setContentModal(false);
-
-  //       return res; // ✅ Return API response so it can be used in handleSubmitDraft
-  //     } else {
-  //       throw new Error(res.data?.message || "Failed to create Bill");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during form submission:", error);
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Error",
-  //       text: error.message || "An error occurred while processing your request.",
-  //     });
-
-  //     return { data: { success: false } }; // ✅ Return failure response
-  //   }
-  // };
-
-  // Handle Submit Draft
   const handleSubmitDraft = async (e) => {
     e.preventDefault();
 
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "You are about to save this as a draft.",
+      text: "You are about to verify this sale order.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, save as draft",
+      confirmButtonText: "Yes, verify order",
       cancelButtonText: "Cancel",
     });
 
@@ -1336,6 +1004,15 @@ const VerifyPurchaseOrder = () => {
     }
   };
 
+  const handleVerifyClick = (row) => {
+    // setSelectedRowData(row);
+    setSelectedRowData({ ...row }); // Set selected row data
+    setVerifyShowModal(true);
+  };
+
+
+
+
 
   // const handleSubmitFinal = async (e) => {
   //   e.preventDefault();
@@ -1415,109 +1092,8 @@ const VerifyPurchaseOrder = () => {
     }
   }
 
-  const supportedTypes = {
-    "application/pdf": "pdf",
-    "application/msword": "doc",
-    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
-    "text/plain": "txt",
-    "application/vnd.ms-excel": "xls",
-    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
-    "text/csv": "csv",
-  };
-
-  // const openFileViewer = (file) => {
-  //   setPdfSrc(file);
-  //   setFileType(supportedTypes[file.file.type] || "txt"); // Default to "txt" if unknown
-  //   setOpenPdfModal(true);
-  // };
-
-  const openFileViewer = (file) => {
-    setPdfSrc(file);
-    const extension = file.name.split(".").pop().toLowerCase();
-
-    if (extension === "xls" || extension === "xlsx") {
-      readExcel(file.file);
-      setFileType("xlsx");
-    } else {
-      setFileType(supportedTypes[file.file.type] || "txt");
-    }
-
-    setOpenPdfModal(true);
-  };
-
-  // Read Excel files and convert to table format
-  const readExcel = (file) => {
-    const reader = new FileReader();
-    reader.readAsBinaryString(file);
-    reader.onload = (e) => {
-      const binaryData = e.target.result;
-      const workbook = XLSX.read(binaryData, { type: "binary" });
-      const sheetName = workbook.SheetNames[0];
-      const sheet = workbook.Sheets[sheetName];
-      const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
-      setExcelData(data);
-    };
-  };
-
-  const handleFileChange = (e) => {
-    const selectedFiles = Array.from(e.target.files); // Get selected files
-    const newFiles = selectedFiles?.map(file => ({
-      file,
-      type: file.type.split('/')[0], // Extract file type (image/pdf)
-      name: file.name,
-      icon: getFileIcon(file),
-    }));
-    
-    setFiles(prevFiles => [...prevFiles, ...newFiles]); // Add new files to the list
-  };
-
-  // Handle file deletion
-  const handleDeleteFile = (index) => {
-    setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
-  };
-
-
-  const handleImageClick = (index) => {
-    if (images?.length > 0 && images[index]) {
-      setCurrentImageIndex(index);
-      setIsOpen(true);
-      setContentModal(false);
-    }
-  };
-
-  const getFileIcon = (file) => {
-    const extension = file.name.split(".").pop().toLowerCase();
-    switch (extension) {
-      case "pdf":
-        return <FaFilePdf size={50} color="red" />;
-      case "doc":
-      case "docx":
-        return <FaFileWord size={50} color="blue" />;
-      case "xls":
-      case "xlsx":
-        return <FaFileExcel size={50} color="green" />;
-      case "txt":
-        return <FaFileAlt size={50} color="gray" />;
-      case "csv":
-        return <FaFileCsv size={50} color="orange" />;
-      default:
-        return <FaFileAlt size={50} color="black" />;
-    }
-  };
-
   return (
     <>
-    {
-     pdfSrc && <PdfView 
-     openPdfModal={openPdfModal} 
-     setOpenPdfModal={setOpenPdfModal} 
-     fileType={fileType}
-     fileUrl={URL.createObjectURL(pdfSrc?.file)}
-     excelData={excelData}
-     />
-    }
-  
-      {/* {pdfSrc && <PdfViewer fileUrl={URL.createObjectURL(pdfSrc?.file)} />} */}
       <ToastContainer />
       <Loader visible={loading} />
       <div className="card">
@@ -1535,7 +1111,7 @@ const VerifyPurchaseOrder = () => {
                   </div> */}
                   <div className="col-sm-4">
                     <h2 className="header-title" style={{ display: 'inline', whiteSpace: 'nowrap' }}>
-                      Rajdhani -Verify Purchase Order
+                      Rajdhani - Authorize Sale Order
                     </h2>
                   </div>
                 </div>
@@ -1581,19 +1157,24 @@ const VerifyPurchaseOrder = () => {
                     <div className="col-md-6 col-xl-4 d-flex justify-content-xl-center mt-3 mt-xl-0  divider">
                       {/* Divider */}
                       <div className="order-info">
-                        <h5>Supplier (Bill from)</h5>
+                        <h5>Customer (Bill from)</h5>
                         <p className="po-view-p">
-                          {purchaseOrderData?.supplier_id?.name}
+                          {purchaseOrderData?.customer_id?.fname}  {purchaseOrderData?.customer_id?.lname}
+                        </p>
+
+                        <p className="po-view-p">
+                          {purchaseOrderData?.customer_id?.address}
                         </p>
                         <p className="po-view-p">
-                          {purchaseOrderData?.supplier_id?.city}
+                          {purchaseOrderData?.customer_id?.state}, {purchaseOrderData?.customer_id?.city}, {purchaseOrderData?.customer_id?.country}
                         </p>
+                        {/* <p className="po-view-p">
+                         
+                        </p> */}
                         <p className="po-view-p">
-                          State: {purchaseOrderData?.supplier_id?.state}
+                          Email: {purchaseOrderData?.customer_id?.email}
                         </p>
-                        <p className="po-view-p">
-                          Email: {purchaseOrderData?.supplier_id?.email}
-                        </p>
+
                       </div>
                     </div>
                   </div>
@@ -1601,73 +1182,10 @@ const VerifyPurchaseOrder = () => {
               </div>
             </div>
 
-            {/* Bill Cards */}
-            <div className="">
-              <div className="card-header pb-0 px-0" >
-                <h4 className="card-title">Bill Details</h4>
-              </div>
 
-              <div className="">
-                <div className="mt-3 px-0">
-                  <div className="row card-main-div">
-                    {billData?.length > 0 ? (<>
-                      {billData?.slice(0, visibleCount)?.map((val, ind) => (<>
-                        <div className="col-md-6 col-xl-3 pb-4">
-                          <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
-                        </div>
-                      </>))}
-                      {/* see more btn */}
-                      {billData?.length > visibleCount && (
-                        <div className="col-md-6 col-xl-3">
-                          <button
-                            className="add-new-bill-btn"
-                            onClick={handleSeeMore}>
-                            <div className="bill-cards" style={{ textAlign: "center" }} >
-                              <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
-                                See More
-                              </p>
-                            </div>
-                          </button>
-                        </div>
-                      )}
-                      {/* Add New Bill Button after bills */}
-                      <div className="col-md-6 col-xl-3 mt-4 mt-md-0">
-                        <button
-                          className="add-new-bill-btn"
-                          onClick={handleAddNewBill}>
-                          <div className="bill-cards" style={{ textAlign: "center" }}>
-                            <i className="fa-solid fa-plus fa-2xl"
-                              style={{ color: "#007bff", marginBottom: "10px" }}
-                            ></i>
-                            <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
-                              Add New Bill
-                            </p>
-                          </div>
-                        </button>
-                      </div>
-                    </>
-                    ) : (
-                      // Message and Add Button if no bills found
-                      <div className="col-md-6 col-xl-3 text-center mt-3 mt-md-0">
-                        <p className="pt-2">No bills found for this Purchase Order ID</p>
-                        <button
-                          className="add-new-bill-btn"
-                          onClick={() => setContentModal(true)}>
-                          <div className="bill-cards" style={{ textAlign: "center" }}>
-                            <i className="fa-solid fa-plus fa-2xl"
-                              style={{ color: "#007bff", marginBottom: "10px" }}
-                            ></i>
-                            <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
-                              Add New Bill
-                            </p>
-                          </div>
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-              </div>
-            </div>
+
+
+
 
 
             {/* Bill Detail */}
@@ -1817,7 +1335,7 @@ const VerifyPurchaseOrder = () => {
               <Col lg={12}>
                 <div className="">
                   <div className="card-header pb-0 px-0">
-                    <h4 className="card-title">PO Product Details</h4>
+                    <h4 className="card-title">SO Product Details</h4>
                   </div>
                   <div className="card-body px-0">
                     <div className="table-responsive">
@@ -1881,125 +1399,367 @@ const VerifyPurchaseOrder = () => {
                             <tr>
                               {theadData?.map((item, ind) => {
                                 return (
-                                  <th
-                                    key={ind}
-                                    onClick={() => {
-                                      SotingData(item?.sortingVale, ind);
-                                      setIconDate((prevState) => ({
-                                        complete: !prevState.complete,
-                                        ind: ind,
-                                      }));
-                                    }}>
-                                    {item.heading}
-                                    <span>
-                                      {ind !== iconData.ind && (
-                                        <i
-                                          className="fa fa-sort ms-2 fs-12"
-                                          style={{ opacity: "0.3" }}
-                                        />
-                                      )}
-                                      {ind === iconData.ind &&
-                                        (iconData.complete ? (
-                                          <i
-                                            className="fa fa-arrow-down ms-2 fs-12"
-                                            style={{ opacity: "0.7" }}
+                                  <>
+
+
+
+
+                                    {item.sortingVale === "authorize" ? (
+                                      <th
+                                        key={ind}
+                                        style={{
+                                          display: 'flex',
+                                          flexDirection: 'column', // stack text and checkbox vertically
+                                          alignItems: 'center',    // center horizontally
+                                          justifyContent: 'center', // center vertically if needed
+                                          padding: '10px',
+                                          userSelect: 'none',
+                                        }}
+                                      >
+                                        <span style={{ fontWeight: '600', marginBottom: '6px' }}>
+                                          {item.heading}
+                                        </span>
+
+                                        <label
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            width: '15px',
+                                            height: '15px',
+                                            borderRadius: '50%',
+                                            transition: 'background-color 0.2s ease, transform 0.2s ease',
+                                            cursor: 'pointer',
+                                          }}
+                                          onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                          }}
+                                        >
+                                          <input
+                                            type="checkbox"
+                                            checked={selectAll}
+                                            onChange={(e) => {
+                                              const checked = e.target.checked;
+                                              setSelectAll(checked);
+
+                                              if (checked) {
+                                                const allIds = purchaseOrderProdcutList.map((item) => item._id);
+                                                setSelectedProducts(allIds);
+                                              } else {
+                                                setSelectedProducts([]);
+                                              }
+                                            }}
+                                            onClick={(e) => e.stopPropagation()}
+                                            style={{
+                                              width: '20px',
+                                              height: '20px',
+                                              borderRadius: '50%',
+                                              accentColor: '#007bff',
+                                              cursor: 'pointer',
+                                              transition: 'transform 0.2s ease',
+                                            }}
+                                            onMouseDown={(e) => {
+                                              e.target.style.transform = 'scale(0.9)';
+                                            }}
+                                            onMouseUp={(e) => {
+                                              e.target.style.transform = 'scale(1)';
+                                            }}
                                           />
-                                        ) : (
-                                          <i
-                                            className="fa fa-arrow-up ms-2 fs-12"
-                                            style={{ opacity: "0.7" }}
-                                          />
-                                        ))}
-                                    </span>
-                                  </th>
+                                        </label>
+                                      </th>
+                                    ) : (
+                                      <th
+                                        key={ind}
+                                        onClick={() => {
+                                          SotingData(item?.sortingVale, ind);
+                                          setIconDate((prevState) => ({
+                                            complete: !prevState.complete,
+                                            ind: ind,
+                                          }));
+                                        }}
+                                      >
+                                        {item.heading}
+                                        <span>
+                                          {ind !== iconData.ind && (
+                                            <i className="fa fa-sort ms-2 fs-12" style={{ opacity: "0.3" }} />
+                                          )}
+                                          {ind === iconData.ind &&
+                                            (iconData.complete ? (
+                                              <i className="fa fa-arrow-down ms-2 fs-12" style={{ opacity: "0.7" }} />
+                                            ) : (
+                                              <i className="fa fa-arrow-up ms-2 fs-12" style={{ opacity: "0.7" }} />
+                                            ))}
+                                        </span>
+                                      </th>
+                                    )}
+
+                                  </>
+
+
                                 );
                               })}
                             </tr>
                           </thead>
-                          <tbody>
-                            {purchaseOrderProdcutList?.map((data, ind) => (
-                              <tr key={ind}>
-                                <td>
-                                  <strong>{ind + 1}</strong>{" "}
-                                </td>
-                                {/* <td>{data?._id}</td> */}
+
+                          <tbody >
+                            {purchaseOrderProdcutList?.map((row, index) => (
+                              console.log("Row ------------------>", row),
+                              <tr key={row.id}
+                                //  onClick={() => handleVerifyClick(row)} 
+                                onClick={(e) => {
+                                  const target = e.target;
+
+                                  // Prevent modal from opening when clicking on an active input or button
+                                  if (target.tagName === "BUTTON") return;
+                                  if (target.tagName === "INPUT" && !target.disabled) return;
+
+                                  // Open modal if clicking on a disabled input or any other row area
+                                  handleVerifyClick(row);
+                                }}
+                                style={{ cursor: "pointer" }}>
+                                {/* <td>{row.id}</td> */}
+                                <td><strong>{index + 1}</strong> </td>
                                 {/* Product Name */}
                                 <td>
-                                  <div
+                                  <input
+                                    type="text"
+                                    placeholder="Product Name"
+                                    value={row?.product_name}
+                                    onClick={() =>
+                                      setFocusedInputIndex((prev) => (prev === index ? null : index))
+                                    }
+                                    // onChange={(e) =>
+                                    //   handleChangeRow(index, "product_name", e.target.value)
+                                    // }
+                                    className="form-control row-input"
                                     style={{
-                                      whiteSpace: "nowrap",
-                                      width: isExpanded ? "100%" : "290px", // Expands width on toggle
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      padding: "4px 8px",
-                                      border: "1px solid #ddd",
-                                      borderRadius: "8px",
-                                      backgroundColor: "#f5f5f5",
-                                      textAlign: "start",
+                                      width: focusedInputIndex === index ? "600px" : "300px",
+                                      transition: "width 0.3s ease",
                                       cursor: "pointer",
-                                      transition: "width 0.3s ease", // Smooth transition
                                     }}
-                                    onClick={toggleExpand}>
-                                    {data?.product_code}
-                                    {!isExpanded && (
-                                      <span
-                                        style={{
-                                          position: "absolute",
-                                          right: "8px",
-                                          top: "50%",
-                                          transform: "translateY(-50%)",
-                                          color: "#007bff",
-                                          fontSize: "12px",
-                                          cursor: "pointer",
-                                        }}>
-                                        ...
-                                      </span>
-                                    )}
-                                  </div>
+                                  />
                                 </td>
-                                {/* Product Code */}
-                                <td className="">{data?.code}</td>
-                                {/* Product Code */}
-                                <td className="">{data?.quantity}</td>
-                                {/* UOM */}
-                                <td className="">{data?.uom}</td>
-                                {/* Weight */}
-                                <td className="">{data?.weight}</td>
-                                {/* Price per unit */}
-                                <td className="">{`${data?.price} ₹`}</td>
-                                {/* Discount per unit */}
-                                <td className="">{data?.discount_per_unit ? `${data.discount_per_unit} ₹` : "0 ₹"}</td>
+                                {/* Fitting Code */}
+                                <td style={{
+                                  whiteSpace: "nowrap",
+                                }}>{row?.fitting_Code}</td>
+                                {/* product Code */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="100001"
+                                    value={row?.product_code}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "product_code",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "90px" }}
+                                  />
+                                </td>
+                                {/* uom */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="UOM"
+                                    value={row?.uom}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "uom",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* weight */}
+                                <td>
+                                  <input
+                                    type="number"
+                                    placeholder="10 kg"
+                                    value={row?.weight}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "weight",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* quantity */}
+                                <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Quantity"
+                                    value={row?.quantity}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "quantity",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                  />
+                                </td>
+                                {/* price */}
+                                <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Price Per Unit"
+                                    value={row?.price}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "price_per_unit",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: '150px' }}
+                                  />
+                                </td>
+                                {/* discount */}
+                                <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Discount Per Unit"
+                                    value={row.discount_per_unit}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "discount_per_unit",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "150px" }}
+                                  />
+                                </td>
+                                {/* cgst */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="CGST"
+                                    value={row.cgst}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "cgst",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* sgst */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="SGST"
+                                    value={row.sgst}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "sgst",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* igst */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="IGST"
+                                    value={row.igst}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "igst",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* amount */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="100"
+                                    value={row?.amount}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "total_amount",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "90px" }}
+                                    disabled
+                                  />
+                                </td>
+                                {/* Authorize checkbox */}
+                                <td style={{
+                                  textAlign: 'center',
+                                }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedProducts.includes(row._id)}
+                                    onChange={(e) => {
+                                      const isChecked = e.target.checked;
+                                      setSelectedProducts((prev) =>
+                                        isChecked ? [...prev, row._id] : prev.filter((id) => id !== row._id)
+                                      );
 
-                                <td className="">{data?.cgst}</td>
+                                      if (!isChecked) {
+                                        setSelectAll(false);
+                                      } else if (
+                                        purchaseOrderProdcutList.length ===
+                                        [...selectedProducts, row._id].length
+                                      ) {
+                                        setSelectAll(true);
+                                      }
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{
+                                      width: '25px',
+                                      height: '25px',
+                                      cursor: 'pointer',
+                                      accentColor: '#007bff',
+                                      transition: 'transform 0.1s ease, box-shadow 0.2s ease',
 
-                                <td className="">{data?.sgst}</td>
-
-                                <td className="">{data?.igst}</td>
-
-                                <td className="">{data?.cess}</td>
-
-                                {/* <td >
-                                  {moment(data?.order_details?.due_date).format(
-                                    "DD MMM YYYY"
-                                  )}
-                                </td> */}
-
-                                <td className="">{data?.total_amount ? `${data.total_amount} ₹` : "0 ₹"}</td>
-
-                                <td className="whitespace-nowrap">
-                                  {moment(data?.created_at).format(
-                                    "DD MMM YYYY, h:mm:ss a"
-                                  )}
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.target.style.transform = 'scale(1.3)';
+                                      e.target.style.boxShadow = '0 0 5px rgba(0, 123, 255, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.target.style.transform = 'scale(1)';
+                                      e.target.style.boxShadow = 'none';
+                                    }}
+                                  />
                                 </td>
 
-                                {/* <td>-</td> */}
-                                {/* <td>
-                                  <button
-                                    className="btn btn-xs sharp btn-primary me-1"
-                                    //onClick={() => navigate(`/purchaseorderview/${data?._id}`)}>
-                                    <i class="fa-solid fa-eye"></i>
-                                  </button>
-                                </td> */}
+
+
                               </tr>
                             ))}
                           </tbody>
@@ -2036,7 +1796,7 @@ const VerifyPurchaseOrder = () => {
             <div className="row justify-content-end ">
               <div className="summary-section col-md-5">
                 <table className="table table-bordered ">
-                  <h3>Summary</h3>
+                  <h3 className="p-2 mx-1">Summary</h3>
 
                   <tbody>
                     <tr>
@@ -2072,9 +1832,23 @@ const VerifyPurchaseOrder = () => {
 
             {/* Footer Section */}
             <div className="footer-section">
-              <p>
-                Prepared By: <b>{orderDetails.footer.preparedBy}</b>
-              </p>
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Prepared By</th>
+                    <th>Verified By</th>
+                    <th>Authorized By</th>
+                    
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{orderDetails.footer.preparedBy}</td>
+                    <td>{orderDetails.footer.authorizedBy}</td>
+                    <td>{orderDetails.footer.verifiedBy}</td>
+                  </tr>
+                </tbody>
+              </table>
               <h4>Terms and Conditions:</h4>
               <ul>
                 {orderDetails.footer.terms.map((term, index) => (
@@ -2084,21 +1858,21 @@ const VerifyPurchaseOrder = () => {
             </div>
 
             {/* Buttons  */}
-            {/* <div className="d-flex gap-3 justify-content-end text-end mt-3 mt-md-0">
+            <div className="d-flex gap-3 justify-content-end text-end mt-3 mt-md-0">
               <button
                 type="submit"
-                onClick={handleSubmitDraft}
-                className="btn btn-danger rounded-sm">
-                Save as draft
+                onClick={handleVerify}
+                className="btn btn-warning rounded-sm">
+                Authorize
               </button>
 
-              <button
+              {/* <button
                 type="submit"
                 onClick={handleSubmitFinal}
                 className="btn btn-primary rounded-sm">
                 Final Submission
-              </button>
-            </div> */}
+              </button> */}
+            </div>
           </div>
         </div>
       </div>
@@ -2337,72 +2111,39 @@ const VerifyPurchaseOrder = () => {
                   </div>
 
                   {/* Third Column: Bill Image/File in a Card */}
-                  <div className="col-xl-4 ">
-                  <div className="bill-img-fileupload-div">
-                   <div className="mb-2">
-                     <label className="form-label fs-6">Bill Image/File</label>
-                     <div style={styles.container}>
-                       <input
-                         type="file"
-                         accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx,.csv"
-                         onChange={handleFileChange}
-                         multiple // Enable multiple file selection
-                         style={{ display: 'none' }}
-                         id="fileUpload"
-                       />
-                       <label className="m-0" htmlFor="fileUpload" style={styles.placeholder}>
-                         <div style={styles.uploadIcon} className="cursor-pointer">
-                           <img width="25" src={uplodIcon} alt="Upload Icon" />
-                           <p className="m-0 fw-semibold">Upload Image/File</p>
-                         </div>
-                       </label>
-                     </div>
-
-                     <p className="mt-2 text-center text-muted fs-7" style={{ marginBottom: '5px' }}>
-                       Image / File
-                     </p>
-                   </div>
-
-                   {/* Display existing files from API data and uploaded files */}
-                  
-                     {files?.length > 0 && (
-                        <>
-                     <div className="bill-image-div">
-                          {files?.map((file, index) => {
-                          return (<>
-                            <div key={index} style={styles.filePreview}>
-                              {file.type === 'image' ? (
-                                <img
-                                  src={URL.createObjectURL(file?.file) || file?.url}
-                                  alt="Uploaded"
-                                  style={{ ...styles.img, width: '50px', height: '50px' }}
-                                  // onClick={()=>handleImageClick(index)}
-                                />
-                              ) : (
-                               <div className="mb-0" style={styles?.filePreview}>
-                                {/* Display a PDF icon for PDFs */}
-                                {/* <img
-                                 src={pdfIcon}
-                                 alt="Uploaded"
-                                 style={{ ...styles.img, width: '50px', height: '50px' }}
-                                 onClick={()=>setPdfSrc(file)}
-                                /> */}
-                                 <div className="mb-0" onClick={()=>{openFileViewer(file)}}>{file?.icon}</div>
-                                 {/* <p>{file.name}</p> */}
-                               </div>
-                              )}
-                              <div style={styles.deleteIcon} onClick={() => handleDeleteFile(index)}>
-                                ⛌
-                              </div>
+                  <div className="col-xl-4 mt-2">
+                    <div className="mb-2 ">
+                      <label className="form-label fs-6">Bill Image/File</label>
+                      <div style={styles.container}>
+                        <input
+                          type="file"
+                          accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx,.csv"
+                          onChange={handleLogoChange}
+                          style={{ display: 'none' }}
+                          id="logoUpload"
+                        />
+                        {logo ? (
+                          <>
+                            <div style={styles.deleteIcon} onClick={handleDeleteLogo}>⛌</div>
+                            <img src={logo} alt="Logo" style={{ ...styles.img, width: '80px', height: '80px' }} />
+                          </>
+                        ) : (
+                          <label htmlFor="logoUpload" style={styles.placeholder}>
+                            <div style={styles.uploadIcon} className="cursor-pointer">
+                              <img width="30" src={uplodIcon} alt="Upload Icon" />
+                              <p>Upload Image/File</p>
                             </div>
-                            </>)
-                          })}
-                         </div>
-                        </>
-                      )}
+                          </label>
+                        )}
+                      </div>
+                      <p className="mt-2 text-muted fs-7" style={{ marginBottom: '5px' }}>
+                        Image format - jpg png jpeg gif<br />
+                        Max size - 2 MB<br />
+                        Ratio - 1:1
+                      </p>
+                      {errors.image && <span className="text-danger fs-12">{errors.image}</span>}
+                    </div>
                   </div>
-                  </div>
-
                 </div>
               </div>
             </div>
@@ -2441,6 +2182,7 @@ const VerifyPurchaseOrder = () => {
                         </thead>
                         <tbody>
                           {rows?.map((row, index) => (
+
                             <tr key={row.id}>
                               <td>{row.id}</td>
                               {/* product Name */}
@@ -2493,56 +2235,6 @@ const VerifyPurchaseOrder = () => {
                                   style={{ width: "90px" }}
                                 />
                               </td>
-
-                              {/* <td>
-                                <input
-                                  type="text"
-                                  placeholder="Unit"
-                                  value={row.unit}
-                                  onChange={(e) =>
-                                    handleChangeRow(
-                                      index,
-                                      "unit",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="form-control row-input"
-                                  style={{ width: "70px" }}
-                                />
-                              </td> */}
-
-                              {/* <td>
-                                <input
-                                  type="text"
-                                  placeholder="Variant"
-                                  value={row.variant}
-                                  onChange={(e) =>
-                                    handleChangeRow(
-                                      index,
-                                      "variant",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="form-control"
-                                  style={{ width: "120px" }}
-                                />
-                              </td> */}
-
-                              {/* <td>
-                                <input
-                                  type="text"
-                                  placeholder="Variant Type"
-                                  value={row.variant_type}
-                                  onChange={(e) =>
-                                    handleChangeRow(
-                                      index,
-                                      "variant_type",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="form-control"
-                                />
-                              </td> */}
                               {/* uom */}
                               <td>
                                 <input
@@ -2626,24 +2318,6 @@ const VerifyPurchaseOrder = () => {
                                   style={{ width: "70px" }}
                                 />
                               </td>
-
-                              {/* <td>
-                                <input
-                                  type="number"
-                                  placeholder="Total Discount"
-                                  value={row.total_discount}
-                                  onChange={(e) =>
-                                    handleChangeRow(
-                                      index,
-                                      "total_discount",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="form-control"
-                                  disabled
-                                />
-                              </td> */}
-
                               {/* cgst */}
                               <td>
                                 <input
@@ -2917,20 +2591,24 @@ const VerifyPurchaseOrder = () => {
 
           {/* Footer Section */}
           <div className="footer-section">
-            <p> Prepared By: <b>{orderDetails.footer.preparedBy}</b></p>
+            <p>
+              Prepared By: <b>{orderDetails.footer.preparedBy}</b>
+            </p>
             <h4>Terms and Conditions:</h4>
             <ul>
-              {orderDetails?.footer?.terms?.map((term, index) => (
+              {orderDetails.footer.terms.map((term, index) => (
                 <li key={index}>{term}</li>
               ))}
             </ul>
           </div>
 
+
         </Modal.Body>
         <Modal.Footer>
           {/* <Button
             variant="danger light"
-            onClick={() => setContentModal(false)}>
+            onClick={() => setContentModal(false)}
+          >
             Close
           </Button>
           <Button variant="primary" onClick={handleSubmit}>Save</Button> */}
@@ -2958,10 +2636,122 @@ const VerifyPurchaseOrder = () => {
         </Modal.Footer>
       </Modal>
 
-      <ImageViewer isOpen={isOpen} images={images} currentImageIndex={currentImageIndex} 
-       setIsOpen={setIsOpen} setCurrentImageIndex={setCurrentImageIndex}/>
+      {/* Authorize Modal */}
+      <Modal
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.5)", // Dim background effect
+        }}
+        centered
+        show={verifyShowModal} onHide={() => setVerifyShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Authorize Item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedRowData && (
+            <div
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0)", // Fully transparent background
+                borderRadius: "8px",
+                padding: "12px",
+                // boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                border: "1px solid rgba(255, 255, 255, 0.3)", // Semi-transparent border
+                width: "100%",
+                fontSize: "13px",
+                backdropFilter: "blur(5px)", // Optional: Glassmorphism effect
+              }}
+            >
+              <h6 style={{ fontWeight: "600", marginBottom: "8px", color: "#222", textAlign: "center" }}>
+                Product Details
+              </h6>
+
+              {/* Table-like Grid with Borders */}
+              <div style={{ display: "grid", gridTemplateColumns: "140px auto", fontSize: "13px", border: "1px solid #D3D3D3", borderRadius: "8px", padding: "5px", }}>
+                {[
+                  { label: "Product Name", value: selectedRowData?.product_name },
+                  { label: "Product Code", value: selectedRowData?.product_code },
+                  { label: "Ordered Qty", value: selectedRowData?.ordered_quantity },
+                  { label: "Weight", value: selectedRowData?.weight || "N/A" },
+                  { label: "UOM", value: selectedRowData?.uom || "N/A" },
+                ].map((item, index) => (
+                  <React.Fragment key={index}>
+                    <div style={{ fontWeight: "600", color: "#444", padding: "6px 0" }}>{item.label}:</div>
+                    <div style={{ color: "#666", padding: "6px 0", borderBottom: "1px dotted #ccc" }}>{item.value}</div>
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/*Checkbox Inputs Row */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '20px',
+                }}
+              >
+                <label
+                  style={{
+                    fontWeight: 'bold',
+                    color: '#333',
+                    marginBottom: '20px',
+                    fontSize: '16px',
+                  }}
+                >
+                  Authorize Item
+                </label>
+                <input
+                  type="checkbox"
+                  checked={selectedProducts.includes(selectedRowData._id)}
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setSelectedProducts((prev) =>
+                      isChecked ? [...prev, selectedRowData._id] : prev.filter((id) => id !== selectedRowData._id)
+                    );
+
+                    if (!isChecked) {
+                      setSelectAll(false);
+                    } else if (
+                      purchaseOrderProdcutList.length ===
+                      [...selectedProducts, selectedRowData._id].length
+                    ) {
+                      setSelectAll(true);
+                    }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    width: '25px',
+                    height: '25px',
+                    cursor: 'pointer',
+                    accentColor: '#007bff',
+                    transition: 'transform 0.1s ease, box-shadow 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'scale(1.3)';
+                    e.target.style.boxShadow = '0 0 5px rgba(0, 123, 255, 0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'scale(1)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+
+            </div>
+          )}
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => setVerifyShowModal(false)}>Close</Button>
+          <Button variant="success" onClick={() => setVerifyShowModal(false)}>Verify</Button>
+        </Modal.Footer>
+      </Modal>
+
     </>
   );
 };
 
-export default VerifyPurchaseOrder;
+export default AuthorizeSaleOrder;

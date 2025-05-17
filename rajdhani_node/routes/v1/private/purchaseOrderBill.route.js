@@ -18,14 +18,15 @@ const upload = multer({
     },
   }),
   fileFilter: function (req, file, cb) {
-    // Optional: Limit file types to a specific set (e.g., images, PDFs)
-    const allowedFileTypes = /jpeg|jpg|png|gif|pdf|docx|xlsx|csv/; // Modify as needed
-    const mimeType = allowedFileTypes.test(file.mimetype);
-    if (mimeType) {
-      cb(null, true);
-    } else {
-      cb(new Error('File type not allowed!'), false); // Reject file if not allowed
-    }
+    // // Optional: Limit file types to a specific set (e.g., images, PDFs)
+    // const allowedFileTypes = /jpeg|jpg|png|gif|pdf|docx|xlsx|csv/; // Modify as needed
+    // const mimeType = allowedFileTypes.test(file.mimetype);
+    // if (mimeType) {
+    //   cb(null, true);
+    // } else {
+    //   cb(new Error('File type not allowed!'), false); // Reject file if not allowed
+    // }
+    cb(null, true);
   },
 }).fields([{ name: 'bill_doc', maxCount: 1 }, { name: 'bill_doc', maxCount: 5 }]); // Allow multiple files, e.g., up to 5
 

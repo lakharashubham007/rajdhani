@@ -77,6 +77,11 @@ const AddSupplierPurchaseOrder = () => {
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [selectedQuantity, setSelectedQuantity] = useState("");
   const [selectedDiscount, setSelectedDiscount] = useState("");
+  const [baseDetails, setBaseDetails] = useState();
+  const [baseDetailsData, setBaseDetailsData] = useState(false);
+  const [baseAddressState, setBaseAddressState] = useState("");
+  const [focusedInputIndex, setFocusedInputIndex] = useState(null);
+
   const TodayDate = moment().format("YYYY-MM-DD");
 
   //All Form Data is here
@@ -95,13 +100,15 @@ const AddSupplierPurchaseOrder = () => {
     mobile_no1: "",
     mobile_no2: "",
     country: "",
-    state_name: "",
+    state: "",
     city: "",
     state_tin_code: "",
     address: "",
     gstin: "",
     pin_code: "",
   });
+
+  console.log("formBillingData", formBillingData)
 
   //Shipping Form Details Fields
   const [formShippingData, setShippingFormData] = useState({
@@ -117,6 +124,8 @@ const AddSupplierPurchaseOrder = () => {
     gstin: "",
     pin_code: "",
   });
+  console.log("formShippingData", formShippingData)
+
 
   const [productformData, setProductFormData] = useState({
     product_code: "",
@@ -135,6 +144,7 @@ const AddSupplierPurchaseOrder = () => {
 
   //Rows Fields
   const [rows, setRows] = useState([]);
+  console.log(rows, "rows data is here")
   const [draggedRow, setDraggedRow] = useState(null);
 
   const handleDragStart = (index) => {
@@ -160,22 +170,23 @@ const AddSupplierPurchaseOrder = () => {
     setDraggedRow(null);
   };
 
+
   const addRow = () => {
+    if (!selectedSupplierOption) {
+      Toaster.warning("Please select a supplier to continue.👨‍💼")
+      return;
+    }
     if (!selectedProduct) return; // Prevent adding empty rows
-
-
     //calculation to add taxable amount 
     const taxableAmount = (selectedProduct?.price - selectedDiscount) * selectedQuantity;
-
-
     let cgst = 0,
       sgst = 0,
       igst = 0;
 
 
-    if (formBillingData.state_name && formShippingData.state_name) {
+    if (supplierDetail?.state && baseAddressState) {
       const isInterState =
-        formBillingData.state_name !== formShippingData.state_name;
+        supplierDetail?.state !== baseAddressState;
 
       const taxableAmount = (selectedProduct?.price - selectedDiscount) * selectedQuantity;
 
@@ -257,12 +268,13 @@ const AddSupplierPurchaseOrder = () => {
 
     updatedRows[index].taxable_amount = (price - discount) * quantity;
 
-    if (formBillingData.state_name && formShippingData.state_name) {
+    if (supplierDetail?.state && baseAddressState) {
       const isInterState =
-        formBillingData.state_name !== formShippingData.state_name;
+        supplierDetail?.state !== baseAddressState;
       const taxableAmount = parseFloat(updatedRows[index].taxable_amount) || 0;
 
       if (isInterState) {
+        console.log("inside this condtion isInterState")
         updatedRows[index].igst = (taxableAmount * gstPercentage) / 100; // Example IGST Rate: 18%
         updatedRows[index].cgst = 0;
         updatedRows[index].sgst = 0;
@@ -401,10 +413,10 @@ const AddSupplierPurchaseOrder = () => {
     //   newErrors.billing_state_code = "Valid billing state code is required.";
     // }
     if (
-      !formBillingData.gstin
+      !formBillingData.gstNumber
       // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formBillingData.gstin)
     ) {
-      newErrors.billing_gstin = "Valid GSTIN is required for billing.";
+      newErrors.gstNumber = "Valid GSTIN is required for billing.";
     }
 
     if (!formBillingData.address) {
@@ -448,15 +460,17 @@ const AddSupplierPurchaseOrder = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  const [baseAddress,setBaseAddress] = useState();
-  console.log("base address is here", baseAddress);
+
+  // console.log("base address is here", baseDetails);
 
   const fetchBaseAddress = async () => {
     try {
       // setLoading(true);
       const res = await getBaseAddress();
       const data = res?.data?.data;
-      setBaseAddress(data?.baseAddress[0])
+      setBaseAddressState(baseDetails?.baseAddress?.state)
+      setBaseDetails(data)
+      setBaseDetailsData(true)
     } catch (error) {
       Toaster.error("Failed to load data. Please try again.");
     } finally {
@@ -464,17 +478,24 @@ const AddSupplierPurchaseOrder = () => {
     }
   };
 
-  useEffect(()=>{
+  useEffect(() => {
     fetchBaseAddress();
-  },[])
+  }, [])
+
+  useEffect(() => {
+    if (formBillingData?.state_code) {
+      fetchStatesListTIN(formBillingData?.state_code)
+    }
+
+  }, [])
 
   const fetchSupplierAllList = async () => {
     setLoading(true);
     try {
       const res = await getAllSupplierListApi();
       const dropdownSupplierList = res?.data?.suppliers?.map((supplier) => ({
-        value: supplier._id,
-        label: supplier.name,
+        value: supplier?._id,
+        label: `${supplier?.supplier_name}`,
       }));
       setSupplierOption(dropdownSupplierList);
       setAllSupplier(res?.data?.suppliers);
@@ -501,14 +522,10 @@ const AddSupplierPurchaseOrder = () => {
         gst: product?.gst,
         fitting_Code: product?.fitting_Code
       }));
-      console.log(
-        "dropdownProductList dropdownProductList dropdownProductList",
-        dropdownProductList
-      );
+
       setProductOption(dropdownProductList);
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+
     } finally {
       setLoading(false);
     }
@@ -583,6 +600,7 @@ const AddSupplierPurchaseOrder = () => {
       );
 
       setCountriesList(dropdownCountryList);
+      return dropdownCountryList;
     } catch (error) {
       console.log(error.message);
     }
@@ -600,6 +618,7 @@ const AddSupplierPurchaseOrder = () => {
         }));
 
         setStateList(dropdownStateList);
+        return dropdownStateList;
       } catch (error) {
         console.log(error.message);
       }
@@ -616,6 +635,7 @@ const AddSupplierPurchaseOrder = () => {
           id: city?.id,
         }));
         setCityList(dropdownCityList);
+        return dropdownCityList;
       } catch (error) {
         console.log(error.message);
       }
@@ -628,6 +648,7 @@ const AddSupplierPurchaseOrder = () => {
     fetchCountryList();
     fetchCountryData();
   }, []);
+  console.log("selectedBillingStateOption", selectedBillingStateOption)
 
   useEffect(() => {
     if (selectedBillingCountryOption?.value) {
@@ -650,6 +671,8 @@ const AddSupplierPurchaseOrder = () => {
   }, [selectedShippingCountryOption, selectedShippingStateOption]);
 
 
+
+
   // Handle the logo image change
   const handleLogoChange = (e) => {
     const file = e.target.files[0];
@@ -670,6 +693,8 @@ const AddSupplierPurchaseOrder = () => {
     }
   };
 
+
+
   const handleSupplierChange = (option) => {
     setFormData({ ...formData, supplier_id: option?.value });
 
@@ -683,61 +708,131 @@ const AddSupplierPurchaseOrder = () => {
     );
     const cityData = cityList?.filter((val) => val?.label == suppDetail?.city);
 
-    //  console.log("countryData",countryData)
-    setSelectedBillingCountryOption({
-      label: "India",
-      value: "India",
-      id: countryData && countryData[0]?.id,
-    });
-    setSelectedBillingStateOption({
-      label: suppDetail?.state,
-      value: suppDetail?.state,
-      id: stateData && stateData[0]?.id,
-    });
-
-    setSelectedBillingCityOption({
-      label: suppDetail?.city,
-      value: suppDetail?.city,
-    });
 
     setBillingFormData({
-      ...suppDetail,
-      mobile_no1: suppDetail?.phone,
-      gstin: suppDetail?.gstNumber,
-      pin_code: suppDetail?.pincode,
-      country: suppDetail?.country,
-      state_name: suppDetail?.state,
-      city: suppDetail?.city,
-    });
+      ...baseDetails?.genralbillingDetails,
 
-    // Shipping Form
-    setSelectedShippingCountryOption({
-      label: "India",
-      value: "India",
-      id: countryData && countryData[0]?.id,
-    });
-
-    setSelectedShippingStateOption({
-      label: suppDetail?.state,
-      value: suppDetail?.state,
-      id: stateData && stateData[0]?.id,
-    });
-
-    setSelectedShippingCityOption({
-      label: suppDetail?.city,
-      value: suppDetail?.city,
     });
 
     setShippingFormData({
-      ...suppDetail,
-      mobile_no1: suppDetail?.phone,
-      gstin: suppDetail?.gstNumber,
-      pin_code: suppDetail?.pincode,
-      country: suppDetail?.country,
-      state_name: suppDetail?.state,
-      city: suppDetail?.city,
+      ...baseDetails?.genralshippingDetails,
     });
   };
+
+
+  //Billing Genral address prefilled selection
+  useEffect(() => {
+    const initializeLocationData = async () => {
+      if (formBillingData?.country) {
+        // 1. Set Country
+        const country = countriesList?.find(
+          (c) => c?.value === formBillingData?.country
+        );
+        if (country) {
+          setSelectedBillingCountryOption({
+            label: country?.value,
+            value: country?.value,
+            id: country?.id,
+          });
+
+          // 2. Fetch States
+          const fetchedStates = await fetchStatesData(country?.id); // should return states list
+          console.log("fetchedStates", fetchedStates)
+
+          if (formBillingData?.state) {
+            const state = fetchedStates?.find(
+              (s) => s?.value === formBillingData?.state
+            );
+            if (state) {
+              setSelectedBillingStateOption({
+                label: state?.value,
+                value: state?.value,
+                state_code: formBillingData?.state_code,
+                id: state?.id,
+              });
+
+              // 3. Fetch Cities
+              const fetchedCities = await fetchCitiesData(state?.id); // should return cities list
+
+              if (formBillingData?.city) {
+                const city = fetchedCities?.find(
+                  (c) => c?.value === formBillingData?.city
+                );
+                if (city) {
+                  setSelectedBillingCityOption({
+                    label: city?.value,
+                    value: city?.value,
+                    id: city?.id,
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    initializeLocationData();
+  }, [formBillingData?.country]);
+
+  //Shipping Genral address prefilled selection
+  useEffect(() => {
+    const initializeLocationData = async () => {
+      if (formShippingData?.country) {
+        // 1. Set Country
+        const country = countriesList?.find(
+          (c) => c?.value === formShippingData?.country
+        );
+        if (country) {
+          setSelectedShippingCountryOption({
+            label: country?.value,
+            value: country?.value,
+            id: country?.id,
+          });
+
+          // 2. Fetch States
+          const fetchedStates = await fetchStatesData(country?.id); // should return states list
+          console.log("fetchedStates", fetchedStates)
+
+          if (formBillingData?.state) {
+            const state = fetchedStates?.find(
+              (s) => s?.value === formShippingData?.state
+            );
+            if (state) {
+
+              setSelectedShippingStateOption({
+                label: state?.value,
+                value: state?.value,
+                state_code: formShippingData?.state_code,
+                id: state?.id,
+              });
+
+              // 3. Fetch Cities
+              const fetchedCities = await fetchCitiesData(state?.id); // should return cities list
+
+              if (formShippingData?.city) {
+                const city = fetchedCities?.find(
+                  (c) => c?.value === formShippingData?.city
+                );
+                if (city) {
+                  setSelectedShippingCityOption({
+                    label: city?.value,
+                    value: city?.value,
+                    id: city?.id,
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    initializeLocationData();
+  }, [formShippingData?.country]);
+
+
+
 
   const calculateTotalAmount = () => {
     return rows.reduce((total, row) => {
@@ -794,7 +889,7 @@ const AddSupplierPurchaseOrder = () => {
       total_quantity += quantity;
       sub_total += totalamount;
       total_discount += quantity * discountPerUnit;
-      // total_gst_amount += quantity * (cgst + sgst + igst); // Sum of all GST components
+      total_gst_amount +=  (cgst + sgst + igst); // Sum of all GST components
     });
 
     const grand_total =
@@ -831,7 +926,6 @@ const AddSupplierPurchaseOrder = () => {
       };
     });
 
-    console.log("fDataProducts fDataProducts -->", fDataProducts)
 
     try {
       const res = await createPoItemApi(fDataProducts);
@@ -891,17 +985,18 @@ const AddSupplierPurchaseOrder = () => {
       ...formBillingData,
       country: option?.value,
     });
-    // setSelectedBillingStateOption('')
-    // setSelectedBillingCityOption('')
+    setSelectedBillingStateOption('')
+    setSelectedBillingCityOption('')
   };
 
   const handleBillingDetailStateChange = (option) => {
     setSelectedBillingStateOption(option);
     setBillingFormData({
       ...formBillingData,
-      state_name: option?.value,
+      state: option?.value,
+      state_code: option?.state_code
     });
-    // setSelectedBillingCityOption('')
+    setSelectedBillingCityOption('')
   };
 
   const handleBillingDetailCityChange = (option) => {
@@ -920,17 +1015,18 @@ const AddSupplierPurchaseOrder = () => {
       ...formShippingData,
       country: option?.value,
     });
-    // setSelectedShippingStateOption('')
-    // setSelectedShippingCityOption('')
+    setSelectedShippingStateOption('')
+    setSelectedShippingCityOption('')
   };
 
   const handleShippingDetailStateChange = (option) => {
     setSelectedShippingStateOption(option);
     setShippingFormData({
       ...formShippingData,
-      state_name: option?.value,
+      state: option?.value,
+      state_code: option?.state_code
     });
-    // setSelectedShippingCityOption('')
+    setSelectedShippingCityOption('')
   };
 
   const handleShippingDetailCityChange = (option) => {
@@ -1006,7 +1102,6 @@ const AddSupplierPurchaseOrder = () => {
   };
 
   const handleSearch = (inputValue) => {
-    console.log("input value is here", inputValue)
     setSearchTerm(inputValue);
     if (inputValue.length > 1) {
       debounceSearch(inputValue)
@@ -1037,7 +1132,7 @@ const AddSupplierPurchaseOrder = () => {
 
       setSimilarProducts(dropdownProductList);
     } catch (error) {
-      console.error("Error fetching similar products:", error);
+      // console.error("Error fetching similar products:", error);
       Toaster.error("Failed to load similar products. Please try again.");
     } finally {
       setLoading(false);
@@ -1057,9 +1152,9 @@ const AddSupplierPurchaseOrder = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    // if (!validateForm()) {
+    //   return;
+    // }
     setLoading(true);
 
     const fData = {
@@ -1075,11 +1170,11 @@ const AddSupplierPurchaseOrder = () => {
         mobile_no1: formBillingData?.mobile_no1,
         mobile_no2: formBillingData?.mobile_no2,
         country: formBillingData?.country,
-        state_name: formBillingData?.state_name,
+        state_name: formBillingData?.state,
         city: formBillingData?.city,
         state_tin_code: formBillingData?.state_tin_code,
         address: formBillingData?.address,
-        gstin: formBillingData?.gstin,
+        gstin: formBillingData?.gstNumber,
       },
       shipping_details: {
         name: formShippingData?.name,
@@ -1087,16 +1182,17 @@ const AddSupplierPurchaseOrder = () => {
         mobile_no1: formShippingData?.mobile_no1,
         mobile_no2: formShippingData?.mobile_no2,
         country: formShippingData?.country,
-        state_name: formShippingData?.state_name,
+        state_name: formShippingData?.state,
         city: formShippingData?.city,
         state_tin_code: formShippingData?.state_tin_code,
         address: formShippingData?.address,
-        gstin: formShippingData?.gstin,
+        gstin: formShippingData?.gstNumber,
       },
       summary: summary,
     };
 
     try {
+      console.log(fData,"Data before api")
       const res = await addSupplierPurchaseOrderApi(fData);
       if (res.data?.success) {
         setLoading(false);
@@ -1184,6 +1280,7 @@ const AddSupplierPurchaseOrder = () => {
               <div className="mb-3">
                 <h4 className="card-title">Supplier Detail</h4>
                 <div className="mb-3 row">
+                  {/* Supplier */}
                   <div className="col-sm-6 col-xl-4">
                     <label className="col-form-label">Supplier<span className="text-danger">*</span></label>
                     <Select
@@ -1203,7 +1300,7 @@ const AddSupplierPurchaseOrder = () => {
                       </span>
                     )}
                   </div>
-
+                  {/* Date */}
                   <div className="col-sm-6 col-xl-4">
                     <label className="col-sm-3 col-form-label">Date<span className="text-danger">*</span></label>
                     <input
@@ -1219,6 +1316,7 @@ const AddSupplierPurchaseOrder = () => {
                       <span className="text-danger fs-12">{errors.date}</span>
                     )}
                   </div>
+                  {/*Due Date */}
                   <div className="col-md-3">
                     <label className="col-form-label">Due Date</label>
                     <input
@@ -1236,9 +1334,8 @@ const AddSupplierPurchaseOrder = () => {
                       </span>
                     )}
                   </div>
-          
                 </div>
-
+                {/* supplier details card */}
                 {supplierDetail && Object.keys(supplierDetail).length !== 0 && (
                   <div className="mb-3 row">
                     <div className="col-sm-6 col-xl-4">
@@ -1252,34 +1349,36 @@ const AddSupplierPurchaseOrder = () => {
                             className="p-0 m-0"
                             style={{ color: "#000000", fontWeight: "400" }}
                           >
-                            {supplierDetail?.name}
+                            {supplierDetail?.supplier_name}
                           </p>
                           <p
                             className="p-0 m-0 d-flex"
                             style={{ color: "#000000", fontWeight: "400" }}
                           >
-                            {supplierDetail?.city} {supplierDetail?.state}
-                            {supplierDetail?.pincode}
+                            {supplierDetail?.city} {supplierDetail?.state} {supplierDetail?.country}
                           </p>
                           <p
                             className="p-0 m-0"
                             style={{ color: "#000000", fontWeight: "400" }}
                           ></p>
 
-                          {supplierDetail?.phone && (
+                          {supplierDetail?.mobile_no1 && (
                             <div className="d-flex gap-1">
-                              <p className="p-0 m-0">Phone: </p>
+                              <p className="p-0 m-0 fw-bold "
+                                style={{ color: "black", fontWeight: "400" }} >Mobile No :</p>
                               <p
-                                className="p-0 m-0"
-                                style={{ color: "#000000", fontWeight: "400" }} >
-                                {supplierDetail?.phone}
+                                className="p-0 m-0 "
+                                style={{ color: "black", fontWeight: "400" }} >
+                                +91-{supplierDetail?.mobile_no1}
                               </p>
                             </div>
                           )}
 
                           {supplierDetail?.email && (
                             <div className="d-flex gap-1">
-                              <p className="p-0 m-0">Email: </p>
+                              <p className="p-0 m-0 fw-bold "
+                                style={{ color: "black", fontWeight: "400" }} >Email :</p>
+
                               <p
                                 className="p-0 m-0"
                                 style={{ color: "#000000", fontWeight: "400" }}
@@ -1291,7 +1390,8 @@ const AddSupplierPurchaseOrder = () => {
 
                           {supplierDetail?.gstNumber && (
                             <div className="d-flex gap-1">
-                              <p className="p-0 m-0">GST: </p>
+                              <p className="p-0 m-0 fw-bold "
+                                style={{ color: "black", fontWeight: "400" }} >GST :</p>
                               <p
                                 className="p-0 m-0"
                                 style={{ color: "#000000", fontWeight: "400" }}
@@ -1303,12 +1403,12 @@ const AddSupplierPurchaseOrder = () => {
                         </div>
                       </div>
                     </div>
-
+                    {/* Billing Details card */}
                     <BillingDetail
                       billingDetail={formBillingData}
                       setOpenBillingMdl={setOpenBillingMdl}
                     />
-
+                    {/* Shipping Details card */}
                     <ShippingDetail
                       shippingDetail={formShippingData}
                       setOpenShippingMdl={setOpenShippingMdl}
@@ -1335,6 +1435,7 @@ const AddSupplierPurchaseOrder = () => {
 
               <hr className="w-100" />
 
+              {/* Product Details and serach box section */}
               <div >
                 <h4 className="card-title">Product Detail</h4>
                 <div className="row mt-3">
@@ -1382,18 +1483,6 @@ const AddSupplierPurchaseOrder = () => {
                       Add Product
                     </button>
                   </div>
-
-                  {/* Result Search Box Brand Wise */}
-                  {/* <div className="col-md-6">
-                    <div className="product-sidebox">
-                      
-
-                    </div>
-                  </div> */}
-
-
-
-
 
                   <div className="col-md-6">
                     <label className="col-form-label ">Select Similar Products by Brand</label>
@@ -1469,206 +1558,10 @@ const AddSupplierPurchaseOrder = () => {
                     </div>
                   </div>
 
-
-
                 </div>
-
-
-
-
-
-
-                {/* <div>
-                <div className="row mt-3">
-                  <div className="col-md-3">
-                  <label className="col-form-label">Product Code</label>
-                    <input
-                      type="text"
-                      placeholder="Product Code"
-                      value={productformData?.product_code}
-                      onChange={(e) =>
-                        handleChangeRow(index, "product_code", e.target.value)
-                      }
-                      className="form-control row-input"
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                  <label className="col-form-label">Quantity</label>
-                    <input
-                      type="number"
-                      placeholder="Qty"
-                      value={productformData?.quantity}
-                      onChange={(e) =>
-                        handleChangeRow(index, "quantity", e.target.value)
-                      }
-                      className="form-control row-input"
-                    />
-                    </div>
-                  
-                  <div className="col-md-3">
-                  <label className="col-form-label">UOM</label>
-                    <input
-                      type="text"
-                      placeholder="UOM"
-                      value={productformData?.uom} // Auto-fill product code
-                      onChange={(e) =>
-                        handleChangeRow(index, "uom", e.target.value)
-                      }
-                      className="form-control row-input"
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                  <label className="col-form-label">Weight</label>
-                    <input
-                      type="text"
-                      placeholder="1 KG"
-                      value={productformData?.weight} // Auto-fill product code
-                      onChange={(e) =>
-                        handleChangeRow(index, "weight", e.target.value)
-                      }
-                      className="form-control row-input"
-                    />
-                    </div>
-                </div>
-
-
-                  <div className="row mt-3">
-                  <div className="col-md-3">
-                  <label className="col-form-label">Price</label>
-                    <input
-                      type="number"
-                      placeholder="Price"
-                      value={productformData?.price}
-                      onChange={(e) =>
-                        handleChangeRow(index, "price", e.target.value)
-                      }
-                      className="form-control"
-                    />
-                    </div>
-
-                    <div className="col-md-3">
-                    <label className="col-form-label">Discount Per Unit</label>
-                    <input
-                      type="number"
-                      placeholder="Discount Per Unit"
-                      value={productformData?.discount_per_unit}
-                      onChange={(e) =>
-                        handleChangeRow(
-                          index,
-                          "discount_per_unit",
-                          e.target.value
-                        )
-                      }
-                      className="form-control"
-                    />
-                    </div>
-
-                  <div className="col-md-3">
-                  <label className="col-form-label">Taxable Amount</label>
-                    <input
-                      type="number"
-                      placeholder="Taxable Amount"
-                      value={productformData?.taxable_amount}
-                      onChange={(e) =>
-                        handleChangeRow(index, "taxable_amount", e.target.value)
-                      }
-                      className="form-control"
-                    />
-                  </div>
-
-                  <div className="col-md-3">
-                  <label className="col-form-label">GST</label>
-                    <input
-                      type="text"
-                      placeholder="GST"
-                      value={productformData?.gst}
-                      onChange={(e) =>
-                        handleChangeRow(index, "gst", e.target.value)
-                      }
-                      className="form-control"
-                    />
-                    </div>
-                  </div>
-                  
-                  <div className="row mt-3">
-                  <div className="col-md-3">
-                  <label className="col-form-label">CGST</label>
-                    <input
-                      type="text"
-                      placeholder="CGST"
-                      value={productformData?.cgst}
-                      onChange={(e) =>
-                        handleChangeRow(index, "cgst", e.target.value)
-                      }
-                      className="form-control"
-                      disabled={
-                        formBillingData.state_name !==
-                        formShippingData.state_name
-                      }
-                    />
-                    </div>
-
-                  <div className="col-md-3">  
-                  <label className="col-form-label">SGST</label>
-                    <input
-                      type="text"
-                      placeholder="SGST"
-                      value={productformData?.sgst}
-                      onChange={(e) =>
-                        handleChangeRow(index, "sgst", e.target.value)
-                      }
-                      className="form-control"
-                      disabled={
-                        formBillingData.state_name !==
-                        formShippingData.state_name
-                      } 
-                    />
-                    </div>
-
-                  <div className="col-md-3">
-                  <label className="col-form-label">IGST</label>
-                    <input
-                      type="text"
-                      placeholder="IGST"
-                      value={productformData?.igst}
-                      onChange={(e) =>
-                        handleChangeRow(index, "igst", e.target.value)
-                      }
-                      className="form-control"
-                      disabled={
-                        formBillingData.state_name ===
-                        formShippingData.state_name
-                      }
-                    />
-                    </div>
-
-                  <div className="col-md-3">
-                  <label className="col-form-label">Cess</label>
-                    <input
-                      type="text"
-                      placeholder="Cess"
-                      value={productformData?.cess}
-                      onChange={(e) =>
-                        handleChangeRow(index, "cess", e.target.value)
-                      }
-                      className="form-control"
-                    />
-                  </div>
-                  </div>
-
-                  <div className="d-flex flex-column mt-2">
-                  <label className="col-form-label">Total Amount</label>
-                    {productformData?.total_amount
-                      ? (productformData?.total_amount).toFixed(2) + ` ₹`
-                      : `0.00 ₹`}
-                    </div>
-               </div> */}
               </div>
 
-              
-
+              {/* Selected product Table  */}
               {/* Table  */}
               <div className="col-xl-12 col-lg-12 mt-5">
                 <div>
@@ -1683,6 +1576,7 @@ const AddSupplierPurchaseOrder = () => {
                             <tr>
                               <th>SL</th>
                               <th>Product Name</th>
+                              <th>Fitting Code</th>
                               <th>Code</th>
                               <th>Quantity</th>
                               <th>UOM</th>
@@ -1708,50 +1602,43 @@ const AddSupplierPurchaseOrder = () => {
                                 onDragOver={handleDragOver}
                                 onDrop={() => handleDrop(index)}
                                 style={{ cursor: "grab", background: "#f8f9fa" }}>
+                                {/* S.no */}
                                 <td>{row.id + 1}</td>
-                                {/* Product  */}
-                                {/* <td>
-                                  <Select
-                                    value={row.selectedOption} // Prefill selected option
-                                    onChange={(selectedOption) =>
-                                      handleProductChange(selectedOption, index)
-                                    }
-                                    options={productOption} // Ensure productOption is properly defined
-                                    styles={{
-                                      control: (provided) => ({
-                                        ...provided,
-                                        width: "200px", // Adjust width as needed
-                                        lineHeight: "20px",
-                                        color: "#7e7e7e",
-                                        paddingLeft: "15px",
-                                      }),
-                                      menuPortal: (provided) => ({
-                                        ...provided,
-                                        zIndex: 9999, // Ensures dropdown appears on top
-                                      }),
-                                      menu: (provided) => ({
-                                        ...provided,
-                                        top: "-100%", // Positions the dropdown above
-                                      }),
-                                    }}
-                                    menuPortalTarget={document.body} // Ensures the dropdown is rendered in the body
-                                  />
-                                </td>  */}
                                 {/* Product Name */}
                                 <td>
                                   <input
                                     type="text"
                                     placeholder="Product Name"
-                                    value={row?.product_name} // Auto-fill product code
+                                    value={row?.product_name}
+                                    onClick={() =>
+                                      setFocusedInputIndex((prev) => (prev === index ? null : index))
+                                    }
+                                    onChange={(e) =>
+                                      handleChangeRow(index, "product_name", e.target.value)
+                                    }
+                                    className="form-control row-input"
+                                    style={{
+                                      width: focusedInputIndex === index ? "500px" : "300px",
+                                      transition: "width 0.3s ease",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </td>
+                                {/* Product Fitting Code */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="Fitting Code"
+                                    value={row?.fitting_Code} // Auto-fill product code
                                     onChange={(e) =>
                                       handleChangeRow(
                                         index,
-                                        "product_code",
+                                        "fitting_Code",
                                         e.target.value
                                       )
                                     }
                                     className="form-control row-input"
-                                    style={{ width: "300px" }}
+                                    style={{ width: "250px" }}
                                   />
                                 </td>
                                 {/* Product code */}
@@ -1903,9 +1790,7 @@ const AddSupplierPurchaseOrder = () => {
                                     }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    disabled={
-                                      formBillingData.state_name !==
-                                      formShippingData.state_name
+                                    disabled={supplierDetail?.state !== baseAddressState
                                     } // Disable for inter-state
                                   />
                                 </td>
@@ -1924,10 +1809,7 @@ const AddSupplierPurchaseOrder = () => {
                                     }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    disabled={
-                                      formBillingData.state_name !==
-                                      formShippingData.state_name
-                                    } // Disable for inter-state
+                                    disabled={supplierDetail?.state !== baseAddressState} // Disable for inter-state
                                   />
                                 </td>
                                 {/* IGST */}
@@ -1945,29 +1827,9 @@ const AddSupplierPurchaseOrder = () => {
                                     }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    disabled={
-                                      formBillingData.state_name ===
-                                      formShippingData.state_name
-                                    } // Disable for intra-state
+                                    disabled={supplierDetail?.state === baseAddressState} // Disable for intra-state
                                   />
-                                </td>
-                                {/* Cess */}
-                                {/* <td>
-                                  <input
-                                    type="text"
-                                    placeholder="Cess"
-                                    value={row?.cess}
-                                    onChange={(e) =>
-                                      handleChangeRow(
-                                        index,
-                                        "cess",
-                                        e.target.value
-                                      )
-                                    }
-                                    className="form-control"
-                                    style={{ width: "70px" }}
-                                  />
-                                </td> */}
+                                </td>                               
                                 {/* Total_amount */}
                                 <td>
                                   {row?.total_amount
@@ -2002,7 +1864,7 @@ const AddSupplierPurchaseOrder = () => {
               <div className="row justify-content-end mt-4">
                 <div className="summary-section col-md-5">
                   <table className="table table-bordered ">
-                    <h3 className="p-2">Summary</h3>
+                    <h3 className="p-2 mx-1">Summary</h3>
 
                     <tbody>
                       <tr>
@@ -2034,7 +1896,7 @@ const AddSupplierPurchaseOrder = () => {
                               })
                             }
                             className="form-control"
-                            style={{ height: "25px", fontSize: "10px" }}
+                            style={{ height: "35px", fontSize: "15px" }}
                           />
                         </td>
                       </tr>

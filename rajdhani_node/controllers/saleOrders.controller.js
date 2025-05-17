@@ -105,6 +105,48 @@ const updateSaleOrderStatus = async (req, res) => {
   }
 };
 
+const verifySaleOrderBy = async (req, res) => {
+  try {
+    const { so_id, isVerifiedBy ,isVerified } = req?.body;
+
+    if (!so_id || !isVerifiedBy) {
+      return res.status(400).json({ success: false, message: "Missing required fields" });
+    }
+
+    const updatedSaleOrder = await saleOrderService.verifySaleOrderBy(so_id, isVerifiedBy, isVerified);
+
+    if (!updatedSaleOrder) {
+      return res.status(404).json({ success: false, message: "Sale order not found" });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Sale order successfully verified.",
+      data: updatedSaleOrder
+    });
+  } catch (error) {
+    console.error("verifySaleOrder error:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+// Get a single Sale Order by ID
+const getSaleOrderByCustomerId = async (req, res) => {
+  try {
+    const saleOrders = await saleOrderService.getSaleOrdersByCustomerId(req.params.id);
+    if (!saleOrders) {
+      return res.status(404).json({ success: false, message: "Sale orders not found" });
+    }
+    res.json({ success: true, saleOrders });
+  } catch (error) {
+    console.error("Error fetching sale order by customer ID:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+
+
 module.exports = {
   createSaleOrder,
   getAllSaleOrders,
@@ -112,5 +154,9 @@ module.exports = {
   getSaleOrderById,
   updateSaleOrder,
   deleteSaleOrder,
-  updateSaleOrderStatus
+  updateSaleOrderStatus,
+  verifySaleOrderBy,
+  getSaleOrderByCustomerId,
+  
+  
 };

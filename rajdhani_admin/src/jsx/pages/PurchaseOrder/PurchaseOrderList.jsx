@@ -51,6 +51,8 @@ const theadData = [
   { heading: "Action", sortingVale: "action" },
 ];
 
+
+
 const SupplierPurchaseOrderList = () => {
   const [sort, setSortata] = useState(10);
   const [loading, setLoading] = useState(false);
@@ -127,8 +129,8 @@ const SupplierPurchaseOrderList = () => {
       setUpdateCategory(false);
     } catch (error) {
       // Catch and handle errors
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       // Always set loading to false when the API call is done (whether successful or failed)
       setLoading(false);
@@ -385,12 +387,12 @@ const SupplierPurchaseOrderList = () => {
                           <td>{data?.voucher_no}</td>
 
                           <td className="">
-                            {data?.supplier_id?.name}
+                            {data?.supplier_id?.supplier_name ? data?.supplier_id?.supplier_name : "N/A"}
                             
                           </td>
 
                           <td className="">
-                            {data?.supplier_id?.city} {data?.supplier_id?.state}
+                            {data?.supplier_id?.city} {data?.supplier_id?.state} 
                           </td>
 
                           

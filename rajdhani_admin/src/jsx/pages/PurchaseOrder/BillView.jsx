@@ -29,21 +29,19 @@ const billtheadData = [
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
-  // { heading: "Order Id", sortingVale: "_id" },
-  { heading: "Product Name", sortingVale: "name" },
-  { heading: "Variant", sortingVale: "variant" },
-  { heading: "Unit", sortingVale: "unit" },
+  { heading: "Product Name", sortingVale: "product_name" },
+  { heading: "Fitting Code", sortingVale: "fitting_code" },
+  { heading: "Code", sortingVale: "product_code" },
+  { heading: "UOM", sortingVale: "uom" },
+  { heading: "Weight(Kg)", sortingVale: "weight" },
   { heading: "QTY", sortingVale: "quantity" },
-  { heading: "Price", sortingVale: "price" },
+  { heading: "Price Per Unit", sortingVale: "price_per_unit" },
+  { heading: "Discount Per Unit", sortingVale: "discount_per_unit" },
   { heading: "CGST", sortingVale: "cgst" },
   { heading: "SGST", sortingVale: "sgst" },
   { heading: "IGST", sortingVale: "igst" },
-  { heading: "Cess", sortingVale: "Cess" },
-  { heading: "Per Item Tax Price", sortingVale: "Cess" },
   { heading: "Amount", sortingVale: "amount" },
-
   { heading: "Created At", sortingVale: "created_at" },
-  { heading: "Status", sortingVale: "status" },
   // { heading: "Action", sortingVale: "action" },
 ];
 
@@ -53,6 +51,7 @@ const BillView = () => {
   const params = useParams()?.id;
   const navigate = useNavigate();
   const billTableRef = useRef(null);
+  const [focusedInputIndex, setFocusedInputIndex] = useState(null);
 
   const [sort, setSortata] = useState(10);
   const [purchaseOrderData, setPurchaseOrderData] = useState([]);
@@ -64,7 +63,7 @@ const BillView = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [singleBillData, setSingleBillData] = useState({});
   const [visibleCount, setVisibleCount] = useState(5);
-  const [billItems,setBillItems]=useState([]);
+  const [billItems, setBillItems] = useState([]);
   // console.log("purchaseOrderData",purchaseOrderData)
 
   // const exportToPDF = () => {
@@ -173,7 +172,7 @@ const BillView = () => {
     try {
       const res = await GetBillViewById(params);
       const data = res?.data?.billDetails;
-      console.log("daaattta",data);
+      console.log("daaattta", data);
       setPurchaseOrderData(data?.po_details);
       // billItems
       setBillItems(data?.bill_items);
@@ -187,7 +186,7 @@ const BillView = () => {
       console.log("errror", err);
     }
   };
-  
+
 
   useEffect(() => {
     fetchBillView();
@@ -271,7 +270,7 @@ const BillView = () => {
       verify: "Verify Order Note",
     },
     footer: {
-      preparedBy: "Malviya Nagar",
+      preparedBy: "Rajdhani",
       terms: [
         "Delivery quantity should be as per SO only.",
         "Goods delivered beyond the expiry date will not be accepted.",
@@ -325,7 +324,7 @@ const BillView = () => {
                     </button>
                   </div>
                 </div>
-               
+
                 <div className="addresses mt-3">
                   <div className="row">
                     <div className="col-md-6 col-xl-4 address-block">
@@ -370,10 +369,10 @@ const BillView = () => {
                       <div className="order-info">
                         <h5>Supplier (Bill from)</h5>
                         <p className="po-view-p">
-                          {purchaseOrderData?.supplier_id?.name}
+                          {purchaseOrderData?.supplier_id?.supplier_name}
                         </p>
                         <p className="po-view-p">
-                          {purchaseOrderData?.supplier_id?.city}
+                          {purchaseOrderData?.supplier_id?.address}
                         </p>
                         <p className="po-view-p">
                           State: {purchaseOrderData?.supplier_id?.state}
@@ -388,197 +387,8 @@ const BillView = () => {
               </div>
             </div>
 
-            {/* Bill Details show */}
-            {/* <div className="">
-              <div className="card-header pb-0 px-0" >
-                <h4 className="card-title">Bill Details</h4>
-              </div>
-              <div className="mt-3 px-0">
-                {
-                  billData?.length > 0 ?
-                    <div className="row card-main-div">
-                      {
-                        billData?.slice(0, visibleCount)?.map((val, ind) => {
-                          return (<>
-                            <div className="col-md-3  pb-4">
-                             <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
-                            </div>
-                          </>)
-                        })
-                      }
-                      
-                      {billData?.length > visibleCount && (
-                       <div className="col-md-4 col-xl-3">
-                        <button
-                          className="add-new-bill-btn"
-                          onClick={handleSeeMore}>
-                          <div className="bill-cards" style={{ textAlign: "center" }} >
-                            <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
-                              See More
-                            </p>
-                          </div>
-                        </button>
-                      </div>
-                      )}
-                    </div>
-                    :
-                    <p>No bills found for this Purchase Order ID</p>
-                }
-              </div>
-            </div> */}
-
-            {/* Bill Detail */}
-            <div ref={billTableRef}>
-             {Object?.keys(singleBillData).length == 0 ? "" :
-              <Row>
-                <Col lg={12}>
-                  <div className="">
-                    <div className="card-header px-0">
-                      <h4 className="card-title">Bill Details</h4>
-                      <button className="table-close-btn" onClick={() => setSingleBillData({})}><i class="fa-solid fa-xmark fa-xl"></i></button>
-                    </div>
-                    <div className="card-body px-0">
-                      <div className="table-responsive">
-                        <div
-                          id="holidayList"
-                          className="dataTables_wrapper no-footer">
-                          <div className="justify-content-between d-sm-flex">
-                            <div className="dataTables_length">
-                              <label className="d-flex align-items-center">
-                                Show
-                                <Dropdown className="search-drop">
-                                  <Dropdown.Toggle
-                                    as="div"
-                                    className="search-drop-btn">
-                                    {sort}
-                                  </Dropdown.Toggle>
-                                  <Dropdown.Menu>
-                                    <Dropdown.Item
-                                      onClick={() => setSortata("2")}>
-                                      2
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setSortata("5")}>
-                                      5
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setSortata("10")}>
-                                      10
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setSortata("15")}>
-                                      15
-                                    </Dropdown.Item>
-                                    <Dropdown.Item
-                                      onClick={() => setSortata("20")}>
-                                      20
-                                    </Dropdown.Item>
-                                  </Dropdown.Menu>
-                                </Dropdown>
-                                entries
-                              </label>
-                            </div>
-                            <div className="dataTables_filter">
-                              <label>
-                                Search :
-                                <input
-                                  type="search"
-                                  className=""
-                                  placeholder=""
-                                  onChange={(e)=>setSearchInputValue(e.target.value)}
-                                />
-                              </label>
-                            </div>
-                          </div>
-
-                          <table id="example4" className="display dataTable no-footer w-100">
-                            <thead>
-                              <tr>
-                                {billtheadData?.map((item, ind) => {
-                                  return (
-                                    <th
-                                      key={ind}
-                                      onClick={() => {
-                                        SotingData(item?.sortingVale, ind);
-                                        setIconDate((prevState) => ({
-                                          complete: !prevState.complete,
-                                          ind: ind,
-                                        }));
-                                      }}>
-                                      {item.heading}
-                                      <span>
-                                        {ind !== iconData.ind && (
-                                          <i
-                                            className="fa fa-sort ms-2 fs-12"
-                                            style={{ opacity: "0.3" }}
-                                          />
-                                        )}
-                                        {ind === iconData.ind &&
-                                          (iconData.complete ? (
-                                            <i
-                                              className="fa fa-arrow-down ms-2 fs-12"
-                                              style={{ opacity: "0.7" }}
-                                            />
-                                          ) : (
-                                            <i
-                                              className="fa fa-arrow-up ms-2 fs-12"
-                                              style={{ opacity: "0.7" }}
-                                            />
-                                          ))}
-                                      </span>
-                                    </th>
-                                  );
-                                })}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              <tr >
-
-                                <td>{singleBillData?.purchase_order_id}</td>
-                                <td className="">
-                                  {singleBillData?.bill_id}
-                                </td>
-                                <td className="">{singleBillData?.bill_doc}</td>
-                                <td className="">{singleBillData?.bill_amount}</td>
-                                <td className="">
-                                  {moment(singleBillData?.bill_date).format(
-                                    "DD MMM YYYY")}
-                                </td>
-                                <td>
-                                  {moment(singleBillData?.created_at).format(
-                                    "DD MMM YYYY, h:mm:ss a")}
-                                </td>
-                              </tr>
-                            </tbody>
-                          </table>
-                          <div>
-                            {/* {brandList?.data?.length < brandList?.total && ( */}
-                            <div className="d-sm-flex text-center justify-content-end align-items-center mt-3">
-                              <div className="pagination-container">
-                                <ReactPaginate
-                                  pageCount={Math.ceil(
-                                    purchaseOrderData?.totalRecords /
-                                    purchaseOrderData?.rowsPerPage
-                                  )}
-                                  pageRangeDisplayed={1}
-                                  marginPagesDisplayed={2}
-                                  onPageChange={handlePageClick}
-                                  containerClassName="pagination"
-                                  activeClassName="selected"
-                                  disabledClassName="disabled"
-                                />
-                              </div>
-                            </div>
-                            {/* )} */}
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                </Col>
-              </Row>
-             }
-            </div>
+           
+          
             {/* Product Table */}
             <Row>
               <Col lg={12}>
@@ -591,56 +401,7 @@ const BillView = () => {
                       <div
                         id="holidayList"
                         className="dataTables_wrapper no-footer">
-                        <div className="justify-content-between d-sm-flex">
-                          <div className="dataTables_length">
-                            <label className="d-flex align-items-center">
-                              Show
-                              <Dropdown className="search-drop">
-                                <Dropdown.Toggle
-                                  as="div"
-                                  className="search-drop-btn">
-                                  {sort}
-                                </Dropdown.Toggle>
-                                <Dropdown.Menu>
-                                  <Dropdown.Item
-                                    onClick={() => setSortata("2")}>
-                                    2
-                                  </Dropdown.Item>
-                                  <Dropdown.Item
-                                    onClick={() => setSortata("5")}>
-                                    5
-                                  </Dropdown.Item>
-                                  <Dropdown.Item
-                                    onClick={() => setSortata("10")}>
-                                    10
-                                  </Dropdown.Item>
-                                  <Dropdown.Item
-                                    onClick={() => setSortata("15")}>
-                                    15
-                                  </Dropdown.Item>
-                                  <Dropdown.Item
-                                    onClick={() => setSortata("20")}>
-                                    20
-                                  </Dropdown.Item>
-                                </Dropdown.Menu>
-                              </Dropdown>
-                              entries
-                            </label>
-                          </div>
-                          <div className="dataTables_filter">
-                            <label>
-                              Search :
-                              <input
-                                type="search"
-                                className=""
-                                placeholder=""
-                                onChange={(e) =>
-                                  setSearchInputValue(e.target.value)
-                                }
-                              />
-                            </label>
-                          </div>
-                        </div>
+                   
 
                         <table id="example4" className="display dataTable no-footer w-100">
                           <thead>
@@ -689,51 +450,50 @@ const BillView = () => {
                                   <strong>{ind + 1}</strong>{" "}
                                 </td>
 
-                                <td className="">
-                                  {data?.product_name}
-                                </td>
+                                 {/* Product Name */}
+                                 <td>
+                                    <div
+                                      onClick={() =>
+                                        setFocusedInputIndex((prev) => (prev === ind ? null : ind))
+                                      }
+                                      style={{
+                                        width: focusedInputIndex === ind ? "600px" : "600px",
+                                        transition: "width 0.3s ease",
+                                        cursor: "pointer",
+                                        // border: "1px solid #ccc",
+                                        borderRadius: "5px",
+                                        padding: "8px",
+                                        minHeight: "38px", // mimic input height
+                                        overflow: "hidden",
+                                        whiteSpace: "nowrap",
+                                      }}
+                                    >
+                                      {data?.product_name}
+                                    </div>
+                                  </td>
+                                  {/* Product Fitting Code */}
+                                  <td style={{ whiteSpace: 'nowrap' }}>{data?.fitting_Code}</td>
+                                  <td className="">{data?.product_code}</td>
+                                  <td className="">{data?.uom}</td>
+                                  <td className="">{data?.weight}</td>
+                                  <td className="">{data?.quantity}</td>
+                                  <td className="">{data?.price} INR</td>
+                                  <td className="">{data?.discount_per_unit}</td>
+                                  <td className="">{data?.cgst}</td>
+                                  <td className="">{data?.sgst}</td>
+                                  <td className="">{data?.igst}</td>
+                                  <td className="">{data?.taxable_amount} INR</td>
+                                  <td>
+                                    {moment(data?.created_at).format(
+                                      "DD MMM YYYY, h:mm:ss a"
+                                    )}
+                                  </td>
 
-                                <td className="">{data?.variant}</td>
-
-                                <td className="">{data?.unit}</td>
-
-                                <td className="">{data?.quantity}</td>
-
-                                <td className="">{data?.price_per_unit}</td>
-
-                                <td className="">{data?.cgst}</td>
-
-                                <td className="">{data?.sgst}</td>
-
-                                <td className="">{data?.igst}</td>
-
-                                <td className="">{data?.cess}</td>
-
-                                <td className="">
-                                  {moment(data?.order_details?.due_date).format(
-                                    "DD MMM YYYY"
-                                  )}
-                                </td>
-
-                                <td className="">{data?.amount}</td>
-
-                                <td>
-                                  {moment(data?.created_at).format(
-                                    "DD MMM YYYY, h:mm:ss a"
-                                  )}
-                                </td>
-
-                                <td>-</td>
-                                {/* <td>
-                                  <button className="btn btn-xs sharp btn-primary me-1">
-                                    <i class="fa-solid fa-eye"></i>
-                                  </button>
-                                </td> */}
                               </tr>
                             ))}
                           </tbody>
                         </table>
-                        <div>
+                        {/* <div>
 
                           <div className="d-sm-flex text-center justify-content-end align-items-center mt-3">
                             <div className="pagination-container">
@@ -751,7 +511,7 @@ const BillView = () => {
                               />
                             </div>
                           </div>
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -764,7 +524,7 @@ const BillView = () => {
             <div className="row justify-content-end ">
               <div className="summary-section col-md-5">
                 <table className="table table-bordered ">
-                  <h3>Summary</h3>
+                  <h3 className="p-2 mx-1">Summary</h3>
 
                   <tbody>
                     <tr>
@@ -785,9 +545,7 @@ const BillView = () => {
                     </tr>
                     <tr>
                       <td>Shipping</td>
-                      <td>
-                        <td>{purchaseOrderData?.summary?.total_gst_amount?.toFixed(2)}</td>
-                      </td>
+                      <td>{purchaseOrderData?.summary?.total_gst_amount?.toFixed(2)}</td>
                     </tr>
                     <tr>
                       <td>Grand Total</td>

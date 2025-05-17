@@ -2,12 +2,25 @@ import axios from "axios";
 import apis from './index'
 
 export const addBillDetailsApi = async (formData) => {
-    console.log("formdata in addBrandsApi", formData)
+  const form = new FormData();
+
+  for (const key in formData) {
+    if (key !== 'bill_doc' && key !== 'bill_doc' && formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+      form.append(key, formData[key]);
+    }
+  }
+  if (formData.image) {
+    form.append("bill_doc", formData.image);
+  }
+
+  formData?.bill_doc?.forEach((file) => {
+    form.append("bill_doc", file);
+  });
     const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
     try {
         const response = await axios.post(
             apis.purchaseorder.addBillDetails,
-            formData,
+            form,
       {
         headers: {
           // 'Content-Type': 'application/json',

@@ -641,6 +641,7 @@ const searchProducts = async (query) => {
 
 
     const products = await Products.find({
+      isDeleted: false, // condition for not fetch deleted products.
       $or: [
         { desc_Code: regexQuerys },
         { product_code: regexQuerys },
@@ -660,7 +661,6 @@ const searchProducts = async (query) => {
 
 //simi brands
 const findSimilarProducts = async (fittingCode) => {
-  console.log("fittingCode", fittingCode);
   try {
     if (!fittingCode) {
       throw new Error("Fitting code is required");
@@ -672,14 +672,10 @@ const findSimilarProducts = async (fittingCode) => {
     // Create a regex pattern that allows any first letter (brand)
     const regexPattern = new RegExp(`^.${configWithoutBrand}$`, "i");
 
-    console.log("fittingCode regexPattern", regexPattern);
 
     // Query the database for products with a matching configuration
     const products = await Products.find({ fitting_Code: { $regex: regexPattern } });
 
-
-
-    // console.log("Search result is --> fittingCode products", products);
 
     // Step 2: Extract product IDs from the found products
     const productIds = products.map((product) => product._id);
@@ -702,16 +698,26 @@ const findSimilarProducts = async (fittingCode) => {
       };
     });
 
-    // console.log("Final Result with Quantity:", productsWithQuantity);
 
     return productsWithQuantity;
-
-    // return products;
+    
   } catch (error) {
     console.error("Error finding similar products:", error);
     throw error;
   }
 };
+
+//simi hoseAssembly
+const findSimilarHoseAssembly = async (productCode) => {
+  try {
+    const products = await Products.find({product_code: productCode});
+    return products; // Return all products
+  } catch (error) {
+    console.error("Error finding similar products:", error);
+    throw error;
+  }
+};
+
 
 
 
@@ -993,5 +999,6 @@ module.exports = {
   searchProducts,
   findSimilarProducts,
   getProductByQRScannerCode,
-  generateQrForProduct
+  generateQrForProduct,
+  findSimilarHoseAssembly
 };

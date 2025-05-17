@@ -14,6 +14,7 @@ const inventorySchema = new mongoose.Schema(
       index: true,
     },
     product_code: { type: String },
+    fitting_Code: { type: String },
     product_unit: { type: String },
     product_name: {
       type: String,

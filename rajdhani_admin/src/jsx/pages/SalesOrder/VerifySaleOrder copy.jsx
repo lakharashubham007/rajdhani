@@ -26,6 +26,7 @@ import "../../../assets/css/PurchaseOrder.css";
 import { createBatchApi } from "../../../services/apis/BatchApi";
 import { addProductsInInvntory, checkProductsInInventoryApi } from "../../../services/apis/InventoryApi";
 import { addEntryInStock } from "../../../services/apis/StockMentainenaceApi";
+import { GetSaleOrderItemsData, GetSaleOrderViewData, verifySalesOrderApi } from "../../../services/apis/salesOrderApi";
 
 
 const billtheadData = [
@@ -56,7 +57,7 @@ const theadData = [
   // { heading: "Action", sortingVale: "action" },
 ];
 
-const VerifyPurchaseOrder = () => {
+const VerifySaleOrder = () => {
   const params = useParams()?.id;
   const navigate = useNavigate();
   const billTableRef = useRef(null);
@@ -73,7 +74,6 @@ const VerifyPurchaseOrder = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [singleBillData, setSingleBillData] = useState({});
   const [contentModal, setContentModal] = useState(false);
-  const [verifyShowModal, setVerifyShowModal] = useState(false);
   const [productOption, setProductOption] = useState(null);
   const [isPressed, setIsPressed] = useState(false);
   const [loading, setLoading] = useState(false);
@@ -110,13 +110,10 @@ const VerifyPurchaseOrder = () => {
   console.log("formBillingData formBillingData==========>", formBillingData);
 
   const [isExpanded, setIsExpanded] = useState(false);
-  const [selectedRowData, setSelectedRowData] = useState();
-  console.log("selectedRowData selectedRowData selectedRowDataselectedRowData", selectedRowData)
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
-
 
   const handleBillingDetailChange = (e) => {
     const { name, value } = e.target;
@@ -138,8 +135,8 @@ const VerifyPurchaseOrder = () => {
       }));
       setProductOption(dropdownProductList);
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -231,7 +228,6 @@ const VerifyPurchaseOrder = () => {
   // };
 
   const prefillRows = (data) => {
-    console.log("data is here=========", data)
     return data
       .map((item, index) => {
         // Check the first condition: Exclude if ordered_quantity, received_quantity, and verified_quantity are equal
@@ -283,10 +279,9 @@ const VerifyPurchaseOrder = () => {
   // }, [purchaseOrderProdcutList, contentModal]);
 
   useEffect(() => {
-    console.log("(purchaseOrderProdcutList.length > 0 && rows.length === 1", purchaseOrderProdcutList.length > 0, rows.length >= 1)
-    if (purchaseOrderProdcutList.length > 0 && rows?.length >= 1) {
+    // console.log("(purchaseOrderProdcutList.length > 0 && rows.length === 1",purchaseOrderProdcutList.length > 0 , rows.length === 1)
+    if (purchaseOrderProdcutList.length > 0 && rows.length === 1) {
       const formattedRows = prefillRows(purchaseOrderProdcutList);
-      console.log("useEffect calls successsfullyy------------->", formattedRows);
       setRows(formattedRows);
     }
   }, [purchaseOrderProdcutList, contentModal]);
@@ -329,7 +324,6 @@ const VerifyPurchaseOrder = () => {
       {
         id: rows.length + 1,
         product_name: "",
-        product_code: "",
         sku: "",
         unit: "",
         variant: "",
@@ -360,6 +354,29 @@ const VerifyPurchaseOrder = () => {
     updatedRows[index][field] = value;
     setRows(updatedRows);
 
+
+
+    // Calculate total discount if quantity or discount_per_unit changes
+    // if (field === "quantity" || field === "discount_per_unit") {
+    //   const quantity = parseFloat(updatedRows[index].quantity || 0);
+    //   const discountPerUnit = parseFloat(
+    //     updatedRows[index].discount_per_unit || 0
+    //   );
+    //   updatedRows[index].total_discount = quantity * discountPerUnit;
+    // }
+
+    // // Calculate amount with discount applied
+    // const quantity = parseFloat(updatedRows[index].quantity || 0);
+    // const pricePerUnit = parseFloat(updatedRows[index].price_per_unit || 0);
+    // const uomQty = parseFloat(updatedRows[index].uom_qty || 1); // Default UOM Qty to 1
+    // const totalDiscount = parseFloat(updatedRows[index].total_discount || 0);
+
+    // Adjust the amount to subtract the total discount
+    // updatedRows[index].amount =
+    //   quantity * pricePerUnit * uomQty - totalDiscount;
+
+    // setRows(updatedRows);
+
   };
 
 
@@ -375,8 +392,8 @@ const VerifyPurchaseOrder = () => {
 
   const fetchPurchaseOrderViewData = async () => {
     try {
-      const res = await GetPurchaseOrderViewData(params);
-      const data = res?.data?.purchaseOrder;
+      const res = await GetSaleOrderViewData(params);
+      const data = res?.data?.saleOrder;
       setPurchaseOrderData(data);
     } catch (err) {
       console.log("errror", err);
@@ -385,7 +402,7 @@ const VerifyPurchaseOrder = () => {
 
   const fetchPurchaseOrderItemsData = async () => {
     try {
-      const res = await GetPurchaseOrderItemsData(params);
+      const res = await GetSaleOrderItemsData(params);
       const data = res?.data?.item;
       setPurchaseOrderProdcutList(data);
       // console.log("daaata",data)
@@ -501,7 +518,9 @@ const VerifyPurchaseOrder = () => {
       verify: "Verify Order Note",
     },
     footer: {
-      preparedBy: "Malviya Nagar",
+      preparedBy: "Mahesh Kumar",
+      authorizedBy: "Pankaj Suthar",
+      verifiedBy: "Kapil Mali",
       terms: [
         "Delivery quantity should be as per SO only.",
         "Goods delivered beyond the expiry date will not be accepted.",
@@ -515,16 +534,7 @@ const VerifyPurchaseOrder = () => {
     setCurrentPage(selectedPage.selected + 1);
   };
 
-  const handleGetBillData = (id) => {
-    const getBillData = billData?.find((val) => val?._id == id)
-    // singleBillData,
-    setSingleBillData(getBillData);
-    console.log("getBillData", getBillData)
 
-    if (billTableRef.current) {
-      billTableRef.current.scrollIntoView({ behavior: "smooth", block: "start" });
-    }
-  }
 
   // Inline styles
   const styles = {
@@ -622,155 +632,6 @@ const VerifyPurchaseOrder = () => {
   };
 
 
-  //    //update purchase order item
-  //   const UpdatePoItems = async(Bill_id,PO_ID)=>{
-
-  //     const po_items_updated = rows?.map(({ id, selectedOption, ...rest }) => {
-  //     return {
-  //       ...rest,
-  //       po_id: PO_ID,
-  //       cess: parseFloat(rest.cess || 0),
-  //       cgst: parseFloat(rest.cgst || 0),
-  //       discount_per_unit: parseFloat(rest.discount_per_unit || 0),
-  //       igst: parseFloat(rest.igst || 0),
-  //       price_per_unit: parseFloat(rest.price_per_unit || 0),
-  //       uom_qty: parseFloat(rest.uom_qty || 0),
-  //       quantity: parseFloat(rest.quantity || 0),
-  //       total_discount: parseFloat(rest.total_discount || 0),
-  //       amount: parseFloat(rest.amount || 0),
-  //       sgst: parseFloat(rest.sgst || 0),
-  //     };
-  //    });
-  //      console.log("fDataProducts item for poi nd pobi" ,po_items_updated)
-  //     try {
-  //       const res = await updatePoItemForBillsApi(params, po_items_updated);
-  //       console.log(res, "response is here");
-  //       if (res.data?.success) {
-  //         setLoading(false);
-  //         // Show success message from backend
-  //         // Toaster.success(res?.data?.message);
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Updated PO Items",
-  //           text: res.data?.message,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //         // resetForm(); 
-  //         // Reset form after success
-  //         // navigate('/productlist');
-  //       } else {
-  //         setLoading(false);
-  //         Toaster.error(res.data?.message || "Failed to create PO Items");
-  //         console.error("PO items creation error:", res);
-  //       }
-  //     } catch (error) {
-  //       // setLoading(false);
-  //       // // Handle any errors during API request
-  //       // Toaster.error(
-  //       //   error.response?.data?.message ||
-  //       //     "An error occurred while processing your request"
-  //       // );
-  //       // console.error("Error creating product:", error);
-  //     }
-  //   }
-
-  //   //CreateBillItems
-  // const CreateBillItems = async(Bill_id,PO_ID)=>{
-
-  //     const bill_items_updated = rows?.map(({ id, selectedOption, ...rest }) => {
-  //     return {
-  //       ...rest,
-  //       bill_id: Bill_id,
-  //       po_id: PO_ID,
-  //       cess: parseFloat(rest.cess || 0),
-  //       cgst: parseFloat(rest.cgst || 0),
-  //       discount_per_unit: parseFloat(rest.discount_per_unit || 0),
-  //       igst: parseFloat(rest.igst || 0),
-  //       price_per_unit: parseFloat(rest.price_per_unit || 0),
-  //       uom_qty: parseFloat(rest.uom_qty || 0),
-  //       quantity: parseFloat(rest.quantity || 0),
-  //       total_discount: parseFloat(rest.total_discount || 0),
-  //       amount: parseFloat(rest.amount || 0),
-  //       sgst: parseFloat(rest.sgst || 0),
-  //     };
-  //    });
-  //     //  console.log("fDataProducts item for poi nd pobi" ,bill_items_updated)
-  //     try {
-  //       const res = await createBillItemsApi(bill_items_updated);
-  //       console.log(res, "response is here");
-  //       if (res.data?.success) {
-  //         setLoading(false);
-  //         // Show success message from backend
-  //         // Toaster.success(res?.data?.message);
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Bill Items Added Successflly!!!",
-  //           text: res.data?.message,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //         // resetForm(); 
-  //         // Reset form after success
-  //         // navigate('/productlist');
-  //       } else {
-  //         setLoading(false);
-  //         Toaster.error(res.data?.message);
-  //       }
-  //     } catch (error) {
-  //       // setLoading(false);
-  //       // // Handle any errors during API request
-  //       // Toaster.error(
-  //       //   error.response?.data?.message ||
-  //       //     "An error occurred while processing your request"
-  //       // );
-  //       // console.error("Error creating product:", error);
-  //     }
-  //   }
-  //   const handleSubmit = async (e) => {
-  //     e.preventDefault();
-
-  //     // if (!validateForm()) {
-  //     //   return;
-  //     // }
-  //     // setLoading(true);
-  //     try {
-  //       const res = await addBillDetailsApi(formBillingData);
-  //       if (res.data?.success) {
-  //         setLoading(false);
-  //         console.log("ress?.data",res?.data?.bill?._id);
-
-  //         UpdatePoItems(res?.data?.bill?._id,params)
-  //         CreateBillItems(res?.data?.bill)
-
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Bill",
-  //           text: res.data?.message,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //         // resetForm(); // Reset form after success
-  //         // navigate('/productlist');
-  //       } else {
-  //         setLoading(false);
-  //         // Toaster.error(res.data?.message || "Failed to create product");
-  //         console.error("Product creation error:", res);
-  //       }
-  //     } catch (error) {
-  //       setLoading(false);
-  //       // Handle any errors during API request
-  //       // Toaster.error(
-  //       //   error.response?.data?.message ||
-  //       //     "An error occurred while processing your request"
-  //       // );
-  //       console.error("Error creating product:", error);
-  //     }
-  //   };
-
-
-
-  // Helper function to parse numeric fields
   const parseFields = (item, additionalFields = {}) => ({
     ...item,
     ...additionalFields,
@@ -823,93 +684,46 @@ const VerifyPurchaseOrder = () => {
     }
   };
 
-  // Handle Form Submission
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
+  // Create Bill Items
+  const verifySOItems = async () => {
+    const products = purchaseOrderProdcutList?.map((item) => ({
+      so_id: item?.so_id,
+      product_id: item?.product_id,
+      quantity: item?.quantity,
+      order_type_ref: "SalesOrder",
+      order_type: "SO",
 
-  //   try {
-  //     const res = await addBillDetailsApi(formBillingData);
+    }));
+    console.log("verify products are here=--=-=-=-=-=-=-=,,,,,,,,,", products)
+    try {
+      const res = await verifySalesOrderApi(products);
+      // if (!res.data?.success) {
+      //   throw new Error(res.data?.message || "Failed to create Bill Items");
+      // }
+      // setApiSuccess(true);
+      return res; // ✅ Return the API response
+    } catch (error) {
+      console.error("Error creating Bill items:", error);
+      throw error; // Propagate the error
+    }
+  };
 
-  //     if (res.data?.success) {
-  //       const billId = res?.data?.bill?._id;
-  //       const poId = params;
 
-  //       // Update PO Items and Create Bill Items
-  //       await updatePoItems(billId, poId);
-  //       await createBillItems(billId, poId);
 
-  //       // Show success alert only for Bill creation
-  //       Swal.fire({
-  //         icon: "success",
-  //         title: "Bill Created Successfully",
-  //         text: res.data?.message,
-  //         showConfirmButton: false,
-  //         timer: 1500,
-  //       });
-  //       setContentModal(false);
-  //     } else {
-  //       throw new Error(res.data?.message || "Failed to create Bill");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during form submission:", error);
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Error",
-  //       text: error.message || "An error occurred while processing your request.",
-  //     });
-  //   }
-  // };
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await verifySOItems();
+      console.log(response);
+    } catch (error) {
 
-  // const handleSubmitDraft = async (e) => {
-  //   e.preventDefault();
+    }
+  }
 
-  //   const result = await Swal.fire({
-  //     title: "Are you sure?",
-  //     text: "You are about to save this as a draft.",
-  //     icon: "warning",
-  //     showCancelButton: true,
-  //     confirmButtonText: "Yes, save as draft",
-  //     cancelButtonText: "Cancel",
-  //   });
-
-  //   if (result.isConfirmed) {
-  //     const payload = { status: "In Pending" };
-
-  //     try {
-  //       const poId = params; // Replace `params` with the actual PO ID
-  //       // First, submit the form (handleSubmit)
-  //       const res = await handleSubmit(e); // Ensure it runs correctly
-
-  //       const response = await updatePurchaseOrderStatusApi(poId, payload);
-
-  //       if (response.data?.success) {
-  //         Swal.fire({
-  //           icon: "success",
-  //           title: "Saved as Draft",
-  //           text: response.data?.message,
-  //           showConfirmButton: false,
-  //           timer: 1500,
-  //         });
-  //       } else {
-  //         throw new Error(response.data?.message || "Failed to save as draft");
-  //       }
-  //     } catch (error) {
-  //       console.error("Error saving as draft:", error);
-  //       Swal.fire({
-  //         icon: "error",
-  //         title: "Error",
-  //         text: error.message || "An error occurred while saving as draft.",
-  //       });
-  //     }
-  //   }
-  // };
-
-  // Handle Form Submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
     try {
-      //step 1 Create Bill High Level
       const res = await addBillDetailsApi(formBillingData);
 
       if (res.data?.success) {
@@ -917,7 +731,6 @@ const VerifyPurchaseOrder = () => {
         const poId = params;
 
         // Update PO Items
-        //step 2 when bill created PO Items will updated with latest bill_id
         await updatePoItems(billId, poId);
 
         // ✅ Create Batch API
@@ -928,13 +741,11 @@ const VerifyPurchaseOrder = () => {
           bill_id: billId,
         };
 
-        //step 3 Batch Will create for a order
         const batchResponse = await createBatchApi(batchPayload);
 
         if (batchResponse.data?.success) {
           const batchId = batchResponse.data?.batch?._id;
 
-          //step 4 All Bill items Saved with bill id , and batch id
           // ✅ Create Bill Items, now including batchId
           const billitems = await createBillItems(billId, poId, batchId);
 
@@ -971,24 +782,6 @@ const VerifyPurchaseOrder = () => {
             );
             const addProductsInInventory = await addProductsInInvntory(filteredBillItems);
             console.log("Added to Inventory:", addProductsInInventory);
-
-            const stockEntries = filteredBillItems.map(item => ({
-              batch_id: item?.batch_id,
-              lot_id: item?.batch_id, // Assuming lot_id is same as batch_id, update if needed
-              product_id: item?.product_id,
-              bill_id: item?.bill_id,
-              po_so_id: item?.po_id, // Replace with actual value
-              order_type_ref: "PurchaseOrder",
-              order_type: "PO",
-              original_quantity: item?.quantity || 0,
-              used_qty: 0,
-              remaining_qty: item?.quantity || 0,
-            }));
-
-            console.log("Stock Entries Payload:", stockEntries);
-
-            const res = await addEntryInStock(stockEntries);
-            console.log("Stock Updated:", res);
           }
 
 
@@ -1098,58 +891,16 @@ const VerifyPurchaseOrder = () => {
     }
   };
 
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
 
-  //   try {
-  //     const res = await addBillDetailsApi(formBillingData);
-
-
-  //     if (res.data?.success) {
-  //       const billId = res?.data?.bill?._id;
-  //       const poId = params;
-
-  //       // Update PO Items and Create Bill Items
-  //       await updatePoItems(billId, poId);
-
-  //       await createBillItems(billId, poId);
-
-  //       // Show success alert only for Bill creation
-  //       Swal.fire({
-  //         icon: "success",
-  //         title: "Bill Created Successfully",
-  //         text: res.data?.message,
-  //         showConfirmButton: false,
-  //         timer: 1500,
-  //       });
-  //       setContentModal(false);
-
-  //       return res; // ✅ Return API response so it can be used in handleSubmitDraft
-  //     } else {
-  //       throw new Error(res.data?.message || "Failed to create Bill");
-  //     }
-  //   } catch (error) {
-  //     console.error("Error during form submission:", error);
-  //     Swal.fire({
-  //       icon: "error",
-  //       title: "Error",
-  //       text: error.message || "An error occurred while processing your request.",
-  //     });
-
-  //     return { data: { success: false } }; // ✅ Return failure response
-  //   }
-  // };
-
-  // Handle Submit Draft
   const handleSubmitDraft = async (e) => {
     e.preventDefault();
 
     const result = await Swal.fire({
       title: "Are you sure?",
-      text: "You are about to save this as a draft.",
+      text: "You are about to verify this sale order.",
       icon: "warning",
       showCancelButton: true,
-      confirmButtonText: "Yes, save as draft",
+      confirmButtonText: "Yes, verify order",
       cancelButtonText: "Cancel",
     });
 
@@ -1322,23 +1073,6 @@ const VerifyPurchaseOrder = () => {
     }
   }
 
-  const handleVerifyClick = (row) => {
-    // setSelectedRowData(row);
-    setSelectedRowData({ ...row }); // Set selected row data
-    setVerifyShowModal(true);
-  };
-
-  const handleVerify = () => {
-    setRows((prevRows) =>
-      prevRows.map((row) =>
-        row.id === selectedRowData?.id
-          ? { ...row, received_quantity: selectedRowData.received_quantity, verified_quantity: selectedRowData.verified_quantity }
-          : row
-      )
-    );
-    setVerifyShowModal(false); // Close the modal
-  };
-
   return (
     <>
       <ToastContainer />
@@ -1358,7 +1092,7 @@ const VerifyPurchaseOrder = () => {
                   </div> */}
                   <div className="col-sm-4">
                     <h2 className="header-title" style={{ display: 'inline', whiteSpace: 'nowrap' }}>
-                      Rajdhani -Verify Purchase Order
+                      Rajdhani -Verify Sale Order
                     </h2>
                   </div>
                 </div>
@@ -1404,19 +1138,24 @@ const VerifyPurchaseOrder = () => {
                     <div className="col-md-6 col-xl-4 d-flex justify-content-xl-center mt-3 mt-xl-0  divider">
                       {/* Divider */}
                       <div className="order-info">
-                        <h5>Supplier (Bill from)</h5>
+                        <h5>Customer (Bill from)</h5>
                         <p className="po-view-p">
-                          {purchaseOrderData?.supplier_id?.name}
+                          {purchaseOrderData?.customer_id?.fname}  {purchaseOrderData?.customer_id?.lname}
+                        </p>
+
+                        <p className="po-view-p">
+                          {purchaseOrderData?.customer_id?.address}
                         </p>
                         <p className="po-view-p">
-                          {purchaseOrderData?.supplier_id?.city}
+                          {purchaseOrderData?.customer_id?.state}, {purchaseOrderData?.customer_id?.city}, {purchaseOrderData?.customer_id?.country}
                         </p>
+                        {/* <p className="po-view-p">
+                         
+                        </p> */}
                         <p className="po-view-p">
-                          State: {purchaseOrderData?.supplier_id?.state}
+                          Email: {purchaseOrderData?.customer_id?.email}
                         </p>
-                        <p className="po-view-p">
-                          Email: {purchaseOrderData?.supplier_id?.email}
-                        </p>
+
                       </div>
                     </div>
                   </div>
@@ -1426,76 +1165,8 @@ const VerifyPurchaseOrder = () => {
 
 
 
-            {/* Bill Cards */}
-            <div className="">
-              <div className="card-header pb-0 px-0" >
-                <h4 className="card-title">Bill Details</h4>
-              </div>
 
-              <div className="">
-                <div className="mt-3 px-0">
-                  <div className="row card-main-div">
-                    {billData?.length > 0 ? (<>
-                      {billData?.slice(0, visibleCount)?.map((val, ind) => (<>
-                        <div className="col-md-6 col-xl-3 pb-4">
-                          <BillCard ind={ind} val={val} handleGetBillData={handleGetBillData} />
-                        </div>
-                      </>))}
-                      {/* see more btn */}
-                      {billData?.length > visibleCount && (
-                        <div className="col-md-6 col-xl-3">
-                          <button
-                            className="add-new-bill-btn"
-                            onClick={handleSeeMore}>
-                            <div className="bill-cards" style={{ textAlign: "center" }} >
-                              <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
-                                See More
-                              </p>
-                            </div>
-                          </button>
-                        </div>
-                      )}
-                      {/* Add New Bill Button after bills */}
-                      <div className="col-md-6 col-xl-3 mt-4 mt-md-0">
-                        <button
-                          className="add-new-bill-btn"
-                          onClick={handleAddNewBill}>
-                          <div className="bill-cards" style={{ textAlign: "center" }}>
-                            <i
-                              className="fa-solid fa-plus fa-2xl"
-                              style={{ color: "#007bff", marginBottom: "10px" }}
-                            ></i>
-                            <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
-                              Add New Bill
-                            </p>
-                          </div>
-                        </button>
-                      </div>
-                    </>
-                    ) : (
-                      // Message and Add Button if no bills found
-                      <div className="col-md-6 col-xl-3 text-center mt-3 mt-md-0">
-                        <p className="pt-2">No bills found for this Purchase Order ID</p>
-                        <button
-                          className="add-new-bill-btn"
-                          onClick={() => setContentModal(true)}>
-                          <div className="bill-cards" style={{ textAlign: "center" }}>
-                            <i
-                              className="fa-solid fa-plus fa-2xl"
-                              style={{ color: "#007bff", marginBottom: "10px" }}
-                            ></i>
-                            <p style={{ fontSize: "14px", margin: "0", color: "#007bff" }}>
-                              Add New Bill
-                            </p>
-                          </div>
-                        </button>
-                      </div>
-                    )
-                    }
-                  </div>
-                </div>
-              </div>
-            </div>
+
 
 
             {/* Bill Detail */}
@@ -1645,7 +1316,7 @@ const VerifyPurchaseOrder = () => {
               <Col lg={12}>
                 <div className="">
                   <div className="card-header pb-0 px-0">
-                    <h4 className="card-title">PO Product Details</h4>
+                    <h4 className="card-title">SO Product Details</h4>
                   </div>
                   <div className="card-body px-0">
                     <div className="table-responsive">
@@ -1871,7 +1542,7 @@ const VerifyPurchaseOrder = () => {
             <div className="row justify-content-end ">
               <div className="summary-section col-md-5">
                 <table className="table table-bordered ">
-                  <h3>Summary</h3>
+                  <h3 className="p-2 mx-1">Summary</h3>
 
                   <tbody>
                     <tr>
@@ -1907,9 +1578,22 @@ const VerifyPurchaseOrder = () => {
 
             {/* Footer Section */}
             <div className="footer-section">
-              <p>
-                Prepared By: <b>{orderDetails.footer.preparedBy}</b>
-              </p>
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Prepared By</th>
+                    <th>Authorized By</th>
+                    <th>Verified By</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>{orderDetails.footer.preparedBy}</td>
+                    <td>{orderDetails.footer.authorizedBy}</td>
+                    <td>{orderDetails.footer.verifiedBy}</td>
+                  </tr>
+                </tbody>
+              </table>
               <h4>Terms and Conditions:</h4>
               <ul>
                 {orderDetails.footer.terms.map((term, index) => (
@@ -1919,26 +1603,26 @@ const VerifyPurchaseOrder = () => {
             </div>
 
             {/* Buttons  */}
-            {/* <div className="d-flex gap-3 justify-content-end text-end mt-3 mt-md-0">
+            <div className="d-flex gap-3 justify-content-end text-end mt-3 mt-md-0">
               <button
                 type="submit"
-                onClick={handleSubmitDraft}
-                className="btn btn-danger rounded-sm">
-                Save as draft
+                onClick={handleVerify}
+                className="btn btn-success rounded-sm">
+                Verify
               </button>
 
-              <button
+              {/* <button
                 type="submit"
                 onClick={handleSubmitFinal}
                 className="btn btn-primary rounded-sm">
                 Final Submission
-              </button>
-            </div> */}
+              </button> */}
+            </div>
           </div>
         </div>
       </div>
 
-      {/* <!-- Modal Box Verify Bill Section--> */}
+      {/* <!-- Modal --> */}
       <Modal className="fade card-body" show={contentModal} onHide={setContentModal} size="xl">
         <Modal.Header>
           <Modal.Title>Add Bill & Verify Bill Items</Modal.Title>
@@ -1949,8 +1633,8 @@ const VerifyPurchaseOrder = () => {
 
           </Button>
         </Modal.Header>
-        {/* <!-- Modal Box Body Verify Bill Section--> */}
         <Modal.Body>
+
           <div className="">
             {/* Header Section */}
             <div className="">
@@ -1965,13 +1649,143 @@ const VerifyPurchaseOrder = () => {
                 </div>
               </div>
             </div>
-            {/* Body Section for verify bill */}
+
+            {/* First Two sections for bill */}
+            {/* <div className="row">
+            
+            <div className="col-xl-6 col-lg-6">
+              <div className="card">
+                <div className="card-header">
+                  <h4 className="card-title">Bill Info</h4>
+                </div>
+                <div className="card-body">
+                  <div>
+
+                    <div className="mb-3 row">
+                      <div className="col-sm-12">
+                        <label className="col-sm-3 col-form-label">
+                          Bill No.
+                        </label>
+                        <input
+                          name="bill_no"
+                          value={formBillingData?.bill_no || ''}
+                          onChange={handleBillingDetailChange}
+                          type="text"
+                          className="form-control"
+                          placeholder="Ex: B12345"
+                        />
+                        {errors.name && <span className="text-danger fs-12">{errors.name}</span>}
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <div className="col-sm-12">
+                        <label className="col-sm-3 col-form-label">
+                          Bill Amount
+                        </label>
+                        <input
+                          name="bill_amount"
+                          value={formBillingData?.bill_amount || ''}
+                          onChange={handleBillingDetailChange}
+                          type="number"
+                          className="form-control"
+                          placeholder="Ex: 1000"
+                        />
+                        {errors.billing_bill_amount && (
+                          <span className="text-danger fs-12">{errors.billing_bill_amount}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mb-3 row">
+                      <div className="col-sm-12">
+                        <label className="col-sm-3 col-form-label">
+                          Bill Date
+                        </label>
+                        <input
+                          name="bill_date"
+                          value={formBillingData?.bill_date || ''}  // Displays the selected date, or an empty string if not available
+                          onChange={handleBillingDetailChange}  // Updates the state when a new date is selected
+                          type="date"  // Specifies the input type as date, enabling the date picker
+                          className="form-control"
+                        />
+                        {errors.billing_bill_date && (
+                          <span className="text-danger fs-12">{errors.billing_bill_date}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mb-3 row">
+                      <div className="col-sm-12">
+                        <label className="col-sm-3 col-form-label">
+                          Note
+                        </label>
+                        
+                        <textarea
+                          name="note"
+                          className="form-control"
+                          rows="3"
+                          id="comment"
+                          placeholder="Ex: Add notes for bill"
+                          value={formBillingData?.note}
+                          onChange={handleBillingDetailChange}
+                        ></textarea>
+                        {errors.note && <span className="text-danger fs-12">{errors.note}</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+           
+            <div className="col-xl-6 col-lg-6 flex ">
+              <div className="card">
+                <div className="card-header mb-4">
+                  <h4 className="card-title">Bill Image/File</h4>
+                </div>
+                <div className="col-sm-12" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <label className="col-form-label">Bill Image/File</label>
+                  <div style={styles.container}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoChange}
+                      style={{ display: 'none' }}
+                      id="logoUpload"
+                    />
+                    {logo ? (
+                      <>
+                        
+                        <div style={styles.deleteIcon} onClick={handleDeleteLogo}>
+                          ⛌
+                        </div>
+                        <img src={logo} alt="Logo" style={styles.img} />
+                      </>
+                    ) : (
+                      <label htmlFor="logoUpload" style={styles.placeholder}>
+                        <div style={styles.uploadIcon} className='flex flex-col cursor-pointer'>
+                          <img width="30" src={uplodIcon} alt="Upload Icon"></img>
+                          <p>Upload Image/File</p>
+                        </div>
+                      </label>
+                    )}
+                  </div>
+                  <p className='mt-2'>Image format - jpg png jpeg gif<br />Image Size - maximum size 2 MB<br />Image Ratio - 1:1</p>
+                  {errors.image && <span className="text-danger fs-12">{errors.image}</span>}
+                </div>
+
+
+              </div>
+            </div>
+
+          </div> */}
+
             <div className="card">
               <div className="card-body p-3">
                 <div className="row">
                   {/* First Column: Bill Info Part 1 */}
                   <div className="col-xl-4">
-                    {/* Bill No. */}
                     <div className="mb-2">
                       <label className="form-label fs-6">Bill No.</label>
                       <input
@@ -1984,7 +1798,20 @@ const VerifyPurchaseOrder = () => {
                       />
                       {errors.name && <span className="text-danger fs-12">{errors.name}</span>}
                     </div>
-                    {/* Note */}
+
+                    {/* <div className="mb-2">
+                    <label className="form-label fs-6">Bill Amount</label>
+                    <input
+                      name="bill_amount"
+                      value={formBillingData?.bill_amount || ''}
+                      onChange={handleBillingDetailChange}
+                      type="number"
+                      className="form-control form-control-sm"
+                      placeholder="Ex: 1000"
+                    />
+                    {errors.billing_bill_amount && <span className="text-danger fs-12">{errors.billing_bill_amount}</span>}
+                   </div> */}
+
                     <div className="mb-2">
                       <label className="form-label fs-6">Note</label>
                       <textarea
@@ -1998,9 +1825,9 @@ const VerifyPurchaseOrder = () => {
                       {errors.note && <span className="text-danger fs-12">{errors.note}</span>}
                     </div>
                   </div>
+
                   {/* Second Column: Bill Info Part 2 */}
                   <div className="col-xl-4">
-                    {/* Bill Date */}
                     <div className="mb-2">
                       <label className="form-label fs-6">Bill Date</label>
                       <input
@@ -2012,7 +1839,22 @@ const VerifyPurchaseOrder = () => {
                       />
                       {errors.billing_bill_date && <span className="text-danger fs-12">{errors.billing_bill_date}</span>}
                     </div>
+                    {/* 
+                  <div className="mb-2">
+                    <label className="form-label fs-6">Note</label>
+                    <textarea
+                      name="note"
+                      className="form-control form-control-sm"
+                      rows="2"
+                      placeholder="Ex: Add notes for bill"
+                      value={formBillingData?.note}
+                      onChange={handleBillingDetailChange}
+                    ></textarea>
+                    {errors.note && <span className="text-danger fs-12">{errors.note}</span>}
                   </div>
+                   */}
+                  </div>
+
                   {/* Third Column: Bill Image/File in a Card */}
                   <div className="col-xl-4 mt-2">
                     <div className="mb-2 ">
@@ -2065,7 +1907,7 @@ const VerifyPurchaseOrder = () => {
                           <tr>
                             <th>SL</th>
                             <th>Product Name</th>
-                            <th>Code</th>
+                            <th>Product Code</th>
                             <th>UOM</th>
                             <th>Weight(Kg)</th>
                             <th>Quantity</th>
@@ -2074,6 +1916,7 @@ const VerifyPurchaseOrder = () => {
                             <th>CGST</th>
                             <th>SGST</th>
                             <th>IGST</th>
+                            <th>Cess</th>
                             <th>Amount</th>
                             <th>Ordered Quantity</th>
                             <th>Received Quantity</th>
@@ -2082,75 +1925,43 @@ const VerifyPurchaseOrder = () => {
                             <th>Action</th>
                           </tr>
                         </thead>
-                        <tbody >
+                        <tbody>
                           {rows?.map((row, index) => (
-                            console.log("Row ------------------>", row),
-                            <tr key={row.id}
-                              //  onClick={() => handleVerifyClick(row)} 
-                              onClick={(e) => {
-                                const target = e.target;
 
-                                // Prevent modal from opening when clicking on an active input or button
-                                if (target.tagName === "BUTTON") return;
-                                if (target.tagName === "INPUT" && !target.disabled) return;
-
-                                // Open modal if clicking on a disabled input or any other row area
-                                handleVerifyClick(row);
-                              }}
-                              style={{ cursor: "pointer" }}>
+                            <tr key={row.id}>
                               <td>{row.id}</td>
                               {/* product Name */}
-                              {/* <td>
-                                <input
-                                  type="text"
-                                  placeholder="Product Name"
-                                  value={row?.product_name}
-                                  onChange={(e) =>
-                                    handleChangeRow(
-                                      index,
-                                      "product_name",
-                                      e.target.value
-                                    )
-                                  }
-                                  className="form-control row-input"
-                                  style={{ width: "390px" }}
-                                  disabled
-                                />
-                              </td> */}
                               <td>
-                                <div
-                                  style={{
-                                    whiteSpace: "nowrap",
-                                    width: isExpanded ? "100%" : "100%", // Expands width on toggle
-                                    overflow: "hidden",
-                                    textOverflow: "ellipsis",
-                                    padding: "4px 8px",
-                                    border: "1px solid #ddd",
-                                    borderRadius: "8px",
-                                    backgroundColor: "#f5f5f5",
-                                    textAlign: "start",
-                                    cursor: "pointer",
-                                    transition: "width 0.3s ease", // Smooth transition
+                                <Select
+                                  //value={row.selectedOption}
+                                  // onChange={(selectedOption) =>
+                                  //   handleProductChange(selectedOption, index)
+                                  // }
+                                  // defaultValue={row.selectedOption}
+
+                                  value={row?.selectedOption} // Prefill selected option
+                                  onChange={(selectedOption) => handleProductChange(selectedOption, index)}
+
+                                  options={productOption} // Ensure productOption is properly defined
+                                  styles={{
+                                    control: (provided) => ({
+                                      ...provided,
+                                      width: '200px', // Adjust the width as needed
+                                      lineHeight: "20px",
+                                      color: "#7e7e7e",
+                                      paddingLeft: "15px",
+                                    }),
+                                    menuPortal: (provided) => ({
+                                      ...provided,
+                                      zIndex: 9999, // Ensures dropdown appears on top of other content
+                                    }),
+                                    menu: (provided) => ({
+                                      ...provided,
+                                      top: '-100%', // Positions the dropdown above the select input
+                                    }),
                                   }}
-                                  onClick={toggleExpand}
-                                >
-                                  {row?.product_name}
-                                  {!isExpanded && (
-                                    <span
-                                      style={{
-                                        position: "absolute",
-                                        right: "8px",
-                                        top: "50%",
-                                        transform: "translateY(-50%)",
-                                        color: "#007bff",
-                                        fontSize: "12px",
-                                        cursor: "pointer",
-                                      }}
-                                    >
-                                      ...
-                                    </span>
-                                  )}
-                                </div>
+                                  menuPortalTarget={document.body}
+                                />
                               </td>
                               {/* product Code */}
                               <td>
@@ -2170,7 +1981,55 @@ const VerifyPurchaseOrder = () => {
                                 />
                               </td>
 
+                              {/* <td>
+                                <input
+                                  type="text"
+                                  placeholder="Unit"
+                                  value={row.unit}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "unit",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control row-input"
+                                  style={{ width: "70px" }}
+                                />
+                              </td> */}
 
+                              {/* <td>
+                                <input
+                                  type="text"
+                                  placeholder="Variant"
+                                  value={row.variant}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "variant",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  style={{ width: "120px" }}
+                                />
+                              </td> */}
+
+                              {/* <td>
+                                <input
+                                  type="text"
+                                  placeholder="Variant Type"
+                                  value={row.variant_type}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "variant_type",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                />
+                              </td> */}
                               {/* uom */}
                               <td>
                                 <input
@@ -2255,7 +2114,22 @@ const VerifyPurchaseOrder = () => {
                                 />
                               </td>
 
-
+                              {/* <td>
+                                <input
+                                  type="number"
+                                  placeholder="Total Discount"
+                                  value={row.total_discount}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "total_discount",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  disabled
+                                />
+                              </td> */}
 
                               {/* cgst */}
                               <td>
@@ -2301,6 +2175,23 @@ const VerifyPurchaseOrder = () => {
                                     handleChangeRow(
                                       index,
                                       "igst",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  style={{ width: "70px" }}
+                                />
+                              </td>
+                              {/* cess */}
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="Cess"
+                                  value={row.cess}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "cess",
                                       e.target.value
                                     )
                                   }
@@ -2381,18 +2272,13 @@ const VerifyPurchaseOrder = () => {
                                 )}
                               </td>
                               <td>
-                                <button
-                                  className="btn btn-primary mt-2 ms-2"
-                                  onClick={() => handleVerifyClick(row)}>
-                                  Verify
-                                </button>
-                                {/* {index > 0 ? (
+                                {index > 0 ? (
                                   <button
                                     className="btn btn-danger mt-2"
                                     onClick={() => handleDeleteTableRow(row?.id)}>
                                     Delete
                                   </button>
-                                ) : null} */}
+                                ) : null}
                               </td>
                             </tr>
                           ))}
@@ -2400,9 +2286,9 @@ const VerifyPurchaseOrder = () => {
                       </table>
                     )}
                   </div>
-                  {/* <button onClick={addRow} className="btn btn-primary mt-2">
+                  <button onClick={addRow} className="btn btn-primary mt-2">
                     Add New Row
-                  </button> */}
+                  </button>
                 </div>
               </div>
             </div>
@@ -2562,93 +2448,9 @@ const VerifyPurchaseOrder = () => {
           </div>
         </Modal.Footer>
       </Modal>
-
-
-      {/* Verify Modal */}
-      <Modal
-        style={{
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: "rgba(0, 0, 0, 0.5)", // Dim background effect
-        }}
-        centered
-        show={verifyShowModal} onHide={() => setVerifyShowModal(false)}>
-        <Modal.Header closeButton>
-          <Modal.Title>Verify Item</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          {selectedRowData && (
-            <div
-              style={{
-                backgroundColor: "rgba(255, 255, 255, 0)", // Fully transparent background
-                borderRadius: "8px",
-                padding: "12px",
-                // boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
-                border: "1px solid rgba(255, 255, 255, 0.3)", // Semi-transparent border
-                width: "100%",
-                fontSize: "13px",
-                backdropFilter: "blur(5px)", // Optional: Glassmorphism effect
-              }}
-            >
-              <h6 style={{ fontWeight: "600", marginBottom: "8px", color: "#222", textAlign: "center" }}>
-                Product Details
-              </h6>
-
-              {/* Table-like Grid with Borders */}
-              <div style={{ display: "grid", gridTemplateColumns: "140px auto", fontSize: "13px", border: "1px solid #D3D3D3", borderRadius: "8px", padding: "5px", }}>
-                {[
-                  { label: "Product Name", value: selectedRowData?.product_name },
-                  { label: "Product Code", value: selectedRowData?.product_code },
-                  { label: "Ordered Qty", value: selectedRowData?.ordered_quantity },
-                  { label: "Weight", value: selectedRowData?.weight || "N/A" },
-                  { label: "UOM", value: selectedRowData?.uom || "N/A" },
-                ].map((item, index) => (
-                  <React.Fragment key={index}>
-                    <div style={{ fontWeight: "600", color: "#444", padding: "6px 0" }}>{item.label}:</div>
-                    <div style={{ color: "#666", padding: "6px 0", borderBottom: "1px dotted #ccc" }}>{item.value}</div>
-                  </React.Fragment>
-                ))}
-              </div>
-
-              {/* Inputs Row */}
-              <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
-                {/* Received Quantity */}
-                <div style={{ flex: 1 }}>
-                  <label style={{ fontWeight: "600", fontSize: "13px", color: "#333" }}>Received Qty</label>
-                  <input
-                    type="number"
-                    placeholder="Received Quantity"
-                    value={selectedRowData?.received_quantity || ""}
-                    onChange={(e) => setSelectedRowData({ ...selectedRowData, received_quantity: e.target.value })}
-                    className="form-control row-input"
-                  />
-
-                </div>
-                <div style={{ flex: 1 }}>
-                  {/* Verify Quantity */}
-                  <label style={{ fontWeight: "600", fontSize: "13px", color: "#333" }}>Verified Qty</label>
-                  <input
-                    type="number"
-                    placeholder="Verify Quantity"
-                    value={selectedRowData?.verified_quantity || ""}
-                    onChange={(e) => setSelectedRowData({ ...selectedRowData, verified_quantity: e.target.value })}
-                    className="form-control row-input"
-                  />
-                </div>
-
-              </div>
-            </div>
-          )}
-
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="danger" onClick={() => setVerifyShowModal(false)}>Close</Button>
-          <Button variant="success" onClick={() => handleVerify()}>Verify</Button>
-        </Modal.Footer>
-      </Modal>
+      
     </>
   );
 };
 
-export default VerifyPurchaseOrder;
+export default VerifySaleOrder;

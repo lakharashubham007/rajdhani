@@ -3,27 +3,37 @@ const { SaleOrder } = require("../models");
 // Generate a new Sale Order ID
 const generateSaleOrderId = async () => {
   try {
-    const now = new Date();
-    const fiscalYearStart = now.getMonth() < 3 ? now.getFullYear() - 1 : now.getFullYear();
-    const fiscalYearEnd = fiscalYearStart + 1;
-    const fiscalYear = `${fiscalYearStart.toString().slice(-2)}-${fiscalYearEnd.toString().slice(-2)}`;
-
-    // Find the latest sale order
-    const lastOrder = await SaleOrder.findOne().sort({ voucher_no: -1 });
-
-    let newCount = 1;
-    if (lastOrder) {
-      const lastSoId = lastOrder.voucher_no;
-      const lastCount = parseInt(lastSoId.split('/').pop(), 10);
-      newCount = lastCount + 1;
-    }
-
-    return `SB/SO/${fiscalYear}/${String(newCount)}`;
-  } catch (error) {
-    console.error("Error generating sale order ID:", error);
-    throw error;
-  }
-};
+     const now = new Date();
+     const fiscalYearStart = now.getMonth() < 3 ? now.getFullYear() - 1 : now.getFullYear();
+     const fiscalYearEnd = fiscalYearStart + 1;
+     const fiscalYear = `${fiscalYearStart.toString().slice(-2)}-${fiscalYearEnd.toString().slice(-2)}`;
+ 
+     const prefix = `SB/SO/${fiscalYear}/`;
+ 
+     // Find all voucher_no starting with the fiscal year prefix
+     const purchaseOrders = await SaleOrder.find({
+       voucher_no: { $regex: `^${prefix}` }
+     });
+ 
+     let maxCount = 0;
+ 
+     purchaseOrders.forEach(order => {
+       const parts = order.voucher_no.split('/');
+       const count = parseInt(parts[parts.length - 1], 10);
+       if (!isNaN(count) && count > maxCount) {
+         maxCount = count;
+       }
+     });
+ 
+     const newCount = maxCount + 1;
+     const newVoucherNo = `${prefix}${newCount}`;
+ 
+     return newVoucherNo;
+   } catch (error) {
+     console.error("Error generating purchase order ID:", error);
+     throw error;
+   }
+ };
 
 // Create a new Sale Order
 const createSaleOrder = async (data) => {
@@ -61,7 +71,12 @@ const getSaleOrders = async (page, limit, sort, search) => {
     }
 
     const saleOrders = await SaleOrder.find(filter)
-      .populate('customer_id')
+    .populate([
+      { path: 'customer_id' },
+      { path: 'isVerifiedBy' },
+      { path: 'createdBy' },
+      { path: 'isAuthorizedBy' }
+    ])
       .sort(sortOptions)
       .skip(skip)
       .limit(limit);
@@ -84,7 +99,12 @@ const getSaleOrders = async (page, limit, sort, search) => {
 // Get a single Sale Order by ID
 const getSaleOrderById = async (id) => {
   try {
-    const saleOrder = await SaleOrder.findById(id).populate('customer_id');
+    const saleOrder = await SaleOrder.findById(id).populate([
+      { path: 'customer_id' },
+      { path: 'isVerifiedBy' },
+      { path: 'createdBy' },
+      { path: 'isAuthorizedBy' }
+    ]);
     return saleOrder;
   } catch (error) {
     console.error("Error fetching sale order by ID:", error);
@@ -125,6 +145,45 @@ const updateSaleOrderStatus = async (id, status) => {
   }
 };
 
+const verifySaleOrderBy = async (so_id, userId, isVerified) => {
+  try {
+    const updated = await SaleOrder.findByIdAndUpdate(
+      so_id,
+      {
+        $set: {
+          isVerifiedBy: userId,
+          isVerified: isVerified
+        }
+      },
+      { new: true }
+    ).populate('isVerifiedBy', 'firstName lastName');
+
+    return updated;
+  } catch (error) {
+    console.error('verifySaleOrderBy error:', error);
+    throw error;
+  }
+};
+
+// Get all Sale Orders by Customer ID
+const getSaleOrdersByCustomerId = async (customerId) => {
+  try {
+    const saleOrders = await SaleOrder.find({ customer_id: customerId }).populate([
+      { path: 'customer_id' },
+      { path: 'isVerifiedBy' },
+      { path: 'createdBy' },
+      { path: 'isAuthorizedBy' }
+    ]);
+    return saleOrders;
+  } catch (error) {
+    console.error("Error fetching sale orders by customer ID:", error);
+    throw error;
+  }
+};
+
+
+
+
 module.exports = {
   createSaleOrder,
   getAllSaleOrders,
@@ -132,5 +191,8 @@ module.exports = {
   getSaleOrderById,
   updateSaleOrder,
   deleteSaleOrder,
-  updateSaleOrderStatus
+  updateSaleOrderStatus,
+  verifySaleOrderBy,
+  getSaleOrdersByCustomerId
+  
 };

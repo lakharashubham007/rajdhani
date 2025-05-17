@@ -84,22 +84,22 @@ const ShippingDetailFormMdl = ({
 
                   <div className="col-sm-6 col-xl-4">
                     <label className=" col-form-label">Mobile No.1<span className="text-danger">*</span></label>
-                    {/* <input
+                    <input
                       name="mobile_no1"
                       value={formShippingData?.mobile_no1}
                       onChange={handleShippingDetailChange}
                       type="text"
                       className="form-control"
                       placeholder="Ex: +91 9876-555-555"
-                    /> */}
-                     <PhoneInput
+                    />
+                     {/* <PhoneInput
                       className=""
                       inputClass=""
                       country={"in"}
                       value={formShippingData?.mobile_no1}
                       onChange={(value) => handleShippingPhoneDetailChange(value, "mobile_no1")}
                       // onChange={handleOnChange}
-                    />
+                    /> */}
 
                     {errors?.shipping_mobile_no1 && (
                       <span className="text-danger fs-12">
@@ -110,22 +110,22 @@ const ShippingDetailFormMdl = ({
 
                   <div className="col-sm-6 col-xl-4">
                     <label className=" col-form-label">Mobile No.2</label>
-                    {/* <input
+                    <input
                       name="mobile_no2"
                       value={formShippingData?.mobile_no2}
                       onChange={handleShippingDetailChange}
                       type="text"
                       className="form-control"
                       placeholder="Ex:  +91 9876-555-555"
-                    /> */}
-                    <PhoneInput
+                    />
+                    {/* <PhoneInput
                       className=""
                       inputClass=""
                       country={"in"}
                       value={formShippingData?.mobile_no2}
                       onChange={(value) => handleShippingPhoneDetailChange(value, "mobile_no2")}
                       // onChange={handleOnChange}
-                    />
+                    /> */}
                     {errors?.shipping_mobile_no2 && (
                       <span className="text-danger fs-12">
                         {errors?.shipping_mobile_no2}
@@ -136,8 +136,8 @@ const ShippingDetailFormMdl = ({
                   <div className="col-sm-6 col-xl-4">
                     <label className="col-form-label">GSTIN<span className="text-danger">*</span></label>
                     <input
-                      name="gstin"
-                      value={formShippingData?.gstin}
+                      name="gstNumber"
+                      value={formShippingData?.gstNumber}
                       onChange={handleShippingDetailChange}
                       type="text"
                       className="form-control"

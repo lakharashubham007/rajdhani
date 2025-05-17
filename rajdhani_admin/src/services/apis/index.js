@@ -142,6 +142,7 @@ const apis = {
     getAllProductList: `${BASE_URL}/private/products/get-all-products`,
     searchProductForSuggestions: `${BASE_URL}/private/products/search`,
     searchSimilarProducts: `${BASE_URL}/private/products/simibrands`,
+    searchSimilarHoseAssembly: `${BASE_URL}/private/products/hoseassembly`,
     generateQr: `${BASE_URL}/private/products/generateqr`,
    },
 
@@ -264,6 +265,13 @@ const apis = {
     getAllSupplierList: `${BASE_URL}/private/suppliers/all-suppliers`,
    },
 
+   producitonManagement: {
+    addProductionSheetDetails: `${BASE_URL}/private/production-sheet/create-production-sheet`,
+    addProductionSheetItems: `${BASE_URL}/private/production-sheet/create-productionsheet-items`,
+    getLastSheetNo: `${BASE_URL}/private/production-sheet/last-sheet-no`,
+    searchLastFiveSheetItems: `${BASE_URL}/private/production-sheet/last-five-usage`,
+   },
+
    purchaseorder:{
     addPurchaseOrder: `${BASE_URL}/private/purchaseorders/create-purchase-order`,
     createPoItem: `${BASE_URL}/private/purchaseorders/create-po-item`,
@@ -298,7 +306,11 @@ const apis = {
     getSaleOrderViewData:`${BASE_URL}/private/so/sale-order-list`,
     getSaleOrderItemsData:`${BASE_URL}/private/so/so-items`,
     verifySO:`${BASE_URL}/private/so/verify-so`,
-
+    veridySOITems: `${BASE_URL}/private/so/verify-so-items`,
+    verifyBySO: `${BASE_URL}/private/so/verifyby-so`,
+    saleOrderByCustomerId:`${BASE_URL}/private/so/sale-orders`,
+    saleOrderItemsBySOId:`${BASE_URL}/private/so/so-id-items`
+    
     
     },
 
@@ -330,7 +342,10 @@ const apis = {
     getCustomerList:`${BASE_URL}/private/customer/customer-list`,
     getAllCustomers:`${BASE_URL}/private/customer/customers-all`,
     getAll:`${BASE_URL}/private/locations/states-tin`,
-    getCountryList: `${BASE_URL}/private/countries/country-list`
+    getCountryList: `${BASE_URL}/private/countries/country-list`,
+    searchParty: `${BASE_URL}/private/customer/search`,
+
+
    },
 };
 

@@ -68,6 +68,7 @@ const uomOptions = [
 
 const AddProduct = () => {
   const authData = useSelector((state) => state.auth.auth);
+  console.log("authdata is here", authData)
   const navigate = useNavigate();
   const [dropdownOptions, setDropwonOptions] = useState();
   const [logo, setLogo] = useState(null);
@@ -230,8 +231,8 @@ const AddProduct = () => {
       }));
       setDesignOption(mappedData)
     } catch (error) {
-      // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -319,8 +320,8 @@ const AddProduct = () => {
       }));
       setStraightBendangleOption(mappedData);
     } catch (error) {
-      // console.error("Error fetching cuisines:", error);
-      // Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching data:", error);
+      // Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -339,8 +340,8 @@ const AddProduct = () => {
       }));
       setBrandLayLineOption(mappedData);
     } catch (error) {
-      // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -359,8 +360,8 @@ const AddProduct = () => {
       }));
       setHoseTypeOption(mappedData);
     } catch (error) {
-      // console.error("Error fetching cuisines:", error);
-      // Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching data:", error);
+      // Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -4,8 +4,14 @@ const { supplierService } = require('../services');
 const createSupplier = async (req, res) => {
   try {
     const supplierData = req.body;
+    const imageArray = req?.files?.image;
+    const imageData =
+      Array.isArray(imageArray) && imageArray.length > 0
+        ? imageArray[0].originalname
+        : "rajdhani_product.jpg";
+    // const imageData = req?.files?.image[0]?.originalname ? req?.files?.image[0]?.originalname : "rajdhani_product.jpg"
 
-    const supplier = await supplierService.createSupplier(supplierData, req.files?.image[0]?.originalname);
+    const supplier = await supplierService.createSupplier(supplierData, imageData);
 
     res.json({ success: true, supplier, message: 'Supplier created successfully!' });
   } catch (error) {
@@ -130,18 +136,18 @@ const deleteSupplier = async (req, res) => {
 // Update Product Status
 const updateSupplierStatus = async (req, res) => {
   try {
-      const supplierId = req.params.id;
-      const status = req.body.status;
-      const updatedSupplier = await supplierService.updateSupplierStatus(supplierId, status);
+    const supplierId = req.params.id;
+    const status = req.body.status;
+    const updatedSupplier = await supplierService.updateSupplierStatus(supplierId, status);
 
-      res.json({
-          success: true,
-          supplier: updatedSupplier,
-          message: 'Supplier status updated successfully!'
-      });
+    res.json({
+      success: true,
+      supplier: updatedSupplier,
+      message: 'Supplier status updated successfully!'
+    });
   } catch (error) {
-      console.error(error);
-      res.status(500).json({ success: false, message: 'Internal Server Error' });
+    console.error(error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
   }
 };
 

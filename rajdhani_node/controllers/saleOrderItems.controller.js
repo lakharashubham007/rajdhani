@@ -80,11 +80,53 @@ const updateSpecificSOItems = async (req, res) => {
   }
 };
 
+const verifyItemInSaleOrder = async (req, res) => {
+  try {
+    const {so_id, isVerified, isVerifiedBy } = req.body;
+
+    if (!Array.isArray(isVerified) || !isVerifiedBy) {
+      return res.status(400).json({ success: false, message: "Invalid payload" });
+    }
+
+    const result = await saleOrderItemService.verifySaleOrderItems(so_id,isVerified, isVerifiedBy);
+  console.log("result/*/*/*/*//*/*/*/*/*/*/*/*/*/*/*/*",result?.success)
+    res.status(200).json({
+      success: result?.success,
+      message: result?.message ? result?.message : 'Verification update successful.',
+      verifiedItems: result.verifiedItemsCount,
+      unverifiedItems: result.unverifiedItemsCount,
+      totalItems: result.totalSOItems,
+      verifiedBy: result.verifiedBy
+    });
+  } catch (error) {
+    console.error("Error verifying sale order items:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+// getSaleOrderItemsBySOId
+const getSaleOrderItemsBySOId = async (req, res) => {
+  try {
+    const saleOrders = await saleOrderItemService.getSaleOrderItemsBySOId(req.params.id);
+    if (!saleOrders) {
+      return res.status(404).json({ success: false, message: "Sale orders not found" });
+    }
+    res.json({ success: true, saleOrders });
+  } catch (error) {
+    console.error("Error fetching sale order by customer ID:", error);
+    res.status(500).json({ success: false, message: "Internal Server Error" });
+  }
+};
+
+
+
 module.exports = {
   createSaleOrderItem,
   getSaleOrderItems,
   getSaleOrderItemById,
   updateSaleOrderItem,
   deleteSaleOrderItem,
-  updateSpecificSOItems
+  updateSpecificSOItems,
+  verifyItemInSaleOrder,
+  getSaleOrderItemsBySOId
 };

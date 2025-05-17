@@ -22,6 +22,8 @@ import { addSupplierPurchaseOrderApi, createPoItemApi } from "../../../services/
 import { getCountryListApi, getStateListApi, getStateListTinApi } from "../../../services/apis/CommonApi";
 import uplodIcon from "../../../assets/images/upload-icon.png";
 import { createCustomerApi } from "../../../services/apis/CustomerApi";
+import CustomerBillingDetailForm from "./CustomerBillingDetailForm";
+import CustomerShippingDetailForm from "./CustomerShippingDetailForm";
 
 const options = [
   { value: "veg", label: "Veg" },
@@ -61,56 +63,31 @@ const AddCustomer = () => {
   const [stateList, setStateList] = useState();
   const [cityList, setCityList] = useState();
   const [supplierDetail, setSupplierDetail] = useState({});
+  const [isEdit, setIsEdit] = useState(false);
   const TodayDate = moment().format("YYYY-MM-DD");
 
 
   //Billing Form Details Fields
   const [formCustomerData, setCustomerFormData] = useState({});
 
-  console.log("formCustomerData",formCustomerData);
+  const [customerBillingDetailsModal, setCustomerBillingDetailsModal] = useState(false);
+  const [customerShippingDetailsModal, setCustomerShippingDetailsModal] = useState(false);
 
-  //All Form Data is here
-  const [formData, setFormData] = useState({
-    supplier_id: "",
-    date: TodayDate,
-    due_date: "",
-    note: "",
-  });
+  const [formCustomerBillingDetailsData, setFormCustomerBillingDetailsData] = useState();
+  const [formCustomerShippingDetailsData, setFormCustomerShippingDetailsData] = useState();
 
-  //Billing Form Details Fields
-  const [formBillingData, setBillingFormData] = useState({
-    name: '',
-    email: '',
-    mobile_no1: '',
-    mobile_no2: '',
-    country: '',
-    state_name: '',
-    city: '',
-    state_tin_code: '',
-    address: '',
-    gstin: '',
-  });
+  const [selectedCustomerBillingCountryOption, setSelectedCustomerBillingCountryOption] = useState(null);
+  const [selectedCustomerBillingStateOption, setSelectedCustomerBillingStateOption] = useState(null);
+  const [selectedCustomerBillingCityOption, setSelectedCustomerBillingCityOption] = useState(null);
 
-  // console.log("Billing Form", formBillingData)
+  const [selectedCustomerShippingCountryOption, setSelectedCustomerShippingCountryOption] = useState(null);
+  const [selectedCustomerShippingStateOption, setSelectedCustomerShippingStateOption] = useState(null);
+  const [selectedCustomerShippingCityOption, setSelectedCustomerShippingCityOption] = useState(null);
 
-  //Shipping Form Details Fields
-  const [formShippingData, setShippingFormData] = useState({
-    name: '',
-    email: '',
-    mobile_no1: '',
-    mobile_no2: '',
-    country: '',
-    state_name: '',
-    city: '',
-    state_tin_code: '',
-    address: '',
-    gstin: '',
-  });
-  // console.log("Shipping Form", formShippingData)
+  console.log("formCustomerData", formCustomerData);
+  console.log("formCustomerShippingDetailsData", formCustomerShippingDetailsData);
+  console.log("formCustomerBillingDetailsData", formCustomerBillingDetailsData)
 
-  // console.log(formBillingData.state_name)
-  // console.log(formShippingData.state_name)
-  // console.log(formBillingData.state_name === formShippingData.state_name)
 
   //Rows Fields
   const [rows, setRows] = useState([
@@ -119,35 +96,14 @@ const AddCustomer = () => {
     },
   ]);
 
-  
-
 
   const resetForm = () => {
     setCustomerFormData({});
-    setBillingFormData({
-      name: '',
-      address: '',
-      gstin: '',
-      state_name: '',
-      state_code: '',
-      email: ''
-    });
+    
 
-    setShippingFormData({
-      name: '',
-      address: '',
-      gstin: '',
-      state_name: '',
-      state_code: '',
-      email: ''
-    });
+   
 
-    setFormData({
-      supplier_id: "",
-      date: TodayDate,
-      due_date: "",
-      note: "",
-    });
+  
 
     setRows([
       {
@@ -182,56 +138,6 @@ const AddCustomer = () => {
   const validateForm = () => {
     const newErrors = {};
     // Required field validation
-    if (!formData.supplier_id) newErrors.supplier_id = "Supplier is required.";
-    if (!formData.note) newErrors.note = "Note is required.";
-    if (!formData.due_date) newErrors.due_date = "Due Date Id is required.";
-
-    // Validate Billing Details
-    if (!formBillingData.name) {
-      newErrors.billing_name = "Billing name is required.";
-    }
-    if (!formBillingData.email || !/\S+@\S+\.\S+/.test(formBillingData.email)) {
-      newErrors.billing_email = "Valid email is required for billing.";
-    }
-    if (!selectedBillingStateOption) {
-      newErrors.billing_state_name = "Billing state is required.";
-    }
-    if (!formBillingData.state_code || !/^\d{1,2}$/.test(formBillingData.state_code)) {
-      newErrors.billing_state_code = "Valid billing state code is required.";
-    }
-    if (!formBillingData.gstin
-      // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formBillingData.gstin)
-    ) {
-      newErrors.billing_gstin = "Valid GSTIN is required for billing.";
-    }
-
-    if (!formBillingData.address) {
-      newErrors.billing_address = "Address is required for billing.";
-    }
-
-    // Validate Shipping Details
-    if (!formShippingData.name) {
-      newErrors.shipping_name = "Shipping name is required.";
-    }
-    if (!formShippingData.email || !/\S+@\S+\.\S+/.test(formShippingData.email)) {
-      newErrors.shipping_email = "Valid email is required for shipping.";
-    }
-    if (!selectedShippingStateOption) {
-      newErrors.shipping_state_name = "Shipping state is required.";
-    }
-    if (!formShippingData.state_tin_code || !/^\d{1,2}$/.test(formShippingData.state_code)) {
-      newErrors.state_tin_code = "Valid shipping state code is required.";
-    }
-    if (!formShippingData.gstin
-      // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formShippingData.gstin)
-    ) {
-      newErrors.shipping_gstin = "Valid GSTIN is required for shipping.";
-    }
-
-    if (!formShippingData.address) {
-      newErrors.shipping_address = "Address required for billing.";
-    }
-
 
     // Set errors to the state
     setErrors(newErrors);
@@ -240,7 +146,7 @@ const AddCustomer = () => {
     return Object.keys(newErrors).length === 0;
   };
 
-  
+
 
   const fetchSupplierAllList = async () => {
     setLoading(true);
@@ -263,7 +169,7 @@ const AddCustomer = () => {
     setLoading(true);
     try {
       const res = await GetAllProductList();
-      console.log("res dropdownProductList res",res)
+      console.log("res dropdownProductList res", res)
       const dropdownProductList = res?.data?.products?.map((product) => ({
         value: product?.desc_Code,
         label: product?.desc_Code,
@@ -275,7 +181,7 @@ const AddCustomer = () => {
         gst: product?.gst
 
       }));
-      console.log("dropdownProductList dropdownProductList dropdownProductList",dropdownProductList)
+      console.log("dropdownProductList dropdownProductList dropdownProductList", dropdownProductList)
       // setProductOption(dropdownProductList);
     } catch (error) {
       console.error("Error fetching cuisines:", error);
@@ -290,10 +196,10 @@ const AddCustomer = () => {
     try {
       const res = await getStateListTinApi(state_code);
       const StateTinNumber = res?.data?.stateTin[0]?.tin_number;
-      setBillingFormData({
-        ...formBillingData,
-        state_tin_code: StateTinNumber
-      })
+      // setBillingFormData({
+      //   ...formBillingData,
+      //   state_tin_code: StateTinNumber
+      // })
       setStateTIN(StateTinNumber);
     } catch (error) {
       Toaster.error("Failed to load tin number. Please try again.");
@@ -302,40 +208,18 @@ const AddCustomer = () => {
     }
   };
 
-    //Fetch State TIN Number
-    const fetchShippingStatesListTIN = async (state_code) => {
-      try {
-        const res = await getStateListTinApi(state_code);
-        const StateTinNumber = res?.data?.stateTin[0]?.tin_number;
-        setShippingFormData({
-          ...formShippingData,
-          state_tin_code: StateTinNumber
-        })
-        setStateTIN(StateTinNumber);
-      } catch (error) {
-        Toaster.error("Failed to load tin number. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-  //Fetch Countries List
-  const fetchCountryList = async () => {
-    setLoading(true);
+  //Fetch State TIN Number
+  const fetchShippingStatesListTIN = async (state_code) => {
     try {
-      const res = await getCountryListApi();
-
-      const data = res?.data?.countries;
-      const dropdownCountryList = data?.map((country) => ({
-        value: country?.name,
-        label: country?.name,
-        code: country?.state_code
-      }));
-      //statesOption, setStatesOption
-      // setStates(data)
-      // setCountryOption(dropdownCountryList);
+      const res = await getStateListTinApi(state_code);
+      const StateTinNumber = res?.data?.stateTin[0]?.tin_number;
+      // setShippingFormData({
+      //   ...formShippingData,
+      //   state_tin_code: StateTinNumber
+      // })
+      setStateTIN(StateTinNumber);
     } catch (error) {
-      console.log(error);
+      Toaster.error("Failed to load tin number. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -388,29 +272,23 @@ const AddCustomer = () => {
       console.log(error.message);
     }
   };
-
-
-
+  //Fetch Data
   useEffect(() => {
     fetchSupplierAllList();
     fetchProductAllList();
-    fetchCountryList();
     fetchCountryData();
   }, []);
 
+  //State and city data from country selection for main form data customer data
   useEffect(() => {
-
     if (selectedCountryOption?.value) {
       fetchStatesData(selectedCountryOption?.id)
     }
-    if (selectedStateOption?.value ) {
+    if (selectedStateOption?.value) {
       fetchStatesListTIN(selectedStateOption?.state_code)
       fetchCitiesData(selectedStateOption?.id)
     }
-   
-    
-  }, [selectedCountryOption,selectedStateOption])
-
+  }, [selectedCountryOption, selectedStateOption])
 
   const handleCustomerDetailChange = (e) => {
     const { name, value } = e.target; // Destructure the input's name and value
@@ -420,10 +298,7 @@ const AddCustomer = () => {
     }));
   };
 
-
-
-  //customer----------------------------------------------------------------------------------------
-
+  //Country state and city handler
   const handleCountryChange = (option) => {
     setSelectedCountryOption(option);
     setCustomerFormData({
@@ -432,18 +307,17 @@ const AddCustomer = () => {
     })
     setSelectedBillingStateOption('')
     setSelectedBillingCityOption('')
-   
+
   }
   const handleStateChange = (option) => {
     setSelectedStateOption(option);
     setCustomerFormData({
       ...formCustomerData,
-      state_name: option?.value,
+      state: option?.value,
     })
     setSelectedBillingCityOption('')
 
   }
-
   const handleCityChange = (option) => {
     setSelectedCityOption(option);
     setCustomerFormData({
@@ -451,12 +325,8 @@ const AddCustomer = () => {
       city: option?.value,
     })
   }
-
-  const [isEdit, setIsEdit] = useState(false);
-
-
-   // Handle the logo image change
-   const handleLogoChange = (e) => {
+  // Handle the logo image change
+  const handleLogoChange = (e) => {
     const file = e.target.files[0];
     if (file) {
       const reader = new FileReader();
@@ -474,13 +344,11 @@ const AddCustomer = () => {
       });
     }
   };
-
-  
+  //Delete the logo
   const handleDeleteLogo = () => {
     setLogo(null);
     document.getElementById("logoUpload").value = "";
   };
-
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -492,10 +360,23 @@ const AddCustomer = () => {
     //   return
     // }
 
-    if (formCustomerData) {
+   
+    
+    const fData = {
+      ...formCustomerData,
+      customer_billing_details:{
+        ...formCustomerBillingDetailsData
+      },
+      customer_shipping_details:{
+        ...formCustomerShippingDetailsData
+      }
+    }
+    console.log(fData)
+
+    if (fData) {
       try {
-        const res = await createCustomerApi(formCustomerData);
-        console.log("res is here ",res  )
+        const res = await createCustomerApi(fData);
+        console.log("res is here ", res)
         if (res.data?.success) {
           setLoading(false);
           Swal.fire({
@@ -515,10 +396,105 @@ const AddCustomer = () => {
         setLoading(false);
         Toaster.error(
           error.response?.data?.message ||
-            "An error occurred while processing your request"
+          "An error occurred while processing your request"
         );
       }
     }
+  };
+
+  /*****************************---------------------------------------------------formCustomerBillingDetailsData-------------------------------------------------------------------- */
+  useEffect(() => {
+    if (selectedCustomerBillingCountryOption?.value) {
+      fetchStatesData(selectedCustomerBillingCountryOption?.id)
+    }
+    if (selectedCustomerBillingStateOption?.value) {
+      // fetchStatesListTIN(selectedStateOption?.state_code)
+      fetchCitiesData(selectedCustomerBillingStateOption?.id)
+    }
+  }, [selectedCustomerBillingCountryOption, selectedCustomerBillingStateOption])
+
+  //cutomer billing Details
+  const handleCustomerBillingCountryChange = (option) => {
+    setSelectedCustomerBillingCountryOption(option);
+    setFormCustomerBillingDetailsData({
+      ...formCustomerBillingDetailsData,
+      country: option?.value,
+    })
+    setSelectedCustomerBillingStateOption('')
+    setSelectedCustomerBillingCityOption('')
+
+  }
+  const handleCustomerBillingStateChange = (option) => {
+    setSelectedCustomerBillingStateOption(option);
+    setFormCustomerBillingDetailsData({
+      ...formCustomerBillingDetailsData,
+      state: option?.value,
+    })
+    setSelectedCustomerBillingCityOption('')
+
+  }
+  const handleCustomerBillingCityChange = (option) => {
+    setSelectedCustomerBillingCityOption(option);
+    setFormCustomerBillingDetailsData({
+      ...formCustomerBillingDetailsData,
+      city: option?.value,
+    })
+  }
+
+
+  const handleCustomerBillingDetailChange = (e) => {
+    const { name, value } = e.target; // Destructure the input's name and value
+    setFormCustomerBillingDetailsData((prevState) => ({
+      ...prevState,
+      [name]: value, // Dynamically update the corresponding field
+    }));
+  };
+
+
+  /*****************************---------------------------------------------------FormCustomerShippingDetailsData-------------------------------------------------------------------- */
+  useEffect(() => {
+    if (selectedCustomerShippingCountryOption?.value) {
+      fetchStatesData(selectedCustomerShippingCountryOption?.id);
+    }
+    if (selectedCustomerShippingStateOption?.value) {
+      fetchCitiesData(selectedCustomerShippingStateOption?.id);
+    }
+  }, [selectedCustomerShippingCountryOption, selectedCustomerShippingStateOption]);
+
+
+  const handleCustomerShippingCountryChange = (option) => {
+    setSelectedCustomerShippingCountryOption(option);
+    setFormCustomerShippingDetailsData((prev) => ({
+      ...prev,
+      country: option?.value,
+    }));
+    setSelectedCustomerShippingStateOption('');
+    setSelectedCustomerShippingCityOption('');
+  };
+
+  const handleCustomerShippingStateChange = (option) => {
+    setSelectedCustomerShippingStateOption(option);
+    setFormCustomerShippingDetailsData((prev) => ({
+      ...prev,
+      state: option?.value,
+    }));
+    setSelectedCustomerShippingCityOption('');
+  };
+
+  const handleCustomerShippingCityChange = (option) => {
+    setSelectedCustomerShippingCityOption(option);
+    setFormCustomerShippingDetailsData((prev) => ({
+      ...prev,
+      city: option?.value,
+    }));
+  };
+
+  const handleCustomerShippingDetailChange = (e) => {
+    const { name, value } = e.target;
+    setFormCustomerShippingDetailsData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
   };
 
 
@@ -527,6 +503,53 @@ const AddCustomer = () => {
     <>
       <ToastContainer />
       <Loader visible={loading} />
+
+      <CustomerBillingDetailForm
+        customerBillingDetailsModal={customerBillingDetailsModal}
+        setCustomerBillingDetailsModal={setCustomerBillingDetailsModal}
+        formCustomerBillingDetailsData={formCustomerBillingDetailsData}
+        handleCustomerBillingDetailChange={handleCustomerBillingDetailChange}
+
+        countriesList={countriesList}
+        setSelectedCustomerBillingCountryOption={setSelectedCustomerBillingCountryOption}
+        handleCountryChange={handleCustomerBillingCountryChange}
+        selectedCustomerBillingCountryOption={selectedCustomerBillingCountryOption}
+
+        stateList={stateList}
+        setSelectedCustomerBillingStateOption={setSelectedCustomerBillingStateOption}
+        handleStateChange={handleCustomerBillingStateChange}
+        selectedCustomerBillingStateOption={selectedCustomerBillingStateOption}
+
+        cityList={cityList}
+        setSelectedCustomerBillingCityOption={setSelectedCustomerBillingCityOption}
+        handleCityChange={handleCustomerBillingCityChange}
+        selectedCustomerBillingCityOption={selectedCustomerBillingCityOption}
+      />
+
+      <CustomerShippingDetailForm
+        customerShippingDetailsModal={customerShippingDetailsModal}
+        setCustomerShippingDetailsModal={setCustomerShippingDetailsModal}
+        formCustomerShippingDetailsData={formCustomerShippingDetailsData}
+        handleCustomerShippingDetailChange={handleCustomerShippingDetailChange}
+
+        countriesList={countriesList}
+        setSelectedCustomerShippingCountryOption={setSelectedCustomerShippingCountryOption}
+        handleShippingCountryChange={handleCustomerShippingCountryChange}
+        selectedCustomerShippingCountryOption={selectedCustomerShippingCountryOption}
+
+        stateList={stateList}
+        setSelectedCustomerShippingStateOption={setSelectedCustomerShippingStateOption}
+        handleShippingStateChange={handleCustomerShippingStateChange}
+        selectedCustomerShippingStateOption={selectedCustomerShippingStateOption}
+
+        cityList={cityList}
+        setSelectedCustomerShippingCityOption={setSelectedCustomerShippingCityOption}
+        handleShippingCityChange={handleCustomerShippingCityChange}
+        selectedCustomerShippingCityOption={selectedCustomerShippingCityOption}
+        
+      />
+
+
       <PageTitle
         activeMenu={"Add New Customer"}
         motherMenu={"Home"}
@@ -536,14 +559,58 @@ const AddCustomer = () => {
         {/* SECTION 1ST */}
         <div className="col-xl-12 col-lg-12">
           <div className="card">
+
             <div className="card-header">
-              <h4 className="card-title">Customer Info</h4>
+              <h4 className="">Customer Info</h4>
+
+              <div class="d-flex flex-wrap gap-2 mt-2">
+                <div className="text-end ">
+                  <button
+                    type="submit"
+                    // onClick={handleSubmit}
+                    onClick={() => setCustomerBillingDetailsModal(true)}
+                    className="btn btn-warning rounded-xl "
+                  >
+                    Add Customer Billing Details
+                  </button>
+                </div>
+                <div className="text-end">
+                  <button
+                    type="submit"
+                    // onClick={handleSubmit}
+                    onClick={() => setCustomerShippingDetailsModal(true)}
+                    className="btn btn-success rounded-sm"
+                  >
+                    Add Customer Shipping Details
+                  </button>
+                </div>
+
+              </div>
             </div>
+
             <div className="card-body">
               {/* Customer Details */}
               <div className="mb-3">
                 {/* <h4 className="card-title">Billing Detail</h4> */}
                 <div className="row mb-3">
+                   {/* company  name */}
+                   <div className="col-sm-6 col-xl-3">
+                    <label className=" col-form-label">Company Name</label>
+                    <input
+                      name="company_name"
+                      value={formCustomerData?.company_name}
+                      onChange={handleCustomerDetailChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: ABC Pvt. Ltd"
+                    />
+
+                    {errors.fname && (
+                      <span className="text-danger fs-12">
+                        {errors.fname}
+                      </span>
+                    )}
+                  </div>
                   {/* first name */}
                   <div className="col-sm-6 col-xl-3">
                     <label className=" col-form-label">First Name</label>
@@ -699,7 +766,7 @@ const AddCustomer = () => {
                 </div>
 
                 <div className="row mb-3">
-                { /* Pincode */}
+                  { /* Pincode */}
                   <div className="col-sm-6 col-xl-3">
                     <label className="col-form-label">Pincode</label>
                     <input

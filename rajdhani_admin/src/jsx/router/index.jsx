@@ -209,6 +209,8 @@ import SaleOrderView from "../pages/SalesOrder/SaleOrderView";
 import VerifySaleOrder from "../pages/SalesOrder/VerifySaleOrder";
 import ProductionManagement from "../pages/ProductionManagement/ProductionManagement";
 import ProductDetailsQR from "../pages/authentication/productDetails";
+import AuthorizeSaleOrder from "../pages/SalesOrder/AuthorizeSaleOrder";
+import EditSaleOrder from "../pages/SalesOrder/EditSaleOrder";
 
 // import Todo from './pages/Todo';
 
@@ -240,7 +242,9 @@ const Markup = () => {
      {url: 'sales-order-list', component: <SaleOrderList/>},
      { url: 'saleorderview/:id', component: <SaleOrderView /> },
      { url: 'verifysSaleOrder/:id', component: <VerifySaleOrder/> },
-
+    {url: 'authorizeSaleOrder/:id', component: <AuthorizeSaleOrder/>},
+    {url: 'edit-sale-order/:id', component: <EditSaleOrder/>},
+    // edit-sale-order
     
 
     //Brands

@@ -32,6 +32,8 @@ router.patch("/update-product-status/:id", Authentication, productsController.up
 router.get('/generateqr/:id', productsController.generateQrForProduct);
 router.get("/search",  productsController.searchProducts)
 router.get("/simibrands",  productsController.getSimilarProducts)
+router.get("/hoseassembly",  productsController.getSimilarHoseAssemblyItem)
+
 
 
 module.exports = router;

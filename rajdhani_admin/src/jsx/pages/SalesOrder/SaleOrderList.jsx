@@ -46,6 +46,10 @@ const theadData = [
   { heading: "Orderd Date", sortingVale: "date" },
   { heading: "Due Date", sortingVale: "due_date" },
   { heading: "SO Amount", sortingVale: "grand_total" },
+  { heading: "Prepared By", sortingValue: "preparedBy" },
+  { heading: "Verified By", sortingValue: "verifiedBy" },
+  { heading: "Verified", sortingValue: "verified" },
+  { heading: "Authorized By", sortingValue: "authorizedBy" },
 
   // { heading: "Created At", sortingVale: "created_at" },
   { heading: "Status", sortingVale: "status" },
@@ -128,8 +132,8 @@ const SaleOrderList = () => {
       setUpdateCategory(false);
     } catch (error) {
       // Catch and handle errors
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       // Always set loading to false when the API call is done (whether successful or failed)
       setLoading(false);
@@ -387,20 +391,21 @@ const SaleOrderList = () => {
 
                           <td className="">
                             {data?.customer_id?.fname} {data?.customer_id?.lname}
-                            
+
                           </td>
 
                           <td className="">
                             {data?.customer_id?.city} {data?.customer_id?.state}
                           </td>
 
-                          
 
-                          <td className="">
+
+                          <td className="whitespace-nowrap ">
                             {moment(data?.order_details?.date).format("DD MMM YYYY")}
                           </td>
 
-                          <td className="">
+                          <td style={{
+                              whiteSpace: 'nowrap',}} >
                             {moment(data?.order_details?.due_date).format("DD MMM YYYY")}
                           </td>
 
@@ -411,6 +416,79 @@ const SaleOrderList = () => {
                           {/* <td>
                             {moment(data?.created_at).format("DD MMM YYYY, h:mm:ss a")}
                           </td> */}
+
+                          <td className="">
+                          <span style={{
+                              whiteSpace: 'nowrap',
+                              border: '0.5px solid black',
+                              padding: '5px 10px',
+                              borderRadius: '9999px', // fully rounded
+                              backgroundColor: 'white',
+                              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                              fontSize: '0.875rem',
+                            }}>
+                            {data?.createdBy?.firstName && data?.createdBy?.lastName
+                              ? `${data?.createdBy?.firstName} ${data?.createdBy?.lastName}`
+                              : '-'}
+                               </span>
+                          </td>
+                         
+                          <td>
+                            <span style={{
+                              whiteSpace: 'nowrap',
+                              border: '0.5px solid black',
+                              padding: '5px 10px',
+                              borderRadius: '9999px', // fully rounded
+                              backgroundColor: 'white',
+                              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                              fontSize: '0.875rem',
+                            }}>
+                              {data?.isVerifiedBy?.firstName && data?.isVerifiedBy?.lastName
+                                ? `${data?.isVerifiedBy?.firstName} ${data?.isVerifiedBy?.lastName}`
+                                : '-'}
+                            </span>
+                          </td>
+
+
+                          <td>
+                            {data?.isVerified ? (
+                              <span
+                                className={`badge bg-success`}
+                              >
+                                Verified
+                                <span className="ml-1">✅</span>
+                              </span>
+
+                            ) : (
+                              <span
+                                className={`badge bg-warning`}
+                              >
+                                Pending
+                                <span className="ml-1">🔄</span>
+                              </span>
+                            )}
+                          </td>
+
+                          {/* <td className="text-center">
+                            {data?.isVerified ? (
+                              <span className="inline-flex items-center text-xs font-medium border border-green-500 text-green-600 px-2 py-1 rounded-full">
+                                Verified
+                                <span className="ml-1">✅</span>
+                              </span>
+                            ) : (
+                              <span className="inline-flex items-center text-xs font-medium border border-green-500 text-green-600 px-2 py-1 rounded-full">
+                                Pending
+                                <span className="ml-1">🔄</span>
+                              </span>
+                            )
+                              }
+                          </td> */}
+
+                          <td className="">
+                            {data?.isAuthorizedBy?.fname && data?.isAuthorizedBy?.lname
+                              ? `${data?.isAuthorizedBy?.firstName} ${data?.isAuthorizedBy?.lastName}`
+                              : '-'}
+                          </td>
 
                           <td>
                             <span
@@ -425,7 +503,8 @@ const SaleOrderList = () => {
                             </span>
                           </td>
 
-                        
+
+
                           <td className="d-flex justify-content-start align-items-center gap-2">
                             <button
                               className="btn btn-xs sharp btn-primary"
@@ -438,6 +517,20 @@ const SaleOrderList = () => {
                               onClick={() => navigate(`/verifysSaleOrder/${data?._id}`)}
                             >
                               <i className="fa-solid fa-check"></i>
+                            </button>
+
+                            <button
+                              className="btn btn-xs sharp"
+                              onClick={() => navigate(`/authorizeSaleOrder/${data?._id}`)}
+                              style={{ background: '#FFB456', color: 'black' }}
+                            >
+                              <i className="fas fa-user-lock"></i>
+                            </button>
+
+                            <button className="btn btn-xs sharp btn-primary"
+                              onClick={() => navigate(`/edit-sale-order/${data?._id}`)}
+                            >
+                              <i className="fa fa-pencil" />
                             </button>
 
                             <button

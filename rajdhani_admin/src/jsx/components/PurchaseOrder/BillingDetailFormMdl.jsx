@@ -2,6 +2,8 @@ import { Button, Modal } from "react-bootstrap";
 import Select from "react-select";
 import PhoneInput from "react-phone-input-2";
 import "react-phone-input-2/lib/style.css";
+import { getStateListTinApi } from "../../../services/apis/CommonApi";
+import { useEffect, useState } from "react";
 
 const BillingDetailFormMdl = ({
   openBillingMdl,
@@ -23,6 +25,32 @@ const BillingDetailFormMdl = ({
   cityList,
   handleBillingPhoneDetailChange
 }) => {
+
+  // const [stateTIN, setStateTIN] = useState();
+
+  // // const stateName = formBillingData?.state;
+  // // console.log(stateTIN)
+  // //Fetch State TIN Number
+    
+  //   const fetchShippingStatesListTIN = async (stateName) => {
+  //   try {
+  //     const res = await getStateListTinApi(stateName);
+  //     const StateTinNumber = res?.data?.stateTin[0]?.tin_number;
+  //     // setShippingFormData({
+  //     //   ...formShippingData,
+  //     //   state_tin_code: StateTinNumber,
+  //     // });
+  //     setStateTIN(StateTinNumber);
+  //   } catch (error) {
+  //     console.error("Failed to load tin number. Please try again.");
+  //   } finally {
+  //     // setLoading(false);
+  //   }
+  // };
+
+  // useEffect( () => {
+  //    fetchShippingStatesListTIN(formBillingData?.state);
+  // },[])
 
 
   return (
@@ -91,24 +119,24 @@ const BillingDetailFormMdl = ({
                 <label className=" col-form-label">
                   Mobile No.1<span className="text-danger">*</span>
                 </label>
-                {/* <input
+                <input
                       name="mobile_no1"
                       value={formBillingData?.mobile_no1}
                       onChange={handleBillingDetailChange}
                       type="text"
                       className="form-control"
                       placeholder="Ex: +91 9876-555-555"
-                    /> */}
-                <PhoneInput
+                    />
+                {/* <PhoneInput
                   className=""
                   inputClass=""
-                  country={"in"}
+                  country={"IN"}
                   value={formBillingData?.mobile_no1}
                   onChange={(value) =>
                     handleBillingPhoneDetailChange(value, "mobile_no1")
                   }
                   // onChange={handleOnChange}
-                />
+                /> */}
 
                 {errors.billing_mobile_no1 && (
                   <span className="text-danger fs-12">
@@ -119,24 +147,24 @@ const BillingDetailFormMdl = ({
               {/* mobile number */}
               <div className="col-sm-6 col-xl-4">
                 <label className=" col-form-label">Mobile No.2</label>
-                {/* <input
+                <input
                       name="mobile_no2"
                       value={formBillingData?.mobile_no2}
                       onChange={handleBillingDetailChange}
                       type="text"
                       className="form-control"
                       placeholder="Ex:  +91 9876-555-555"
-                    /> */}
-                <PhoneInput
+                    />
+                {/* <PhoneInput
                   className=""
                   inputClass=""
-                  country={"in"}
+                  country={"IN"}
                   value={formBillingData?.mobile_no2}
                   onChange={(value) =>
                     handleBillingPhoneDetailChange(value, "mobile_no2")
                   }
                   // onChange={handleOnChange}
-                />
+                /> */}
                 {errors.billing_mobile_no2 && (
                   <span className="text-danger fs-12">
                     {errors.billing_mobile_no2}
@@ -149,17 +177,17 @@ const BillingDetailFormMdl = ({
                   GSTIN<span className="text-danger">*</span>
                 </label>
                 <input
-                  name="gstin"
-                  value={formBillingData?.gstin}
+                  name="gstNumber"
+                  value={formBillingData?.gstNumber}
                   onChange={handleBillingDetailChange}
                   type="text"
                   className="form-control"
                   placeholder="Ex: 22AAAAA0000A1Z5"
                 />
 
-                {errors.billing_gstin && (
+                {errors.gstNumber && (
                   <span className="text-danger fs-12">
-                    {errors.billing_gstin}
+                    {errors.gstNumber}
                   </span>
                 )}
               </div>

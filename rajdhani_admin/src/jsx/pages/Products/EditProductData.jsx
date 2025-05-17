@@ -1400,8 +1400,8 @@ const EditProductData = () => {
       const res = await getAllOptions();
       setDropwonOptions(res?.data?.data);
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }

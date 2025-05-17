@@ -26,6 +26,11 @@ import "../../../assets/css/PurchaseOrder.css";
 import { createBatchApi } from "../../../services/apis/BatchApi";
 import { addProductsInInvntory, checkProductsInInventoryApi } from "../../../services/apis/InventoryApi";
 import { addEntryInStock } from "../../../services/apis/StockMentainenaceApi";
+import { FaFilePdf, FaFileWord, FaFileExcel, FaFileAlt, FaFileCsv } from "react-icons/fa"; // Icons from react-icons
+import ImageViewer from "./ImageViewer";
+import PdfView from "./PdfViewer";
+import * as XLSX from "xlsx";
+
 
 
 const billtheadData = [
@@ -40,6 +45,7 @@ const billtheadData = [
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
   { heading: "Product Name", sortingVale: "name" },
+  { heading: "Fitting Code", sortingVale: "fitting_Code" },
   { heading: "Product Code", sortingVale: "product_code" },
   { heading: "Quantity", sortingVale: "quantity" },
   { heading: "UOM", sortingVale: "uom" },
@@ -56,6 +62,17 @@ const theadData = [
   // { heading: "Action", sortingVale: "action" },
 ];
 
+const supportedTypes = {
+  "application/pdf": "pdf",
+  "application/msword": "doc",
+  "application/vnd.openxmlformats-officedocument.wordprocessingml.document": "docx",
+  "text/plain": "txt",
+  "application/vnd.ms-excel": "xls",
+  "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": "xlsx",
+  "text/csv": "csv",
+};
+
+
 const VerifyPurchaseOrder = () => {
   const params = useParams()?.id;
   const navigate = useNavigate();
@@ -67,6 +84,7 @@ const VerifyPurchaseOrder = () => {
   const [billData, setBillData] = useState([]);
   const [errors, setErrors] = useState({});
   const [formBillingData, setFormBillingData] = useState({});
+  console.log("formBillingData",formBillingData)
   const [formData, setFormData] = useState({});
   const [searchInputValue, setSearchInputValue] = useState("");
   const [iconData, setIconDate] = useState({ complete: false, ind: Number });
@@ -80,6 +98,15 @@ const VerifyPurchaseOrder = () => {
   const [logo, setLogo] = useState(null);
   const [apiSuccess, setApiSuccess] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
+  const [focusedInputIndex, setFocusedInputIndex] = useState(null);
+  const [files, setFiles] = useState([]);
+  const [pdfSrc, setPdfSrc] = useState(null);
+  const [fileType, setFileType] = useState(""); 
+  const[openPdfModal,setOpenPdfModal]=useState(false);
+  const [excelData, setExcelData] = useState([]);
+
+
+
   const [rows, setRows] = useState([
     {
       id: 1,
@@ -138,8 +165,8 @@ const VerifyPurchaseOrder = () => {
       }));
       setProductOption(dropdownProductList);
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -253,6 +280,7 @@ const VerifyPurchaseOrder = () => {
           _id: item._id,
           product_name: item.product_name,
           product_code: item.product_code,
+          fitting_Code: item?.fitting_Code,
           product_id: item?.product_id,
           product_unit: item?.product_unit,
           selectedOption: selectedOption || null,
@@ -283,7 +311,7 @@ const VerifyPurchaseOrder = () => {
   // }, [purchaseOrderProdcutList, contentModal]);
 
   useEffect(() => {
-    console.log("(purchaseOrderProdcutList.length > 0 && rows.length === 1", purchaseOrderProdcutList.length > 0, rows.length >= 1)
+    console.log("(purchaseOrderProdcutList.length > 0 && rows.length === 1",purchaseOrderProdcutList, purchaseOrderProdcutList.length > 0, rows.length >= 1)
     if (purchaseOrderProdcutList.length > 0 && rows?.length >= 1) {
       const formattedRows = prefillRows(purchaseOrderProdcutList);
       console.log("useEffect calls successsfullyy------------->", formattedRows);
@@ -501,7 +529,7 @@ const VerifyPurchaseOrder = () => {
       verify: "Verify Order Note",
     },
     footer: {
-      preparedBy: "Malviya Nagar",
+      preparedBy: "Rajdhani-SB Parts",
       terms: [
         "Delivery quantity should be as per SO only.",
         "Goods delivered beyond the expiry date will not be accepted.",
@@ -526,73 +554,62 @@ const VerifyPurchaseOrder = () => {
     }
   }
 
-  // Inline styles
   const styles = {
     container: {
-      border: "2px dashed #ccc",
-      borderRadius: "8px",
-      width: "150px", // Logo size
-      height: "150px",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      cursor: "pointer",
-      backgroundColor: "#f9f9f9",
-      position: "relative",
-      textAlign: "center",
-      overflow: "hidden",
-      // marginLeft: '110px'
-    },
-    coverContainer: {
-      border: "2px dashed #ccc",
-      borderRadius: "8px",
-      width: "250px", // Cover size (2:1 ratio)
-      height: "150px",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      cursor: "pointer",
-      backgroundColor: "#f9f9f9",
-      position: "relative",
-      textAlign: "center",
-      overflow: "hidden",
+      border: '2px dashed #ccc',
+      borderRadius: '8px',
+      width: '100%', // Size for image/file preview
+      height: '70px',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      cursor: 'pointer',
+      backgroundColor: '#f9f9f9',
+      position: 'relative',
+      textAlign: 'center',
+      overflow: 'hidden',
     },
     placeholder: {
-      width: "100%",
-      height: "100%",
-      display: "flex",
-      justifyContent: "center",
-      alignItems: "center",
-      position: "relative",
-      textAlign: "center",
+      width: '100%',
+      height: '100%',
+      display: 'flex',
+      justifyContent: 'center',
+      alignItems: 'center',
+      position: 'relative',
+      textAlign: 'center',
     },
     img: {
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      borderRadius: "8px",
+      width: '100%',
+      height: '100%',
+      objectFit: 'cover',
+      borderRadius: '8px',
     },
-    hover: {
-      borderColor: "#007bff",
-      backgroundColor: "#e9f4ff",
+    filePreview: {
+      textAlign: 'center',
+      color: '#888',
+      position: 'relative',
+      marginBottom: '10px',
+    },
+    previewContainer: {
+      marginTop: '15px',
     },
     uploadIcon: {
-      color: "#888",
-      fontSize: "16px",
-      fontWeight: "bold",
+      color: '#888',
+      fontSize: '13px',
+      fontWeight: 'semibold',
     },
     deleteIcon: {
-      position: "absolute",
-      top: "0px",
-      right: "0px",
-      backgroundColor: "#FF6D6D",
-      color: "white",
-      borderRadius: "100%",
-      padding: "5px 10px",
-      cursor: "pointer",
+      position: 'absolute',
+      top: '0px',
+      right: '0px',
+      backgroundColor: '#FF6D6D',
+      color: 'white',
+      borderRadius: '100%',
+      padding: '4px 6px',
+      cursor: 'pointer',
       zIndex: 2,
-      fontSize: "10px",
-      fontWeight: "bold",
+      fontSize: '8px',
+      fontWeight: 'bold',
     },
   };
 
@@ -1339,8 +1356,100 @@ const VerifyPurchaseOrder = () => {
     setVerifyShowModal(false); // Close the modal
   };
 
+  const getFileIcon = (file) => {
+    const extension = file.name.split(".").pop().toLowerCase();
+    switch (extension) {
+      case "pdf":
+        return <FaFilePdf size={50} color="red" />;
+      case "doc":
+      case "docx":
+        return <FaFileWord size={50} color="blue" />;
+      case "xls":
+      case "xlsx":
+        return <FaFileExcel size={50} color="green" />;
+      case "txt":
+        return <FaFileAlt size={50} color="gray" />;
+      case "csv":
+        return <FaFileCsv size={50} color="orange" />;
+      default:
+        return <FaFileAlt size={50} color="black" />;
+    }
+  };
+
+  
+  const handleFileChange = (e) => {
+    const selectedFiles = Array.from(e.target.files); // Get selected files
+  
+    const newFiles = selectedFiles?.map(file => ({
+      file,
+      type: file.type.split('/')[0], // Extract file type (image/pdf)
+      name: file.name,
+      icon: getFileIcon(file),
+    }));
+  
+    // Add new files to preview list
+    setFiles(prevFiles => [...prevFiles, ...newFiles]);
+  
+    // Update the formBillingData with actual files
+    setFormBillingData({
+      ...formBillingData,
+      bill_doc: [...(formBillingData?.bill_doc || []), ...selectedFiles] // if it's a list
+      // bill_doc: selectedFiles[0] // if it's just one file
+    });
+  
+    setErrors({
+      ...errors,
+      bill_doc: null,
+    });
+  };
+  
+
+  const openFileViewer = (file) => {
+    setPdfSrc(file);
+    const extension = file.name.split(".").pop().toLowerCase();
+
+    if (extension === "xls" || extension === "xlsx") {
+      readExcel(file.file);
+      setFileType("xlsx");
+    } else {
+      setFileType(supportedTypes[file.file.type] || "txt");
+    }
+
+    setOpenPdfModal(true);
+  };
+
+  // Handle file deletion
+  const handleDeleteFile = (index) => {
+    setFiles(prevFiles => prevFiles.filter((_, i) => i !== index));
+  };
+
+  // Read Excel files and convert to table format
+  const readExcel = (file) => {
+    const reader = new FileReader();
+    reader.readAsBinaryString(file);
+    reader.onload = (e) => {
+      const binaryData = e.target.result;
+      const workbook = XLSX.read(binaryData, { type: "binary" });
+      const sheetName = workbook.SheetNames[0];
+      const sheet = workbook.Sheets[sheetName];
+      const data = XLSX.utils.sheet_to_json(sheet, { header: 1 });
+      setExcelData(data);
+    };
+  };
+
+
+
   return (
     <>
+    {
+     pdfSrc && <PdfView 
+     openPdfModal={openPdfModal} 
+     setOpenPdfModal={setOpenPdfModal} 
+     fileType={fileType}
+     fileUrl={URL.createObjectURL(pdfSrc?.file)}
+     excelData={excelData}
+     />
+    }
       <ToastContainer />
       <Loader visible={loading} />
       <div className="card">
@@ -1406,7 +1515,10 @@ const VerifyPurchaseOrder = () => {
                       <div className="order-info">
                         <h5>Supplier (Bill from)</h5>
                         <p className="po-view-p">
-                          {purchaseOrderData?.supplier_id?.name}
+                          {purchaseOrderData?.supplier_id?.supplier_name}
+                        </p>
+                        <p className="po-view-p">
+                          {purchaseOrderData?.supplier_id?.address}
                         </p>
                         <p className="po-view-p">
                           {purchaseOrderData?.supplier_id?.city}
@@ -1414,6 +1526,7 @@ const VerifyPurchaseOrder = () => {
                         <p className="po-view-p">
                           State: {purchaseOrderData?.supplier_id?.state}
                         </p>
+
                         <p className="po-view-p">
                           Email: {purchaseOrderData?.supplier_id?.email}
                         </p>
@@ -1424,14 +1537,12 @@ const VerifyPurchaseOrder = () => {
               </div>
             </div>
 
-
-
             {/* Bill Cards */}
             <div className="">
               <div className="card-header pb-0 px-0" >
                 <h4 className="card-title">Bill Details</h4>
               </div>
-
+              {/* Bill Section Add New Bill */}
               <div className="">
                 <div className="mt-3 px-0">
                   <div className="row card-main-div">
@@ -1496,7 +1607,6 @@ const VerifyPurchaseOrder = () => {
                 </div>
               </div>
             </div>
-
 
             {/* Bill Detail */}
             <div ref={billTableRef}>
@@ -1652,7 +1762,7 @@ const VerifyPurchaseOrder = () => {
                       <div
                         id="holidayList"
                         className="dataTables_wrapper no-footer">
-                        <div className="justify-content-between d-sm-flex">
+                        {/* <div className="justify-content-between d-sm-flex">
                           <div className="dataTables_length">
                             <label className="d-flex align-items-center">
                               Show
@@ -1701,7 +1811,7 @@ const VerifyPurchaseOrder = () => {
                               />
                             </label>
                           </div>
-                        </div>
+                        </div> */}
 
                         <table id="example4" className="display dataTable no-footer w-100">
                           {/* Table Headings */}
@@ -1751,44 +1861,30 @@ const VerifyPurchaseOrder = () => {
                                 <td>
                                   <strong>{ind + 1}</strong>{" "}
                                 </td>
-
-                                {/* <td>{data?._id}</td> */}
                                 {/* Product Name */}
                                 <td>
-                                  <div
+                                  <input
+                                    type="text"
+                                    placeholder="Product Name"
+                                    value={data?.product_name}
+                                    onClick={() =>
+                                      setFocusedInputIndex((prev) => (prev === ind ? null : ind))
+                                    }
+                                    // onChange={(e) =>
+                                    //   handleChangeRow(index, "product_name", e.target.value)
+                                    // }
+                                    className="form-control row-input"
                                     style={{
-                                      whiteSpace: "nowrap",
-                                      width: isExpanded ? "100%" : "290px", // Expands width on toggle
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      padding: "4px 8px",
-                                      border: "1px solid #ddd",
-                                      borderRadius: "8px",
-                                      backgroundColor: "#f5f5f5",
-                                      textAlign: "start",
+                                      width: focusedInputIndex === ind ? "600px" : "300px",
+                                      transition: "width 0.3s ease",
                                       cursor: "pointer",
-                                      transition: "width 0.3s ease", // Smooth transition
                                     }}
-                                    onClick={toggleExpand}
-                                  >
-                                    {data?.product_name}
-                                    {!isExpanded && (
-                                      <span
-                                        style={{
-                                          position: "absolute",
-                                          right: "8px",
-                                          top: "50%",
-                                          transform: "translateY(-50%)",
-                                          color: "#007bff",
-                                          fontSize: "12px",
-                                          cursor: "pointer",
-                                        }}
-                                      >
-                                        ...
-                                      </span>
-                                    )}
-                                  </div>
+                                  />
                                 </td>
+                                {/* Fitting Code */}
+                                <td style={{
+                                  whiteSpace: "nowrap",
+                                }}>{data?.fitting_Code}</td>
                                 {/* Product Code */}
                                 <td className="">{data?.product_code}</td>
                                 {/* Product Code */}
@@ -1839,8 +1935,8 @@ const VerifyPurchaseOrder = () => {
                             ))}
                           </tbody>
                         </table>
-                        <div>
-                          {/* {brandList?.data?.length < brandList?.total && ( */}
+                        {/* <div>
+                          
                           <div className="d-sm-flex text-center justify-content-end align-items-center mt-3">
                             <div className="pagination-container">
                               <ReactPaginate
@@ -1857,8 +1953,8 @@ const VerifyPurchaseOrder = () => {
                               />
                             </div>
                           </div>
-                          {/* )} */}
-                        </div>
+                          
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -1871,7 +1967,7 @@ const VerifyPurchaseOrder = () => {
             <div className="row justify-content-end ">
               <div className="summary-section col-md-5">
                 <table className="table table-bordered ">
-                  <h3>Summary</h3>
+                  <h3 className="p-2 mx-1">Summary</h3>
 
                   <tbody>
                     <tr>
@@ -1970,7 +2066,7 @@ const VerifyPurchaseOrder = () => {
               <div className="card-body p-3">
                 <div className="row">
                   {/* First Column: Bill Info Part 1 */}
-                  <div className="col-xl-4">
+                  <div className="col-xl-8">
                     {/* Bill No. */}
                     <div className="mb-2">
                       <label className="form-label fs-6">Bill No.</label>
@@ -1984,6 +2080,26 @@ const VerifyPurchaseOrder = () => {
                       />
                       {errors.name && <span className="text-danger fs-12">{errors.name}</span>}
                     </div>
+
+                    {/* Bill Date */}
+                     {/*Due Date */}
+                     <div className="mb-2">
+                  <label className="form-label fs-6">Bill Date</label>
+                    <input
+                      name="bill_date"
+                      value={formBillingData?.bill_date || ''}
+                      onChange={handleBillingDetailChange}
+                      onClick={(e) => e.target.showPicker()}
+                      type="date"
+                      className="form-control"
+                      placeholder="Enter Date"
+                    />
+                    {errors?.billing_bill_date && (
+                      <span className="text-danger fs-12">
+                        {errors?.billing_bill_date}
+                      </span>
+                    )}
+                  </div>
                     {/* Note */}
                     <div className="mb-2">
                       <label className="form-label fs-6">Note</label>
@@ -1998,55 +2114,77 @@ const VerifyPurchaseOrder = () => {
                       {errors.note && <span className="text-danger fs-12">{errors.note}</span>}
                     </div>
                   </div>
-                  {/* Second Column: Bill Info Part 2 */}
-                  <div className="col-xl-4">
-                    {/* Bill Date */}
-                    <div className="mb-2">
-                      <label className="form-label fs-6">Bill Date</label>
-                      <input
-                        name="bill_date"
-                        value={formBillingData?.bill_date || ''}
-                        onChange={handleBillingDetailChange}
-                        type="date"
-                        className="form-control form-control-sm"
-                      />
-                      {errors.billing_bill_date && <span className="text-danger fs-12">{errors.billing_bill_date}</span>}
-                    </div>
-                  </div>
+
                   {/* Third Column: Bill Image/File in a Card */}
-                  <div className="col-xl-4 mt-2">
-                    <div className="mb-2 ">
-                      <label className="form-label fs-6">Bill Image/File</label>
-                      <div style={styles.container}>
-                        <input
-                          type="file"
-                          accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx,.csv"
-                          onChange={handleLogoChange}
-                          style={{ display: 'none' }}
-                          id="logoUpload"
-                        />
-                        {logo ? (
-                          <>
-                            <div style={styles.deleteIcon} onClick={handleDeleteLogo}>⛌</div>
-                            <img src={logo} alt="Logo" style={{ ...styles.img, width: '80px', height: '80px' }} />
-                          </>
-                        ) : (
-                          <label htmlFor="logoUpload" style={styles.placeholder}>
+                  <div className="col-xl-4 ">
+                    <div className="bill-img-fileupload-div">
+                      <div className="mb-2">
+                        <label className="form-label fs-6">Bill Image/File</label>
+                        <div style={styles.container}>
+                          <input
+                            type="file"
+                            accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx,.csv"
+                            onChange={handleFileChange}
+                            multiple // Enable multiple file selection
+                            style={{ display: 'none' }}
+                            id="fileUpload"
+                          />
+                          <label className="m-0" htmlFor="fileUpload" style={styles.placeholder}>
                             <div style={styles.uploadIcon} className="cursor-pointer">
-                              <img width="30" src={uplodIcon} alt="Upload Icon" />
-                              <p>Upload Image/File</p>
+                              <img width="25" src={uplodIcon} alt="Upload Icon" />
+                              <p className="m-0 fw-semibold">Upload Image/File</p>
                             </div>
                           </label>
-                        )}
+                        </div>
+
+                        <p className="mt-2 text-center text-muted fs-7" style={{ marginBottom: '5px' }}>
+                          Image / File
+                        </p>
                       </div>
-                      <p className="mt-2 text-muted fs-7" style={{ marginBottom: '5px' }}>
-                        Image format - jpg png jpeg gif<br />
-                        Max size - 2 MB<br />
-                        Ratio - 1:1
-                      </p>
-                      {errors.image && <span className="text-danger fs-12">{errors.image}</span>}
+
+                      {/* Display existing files from API data and uploaded files */}
+
+                      {files?.length > 0 && (
+                        <>
+                          <div className="bill-image-div">
+                            {files?.map((file, index) => {
+                              return (<>
+                                <div key={index} style={styles.filePreview}>
+                                  {file.type === 'image' ? (
+                                    <img
+                                      src={URL.createObjectURL(file?.file) || file?.url}
+                                      alt="Uploaded"
+                                      style={{ ...styles.img, width: '50px', height: '50px' }}
+                                    // onClick={()=>handleImageClick(index)}
+                                    />
+                                  ) : (
+                                    <div className="mb-0" style={styles?.filePreview}>
+                                      {/* Display a PDF icon for PDFs */}
+                                      {/* <img
+                                 src={pdfIcon}
+                                 alt="Uploaded"
+                                 style={{ ...styles.img, width: '50px', height: '50px' }}
+                                 onClick={()=>setPdfSrc(file)}
+                                /> */}
+                                      <div className="mb-0" onClick={() => { openFileViewer(file) }}>{file?.icon}</div>
+                                      {/* <p>{file.name}</p> */}
+                                    </div>
+                                  )}
+                                  <div style={styles.deleteIcon} onClick={() => handleDeleteFile(index)}>
+                                    ⛌
+                                  </div>
+                                </div>
+                              </>)
+                            })}
+                          </div>
+                        </>
+                      )}
                     </div>
                   </div>
+
+
+
+
                 </div>
               </div>
             </div>
@@ -2065,6 +2203,7 @@ const VerifyPurchaseOrder = () => {
                           <tr>
                             <th>SL</th>
                             <th>Product Name</th>
+                            <th>Fitting Code</th>
                             <th>Code</th>
                             <th>UOM</th>
                             <th>Weight(Kg)</th>
@@ -2117,7 +2256,7 @@ const VerifyPurchaseOrder = () => {
                                   disabled
                                 />
                               </td> */}
-                              <td>
+                              {/* <td>
                                 <div
                                   style={{
                                     whiteSpace: "nowrap",
@@ -2151,7 +2290,31 @@ const VerifyPurchaseOrder = () => {
                                     </span>
                                   )}
                                 </div>
-                              </td>
+                              </td> */}
+                              {/* Product Name */}
+                              <td>
+                                  <input
+                                    type="text"
+                                    placeholder="Product Name"
+                                    value={row?.product_name}
+                                    onClick={() =>
+                                      setFocusedInputIndex((prev) => (prev === index ? null : index))
+                                    }
+                                    // onChange={(e) =>
+                                    //   handleChangeRow(index, "product_name", e.target.value)
+                                    // }
+                                    className="form-control row-input"
+                                    style={{
+                                      width: focusedInputIndex === index ? "600px" : "300px",
+                                      transition: "width 0.3s ease",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </td>
+                                {/* Fitting Code */}
+                                <td style={{
+                                  whiteSpace: "nowrap",
+                                }}>{row?.fitting_Code}</td>
                               {/* product Code */}
                               <td>
                                 <input
@@ -2412,7 +2575,7 @@ const VerifyPurchaseOrder = () => {
           <div className="row justify-content-end ">
             <div className="summary-section col-md-5">
               <table className="table table-bordered ">
-                <h3>Summary</h3>
+                <h3 className="p-2 mx-1">Summary</h3>
 
                 <tbody>
                   <tr>
@@ -2497,14 +2660,15 @@ const VerifyPurchaseOrder = () => {
                     <div className="order-info">
                       <h5>Supplier (Bill from)</h5>
                       <p className="po-view-p">
-                        {purchaseOrderData?.supplier_id?.name}
+                        {purchaseOrderData?.supplier_id?.supplier_name}
                       </p>
                       <p className="po-view-p">
-                        {purchaseOrderData?.supplier_id?.city}
+                        {purchaseOrderData?.supplier_id?.address}
                       </p>
                       <p className="po-view-p">
-                        State: {purchaseOrderData?.supplier_id?.state}
+                      State: {purchaseOrderData?.supplier_id?.state}
                       </p>
+                      
                       <p className="po-view-p">
                         Email: {purchaseOrderData?.supplier_id?.email}
                       </p>

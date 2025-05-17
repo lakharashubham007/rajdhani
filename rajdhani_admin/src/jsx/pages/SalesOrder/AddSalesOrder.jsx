@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { DatePicker } from "rsuite";
 import Select from "react-select";
 import PageTitle from "../../layouts/PageTitle";
@@ -13,19 +13,34 @@ import {
   getCityApi,
   getCountryApi,
   getStateApi,
+  SearchProductsApi,
+  SearchProductsFromInventoryApi,
+  SearchSimilarProductsApi,
 } from "../../../services/apis/Product";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
 import { getAllSupplierListApi } from "../../../services/apis/Supplier";
 import "../../../assets/css/AddSupplierPurchaseOrder.css";
-import { addSupplierPurchaseOrderApi, createPoItemApi } from "../../../services/apis/PurchaseOrder";
-import { getCountryListApi, getStateListApi, getStateListTinApi } from "../../../services/apis/CommonApi";
-import { getAllCusotmerListApi } from "../../../services/apis/CustomerApi";
-import { addSalesOrderApi, createSOItemApi } from "../../../services/apis/salesOrderApi";
+import {
+  addSupplierPurchaseOrderApi,
+  createPoItemApi,
+} from "../../../services/apis/PurchaseOrder";
+import {
+  getCountryListApi,
+  getStateListApi,
+  getStateListTinApi,
+} from "../../../services/apis/CommonApi";
 import BillingDetail from "../../components/PurchaseOrder/BillingDetail";
 import ShippingDetail from "../../components/PurchaseOrder/Shippingdetail";
-import ShippingDetailFormMdl from "../../components/PurchaseOrder/ShippingDetailFormMdl";
 import BillingDetailFormMdl from "../../components/PurchaseOrder/BillingDetailFormMdl";
+import ShippingDetailFormMdl from "../../components/PurchaseOrder/ShippingDetailFormMdl";
+import { getBaseAddress } from "../../../services/apis/options";
+import { addSalesOrderApi, createSOItemApi } from "../../../services/apis/salesOrderApi";
+import { getAllCusotmerListApi } from "../../../services/apis/CustomerApi";
+import { isCompositeComponent } from "react-dom/test-utils";
+import { useSelector } from "react-redux";
+
+
 
 const options = [
   { value: "veg", label: "Veg" },
@@ -38,19 +53,19 @@ const discountOptions = [
 ];
 
 const AddSalesOrder = () => {
-
   const navigate = useNavigate();
   const [logo, setLogo] = useState(null);
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
+  const authData = useSelector((state) => state.auth.auth);
+  console.log("authdata is here user id :-----> ", authData?.user?._id)
+  console.log("authdata is here user Name :-----> ", authData?.user?.firstName, authData?.user?.lastName)
   const [galleryImages, setGalleryImages] = useState([]);
   const [states, setStates] = useState([]);
   const [supplierOption, setSupplierOption] = useState(null);
   const [customerOption, setCustomerOption] = useState(null);
-
   const [allSupplier, setAllSupplier] = useState(null);
-  const[allCustomers, setAllCustomer] = useState(null);
-  // console.log("allCustomers",allCustomers)
+  const [allCustomers, setAllCustomers] = useState(null);
   const [productOption, setProductOption] = useState(null);
   const [statesOption, setStatesOption] = useState(null);
   const [countryOption, setCountryOption] = useState(null);
@@ -58,27 +73,99 @@ const AddSalesOrder = () => {
   const [selectedCustomerOption, setSelectedCustomerOption] = useState(null);
 
   const [selectedProductOption, setSelectedProductOption] = useState(null);
-
-  // const [selectedShippingStateOption, setSelectedShippingStateOption] = useState(null);
-
   const [selectedBillingCountryOption, setSelectedBillingCountryOption] = useState();
   const [selectedBillingStateOption, setSelectedBillingStateOption] = useState(null);
   const [selectedBillingCityOption, setSelectedBillingCityOption] = useState(null);
-
   const [selectedShippingCountryOption, setSelectedShippingCountryOption] = useState();
   const [selectedShippingStateOption, setSelectedShippingStateOption] = useState(null);
   const [selectedShippingCityOption, setSelectedShippingCityOption] = useState(null);
-
   const [stateTIN, setStateTIN] = useState();
-  // console.log("stateTIN",stateTIN)
   const [countriesList, setCountriesList] = useState();
   const [stateList, setStateList] = useState();
   const [cityList, setCityList] = useState();
   const [supplierDetail, setSupplierDetail] = useState({});
-  const [customerDetail, setCustomerDetail] = useState({});
+  const [customerDetails, setCustomerDetails] = useState();
+  const [openBillingMdl, setOpenBillingMdl] = useState(false);
+  const [openShippingMdl, setOpenShippingMdl] = useState(false);
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  console.log("selectedProduct selectedProduct selectedProduct selectedProduct",selectedProduct,productOption)
+  const [selectedQuantity, setSelectedQuantity] = useState("");
+ 
+  const [selectedDiscount, setSelectedDiscount] = useState("");
+  const [baseDetails, setBaseDetails] = useState();
+  const [similarProducts, setSimilarProducts] = useState([]);
+  const [baseDetailsData, setBaseDetailsData] = useState(false);
+  const [baseAddressState, setBaseAddressState] = useState("");
+  const [focusedInputIndex, setFocusedInputIndex] = useState(null);
   const TodayDate = moment().format("YYYY-MM-DD");
+
+  console.log("When user Search and bydefault select ->  initial selected Quantity",similarProducts[0]?.quantity );
+  console.log("selected Quantity",selectedProduct?.quantity,  );
+  console.log("similarProducts ",similarProducts)
+
+
+  //All Form Data is here
+  const [formData, setFormData] = useState({
+    supplier_id: "",
+    date: TodayDate,
+    due_date: "",
+    note: "",
+  });
+  console.log("FormData is here",formData)
+
+  //Billing Form Details Fields
+  const [formBillingData, setBillingFormData] = useState({
+    name: "",
+    email: "",
+    mobile_no1: "",
+    mobile_no2: "",
+    country: "",
+    state: "",
+    city: "",
+    state_tin_code: "",
+    address: "",
+    gstin: "",
+    pin_code: "",
+  });
+
+  console.log("formBillingData", formBillingData)
+
+  //Shipping Form Details Fields
+  const [formShippingData, setShippingFormData] = useState({
+    name: "",
+    email: "",
+    mobile_no1: "",
+    mobile_no2: "",
+    country: "",
+    state_name: "",
+    city: "",
+    state_tin_code: "",
+    address: "",
+    gstin: "",
+    pin_code: "",
+  });
+  console.log("formShippingData", formShippingData)
+
+
+  const [productformData, setProductFormData] = useState({
+    product_code: "",
+    quantity: "",
+    uom: "",
+    weight: "",
+    price: "",
+    discount_per_unit: "",
+    total_discount: "",
+    cgst: "",
+    sgst: "",
+    igst: "",
+    cess: "",
+    amount: "",
+  });
+
+  //Rows Fields
+  const [rows, setRows] = useState([]);
+  console.log("rows",rows)
   const [draggedRow, setDraggedRow] = useState(null);
-  // console.log("row data is here : --------->", rows);
 
   const handleDragStart = (index) => {
     setDraggedRow(index);
@@ -91,87 +178,85 @@ const AddSalesOrder = () => {
   const handleDrop = (index) => {
     if (draggedRow === null) return;
 
-    const newRows = [...rows];
-    const [movedRow] = newRows.splice(draggedRow, 1);
-    newRows.splice(index, 0, movedRow);
+    // Reorder rows
+    const updatedRows = [...rows];
+    const draggedRows = updatedRows?.splice(draggedRow, 1)[0]; // Remove dragged row
+    updatedRows.splice(index, 0, draggedRows); // Insert at new position
 
-    setRows(newRows);
+    // Reassign sequence numbers
+    const reorderedRows = updatedRows.map((row, idx) => ({ ...row, id: idx }));
+
+    setRows(reorderedRows);
     setDraggedRow(null);
   };
 
-  //All Form Data is here
-  const [formData, setFormData] = useState({
-    customer_id: "",
-    date: TodayDate,
-    due_date: "",
-    note: "",
-  });
 
-  // console.log("formData Form", formData)
-
-  //Billing Form Details Fields
-  const [formBillingData, setBillingFormData] = useState({
-    name: '',
-    email: '',
-    mobile_no1: '',
-    mobile_no2: '',
-    country: '',
-    state_name: '',
-    city: '',
-    state_tin_code: '',
-    address: '',
-    gstin: '',
-  });
-
-  // console.log("Billing Form", formBillingData)
-
-  //Shipping Form Details Fields
-  const [formShippingData, setShippingFormData] = useState({
-    name: '',
-    email: '',
-    mobile_no1: '',
-    mobile_no2: '',
-    country: '',
-    state_name: '',
-    city: '',
-    state_tin_code: '',
-    address: '',
-    gstin: '',
-  });
-  // console.log("Shipping Form", formShippingData)
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [openBillingMdl, setOpenBillingMdl] = useState(false);
-  const [openShippingMdl, setOpenShippingMdl] = useState(false);
-  // console.log(formBillingData.state_name)
-  // console.log(formShippingData.state_name)
-  // console.log(formBillingData.state_name === formShippingData.state_name)
-
-  //Rows Fields
-  const [rows, setRows] = useState([]);
-  // console.log("row data is here : --------->",rows)
-
-  // Function to add a new row
   const addRow = () => {
+    if (!selectedSupplierOption) {
+      Toaster.warning("Please select a customer to continue.👨‍💼")
+      return;
+    }
     if (!selectedProduct) return; // Prevent adding empty rows
+    //calculation to add taxable amount 
+    const taxableAmount = (selectedProduct?.price - selectedDiscount) * selectedQuantity;
+    let cgst = 0,
+      sgst = 0,
+      igst = 0;
+
+
+    if (customerDetails?.state && baseAddressState) {
+      const isInterState =
+      customerDetails?.state !== baseAddressState;
+
+      const taxableAmount = (selectedProduct?.price - selectedDiscount) * selectedQuantity;
+
+
+
+      if (isInterState) {
+        igst = (taxableAmount * selectedProduct?.gst) / 100; // Example IGST Rate: 18%
+        cgst = 0;
+        sgst = 0;
+      } else {
+        cgst = (taxableAmount * (selectedProduct?.gst / 2)) / 100;
+        sgst = (taxableAmount * (selectedProduct?.gst / 2)) / 100;
+        igst = 0;
+      }
+
+    }
+
+
+    const TotalAmount = taxableAmount + cgst + sgst + igst;
+
+   console.log("add row row row row row row row row row  ",selectedProduct)
+
     const newRow = {
       ...selectedProduct,
       id: rows.length,
-      product_code: selectedProduct.value,
-      quantity: selectedProduct?.quantity,
+      product_name: selectedProduct.value,
+      product_code: selectedProduct.product_code,
+      quantity: selectedProduct?.quantity || selectedQuantity,
       uom: selectedProduct.uom || "",
       weight: selectedProduct.weight || "",
       price: selectedProduct.price || 0,
-      discount_per_unit: 0,
-      taxable_amount: selectedProduct.price || 0,
+      discount_per_unit: 0 || selectedDiscount,
+      taxable_amount: taxableAmount || 0,
       gst: selectedProduct.gst || 0,
+      cgst: cgst || 0,
+      sgst: sgst || 0,
+      igst: igst || 0,
+      total_amount: TotalAmount || 0,
+      product_id: selectedProduct?.id,
+      product_type: selectedProduct?.product_type
+
     };
     setRows([...rows, newRow]);
     setSelectedProduct(null);
+    setSelectedDiscount("");
+    setSelectedQuantity("");
   };
 
   //Funciton to Delete Row
   const handleDeleteTableRow = (id) => {
-    // Filter out the row with the matching id
     setRows(rows?.filter((row) => row.id !== id));
   };
 
@@ -181,65 +266,53 @@ const AddSalesOrder = () => {
     updatedRows[index][field] = value;
     setRows(updatedRows);
 
-    // Calculate total discount if quantity or discount_per_unit changes
     if (field === "quantity" || field === "discount_per_unit") {
       const quantity = parseFloat(updatedRows[index].quantity || 0);
       const discountPerUnit = parseFloat(
-        updatedRows[index].discount_per_unit || 0
+        updatedRows[index].discount_per_unit || selectedDiscount || 0
       );
       updatedRows[index].total_discount = quantity * discountPerUnit;
     }
 
-    // Calculate amount with discount applied
-    const quantity = parseFloat(updatedRows[index].quantity || 0);
+    const quantity = parseFloat(updatedRows[index].quantity || selectedQuantity || 0);
     const pricePerUnit = parseFloat(updatedRows[index].price_per_unit || 0);
-    const uomQty = parseFloat(updatedRows[index].uom_qty || 1); // Default UOM Qty to 1
+    const uomQty = parseFloat(updatedRows[index].uom_qty || 1);
     const totalDiscount = parseFloat(updatedRows[index].total_discount || 0);
     const gstPercentage = parseFloat(updatedRows[index].gst) || 0;
 
-    // Adjust the amount to subtract the total discount
-    // updatedRows[index].amount =
-    //   quantity * pricePerUnit * uomQty - totalDiscount;
 
-
-    // Convert values to numbers for calculation
     const price = parseFloat(updatedRows[index].price) || 0;
-    const discount = parseFloat(updatedRows[index].discount_per_unit) || 0;
-    // const quantity = parseFloat(updatedRows[index].quantity) || 0;
+    const discount = parseFloat(updatedRows[index].discount_per_unit) || selectedDiscount || 0;
     const gst = parseFloat(updatedRows[index].gst) || 0;
 
 
-
-    // Calculate taxable amount
     updatedRows[index].taxable_amount = (price - discount) * quantity;
 
-
-
-    // Check if billing and shipping states are available
-    if (formBillingData.state_name && formShippingData.state_name) {
-      const isInterState = formBillingData.state_name !== formShippingData.state_name;
-
-      // Ensure taxable_amount is a valid number
+    if (customerDetails?.state && baseAddressState) {
+      const isInterState =
+      customerDetails?.state !== baseAddressState;
       const taxableAmount = parseFloat(updatedRows[index].taxable_amount) || 0;
 
       if (isInterState) {
-        // Inter-State → Enable IGST, Disable CGST & SGST
-        updatedRows[index].igst = (taxableAmount * gstPercentage) / 100;// Example IGST Rate: 18%
+        updatedRows[index].igst = (taxableAmount * gstPercentage) / 100; // Example IGST Rate: 18%
         updatedRows[index].cgst = 0;
         updatedRows[index].sgst = 0;
       } else {
-        // Intra-State → Enable CGST & SGST, Disable IGST
         updatedRows[index].cgst = (taxableAmount * (gstPercentage / 2)) / 100;
         updatedRows[index].sgst = (taxableAmount * (gstPercentage / 2)) / 100;
         updatedRows[index].igst = 0;
       }
 
-      // Example Cess Calculation (Modify as needed)
       updatedRows[index].cess = (updatedRows[index].taxable_amount * 2) / 100; // Example Cess Rate: 2%
     }
 
-    updatedRows[index].total_amount = parseFloat(updatedRows[index].taxable_amount + updatedRows[index].cgst + updatedRows[index].sgst + updatedRows[index].igst + updatedRows[index].cess)
-
+    updatedRows[index].total_amount = parseFloat(
+      updatedRows[index].taxable_amount +
+      updatedRows[index].cgst +
+      updatedRows[index].sgst +
+      updatedRows[index].igst +
+      updatedRows[index].cess
+    );
 
     setRows(updatedRows);
   };
@@ -281,21 +354,21 @@ const AddSalesOrder = () => {
 
   const resetForm = () => {
     setBillingFormData({
-      name: '',
-      address: '',
-      gstin: '',
-      state_name: '',
-      state_code: '',
-      email: ''
+      name: "",
+      address: "",
+      gstin: "",
+      state_name: "",
+      state_code: "",
+      email: "",
     });
 
     setShippingFormData({
-      name: '',
-      address: '',
-      gstin: '',
-      state_name: '',
-      state_code: '',
-      email: ''
+      name: "",
+      address: "",
+      gstin: "",
+      state_name: "",
+      state_code: "",
+      email: "",
     });
 
     setFormData({
@@ -338,8 +411,8 @@ const AddSalesOrder = () => {
   const validateForm = () => {
     const newErrors = {};
     // Required field validation
-    if (!formData.customer_id) newErrors.customer_id = "Customer is required.";
-    if (!formData.note) newErrors.note = "Note is required.";
+    if (!formData.supplier_id) newErrors.supplier_id = "Supplier is required.";
+    // if (!formData.note) newErrors.note = "Note is required.";
     if (!formData.due_date) newErrors.due_date = "Due Date Id is required.";
 
     // Validate Billing Details
@@ -352,13 +425,17 @@ const AddSalesOrder = () => {
     if (!selectedBillingStateOption) {
       newErrors.billing_state_name = "Billing state is required.";
     }
-    // if (!formBillingData.state_code || !/^\d{1,2}$/.test(formBillingData.state_code)) {
+    // if (
+    //   !formBillingData.state_code ||
+    //   !/^\d{1,2}$/.test(formBillingData.state_code)
+    // ) {
     //   newErrors.billing_state_code = "Valid billing state code is required.";
     // }
-    if (!formBillingData.gstin
+    if (
+      !formBillingData.gstNumber
       // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formBillingData.gstin)
     ) {
-      newErrors.billing_gstin = "Valid GSTIN is required for billing.";
+      newErrors.gstNumber = "Valid GSTIN is required for billing.";
     }
 
     if (!formBillingData.address) {
@@ -369,73 +446,99 @@ const AddSalesOrder = () => {
     if (!formShippingData.name) {
       newErrors.shipping_name = "Shipping name is required.";
     }
-
-    if (!formShippingData.email || !/\S+@\S+\.\S+/.test(formShippingData.email)) {
+    if (
+      !formShippingData.email ||
+      !/\S+@\S+\.\S+/.test(formShippingData.email)
+    ) {
       newErrors.shipping_email = "Valid email is required for shipping.";
     }
-
     if (!selectedShippingStateOption) {
       newErrors.shipping_state_name = "Shipping state is required.";
     }
-
-    // if (!formShippingData.state_tin_code || !/^\d{1,2}$/.test(formShippingData.state_code)) {
+    // if (
+    //   !formShippingData.state_tin_code ||
+    //   !/^\d{1,2}$/.test(formShippingData.state_code)
+    // ) {
     //   newErrors.state_tin_code = "Valid shipping state code is required.";
     // }
-
-    // if (!formShippingData.gstin
-    //   || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formShippingData.gstin)
-    // ) {
-    //   newErrors.shipping_gstin = "Valid GSTIN is required for shipping.";
-    // }
+    if (
+      !formShippingData.gstin
+      // || !/^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[A-Z0-9]{1}[Z]{1}[A-Z0-9]{1}$/.test(formShippingData.gstin)
+    ) {
+      newErrors.shipping_gstin = "Valid GSTIN is required for shipping.";
+    }
 
     if (!formShippingData.address) {
       newErrors.shipping_address = "Address required for billing.";
     }
+
     // Set errors to the state
     setErrors(newErrors);
+
     // Return true if there are no errors, false otherwise
     return Object.keys(newErrors).length === 0;
   };
 
-  // console.log("err",errors)
 
-  const handleDeleteLogo = () => {
-    setLogo(null);
-    document.getElementById("logoUpload").value = "";
-  };
+  // console.log("base address is here", baseDetails);
 
-  const fetchCustomerAllList = async () => {
-    setLoading(true);
+  const fetchBaseAddress = async () => {
     try {
-      const res = await getAllCusotmerListApi();
-      // console.log(res,"=-=-=-=-=-=-=-=-=-=-=-=-=-=")
-      const dropdownCustomerList = res?.data?.map((customer) => ({
-        value: customer._id,
-        label: customer.fname + " " + customer.lname,
-      }));
-      setCustomerOption(dropdownCustomerList)
-      setAllCustomer(res?.data)
-      // setSupplierOption(dropdownCustomerList);
-      // setAllSupplier(res?.data);
+      // setLoading(true);
+      const res = await getBaseAddress();
+      const data = res?.data?.data;
+      setBaseAddressState(data?.baseAddress?.state)
+      setBaseDetails(data)
+      setBaseDetailsData(true)
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchBaseAddress();
+  }, [])
+
+  useEffect(() => {
+    if (formBillingData?.state_code) {
+      fetchStatesListTIN(formBillingData?.state_code)
+    }
+
+  }, [])
+
 
   const fetchSupplierAllList = async () => {
     setLoading(true);
     try {
       const res = await getAllSupplierListApi();
       const dropdownSupplierList = res?.data?.suppliers?.map((supplier) => ({
-        value: supplier._id,
-        label: supplier.name,
+        value: supplier?._id,
+        label: `${supplier?.supplier_name}`,
       }));
       setSupplierOption(dropdownSupplierList);
       setAllSupplier(res?.data?.suppliers);
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
+      console.error("Error fetching data:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchAllCustomerList = async () => {
+    setLoading(true);
+    try {
+      const res = await getAllCusotmerListApi();
+      const dopdownData = res?.data?.map((customer) => ({
+        value: customer?._id,
+        label: `${customer?.fname} ${customer?.lname}  ${customer?.company_name ? `(${customer?.company_name})` : ""}`,
+      }));
+      setCustomerOption(dopdownData);
+      setAllCustomers(res?.data)
+      // setAllSupplier(res?.data?.suppliers);
+    } catch (error) {
+      console.error("Error fetching data:", error);
     } finally {
       setLoading(false);
     }
@@ -445,28 +548,27 @@ const AddSalesOrder = () => {
     setLoading(true);
     try {
       const res = await GetAllProductList();
-      console.log("res dropdownProductList res",res)
+     
       const dropdownProductList = res?.data?.products?.map((product) => ({
         value: product?.desc_Code,
-        label: product?.desc_Code,
+        label: `[${product?.product_code}] ${product?.desc_Code}`,
         id: product?._id,
         product_code: product?.product_code,
         uom: product?.uom,
         weight: product?.weight,
         price: product?.price,
-        gst: product?.gst
-
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+        product_type: product?.product_type
       }));
-      console.log("dropdownProductList dropdownProductList dropdownProductList",dropdownProductList)
+      console.log("dropdownProductList dropdownProductList dropdownProductList dropdownProductList",dropdownProductList)
       setProductOption(dropdownProductList);
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+
     } finally {
       setLoading(false);
     }
   };
-
   //Fetch State TIN Number
   const fetchStatesListTIN = async (state_code) => {
     try {
@@ -474,8 +576,8 @@ const AddSalesOrder = () => {
       const StateTinNumber = res?.data?.stateTin[0]?.tin_number;
       setBillingFormData({
         ...formBillingData,
-        state_tin_code: StateTinNumber
-      })
+        state_tin_code: StateTinNumber,
+      });
       setStateTIN(StateTinNumber);
     } catch (error) {
       Toaster.error("Failed to load tin number. Please try again.");
@@ -483,24 +585,22 @@ const AddSalesOrder = () => {
       setLoading(false);
     }
   };
-
-    //Fetch State TIN Number
-    const fetchShippingStatesListTIN = async (state_code) => {
-      try {
-        const res = await getStateListTinApi(state_code);
-        const StateTinNumber = res?.data?.stateTin[0]?.tin_number;
-        setShippingFormData({
-          ...formShippingData,
-          state_tin_code: StateTinNumber
-        })
-        setStateTIN(StateTinNumber);
-      } catch (error) {
-        Toaster.error("Failed to load tin number. Please try again.");
-      } finally {
-        setLoading(false);
-      }
-    };
-
+  //Fetch State TIN Number
+  const fetchShippingStatesListTIN = async (state_code) => {
+    try {
+      const res = await getStateListTinApi(state_code);
+      const StateTinNumber = res?.data?.stateTin[0]?.tin_number;
+      setShippingFormData({
+        ...formShippingData,
+        state_tin_code: StateTinNumber,
+      });
+      setStateTIN(StateTinNumber);
+    } catch (error) {
+      Toaster.error("Failed to load tin number. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   //Fetch Countries List
   const fetchCountryList = async () => {
     setLoading(true);
@@ -511,7 +611,7 @@ const AddSalesOrder = () => {
       const dropdownCountryList = data?.map((country) => ({
         value: country?.name,
         label: country?.name,
-        code: country?.state_code
+        code: country?.state_code,
       }));
       //statesOption, setStatesOption
       // setStates(data)
@@ -522,87 +622,91 @@ const AddSalesOrder = () => {
       setLoading(false);
     }
   };
-
   //Fetch Countries List
   const fetchCountryData = async () => {
     try {
       const countriesResponse = await getCountryApi();
-      const dropdownCountryList = countriesResponse?.data?.countries?.map((country) => ({
-        value: country?.name,
-        label: country?.name,
-        id: country?.id
-      }));
+      const dropdownCountryList = countriesResponse?.data?.countries?.map(
+        (country) => ({
+          value: country?.name,
+          label: country?.name,
+          id: country?.id,
+        })
+      );
 
       setCountriesList(dropdownCountryList);
+      return dropdownCountryList;
     } catch (error) {
       console.log(error.message);
     }
   };
   //Fetch state List
   const fetchStatesData = async (id) => {
-    try {
-      const stateData = await getStateApi(id);
-      const dropdownStateList = stateData?.data?.states?.map((state) => ({
-        value: state?.name,
-        label: state?.name,
-        id: state?.id,
-        state_code: state?.state_code
-      }));
+    if (id) {
+      try {
+        const stateData = await getStateApi(id);
+        const dropdownStateList = stateData?.data?.states?.map((state) => ({
+          value: state?.name,
+          label: state?.name,
+          id: state?.id,
+          state_code: state?.state_code,
+        }));
 
-
-      setStateList(dropdownStateList);
-
-    } catch (error) {
-      console.log(error.message);
+        setStateList(dropdownStateList);
+        return dropdownStateList;
+      } catch (error) {
+        console.log(error.message);
+      }
     }
   };
   //Fetch Cities List
   const fetchCitiesData = async (id) => {
-    try {
-      const cityData = await getCityApi(id);
-      const dropdownCityList = cityData?.data?.cities?.map((city) => ({
-        value: city?.name,
-        label: city?.name,
-        id: city?.id
-      }));
-      setCityList(dropdownCityList);
-    } catch (error) {
-      console.log(error.message);
+    if (id) {
+      try {
+        const cityData = await getCityApi(id);
+        const dropdownCityList = cityData?.data?.cities?.map((city) => ({
+          value: city?.name,
+          label: city?.name,
+          id: city?.id,
+        }));
+        setCityList(dropdownCityList);
+        return dropdownCityList;
+      } catch (error) {
+        console.log(error.message);
+      }
     }
   };
 
   useEffect(() => {
-    fetchCustomerAllList();
     fetchSupplierAllList();
+    fetchAllCustomerList();
     fetchProductAllList();
     fetchCountryList();
     fetchCountryData();
   }, []);
 
-  useEffect(() => {
 
+  useEffect(() => {
     if (selectedBillingCountryOption?.value) {
-      fetchStatesData(selectedBillingCountryOption?.id)
+      fetchStatesData(selectedBillingCountryOption?.id);
     }
-    if (selectedBillingStateOption?.value ) {
-      fetchStatesListTIN(selectedBillingStateOption?.state_code)
-      fetchCitiesData(selectedBillingStateOption?.id)
+    if (selectedBillingStateOption?.value) {
+      fetchStatesListTIN(selectedBillingStateOption?.state_code);
+      fetchCitiesData(selectedBillingStateOption?.id);
     }
-   
-    
-  }, [selectedBillingCountryOption,selectedBillingStateOption])
+  }, [selectedBillingCountryOption, selectedBillingStateOption]);
 
   useEffect(() => {
-
     if (selectedShippingCountryOption?.value) {
-      fetchStatesData(selectedShippingCountryOption?.id)
+      fetchStatesData(selectedShippingCountryOption?.id);
     }
     if (selectedShippingStateOption?.value) {
-      fetchShippingStatesListTIN(selectedShippingStateOption?.state_code)
-      fetchCitiesData(selectedShippingStateOption?.id)
+      fetchShippingStatesListTIN(selectedShippingStateOption?.state_code);
+      fetchCitiesData(selectedShippingStateOption?.id);
     }
-    
-  }, [selectedShippingCountryOption,selectedShippingStateOption])
+  }, [selectedShippingCountryOption, selectedShippingStateOption]);
+
+
 
 
   // Handle the logo image change
@@ -625,87 +729,166 @@ const AddSalesOrder = () => {
     }
   };
 
+
+
   const handleSupplierChange = (option) => {
     setFormData({ ...formData, supplier_id: option?.value });
 
     setSelectedSupplierOption(option);
     const suppDetail = allSupplier?.find((val) => val?._id == option?.value);
     setSupplierDetail(suppDetail);
-  };
-
-  const handleCustomerChange = (option) => {
-    setFormData({ ...formData, customer_id: option?.value });
 
     setSelectedCustomerOption(option);
-    const customerDetail = allCustomers?.find((val) => val?._id == option?.value);
-    setCustomerDetail(customerDetail);
-  // console.log("customerDetail",customerDetail)
-     
+    const customerSelectedDetails = allCustomers?.find((val) => val?._id == option?.value);
+    setCustomerDetails(customerSelectedDetails)
+
+
     const countryData = countriesList?.filter((val) => val?.label == "India");
     const stateData = stateList?.filter(
-      (val) => val?.label == customerDetail?.state
+      (val) => val?.label == suppDetail?.state
     );
-    const cityData = cityList?.filter((val) => val?.label == customerDetail?.city);
+    const cityData = cityList?.filter((val) => val?.label == suppDetail?.city);
 
-    //  console.log("countryData",countryData)
-    setSelectedBillingCountryOption({
-      label: "India",
-      value: "India",
-      id: countryData && countryData[0]?.id,
-    });
-    setSelectedBillingStateOption({
-      label: customerDetail?.state_name,
-      value: customerDetail?.state_name,
-      id: stateData && stateData[0]?.id,
-    });
 
-    setSelectedBillingCityOption({
-      label: customerDetail?.city,
-      value: customerDetail?.city,
-    });
+    if(customerSelectedDetails?.customer_billing_details){
+      setBillingFormData({
+        // ...baseDetails?.genralbillingDetails,
+        ...customerSelectedDetails?.customer_billing_details
+      });
+    }else{
+      setBillingFormData({
+        ...customerSelectedDetails,
+      });
+    }
 
-    setBillingFormData({
-      ...customerDetail,
-      name: `${customerDetail?.fname} ${customerDetail?.lname}`,
-      mobile_no1: customerDetail?.mobile_no1,
-      gstin: customerDetail?.gstNumber,
-      pin_code: customerDetail?.pin_code,
-      country: customerDetail?.country,
-      state_name: customerDetail?.state_name,
-      city: customerDetail?.city,
-    });
 
-    // Shipping Form
-    setSelectedShippingCountryOption({
-      label: "India",
-      value: "India",
-      id: countryData && countryData[0]?.id,
-    });
+    if(customerSelectedDetails?.customer_shipping_details){
+      setShippingFormData({
+        ...customerSelectedDetails?.customer_shipping_details
+      });
+    }else{
+      setShippingFormData({
+        ...customerSelectedDetails,
+      });
+    }
+   
 
-    setSelectedShippingStateOption({
-      label: customerDetail?.state_name,
-      value: customerDetail?.state_name,
-      id: stateData && stateData[0]?.id,
-    });
-
-    setSelectedShippingCityOption({
-      label: customerDetail?.city,
-      value: customerDetail?.city,
-    });
-
-    setShippingFormData({
-      ...customerDetail,
-      name: `${customerDetail?.fname} ${customerDetail?.lname}`,
-      mobile_no1: customerDetail?.mobile_no1,
-      gstin: customerDetail?.gstNumber,
-      pin_code: customerDetail?.pin_code,
-      country: customerDetail?.country,
-      state_name: customerDetail?.state_name,
-      city: customerDetail?.city,
-    });
   };
- 
-  // console.log("ssss",customerDetail)
+
+
+  //Billing Genral address prefilled selection
+  useEffect(() => {
+    const initializeLocationData = async () => {
+      if (formBillingData?.country) {
+        // 1. Set Country
+        const country = countriesList?.find(
+          (c) => c?.value === formBillingData?.country
+        );
+        if (country) {
+          setSelectedBillingCountryOption({
+            label: country?.value,
+            value: country?.value,
+            id: country?.id,
+          });
+
+          // 2. Fetch States
+          const fetchedStates = await fetchStatesData(country?.id); // should return states list
+          
+
+          if (formBillingData?.state) {
+            const state = fetchedStates?.find(
+              (s) => s?.value === formBillingData?.state
+            );
+            if (state) {
+              setSelectedBillingStateOption({
+                label: state?.value,
+                value: state?.value,
+                state_code: formBillingData?.state_code,
+                id: state?.id,
+              });
+
+              // 3. Fetch Cities
+              const fetchedCities = await fetchCitiesData(state?.id); // should return cities list
+
+              if (formBillingData?.city) {
+                const city = fetchedCities?.find(
+                  (c) => c?.value === formBillingData?.city
+                );
+                if (city) {
+                  setSelectedBillingCityOption({
+                    label: city?.value,
+                    value: city?.value,
+                    id: city?.id,
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    initializeLocationData();
+  }, [formBillingData?.country]);
+
+  //Shipping Genral address prefilled selection
+  useEffect(() => {
+    const initializeLocationData = async () => {
+      if (formShippingData?.country) {
+        // 1. Set Country
+        const country = countriesList?.find(
+          (c) => c?.value === formShippingData?.country
+        );
+        if (country) {
+          setSelectedShippingCountryOption({
+            label: country?.value,
+            value: country?.value,
+            id: country?.id,
+          });
+
+          // 2. Fetch States
+          const fetchedStates = await fetchStatesData(country?.id); // should return states list
+          
+
+          if (formBillingData?.state) {
+            const state = fetchedStates?.find(
+              (s) => s?.value === formShippingData?.state
+            );
+            if (state) {
+
+              setSelectedShippingStateOption({
+                label: state?.value,
+                value: state?.value,
+                state_code: formShippingData?.state_code,
+                id: state?.id,
+              });
+
+              // 3. Fetch Cities
+              const fetchedCities = await fetchCitiesData(state?.id); // should return cities list
+
+              if (formShippingData?.city) {
+                const city = fetchedCities?.find(
+                  (c) => c?.value === formShippingData?.city
+                );
+                if (city) {
+                  setSelectedShippingCityOption({
+                    label: city?.value,
+                    value: city?.value,
+                    id: city?.id,
+                  });
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+
+    initializeLocationData();
+  }, [formShippingData?.country]);
+
+
+
 
   const calculateTotalAmount = () => {
     return rows.reduce((total, row) => {
@@ -719,26 +902,25 @@ const AddSalesOrder = () => {
     }, 0);
   };
 
-
   const handleProductChange = (selectedOption, index) => {
     const updatedRows = [...rows];
-    // updatedRows[index].selectedOption = selectedOption; 
+    // updatedRows[index].selectedOption = selectedOption;
     // Update only the specific row's selectedOption
     updatedRows[index].product_name = selectedOption.value; // Update the product_name
-
 
     // Find the selected product from productOption array
     const selectedProduct = productOption.find(
       (product) => product.id === selectedOption.id
     );
 
-    updatedRows[index].product_code = selectedProduct ? selectedProduct?.product_code : "";
+    updatedRows[index].product_code = selectedProduct
+      ? selectedProduct?.product_code
+      : "";
     updatedRows[index].uom = selectedProduct ? selectedProduct?.uom : "";
     updatedRows[index].weight = selectedProduct ? selectedProduct?.weight : "";
     updatedRows[index].price = selectedProduct ? selectedProduct?.price : "";
     updatedRows[index].gst = selectedProduct ? selectedProduct?.gst : "";
     updatedRows[index].product_id = selectedProduct ? selectedProduct?.id : "";
-
 
     setRows(updatedRows);
   };
@@ -758,12 +940,12 @@ const AddSalesOrder = () => {
       const sgst = parseFloat(row.sgst || 0);
       const igst = parseFloat(row.igst || 0);
 
-      const totalamount = parseFloat(row?.total_amount)
+      const totalamount = parseFloat(row?.total_amount);
 
       total_quantity += quantity;
       sub_total += totalamount;
       total_discount += quantity * discountPerUnit;
-      // total_gst_amount += quantity * (cgst + sgst + igst); // Sum of all GST components
+      total_gst_amount += (cgst + sgst + igst); // Sum of all GST components
     });
 
     const grand_total =
@@ -782,24 +964,14 @@ const AddSalesOrder = () => {
   const summary = calculateSummary();
 
   const CreateSOItem = async (SO_id) => {
-
     const fDataProducts = rows?.map(({ id, selectedOption, ...rest }) => {
       return {
         ...rest,
         so_id: SO_id,
-        // product_id: rest?.id
-        // cess: parseFloat(rest.cess || 0),
-        // cgst: parseFloat(rest.cgst || 0),
-        // discount_per_unit: parseFloat(rest.discount_per_unit || 0),
-        // igst: parseFloat(rest.igst || 0),
-        // price_per_unit: parseFloat(rest.price_per_unit || 0),
-        // uom_qty: parseFloat(rest.uom_qty || 0),
-        // quantity: parseFloat(rest.quantity || 0),
-        // total_discount: parseFloat(rest.total_discount || 0),
-        // amount: parseFloat(rest.amount || 0),
-        // sgst: parseFloat(rest.sgst || 0),
+        createdBy: authData?.user?._id,
       };
     });
+
 
     try {
       const res = await createSOItemApi(fDataProducts);
@@ -832,71 +1004,208 @@ const AddSalesOrder = () => {
       );
       console.error("Error creating product:", error);
     }
-  }
+  };
 
-  const CreatePoItem = async (PO_id) => {
 
-    const fDataProducts = rows?.map(({ id, selectedOption, ...rest }) => {
-      return {
-        ...rest,
-        po_id: PO_id,
-        // product_id: rest?.id
-        // cess: parseFloat(rest.cess || 0),
-        // cgst: parseFloat(rest.cgst || 0),
-        // discount_per_unit: parseFloat(rest.discount_per_unit || 0),
-        // igst: parseFloat(rest.igst || 0),
-        // price_per_unit: parseFloat(rest.price_per_unit || 0),
-        // uom_qty: parseFloat(rest.uom_qty || 0),
-        // quantity: parseFloat(rest.quantity || 0),
-        // total_discount: parseFloat(rest.total_discount || 0),
-        // amount: parseFloat(rest.amount || 0),
-        // sgst: parseFloat(rest.sgst || 0),
-      };
+  const handleBillingDetailChange = (e) => {
+    const { name, value } = e.target; // Destructure the input's name and value
+    setBillingFormData((prevState) => ({
+      ...prevState,
+      [name]: value, // Dynamically update the corresponding field
+    }));
+  };
+
+  const handleShippingDetailChange = (e) => {
+    const { name, value } = e.target; // Destructure the input's name and value
+    setShippingFormData((prevState) => ({
+      ...prevState,
+      [name]: value, // Dynamically update the corresponding field
+    }));
+  };
+
+  //Billing...........................................................................................................................
+
+  const handleBillingDetailCountryChange = (option) => {
+    setSelectedBillingCountryOption(option);
+    setBillingFormData({
+      ...formBillingData,
+      country: option?.value,
     });
+    setSelectedBillingStateOption('')
+    setSelectedBillingCityOption('')
+  };
+
+  const handleBillingDetailStateChange = (option) => {
+    setSelectedBillingStateOption(option);
+    setBillingFormData({
+      ...formBillingData,
+      state: option?.value,
+      state_code: option?.state_code
+    });
+    setSelectedBillingCityOption('')
+  };
+
+  const handleBillingDetailCityChange = (option) => {
+    setSelectedBillingCityOption(option);
+    setBillingFormData({
+      ...formBillingData,
+      city: option?.value,
+    });
+  };
+
+  //shipping....................................................
+
+  const handleShippingDetailCountryChange = (option) => {
+    setSelectedShippingCountryOption(option);
+    setShippingFormData({
+      ...formShippingData,
+      country: option?.value,
+    });
+    setSelectedShippingStateOption('')
+    setSelectedShippingCityOption('')
+  };
+
+  const handleShippingDetailStateChange = (option) => {
+    setSelectedShippingStateOption(option);
+    setShippingFormData({
+      ...formShippingData,
+      state: option?.value,
+      state_code: option?.state_code
+    });
+    setSelectedShippingCityOption('')
+  };
+
+  const handleShippingDetailCityChange = (option) => {
+    setSelectedShippingCityOption(option);
+    setShippingFormData({
+      ...formShippingData,
+      city: option?.value,
+    });
+  };
+
+  const handleBillingPhoneDetailChange = (value, field) => {
+    setBillingFormData((prev) => ({
+      ...prev,
+      [field]: value, // Dynamically update the correct field
+    }));
+  };
+
+  const handleShippingPhoneDetailChange = (value, field) => {
+    setShippingFormData((prevState) => ({
+      ...prevState,
+      [field]: value, // Dynamically update the corresponding field
+    }));
+  };
+
+  const handleProductDataChange = (selectedOption) => {
+    setSelectedProduct(selectedOption);
+    setProductFormData(selectedOption);
+  };
+
+  // Function to update selected row when selecting a product
+  const handleSelectProduct = (index) => {
+    handleChangeRow(index, "quantity", selectedQuantity);
+    handleChangeRow(index, "discount_per_unit", selectedDiscount);
+  };
+
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const debounceTimer = useRef(null);
+
+  const fetchProductSearchResults = async (query) => {
+    if (!query) return; // Prevent empty requests
+    // setLoading(true);
 
     try {
-      const res = await createPoItemApi(fDataProducts);
-      // console.log(res, "response is here");
-      if (res.data?.success) {
-        setLoading(false);
-        // Show success message from backend
-        // Toaster.success(res?.data?.message);
-        // Swal.fire({
-        //   icon: "success",
-        //   title: "Purchase Order Items",
-        //   text: res.data?.message || "PO Items created successfully",
-        //   showConfirmButton: false,
-        //   timer: 1500,
-        // });
-        resetForm();
-        // Reset form after success
-        // navigate('/productlist');
-      } else {
-        setLoading(false);
-        Toaster.error(res.data?.message || "Failed to create PO Items");
-        console.error("PO items creation error:", res);
-      }
+      const res = await SearchProductsApi(query); // API should support search
+      const dropdownProductList = res?.data?.products.map((product) => ({
+        value: product?.desc_Code,
+        label: `[${product?.product_code}]  [${product?.desc_Code}]  ${product?.fitting_Code ? ` ⇨[${product?.fitting_Code}]` : ""}`,
+        id: product?._id,
+        product_code: product?.product_code,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+        product_type: product?.product_type,
+      }));
+
+      setProductOption(dropdownProductList);
     } catch (error) {
+      console.error("Error fetching products:", error);
+      Toaster.error("Failed to load products. Please try again.");
+    } finally {
       setLoading(false);
-      // Handle any errors during API request
-      Toaster.error(
-        error.response?.data?.message ||
-        "An error occurred while processing your request"
-      );
-      console.error("Error creating product:", error);
     }
-  }
+  };
+
+  // **Debounce Function (Delays API call until user stops typing)**
+  const debounceSearch = (query) => {
+    clearTimeout(debounceTimer.current);
+    debounceTimer.current = setTimeout(() => {
+      fetchProductSearchResults(query);
+    }, 500); // 500ms delay
+  };
+
+  const handleSearch = (inputValue) => {
+    setSearchTerm(inputValue);
+    if (inputValue.length > 1) {
+      debounceSearch(inputValue)
+      // fetchProductSearchResults(inputValue); // Fetch matching products
+    }
+  };
+
+
+  const fetchSimilarProducts = async (fittingCode) => {
+    // setLoading(true);
+    try {
+      const res = await SearchSimilarProductsApi(fittingCode);
+      // Transform the API response into dropdown format
+      const dropdownProductList = res?.products.map((product) => ({
+        value: product?.desc_Code,
+        label: `[${product?.product_code}]  [${product?.desc_Code}]  ⇨[${product?.fitting_Code}]`,
+        id: product?._id,
+        product_code: product?.product_code,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+        desc_Code: product?.desc_Code,
+        quantity: product?.total_quantity,
+        product_type: product?.product_type
+      }));
+
+      setSimilarProducts(dropdownProductList);
+    } catch (error) {
+      // console.error("Error fetching similar products:", error);
+      Toaster.error("Failed to load similar products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    if (selectedProduct?.fitting_Code) {
+      fetchSimilarProducts(selectedProduct?.fitting_Code);
+    }
+    if (searchTerm == "") {
+      setSimilarProducts("")
+    }
+
+  }, [selectedProduct, searchTerm]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (!validateForm()) {
-      return;
-    }
+    // if (!validateForm()) {
+    //   return;
+    // }
     setLoading(true);
 
     const fData = {
-      customer_id: formData?.customer_id,
+      customer_id: formData?.supplier_id,
       order_details: {
         date: formData?.date,
         due_date: formData?.due_date,
@@ -908,11 +1217,11 @@ const AddSalesOrder = () => {
         mobile_no1: formBillingData?.mobile_no1,
         mobile_no2: formBillingData?.mobile_no2,
         country: formBillingData?.country,
-        state_name: formBillingData?.state_name,
+        state_name: formBillingData?.state,
         city: formBillingData?.city,
         state_tin_code: formBillingData?.state_tin_code,
         address: formBillingData?.address,
-        gstin: formBillingData?.gstin,
+        gstin: formBillingData?.gstNumber,
       },
       shipping_details: {
         name: formShippingData?.name,
@@ -920,28 +1229,44 @@ const AddSalesOrder = () => {
         mobile_no1: formShippingData?.mobile_no1,
         mobile_no2: formShippingData?.mobile_no2,
         country: formShippingData?.country,
-        state_name: formShippingData?.state_name,
+        state_name: formShippingData?.state,
         city: formShippingData?.city,
         state_tin_code: formShippingData?.state_tin_code,
         address: formShippingData?.address,
-        gstin: formShippingData?.gstin,
+        gstin: formShippingData?.gstNumber,
       },
+      base_company_address: {
+        name: baseDetails?.baseAddress?.name,
+        fname: baseDetails?.baseAddress?.fname,
+        lname: baseDetails?.baseAddress?.lname,
+        email: baseDetails?.baseAddress?.email,
+        mobile_no1: baseDetails?.baseAddress?.mobile_no1,
+        mobile_no2: baseDetails?.baseAddress?.mobile_no2,
+        country: baseDetails?.baseAddress?.country,
+        state_name: baseDetails?.baseAddress?.state,
+        city: baseDetails?.baseAddress?.city,
+        state_tin_code: baseDetails?.baseAddress?.state_tin_code,
+        address: baseDetails?.baseAddress?.address,
+        gstNumber: baseDetails?.baseAddress?.gstNumber,
+        panNumber: baseDetails?.baseAddress?.panNumber,
+        state_code: baseDetails?.baseAddress?.state_code,
+      },
+      createdBy: authData?.user?._id,
       summary: summary,
     };
-   
 
     try {
+      // console.log(fData, "Data before api");
+      //Step1: Create Sale order Details (High level info in DB)
       const res = await addSalesOrderApi(fData);
-      console.log("res res res resis 55565565565656565665655656",res)
       if (res.data?.success) {
         setLoading(false);
-
-        // CreatePoItem(res?.data?.purchaseOrder?._id)
+        //Step2: Add All Items in DB For a Perticular Sale Order(Sepratey store items in DB)
         CreateSOItem(res?.data?.saleOrder?._id)
         Swal.fire({
           icon: "success",
           title: "Sales Order",
-          text: res.data?.message || "Sales created successfully",
+          text: res.data?.message,
           showConfirmButton: false,
           timer: 1500,
         });
@@ -963,144 +1288,48 @@ const AddSalesOrder = () => {
     }
   };
 
-
-  const handleBillingDetailChange = (e) => {
-    const { name, value } = e.target; // Destructure the input's name and value
-    setBillingFormData((prevState) => ({
-      ...prevState,
-      [name]: value, // Dynamically update the corresponding field
-    }));
-  };
-
-  const handleShippingDetailChange = (e) => {
-    const { name, value } = e.target; // Destructure the input's name and value
-    setShippingFormData((prevState) => ({
-      ...prevState,
-      [name]: value, // Dynamically update the corresponding field
-    }));
-  };
-
- //Billing...........................................................................................................................
-
-  const handleBillingDetailCountryChange = (option) => {
-    setSelectedBillingCountryOption(option);
-    setBillingFormData({
-      ...formBillingData,
-      country: option?.value,
-    })
-    setSelectedBillingStateOption('')
-    setSelectedBillingCityOption('')
-   
-  }
-
-  const handleBillingDetailStateChange = (option) => {
-    setSelectedBillingStateOption(option);
-    setBillingFormData({
-      ...formBillingData,
-      state_name: option?.value,
-    })
-    setSelectedBillingCityOption('')
-
-  }
-
-  const handleBillingDetailCityChange = (option) => {
-    setSelectedBillingCityOption(option);
-    setBillingFormData({
-      ...formBillingData,
-      city: option?.value,
-    })
-  }
-
-  //shipping.................................................................................................................................
-
-  const handleShippingDetailCountryChange = (option) => {
-    setSelectedShippingCountryOption(option);
-    setShippingFormData({
-      ...formShippingData,
-      country: option?.value,
-    })
-    setSelectedShippingStateOption('')
-    setSelectedShippingCityOption('')
-    
-  }
-
-  const handleShippingDetailStateChange = (option) => {
-    setSelectedShippingStateOption(option);
-    setShippingFormData({
-      ...formShippingData,
-      state_name: option?.value,
-    })
-    setSelectedShippingCityOption('')
-  }
-
-  const handleShippingDetailCityChange = (option) => {
-    setSelectedShippingCityOption(option);
-    setShippingFormData({
-      ...formShippingData,
-      city: option?.value,
-    })
-  }
-
-
-  const handleBillingPhoneDetailChange = (value, field) => {
-    setBillingFormData((prev) => ({
-      ...prev,
-      [field]: value, // Dynamically update the correct field
-    }));
-  };
-
-  const handleShippingPhoneDetailChange = (value, field) => {
-    setShippingFormData((prevState) => ({
-      ...prevState,
-      [field]: value, // Dynamically update the corresponding field
-    }));
-  };
-
-  const handleProductDataChange = (selectedOption) => {
-    setSelectedProduct(selectedOption);
-  };
-
   return (
     <>
       <ToastContainer />
-        <BillingDetailFormMdl
-           openBillingMdl={openBillingMdl}
-           setOpenBillingMdl={setOpenBillingMdl}
-           formBillingData={formBillingData}
-           handleBillingDetailChange={handleBillingDetailChange}
-           selectedBillingCountryOption={selectedBillingCountryOption}
-           handleBillingDetailCountryChange={handleBillingDetailCountryChange}
-           countriesList={countriesList}
-           selectedBillingStateOption={selectedBillingStateOption}
-           handleBillingDetailStateChange={handleBillingDetailStateChange}
-           stateList={stateList}
-           selectedBillingCityOption={selectedBillingCityOption}
-           handleBillingDetailCityChange={handleBillingDetailCityChange}
-           cityList={cityList}
-           handleBillingPhoneDetailChange={handleBillingPhoneDetailChange}
-           errors={errors}
-         />
-      
-         <ShippingDetailFormMdl
-           openShippingMdl={openShippingMdl}
-           setOpenShippingMdl={setOpenShippingMdl}
-           formShippingData={formShippingData}
-           handleShippingDetailChange={handleShippingDetailChange}
-           handleShippingPhoneDetailChange={handleShippingPhoneDetailChange}
-           selectedShippingCountryOption={selectedShippingCountryOption}
-           handleShippingDetailCountryChange={handleShippingDetailCountryChange}
-           countriesList={countriesList}
-           selectedShippingStateOption={selectedShippingStateOption}
-           handleShippingDetailStateChange={handleShippingDetailStateChange}
-           stateList={stateList}
-           selectedShippingCityOption={selectedShippingCityOption}
-           handleShippingDetailCityChange={handleShippingDetailCityChange}
-           cityList={cityList}
-         />
-      
       <Loader visible={loading} />
+
+      <BillingDetailFormMdl
+        openBillingMdl={openBillingMdl}
+        setOpenBillingMdl={setOpenBillingMdl}
+        formBillingData={formBillingData}
+        handleBillingDetailChange={handleBillingDetailChange}
+        selectedBillingCountryOption={selectedBillingCountryOption}
+        handleBillingDetailCountryChange={handleBillingDetailCountryChange}
+        countriesList={countriesList}
+        selectedBillingStateOption={selectedBillingStateOption}
+        handleBillingDetailStateChange={handleBillingDetailStateChange}
+        stateList={stateList}
+        selectedBillingCityOption={selectedBillingCityOption}
+        handleBillingDetailCityChange={handleBillingDetailCityChange}
+        cityList={cityList}
+        handleBillingPhoneDetailChange={handleBillingPhoneDetailChange}
+        errors={errors}
+      />
+
+      <ShippingDetailFormMdl
+        openShippingMdl={openShippingMdl}
+        setOpenShippingMdl={setOpenShippingMdl}
+        formShippingData={formShippingData}
+        handleShippingDetailChange={handleShippingDetailChange}
+        handleShippingPhoneDetailChange={handleShippingPhoneDetailChange}
+        selectedShippingCountryOption={selectedShippingCountryOption}
+        handleShippingDetailCountryChange={handleShippingDetailCountryChange}
+        countriesList={countriesList}
+        selectedShippingStateOption={selectedShippingStateOption}
+        handleShippingDetailStateChange={handleShippingDetailStateChange}
+        stateList={stateList}
+        selectedShippingCityOption={selectedShippingCityOption}
+        handleShippingDetailCityChange={handleShippingDetailCityChange}
+        cityList={cityList}
+      />
+
       <PageTitle
-        activeMenu={"Add New Sales Order"}
+        activeMenu={"Add New Sale Order"}
         motherMenu={"Home"}
         motherMenuLink={"/dashboard"}
       />
@@ -1112,17 +1341,17 @@ const AddSalesOrder = () => {
               <h4 className="card-title">Basic Info</h4>
             </div>
             <div className="card-body">
-
-              {/* supplier Details */}
+              {/* Customer Details */}
               <div className="mb-3">
-                <h4 className="card-title">Customer Detail</h4>
+                <h4 className="card-title">Customer Details</h4>
                 <div className="mb-3 row">
+                  {/* Customer */}
                   <div className="col-sm-6 col-xl-4">
                     <label className="col-form-label">Customer<span className="text-danger">*</span></label>
                     <Select
-                      value={selectedCustomerOption}
-                      onChange={handleCustomerChange}
-                      defaultValue={selectedCustomerOption}
+                      value={selectedSupplierOption}
+                      onChange={handleSupplierChange}
+                      defaultValue={selectedSupplierOption}
                       options={customerOption}
                       style={{
                         lineHeight: "40px",
@@ -1130,13 +1359,13 @@ const AddSalesOrder = () => {
                         paddingLeft: " 15px",
                       }}
                     />
-                    {errors.customer_id && (
+                    {errors.supplier_id && (
                       <span className="text-danger fs-12">
-                        {errors.customer_id}
+                        {errors.supplier_id}
                       </span>
                     )}
                   </div>
-
+                  {/* Date */}
                   <div className="col-sm-6 col-xl-4">
                     <label className="col-sm-3 col-form-label">Date<span className="text-danger">*</span></label>
                     <input
@@ -1152,674 +1381,265 @@ const AddSalesOrder = () => {
                       <span className="text-danger fs-12">{errors.date}</span>
                     )}
                   </div>
-
-                  <div className="col-sm-6 col-xl-4">
-                    <label className="col-form-label">Due Date<span className="text-danger">*</span></label>
+                  {/*Due Date */}
+                  <div className="col-md-3">
+                    <label className="col-form-label">Due Date</label>
                     <input
                       name="due_date"
                       value={formData?.due_date}
                       onChange={handleChange}
+                      onClick={(e) => e.target.showPicker()}
                       type="date"
                       className="form-control"
-                      placeholder="Ex: ABC"
+                      placeholder="Enter Date"
                     />
-
-                    {errors.due_date && (
+                    {errors?.due_date && (
                       <span className="text-danger fs-12">
-                        {errors.due_date}
+                        {errors?.due_date}
                       </span>
                     )}
                   </div>
                 </div>
-                
-                {customerDetail && Object.keys(customerDetail).length !== 0 && (
-                <div className="mb-3 row">
-                  <div className="col-sm-6 col-xl-4">
-                    <div className="supplier-card">
-                    <label className="col-form-label">
-                      Customer Details
-                    </label>
-                    <hr className="w-100" />
-                    <div className="supplier-detail-div">
-                      <p className="p-0 m-0"
-                        style={{ color: "#000000", fontWeight: "400" }}>
-                        {customerDetail?.fname}  {customerDetail?.lname}
-                      </p>
-                      <p className="p-0 m-0 d-flex"
-                        style={{ color: "#000000", fontWeight: "400" }}>
-                       {customerDetail?.country} {customerDetail?.state_name} {customerDetail?.city} 
-                        {customerDetail?.pincode}
-                      </p>
-                      <p className="p-0 m-0"
-                        style={{ color: "#000000", fontWeight: "400" }}
-                      ></p>
-
-                      {customerDetail?.mobile_no1 && (
-                        <div className="d-flex gap-1">
-                          <p className="p-0 m-0">Phone: </p>
-                          <p className="p-0 m-0"
-                            style={{ color: "#000000", fontWeight: "400" }}>
-                            {customerDetail?.mobile_no1}
+                {/* Customer details card */}
+                {customerDetails && Object.keys(customerDetails).length !== 0 && (
+                  <div className="mb-3 row">
+                    <div className="col-sm-6 col-xl-4">
+                      <div className="supplier-card">
+                        <label className="col-form-label">
+                          Customer Details
+                        </label>
+                        <hr className="w-100" />
+                        <div className="supplier-detail-div">
+                          <p className="p-0 m-0">
+                            <span style={{ color: "#000000", fontWeight: "550",fontStyle: "italic" }}>
+                              {customerDetails?.company_name}
+                            </span>{" "}
+                            <span style={{ color: "#000000", fontWeight: "400" }}>
+                              ({customerDetails?.fname} {customerDetails?.lname})
+                            </span>
                           </p>
-                        </div>
-                      )}
-
-                      {customerDetail?.email && (
-                        <div className="d-flex gap-1">
-                          <p className="p-0 m-0">Email: </p>
-                          <p className="p-0 m-0" style={{ color: "#000000", fontWeight: "400" }}>
-                            {customerDetail?.email}
+                          <p
+                            className="p-0 m-0 d-flex"
+                            style={{ color: "#000000", fontWeight: "400" }}
+                          >
+                            {customerDetails?.city} {customerDetails?.state} {customerDetails?.country}
                           </p>
-                        </div>
-                      )}
+                          <p
+                            className="p-0 m-0"
+                            style={{ color: "#000000", fontWeight: "400" }}
+                          ></p>
 
-                      {/* {supplierDetail?.gstNumber && (
-                        <div className="d-flex gap-1">
-                          <p className="p-0 m-0">GST: </p>
-                          <p className="p-0 m-0" style={{ color: "#000000", fontWeight: "400" }}>
-                            {supplierDetail?.gstNumber}
-                          </p>
+                          {customerDetails?.mobile_no1 && (
+                            <div className="d-flex gap-1">
+                              <p className="p-0 m-0 fw-bold "
+                                style={{ color: "black", fontWeight: "400" }} >Mobile No :</p>
+                              <p
+                                className="p-0 m-0 "
+                                style={{ color: "black", fontWeight: "400" }} >
+                                +91-{customerDetails?.mobile_no1 ? customerDetails?.mobile_no1 : "N/A"}
+                              </p>
+                            </div>
+                          )}
+                          {customerDetails?.mobile_no2 && (
+                            <div className="d-flex gap-1">
+                              <p className="p-0 m-0 fw-bold "
+                                style={{ color: "black", fontWeight: "400" }} >Mobile No. (Alternate):</p>
+                              <p
+                                className="p-0 m-0 "
+                                style={{ color: "black", fontWeight: "400" }} >
+                                +91-{customerDetails?.mobile_no2 ? customerDetails?.mobile_no2 : "N/A"}
+                              </p>
+                            </div>
+                          )}
+
+                          {customerDetails?.email && (
+                            <div className="d-flex gap-1">
+                              <p className="p-0 m-0 fw-bold "
+                                style={{ color: "black", fontWeight: "400" }} >Email :</p>
+
+                              <p
+                                className="p-0 m-0"
+                                style={{ color: "#000000", fontWeight: "400" }}
+                              >
+                                {customerDetails?.email}
+                              </p>
+                            </div>
+                          )}
+
+                          {setCustomerDetails?.gstNumber && (
+                            <div className="d-flex gap-1">
+                              <p className="p-0 m-0 fw-bold "
+                                style={{ color: "black", fontWeight: "400" }} >GST :</p>
+                              <p
+                                className="p-0 m-0"
+                                style={{ color: "#000000", fontWeight: "400" }}
+                              >
+                                {setCustomerDetails?.gstNumber}
+                              </p>
+                            </div>
+                          )}
                         </div>
-                      )} */}
+                      </div>
                     </div>
+                    {/* Billing Details card */}
+                    <BillingDetail
+                      billingDetail={formBillingData}
+                      setOpenBillingMdl={setOpenBillingMdl}
+                    />
+                    {/* Shipping Details card */}
+                    <ShippingDetail
+                      shippingDetail={formShippingData}
+                      setOpenShippingMdl={setOpenShippingMdl}
+                    />
 
+                    <div className=" col-sm-8">
+                      <label className="col-form-label">Note<span className="text-danger">*</span></label>
+                      <textarea
+                        name="note"
+                        className="form-control"
+                        rows="3"
+                        id="comment"
+                        placeholder="Note"
+                        value={formData.note}
+                        onChange={handleChange}
+                      ></textarea>
+                      {errors.note && (
+                        <span className="text-danger fs-12">{errors.note}</span>
+                      )}
+                    </div>
                   </div>
-
-                  <div className="col-sm-12 col-sm-8">
-                    <label className="col-form-label">Note<span className="text-danger">*</span></label>
-                    <textarea
-                      name="note"
-                      className="form-control"
-                      rows="3"
-                      id="comment"
-                      placeholder="Note"
-                      value={formData.note}
-                      onChange={handleChange}
-                    ></textarea>
-                    {errors.note && (
-                      <span className="text-danger fs-12">{errors.note}</span>
-                    )}
-                  </div>
-                  </div>
-
-                  <BillingDetail
-                    billingDetail={formBillingData}
-                    setOpenBillingMdl={setOpenBillingMdl}
-                  />
-
-                  <ShippingDetail
-                    shippingDetail={formShippingData}
-                    setOpenShippingMdl={setOpenShippingMdl}
-                  />
-                </div>
                 )}
               </div>
 
               <hr className="w-100" />
 
-            <h4 className="card-title">Product Detail</h4>
+              {/* Product Details and serach box section */}
+              <div >
+                <h4 className="card-title">Product Detail</h4>
                 <div className="row mt-3">
-                  <label className="col-form-label">Product<span className="text-danger">*</span></label>
+
                   <div className="col-md-6">
+                    <label className="col-form-label">Product</label>
+                    {/* Search Button */}
                     <Select
-                      options={productOption}
+                      options={searchTerm ? productOption : []}
+                      placeholder="Search product by name or code ..."
+                      isLoading={loading}
                       value={selectedProduct}
                       onChange={handleProductDataChange}
+                      onInputChange={handleSearch}
+                      noOptionsMessage={() => "No matching products found"}
+                      isClearable
+                      menuIsOpen={!!searchTerm}
                     />
-                   <button onClick={addRow} className="btn btn-primary mt-2">
-                     Add Product
-                   </button>
-                  </div>
-                  
-                  {/* <div className="col-md-6">
-                    <div className="product-sidebox">
+                    {/* Qty and Discount */}
+                    <div className="row">
+                      <div className="col-md-6">
+                        <label className="col-form-label">Add Quantity</label>
+                        <input
+                          type="number"
+                          placeholder="Qty"
+                          value={selectedQuantity}
+                          onChange={(e) => setSelectedQuantity(e.target.value)}
+                          className="form-control row-input"
+                        />
+                      </div>
 
+                      <div className="col-md-6">
+                        <label className="col-form-label">Discount Per Unit</label>
+                        <input
+                          type="number"
+                          placeholder="Discount Per Unit"
+                          value={selectedDiscount}
+                          onChange={(e) => setSelectedDiscount(e.target.value)}
+                          className="form-control"
+                        />
+                      </div>
                     </div>
-                  </div> */}
-                </div>
-              {/* Billing Details */}
-              {/* <div className="mb-3">
-                <h4 className="card-title">Billing Detail</h4>
-                <div className="row mb-3">
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Name</label>
-                    <input
-                      name="name"
-                      value={formBillingData?.name}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.billing_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_name}
-                      </span>
-                    )}
-                  </div>
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Email</label>
-                    <input
-                      name="email"
-                      value={formBillingData?.email}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC@gmail.com"
-                    />
-
-                    {errors.billing_email && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_email}
-                      </span>
-                    )}
-                  </div>
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Mobile No.1</label>
-                    <input
-                      name="mobile_no1"
-                      value={formBillingData?.mobile_no1}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: +91 9876-555-555"
-                    />
-
-                    {errors.billing_mobile_no1 && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_mobile_no1}
-                      </span>
-                    )}
+                    {/* Add button */}
+                    <button onClick={addRow} className="btn btn-primary mt-4">
+                      Add Product
+                    </button>
                   </div>
 
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Mobile No.2</label>
-                    <input
-                      name="mobile_no2"
-                      value={formBillingData?.mobile_no2}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex:  +91 9876-555-555"
-                    />
+                  <div className="col-md-6">
+                    <label className="col-form-label ">Select Similar Products by Brand</label>
 
-                    {errors.billing_mobile_no2 && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_mobile_no2}
-                      </span>
-                    )}
+                    <div className="product-sidebox p-3 bg-white  rounded">
+                      {similarProducts.length === 0 ? (
+                        <div className="d-flex flex-column align-items-center justify-content-center" style={{ minHeight: "200px" }}>
+                          <div
+                            style={{
+                              fontSize: "5rem",
+                              color: "#6c757d",
+                              animation: "bounce 1.5s infinite"
+                            }}
+                          >
+                            🔍
+                          </div>
+                          <p className="text-center text-muted fw-bold">
+                            No Data Found. Start Searching for a Product!
+                          </p>
+                        </div>
+                      ) : (
+                        <div className="product-list" style={{ maxHeight: "300px", }}>
+                          {similarProducts.map((product) => (
+                            <div
+                              key={product._id}
+                              className="product-item p-2 mb-2 text-dark rounded cursor-pointer"
+                              onClick={() => setSelectedProduct(product)}
+                              style={{
+                                border: (selectedProduct?.id == product?.id) ? "3px solid #5b11e1" : "1px solid #ddd",
+                                backgroundColor: "#E0CFFF",
+                                cursor: "pointer"
+                              }}
+                            >
+
+                              {/* <strong>{product.product_code}</strong>
+                              <span> {product.desc_Code}</span>
+                              <br />
+                              <small className="text-muted">{product.fitting_Code}</small> */}
+                              <div className="col">
+                                <div className="d-flex justify-content-between">
+                                  <div className="w-80">
+                                    <strong>{product?.product_code}</strong>
+                                    <span> {product?.desc_Code}</span>
+                                    <br />
+                                    <small className="text-muted">{product?.fitting_Code}</small>
+                                  </div>
+
+                                  {/* <div className="w-20">
+                                    <span>Quantity</span>
+                                    <br />
+                                    <small className="text-muted">0</small>
+                                  </div> */}
+
+                                  <div className="w-20 d-flex align-items-center justify-content-center text-white rounded  px-3 py-1 shadow-sm"
+                                    style={{
+                                      minWidth: "60px", fontSize: "12px",
+                                      // background: "#C3A4FC",
+                                      background: "linear-gradient(135deg, #C3A4FC, #C3A4FC , #9A67F8)",
+                                      border: "1px solid transparent",
+                                      // borderImage: "linear-gradient(135deg, #9A67F8, #C3A4FC , #7B32FF) 1", // Gradient border
+                                    }}>
+                                    <span className="text-black font-bold">Qty:</span>
+                                    <span className="ms-1 text-black font-bold">{product?.quantity}</span>
+                                  </div>
+                                </div>
+                              </div>
+
+                            </div>
+
+                          ))}
+                        </div>
+                      )}
+                    </div>
                   </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">Country</label>
-                    <Select
-                      value={selectedBillingCountryOption}
-                      onChange={handleBillingDetailCountryChange}
-                      defaultValue={setSelectedBillingCountryOption}
-                      options={countriesList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.country && (
-                      <span className="text-danger fs-12">
-                        {errors.country}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">State</label>
-                    <Select
-                      value={selectedBillingStateOption}
-                      onChange={handleBillingDetailStateChange}
-                      defaultValue={selectedBillingStateOption}
-                      options={stateList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.billing_state_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_state_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">City</label>
-                    <Select
-                      value={selectedBillingCityOption}
-                      onChange={handleBillingDetailCityChange}
-                      defaultValue={selectedBillingCityOption}
-                      options={cityList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.billing_state_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_state_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-2">
-                    <label className="col-form-label">Pincode</label>
-                    <input
-                      name="pin_code"
-                      value={formBillingData?.pin_code}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 313001"
-                    />
-
-                    {errors.billing_pin_code && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_pin_code}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-1">
-                    <label className="col-form-label flex-wrap">TIN</label>
-                    <input
-                      name="state_code"
-                      value={formBillingData?.state_tin_code}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 12"
-                      disabled
-                    />
-
-                    {errors.billings_state_code && (
-                      <span className="text-danger fs-12">
-                        {errors.billings_state_code}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="row mb-3">
-                  <div className="col-xl-6">
-                    <label className="col-sm-3 col-form-label">Address</label>
-                    <input
-                      name="address"
-                      value={formBillingData?.address}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.billing_address && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_address}
-                      </span>
-                    )}
-                  </div>
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">GSTIN</label>
-                    <input
-                      name="gstin"
-                      value={formBillingData?.gstin}
-                      onChange={handleBillingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 22AAAAA0000A1Z5"
-                    />
-
-                    {errors.billing_gstin && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_gstin}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-              </div> */}
-
-              {/* <hr className="w-100" /> */}
-              {/* <div className="mb-3">
-                <h4 className="card-title">Shipping Detail</h4>
-                <div className="row mb-3">
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Name</label>
-                    <input
-                      name="name"
-                      value={formShippingData?.name}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.billing_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Email</label>
-                    <input
-                      name="email"
-                      value={formShippingData?.email}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC@gmail.com"
-                    />
-
-                    {errors.billing_email && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_email}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Mobile No.1</label>
-                    <input
-                      name="mobile_no1"
-                      value={formShippingData?.mobile_no1}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: +91 9876-555-555"
-                    />
-
-                    {errors.shipping_mobile_no1 && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_mobile_no1}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Mobile No.2</label>
-                    <input
-                      name="mobile_no2"
-                      value={formShippingData?.mobile_no2}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex:  +91 9876-555-555"
-                    />
-
-                    {errors.shipping_mobile_no2 && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_mobile_no2}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">Country</label>
-                    <Select
-                      value={selectedShippingCountryOption}
-                      onChange={handleShippingDetailCountryChange}
-                      defaultValue={selectedShippingCountryOption}
-                      options={countriesList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.country && (
-                      <span className="text-danger fs-12">
-                        {errors.country}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">State</label>
-                    <Select
-                      value={selectedShippingStateOption}
-                      onChange={handleShippingDetailStateChange}
-                      defaultValue={selectedShippingStateOption}
-                      options={stateList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.billing_state_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_state_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">City</label>
-                    <Select
-                      value={selectedShippingCityOption}
-                      onChange={handleShippingDetailCityChange}
-                      defaultValue={selectedShippingCityOption}
-                      options={cityList}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.billing_state_name && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_state_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-2">
-                    <label className="col-form-label">Pincode</label>
-                    <input
-                      name="pin_code"
-                      value={formShippingData?.pin_code}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 313001"
-                    />
-
-                    {errors.billing_pin_code && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_pin_code}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-1">
-                    <label className="col-form-label">TIN</label>
-                    <input
-                      name="state_code"
-                      value={formShippingData?.state_tin_code}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 08"
-                      disabled
-                    />
-
-                    {errors.shipping_state_code && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_state_code}
-                      </span>
-                    )}
-                  </div>
-
-
 
                 </div>
-                <div className="row mb-3">
-                  <div className="col-xl-6">
-                    <label className="col-sm-3 col-form-label">Address</label>
-                    <input
-                      name="address"
-                      value={formShippingData?.address}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
+              </div>
 
-                    {errors.billing_address && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_address}
-                      </span>
-                    )}
-                  </div>
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">GSTIN</label>
-                    <input
-                      name="gstin"
-                      value={formShippingData?.gstin}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 22AAAAA0000A1Z5"
-                    />
-
-                    {errors.billing_gstin && (
-                      <span className="text-danger fs-12">
-                        {errors.billing_gstin}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-              </div> */}
-
-
-              {/* <div className="">
-                <h4 className="card-title">Shipping Detail</h4>
-                <div className="row mb-3">
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">Name</label>
-                    <input
-                      name="name"
-                      value={formShippingData?.name}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-                    {errors.shipping_name && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">Email</label>
-                    <input
-                      name="email"
-                      value={formShippingData?.email}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC@gmail.com"
-                    />
-                    {errors.shipping_email && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_email}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">State Name</label>
-                    <Select
-                      value={selectedShippingStateOption}
-                      onChange={handleShippingDetailStateChange}
-                      defaultValue={selectedShippingStateOption}
-                      options={statesOption}
-                      style={{
-                        lineHeight: "40px",
-                        color: "#7e7e7e",
-                        paddingLeft: " 15px",
-                      }}
-                    />
-                    {errors.shipping_state_name && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_state_name}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">State Code</label>
-                    <input
-                      name="state_code"
-                      value={formShippingData?.state_code}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.shipping_state_code && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_state_code}
-                      </span>
-                    )}
-                  </div>
-                </div>
-
-                <div className="row mb-3">
-                  <div className="col-sm-6 col-xl-3">
-                    <label className=" col-form-label">Address</label>
-                    <input
-                      name="address"
-                      value={formShippingData?.address}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: ABC"
-                    />
-
-                    {errors.shipping_address && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_address}
-                      </span>
-                    )}
-                  </div>
-
-                  <div className="col-sm-6 col-xl-3">
-                    <label className="col-form-label">GSTIN</label>
-                    <input
-                      name="gstin"
-                      value={formShippingData?.gstin}
-                      onChange={handleShippingDetailChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: 22AAAAA0000A1Z5"
-                    />
-
-                    {errors.shipping_gstin && (
-                      <span className="text-danger fs-12">
-                        {errors.shipping_gstin}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              </div> */}
-
+              {/* Selected product Table  */}
               {/* Table  */}
               <div className="col-xl-12 col-lg-12 mt-5">
                 <div>
@@ -1833,8 +1653,9 @@ const AddSalesOrder = () => {
                           <thead className="table-head">
                             <tr>
                               <th>SL</th>
-                              {/* <th>Product Name</th> */}
-                              <th>Product Code</th>
+                              <th>Product Name</th>
+                              <th>Fitting Code</th>
+                              <th>Code</th>
                               <th>Quantity</th>
                               <th>UOM</th>
                               <th>Weight(kg)</th>
@@ -1845,7 +1666,7 @@ const AddSalesOrder = () => {
                               <th>CGST</th>
                               <th>SGST</th>
                               <th>IGST</th>
-                              <th>Cess</th>
+                              {/* <th>Cess</th> */}
                               <th>Amount</th>
                               <th>Action</th>
                             </tr>
@@ -1854,46 +1675,55 @@ const AddSalesOrder = () => {
                           <tbody>
                             {rows?.map((row, index) => (
                               <tr key={row.id}
-                               draggable
-                               onDragStart={() => handleDragStart(index)}
-                               onDragOver={handleDragOver}
-                               onDrop={() => handleDrop(index)}
-                               style={{ cursor: "grab", background: "#f8f9fa" }}
-                              >
-                               <td>{row?.id + 1}</td>
-                                {/* Product  */}
-                                {/* <td>
-                                  <Select
-                                    value={row.selectedOption} // Prefill selected option
-                                    onChange={(selectedOption) =>
-                                      handleProductChange(selectedOption, index)
-                                    }
-                                    options={productOption} // Ensure productOption is properly defined
-                                    styles={{
-                                      control: (provided) => ({
-                                        ...provided,
-                                        width: "200px", // Adjust width as needed
-                                        lineHeight: "20px",
-                                        color: "#7e7e7e",
-                                        paddingLeft: "15px",
-                                      }),
-                                      menuPortal: (provided) => ({
-                                        ...provided,
-                                        zIndex: 9999, // Ensures dropdown appears on top
-                                      }),
-                                      menu: (provided) => ({
-                                        ...provided,
-                                        top: "-100%", // Positions the dropdown above
-                                      }),
-                                    }}
-                                    menuPortalTarget={document.body} // Ensures the dropdown is rendered in the body
-                                  />
-                                </td> */}
-                                {/* Product Code */}
+                                draggable
+                                onDragStart={() => handleDragStart(index)}
+                                onDragOver={handleDragOver}
+                                onDrop={() => handleDrop(index)}
+                                style={{ cursor: "grab", background: "#f8f9fa" }}>
+                                {/* S.no */}
+                                <td>{row.id + 1}</td>
+                                {/* Product Name */}
                                 <td>
                                   <input
                                     type="text"
-                                    placeholder="Product Code"
+                                    placeholder="Product Name"
+                                    value={row?.product_name}
+                                    onClick={() =>
+                                      setFocusedInputIndex((prev) => (prev === index ? null : index))
+                                    }
+                                    onChange={(e) =>
+                                      handleChangeRow(index, "product_name", e.target.value)
+                                    }
+                                    className="form-control row-input"
+                                    style={{
+                                      width: focusedInputIndex === index ? "500px" : "300px",
+                                      transition: "width 0.3s ease",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </td>
+                                {/* Product Fitting Code */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="Fitting Code"
+                                    value={row?.fitting_Code} // Auto-fill product code
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "fitting_Code",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "250px" }}
+                                  />
+                                </td>
+                                {/* Product code */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="Code"
                                     value={row?.product_code} // Auto-fill product code
                                     onChange={(e) =>
                                       handleChangeRow(
@@ -2020,7 +1850,7 @@ const AddSalesOrder = () => {
                                     }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    // disabled={formBillingData.state_name !== formShippingData.state_name} // Disable for inter-state
+                                  // disabled={formBillingData.state_name !== formShippingData.state_name} // Disable for inter-state
                                   />
                                 </td>
                                 {/* CGST */}
@@ -2038,9 +1868,7 @@ const AddSalesOrder = () => {
                                     }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    disabled={
-                                      formBillingData.state_name !==
-                                      formShippingData.state_name
+                                    disabled={customerDetails?.state !== baseAddressState
                                     } // Disable for inter-state
                                   />
                                 </td>
@@ -2059,10 +1887,7 @@ const AddSalesOrder = () => {
                                     }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    disabled={
-                                      formBillingData.state_name !==
-                                      formShippingData.state_name
-                                    } // Disable for inter-state
+                                    disabled={customerDetails?.state !== baseAddressState} // Disable for inter-state
                                   />
                                 </td>
                                 {/* IGST */}
@@ -2080,27 +1905,7 @@ const AddSalesOrder = () => {
                                     }
                                     className="form-control"
                                     style={{ width: "70px" }}
-                                    disabled={
-                                      formBillingData.state_name ===
-                                      formShippingData.state_name
-                                    } // Disable for intra-state
-                                  />
-                                </td>
-                                {/* Cess */}
-                                <td>
-                                  <input
-                                    type="text"
-                                    placeholder="Cess"
-                                    value={row?.cess}
-                                    onChange={(e) =>
-                                      handleChangeRow(
-                                        index,
-                                        "cess",
-                                        e.target.value
-                                      )
-                                    }
-                                    className="form-control"
-                                    style={{ width: "70px" }}
+                                    disabled={customerDetails?.state === baseAddressState} // Disable for intra-state
                                   />
                                 </td>
                                 {/* Total_amount */}
@@ -2134,10 +1939,10 @@ const AddSalesOrder = () => {
               </div>
 
               {/* summary */}
-              <div className="row justify-content-end ">
+              <div className="row justify-content-end mt-4">
                 <div className="summary-section col-md-5">
                   <table className="table table-bordered ">
-                    <h3>Summary</h3>
+                    <h3 className="p-2 mx-1">Summary</h3>
 
                     <tbody>
                       <tr>
@@ -2169,6 +1974,7 @@ const AddSalesOrder = () => {
                               })
                             }
                             className="form-control"
+                            style={{ height: "35px", fontSize: "15px" }}
                           />
                         </td>
                       </tr>
@@ -2180,7 +1986,6 @@ const AddSalesOrder = () => {
                   </table>
                 </div>
               </div>
-              
             </div>
           </div>
         </div>
@@ -2201,3 +2006,5 @@ const AddSalesOrder = () => {
 };
 
 export default AddSalesOrder;
+
+

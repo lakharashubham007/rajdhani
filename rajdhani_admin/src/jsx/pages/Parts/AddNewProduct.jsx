@@ -592,8 +592,8 @@ const AddProduct = () => {
       );
       setfittingSizeOption(dropdownFittingSize)
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -611,8 +611,8 @@ const AddProduct = () => {
       );
       setThreadtypeOption(dropdownThreads)
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -630,8 +630,8 @@ const AddProduct = () => {
       );
       setCategoryOption(dropdownCategories);
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -651,8 +651,8 @@ const AddProduct = () => {
       );
       setSubCategoryOption(dropdownSubCategories)
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -670,8 +670,8 @@ const AddProduct = () => {
       );
       setSubSubCategoryOption(dropdownSubSubCategories)
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -689,8 +689,8 @@ const AddProduct = () => {
       );
       setBrandOption(dropdownSubSubCategories)
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -709,8 +709,8 @@ const AddProduct = () => {
       );
       setmaterialOption(dropdownSubSubCategories)
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -728,8 +728,8 @@ const AddProduct = () => {
   //     );
   //     setVariantOption(dropdownSubSubCategories)
   //   } catch (error) {
-  //     console.error("Error fetching cuisines:", error);
-  //     Toaster.error("Failed to load cuisines. Please try again.");
+  //     console.error("Error fetching data:", error);
+  //     Toaster.error("Failed to load data. Please try again.");
   //   } finally {
   //     setLoading(false);
   //   }
@@ -747,8 +747,8 @@ const AddProduct = () => {
       );
       setPartOption(dropdownSubSubCategories)
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -766,8 +766,8 @@ const AddProduct = () => {
       // );
       setDropwonOptions(res?.data?.data)
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }

@@ -26,7 +26,8 @@ import "../../../assets/css/PurchaseOrder.css";
 import { createBatchApi } from "../../../services/apis/BatchApi";
 import { addProductsInInvntory, checkProductsInInventoryApi } from "../../../services/apis/InventoryApi";
 import { addEntryInStock } from "../../../services/apis/StockMentainenaceApi";
-import { GetSaleOrderItemsData, GetSaleOrderViewData, verifySalesOrderApi } from "../../../services/apis/salesOrderApi";
+import { GetSaleOrderItemsData, GetSaleOrderViewData, verifyBySOApi, verifyItemsInSalesOrderApi, verifySalesOrderApi, verifySOApi } from "../../../services/apis/salesOrderApi";
+import { useSelector } from "react-redux";
 
 
 const billtheadData = [
@@ -41,30 +42,36 @@ const billtheadData = [
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
   { heading: "Product Name", sortingVale: "name" },
-  { heading: "Product Code", sortingVale: "product_code" },
-  { heading: "Quantity", sortingVale: "quantity" },
+  { heading: "Fitting Code", sortingVale: "fitting_code" },
+  { heading: "Code", sortingVale: "product_code" },
   { heading: "UOM", sortingVale: "uom" },
   { heading: "Weight(kg)", sortingVale: "weight" },
+  { heading: "Quantity", sortingVale: "quantity" },
   { heading: "Price", sortingVale: "price" },
   { heading: "Discount Per Unit", sortingVale: "discount_per_unit" },
   { heading: "CGST", sortingVale: "cgst" },
   { heading: "SGST", sortingVale: "sgst" },
   { heading: "IGST", sortingVale: "igst" },
-  { heading: "Cess", sortingVale: "Cess" },
   { heading: "Amount", sortingVale: "amount" },
-  { heading: "Created At", sortingVale: "created_at" },
+  { heading: "Verify", sortingVale: "verify" },
+  // { heading: "Created At", sortingVale: "created_at" },
   // { heading: "Status", sortingVale: "status" },
   // { heading: "Action", sortingVale: "action" },
 ];
 
+
 const VerifySaleOrder = () => {
   const params = useParams()?.id;
   const navigate = useNavigate();
+  const authData = useSelector((state) => state.auth.auth);
+  console.log("authdata is here user id :-----> ", authData?.user?._id)
+  console.log("authdata is here user Name :-----> ", authData?.user?.firstName, authData?.user?.lastName)
+  console.log("params so id is here", params)
   const billTableRef = useRef(null);
   const [sort, setSortata] = useState(10);
   const [purchaseOrderData, setPurchaseOrderData] = useState([]);
   const [purchaseOrderProdcutList, setPurchaseOrderProdcutList] = useState([]);
-  console.log("purchaseOrderProdcutList", purchaseOrderProdcutList)
+  console.log("purchaseOrderProdcutList", purchaseOrderData)
   const [billData, setBillData] = useState([]);
   const [errors, setErrors] = useState({});
   const [formBillingData, setFormBillingData] = useState({});
@@ -80,6 +87,18 @@ const VerifySaleOrder = () => {
   const [logo, setLogo] = useState(null);
   const [apiSuccess, setApiSuccess] = useState(false);
   const [visibleCount, setVisibleCount] = useState(5);
+  const [verifyShowModal, setVerifyShowModal] = useState(false);
+  const [focusedInputIndex, setFocusedInputIndex] = useState(null);
+  const [selectedRowData, setSelectedRowData] = useState();
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  console.log("selectAll ---> check box ---->", selectAll)
+  console.log("selectedProducts ---> check box ---->", selectedProducts)
+  console.log("selected row data", selectedRowData)
+
+
+
+
   const [rows, setRows] = useState([
     {
       id: 1,
@@ -135,8 +154,8 @@ const VerifySaleOrder = () => {
       }));
       setProductOption(dropdownProductList);
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -285,6 +304,16 @@ const VerifySaleOrder = () => {
       setRows(formattedRows);
     }
   }, [purchaseOrderProdcutList, contentModal]);
+
+  useEffect(() => {
+
+    if (!purchaseOrderProdcutList) return;
+
+    const verifiedIds = purchaseOrderProdcutList.filter((row) => row?.isVerified).map((row) => row._id);
+
+    setSelectedProducts((prev) => { const updated = [...new Set([...prev, ...verifiedIds])]; return updated; });
+
+  }, [purchaseOrderProdcutList]);
 
 
 
@@ -518,7 +547,9 @@ const VerifySaleOrder = () => {
       verify: "Verify Order Note",
     },
     footer: {
-      preparedBy: "Malviya Nagar",
+      preparedBy: "Mahesh Kumar",
+      authorizedBy: "Pankaj Suthar",
+      verifiedBy: "Kushal Kumar",
       terms: [
         "Delivery quantity should be as per SO only.",
         "Goods delivered beyond the expiry date will not be accepted.",
@@ -532,7 +563,7 @@ const VerifySaleOrder = () => {
     setCurrentPage(selectedPage.selected + 1);
   };
 
- 
+
 
   // Inline styles
   const styles = {
@@ -682,41 +713,91 @@ const VerifySaleOrder = () => {
     }
   };
 
-   // Create Bill Items
-   const verifySOItems = async () => {
-    const products = purchaseOrderProdcutList?.map((item) => ({
-      so_id: item?.so_id,
-      product_id: item?.product_id,
-      quantity: item?.quantity,
-      order_type_ref: "SalesOrder",
-      order_type: "SO",
+  // Create Bill Items
+  // const verifySOItems = async () => {
+  //   const products = purchaseOrderProdcutList?.map((item) => ({
+  //     so_id: item?.so_id,
+  //     product_id: item?.product_id,
+  //     quantity: item?.quantity,
+  //     order_type_ref: "SalesOrder",
+  //     order_type: "SO",
 
-    }));
-    console.log("verify products are here=--=-=-=-=-=-=-=,,,,,,,,,", products)
-    try {
-      const res = await verifySalesOrderApi(products);
-      // if (!res.data?.success) {
-      //   throw new Error(res.data?.message || "Failed to create Bill Items");
-      // }
-      // setApiSuccess(true);
-      return res; // ✅ Return the API response
-    } catch (error) {
-      console.error("Error creating Bill items:", error);
-      throw error; // Propagate the error
-    }
-  };
 
-  
+  //   }));
+  //   console.log("verify products are here=--=-=-=-=-=-=-=,,,,,,,,,", products)
+  //   try {
+  //     const res = await verifySalesOrderApi(products);
+  //     // if (!res.data?.success) {
+  //     //   throw new Error(res.data?.message || "Failed to create Bill Items");
+  //     // }
+  //     // setApiSuccess(true);
+  //     return res; // ✅ Return the API response
+  //   } catch (error) {
+  //     console.error("Error creating Bill items:", error);
+  //     throw error; // Propagate the error
+  //   }
+  // };
+
+
 
   const handleVerify = async (e) => {
     e.preventDefault();
+
+    const payloadSOItems = {
+      so_id: params,
+      isVerified: selectedProducts, // Array of product IDs
+      isVerifiedBy: authData?.user?._id, // User ID
+    };
+
+    const soUpdateisVerifiedPayload = {
+      so_id: params,
+      isVerified: true, // Array of product IDs
+      isVerifiedBy: authData?.user?._id,
+
+    };
+
+    const soUpdateisNotVerifiedPayload = {
+      so_id: params,
+      isVerified: false, // Array of product IDs
+      isVerifiedBy: authData?.user?._id,
+
+    };
+
+
+    // console.log("payload is herer", payload)
+
     try {
-      const response = await verifySOItems();
-      console.log(response);
+      setLoading(true);
+
+      const response = await verifyItemsInSalesOrderApi(payloadSOItems);
+
+      console.log("response is here -*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-> Verification Response:", response);
+
+
+      if (response?.data?.success) {
+        //here condtion will be all So items are verified then only update SO isVarified or add verified by person name
+        if (response?.data?.totalItems === response?.data?.verifiedItems) {
+          const saleOrderResponse = await verifyBySOApi(soUpdateisVerifiedPayload);
+
+        } else {
+          const saleOrderResponse = await verifyBySOApi(soUpdateisNotVerifiedPayload);
+          console.log("response is here -*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-> ", saleOrderResponse);
+        }
+
+        Toaster.success(response?.data?.message)
+      } else {
+        Toaster.error(response?.data?.message)
+      }
+
+
+      // Optionally, show a toast or refresh the list
     } catch (error) {
-      
+      // Toaster.error(error?.message)
+      console.error("Verification failed:", error);
+    } finally {
+      setLoading(false);
     }
-  }
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -889,7 +970,7 @@ const VerifySaleOrder = () => {
     }
   };
 
-  
+
   const handleSubmitDraft = async (e) => {
     e.preventDefault();
 
@@ -990,6 +1071,13 @@ const VerifySaleOrder = () => {
     }
   };
 
+  const handleVerifyClick = (row) => {
+    // setSelectedRowData(row);
+    setSelectedRowData({ ...row }); // Set selected row data
+    setVerifyShowModal(true);
+  };
+
+
 
 
 
@@ -1081,6 +1169,8 @@ const VerifySaleOrder = () => {
             {/* Header Section */}
             <div className="">
               <div className="header-section mb-3">
+
+
                 <div className="row">
                   <div className="col-sm-4">
                     <img src={rajdhanilogo} alt="logo" height={60} />
@@ -1094,12 +1184,76 @@ const VerifySaleOrder = () => {
                     </h2>
                   </div>
                 </div>
+
+                <div className="addresses mt-3">
+                  <hr />
+                  <div className="row">
+
+                    <div className="col-md-6 col-xl-4 address-block">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h5 style={{ margin: 0 }}>Voucher No.</h5>
+                        <p style={{ margin: 0 }}>{purchaseOrderData?.voucher_no}</p>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h5 style={{ margin: 0 }}>Buyer’s Ref./Order No.</h5>
+                        <p style={{ margin: 0 }}>{purchaseOrderData?.voucher_no}</p>
+                      </div>
+                    </div>
+
+                    <div className="col-md-6 col-xl-4 address-block">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h5 style={{ margin: 0 }}>Dated</h5>
+                        <p style={{ margin: 0 }}>
+                          {new Date(purchaseOrderData?.created_at).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                          })}
+                        </p>
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h5 style={{ margin: 0 }}>Mode/Terms of Payment</h5>
+                        <p style={{ margin: 0 }}>-</p>
+                      </div>
+                    </div>
+
+                    <div className="col-md-6 col-xl-4 address-block">
+                      {/* Terms of Delivery */}
+                      <div className="order-info">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <h5 style={{ margin: 0 }}>Terms of Delivery</h5>
+                          <p style={{ margin: 0 }}></p>
+                        </div>
+
+                        {/* <p className="po-view-p">{purchaseOrderData?.customer_id?.company_name}</p>
+
+
+                        <p className="po-view-p">
+                          {purchaseOrderData?.customer_id?.address}
+                        </p>
+                        <p className="po-view-p">
+                          {purchaseOrderData?.customer_id?.state}, {purchaseOrderData?.customer_id?.city}, {purchaseOrderData?.customer_id?.country}
+                        </p>
+                    
+                        <p className="po-view-p">
+                          Email: {purchaseOrderData?.customer_id?.email}
+                        </p> */}
+
+                      </div>
+                    </div>
+
+                  </div>
+                  <hr />
+                </div>
+
+
+
                 <div className="addresses mt-3">
                   <div className="row">
                     <div className="col-md-6 col-xl-4 address-block">
                       <h5>Invoice To</h5>
                       <p className="po-view-p">
-                        {purchaseOrderData?.billing_details?.name}
+                        {purchaseOrderData?.customer_id?.company_name}
                       </p>
                       <p className="po-view-p">
                         {purchaseOrderData?.billing_details?.address}
@@ -1118,8 +1272,7 @@ const VerifySaleOrder = () => {
                         {/* Divider */}
                         <h5>Consignee (Ship to)</h5>
                         <p className="po-view-p">
-                          {purchaseOrderData?.shipping_details?.name}
-                        </p>
+                          {purchaseOrderData?.customer_id?.company_name}                        </p>
                         <p className="po-view-p">
                           {purchaseOrderData?.shipping_details?.address}
                         </p>
@@ -1137,15 +1290,17 @@ const VerifySaleOrder = () => {
                       {/* Divider */}
                       <div className="order-info">
                         <h5>Customer (Bill from)</h5>
-                        <p className="po-view-p">
+                        {/* <p className="po-view-p">
                           {purchaseOrderData?.customer_id?.fname}  {purchaseOrderData?.customer_id?.lname}
-                        </p>
-                       
+                        </p> */}
+                        <p className="po-view-p">{purchaseOrderData?.customer_id?.company_name}</p>
+
+
                         <p className="po-view-p">
-                           {purchaseOrderData?.customer_id?.country}
+                          {purchaseOrderData?.customer_id?.address}
                         </p>
                         <p className="po-view-p">
-                          {purchaseOrderData?.customer_id?.state_name}, {purchaseOrderData?.customer_id?.city}
+                          {purchaseOrderData?.customer_id?.state}, {purchaseOrderData?.customer_id?.city}, {purchaseOrderData?.customer_id?.country}
                         </p>
                         {/* <p className="po-view-p">
                          
@@ -1153,18 +1308,20 @@ const VerifySaleOrder = () => {
                         <p className="po-view-p">
                           Email: {purchaseOrderData?.customer_id?.email}
                         </p>
-                        
+
                       </div>
                     </div>
                   </div>
                 </div>
+
+
               </div>
             </div>
 
 
 
-            
-            
+
+
 
 
             {/* Bill Detail */}
@@ -1315,6 +1472,27 @@ const VerifySaleOrder = () => {
                 <div className="">
                   <div className="card-header pb-0 px-0">
                     <h4 className="card-title">SO Product Details</h4>
+                    <div className="mb-3">
+                              {/* Analytics Badge Boxes */}
+                              <div class="d-flex flex-wrap gap-2 mt-2">
+                                <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#e7f3ff" }}>
+                                    Total Items: {purchaseOrderData?.total_quantity ? purchaseOrderData?.total_quantity : 0}
+                                </div>
+                                <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#e8f5e9" }}>
+                                    Total Verified Items: {purchaseOrderData?.total_amount ? purchaseOrderData?.total_amount : 0} INR
+                                </div>
+                                {/* <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#fff8e1" }} >
+                                    Total Weight: 500 tons
+                                </div> */}
+                                <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#e0f7fa" }} >
+                                    Total Unverified Items: {purchaseOrderData?.total_products ? purchaseOrderData?.total_products : 0}
+                                </div>
+                                {/* <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#f5f5f5" }} >
+                                    Stock Value: 1,200,000 INR
+                                </div> */}
+                            </div>
+                            
+                          </div>
                   </div>
                   <div className="card-body px-0">
                     <div className="table-responsive">
@@ -1322,7 +1500,7 @@ const VerifySaleOrder = () => {
                         id="holidayList"
                         className="dataTables_wrapper no-footer">
                         <div className="justify-content-between d-sm-flex">
-                          <div className="dataTables_length">
+                          {/* <div className="dataTables_length">
                             <label className="d-flex align-items-center">
                               Show
                               <Dropdown className="search-drop">
@@ -1356,20 +1534,9 @@ const VerifySaleOrder = () => {
                               </Dropdown>
                               entries
                             </label>
-                          </div>
-                          <div className="dataTables_filter">
-                            <label>
-                              Search :
-                              <input
-                                type="search"
-                                className=""
-                                placeholder=""
-                                onChange={(e) =>
-                                  setSearchInputValue(e.target.value)
-                                }
-                              />
-                            </label>
-                          </div>
+                          </div> */}
+
+                          
                         </div>
 
                         <table id="example4" className="display dataTable no-footer w-100">
@@ -1378,132 +1545,405 @@ const VerifySaleOrder = () => {
                             <tr>
                               {theadData?.map((item, ind) => {
                                 return (
-                                  <th
-                                    key={ind}
-                                    onClick={() => {
-                                      SotingData(item?.sortingVale, ind);
-                                      setIconDate((prevState) => ({
-                                        complete: !prevState.complete,
-                                        ind: ind,
-                                      }));
-                                    }}
-                                  >
-                                    {item.heading}
-                                    <span>
-                                      {ind !== iconData.ind && (
-                                        <i
-                                          className="fa fa-sort ms-2 fs-12"
-                                          style={{ opacity: "0.3" }}
-                                        />
-                                      )}
-                                      {ind === iconData.ind &&
-                                        (iconData.complete ? (
-                                          <i
-                                            className="fa fa-arrow-down ms-2 fs-12"
-                                            style={{ opacity: "0.7" }}
+                                  <>
+                                    {item.sortingVale === "verify" ? (
+                                      <th
+                                        key={ind}
+                                        style={{
+                                          display: 'flex',
+                                          flexDirection: 'column', // stack text and checkbox vertically
+                                          alignItems: 'center',    // center horizontally
+                                          justifyContent: 'center', // center vertically if needed
+                                          padding: '10px',
+                                          userSelect: 'none',
+                                        }}
+                                      >
+                                        <span style={{ fontWeight: '600', marginBottom: '6px' }}>
+                                          {item.heading}
+                                        </span>
+
+                                        <label
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            width: '15px',
+                                            height: '15px',
+                                            borderRadius: '50%',
+                                            transition: 'background-color 0.2s ease, transform 0.2s ease',
+                                            cursor: 'pointer',
+                                          }}
+                                          onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                          }}
+                                        >
+                                          <input
+                                            type="checkbox"
+                                            checked={selectAll}
+                                            onChange={(e) => {
+                                              const checked = e.target.checked;
+                                              setSelectAll(checked);
+
+                                              if (checked) {
+                                                const allIds = purchaseOrderProdcutList.map((item) => item._id);
+                                                setSelectedProducts(allIds);
+                                              } else {
+                                                setSelectedProducts([]);
+                                              }
+                                            }}
+                                            onClick={(e) => e.stopPropagation()}
+                                            style={{
+                                              width: '20px',
+                                              height: '20px',
+                                              borderRadius: '50%',
+                                              accentColor: '#007bff',
+                                              cursor: 'pointer',
+                                              transition: 'transform 0.2s ease',
+                                            }}
+                                            onMouseDown={(e) => {
+                                              e.target.style.transform = 'scale(0.9)';
+                                            }}
+                                            onMouseUp={(e) => {
+                                              e.target.style.transform = 'scale(1)';
+                                            }}
                                           />
-                                        ) : (
-                                          <i
-                                            className="fa fa-arrow-up ms-2 fs-12"
-                                            style={{ opacity: "0.7" }}
-                                          />
-                                        ))}
-                                    </span>
-                                  </th>
+                                        </label>
+                                      </th>
+                                    ) : (
+                                      <th
+                                        key={ind}
+                                        onClick={() => {
+                                          SotingData(item?.sortingVale, ind);
+                                          setIconDate((prevState) => ({
+                                            complete: !prevState.complete,
+                                            ind: ind,
+                                          }));
+                                        }}
+                                      >
+                                        {item.heading}
+                                        <span>
+                                          {ind !== iconData.ind && (
+                                            <i className="fa fa-sort ms-2 fs-12" style={{ opacity: "0.3" }} />
+                                          )}
+                                          {ind === iconData.ind &&
+                                            (iconData.complete ? (
+                                              <i className="fa fa-arrow-down ms-2 fs-12" style={{ opacity: "0.7" }} />
+                                            ) : (
+                                              <i className="fa fa-arrow-up ms-2 fs-12" style={{ opacity: "0.7" }} />
+                                            ))}
+                                        </span>
+                                      </th>
+                                    )}
+
+                                  </>
+
+
                                 );
                               })}
                             </tr>
                           </thead>
-                          <tbody>
-                            {purchaseOrderProdcutList?.map((data, ind) => (
-                              <tr key={ind}>
-                                <td>
-                                  <strong>{ind + 1}</strong>{" "}
-                                </td>
 
-                                {/* <td>{data?._id}</td> */}
+                          <tbody >
+                            {purchaseOrderProdcutList?.map((row, index) => (
+                              <tr key={row.id}
+                                //  onClick={() => handleVerifyClick(row)} 
+                                onClick={(e) => {
+                                  const target = e.target;
+
+                                  // Prevent modal from opening when clicking on an active input or button
+                                  if (target.tagName === "BUTTON") return;
+                                  if (target.tagName === "INPUT" && !target.disabled) return;
+
+                                  // Open modal if clicking on a disabled input or any other row area
+                                  handleVerifyClick(row);
+                                }}
+                                style={{ cursor: "pointer" }}>
+                                <td><strong>{index + 1}</strong> </td>
                                 {/* Product Name */}
                                 <td>
-                                  <div
+                                  <input
+                                    type="text"
+                                    placeholder="Product Name"
+                                    value={row?.product_name}
+                                    onClick={() =>
+                                      setFocusedInputIndex((prev) => (prev === index ? null : index))
+                                    }
+                                    // onChange={(e) =>
+                                    //   handleChangeRow(index, "product_name", e.target.value)
+                                    // }
+                                    className="form-control row-input"
                                     style={{
-                                      whiteSpace: "nowrap",
-                                      width: isExpanded ? "100%" : "290px", // Expands width on toggle
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      padding: "4px 8px",
-                                      border: "1px solid #ddd",
-                                      borderRadius: "8px",
-                                      backgroundColor: "#f5f5f5",
-                                      textAlign: "start",
+                                      width: focusedInputIndex === index ? "600px" : "300px",
+                                      transition: "width 0.3s ease",
                                       cursor: "pointer",
-                                      transition: "width 0.3s ease", // Smooth transition
                                     }}
-                                    onClick={toggleExpand}
-                                  >
-                                    {data?.product_name}
-                                    {!isExpanded && (
-                                      <span
-                                        style={{
-                                          position: "absolute",
-                                          right: "8px",
-                                          top: "50%",
-                                          transform: "translateY(-50%)",
-                                          color: "#007bff",
-                                          fontSize: "12px",
-                                          cursor: "pointer",
-                                        }}
-                                      >
-                                        ...
-                                      </span>
-                                    )}
-                                  </div>
+                                  />
                                 </td>
-                                {/* Product Code */}
-                                <td className="">{data?.product_code}</td>
-                                {/* Product Code */}
-                                <td className="">{data?.quantity}</td>
-                                {/* UOM */}
-                                <td className="">{data?.uom}</td>
-                                {/* Weight */}
-                                <td className="">{data?.weight}</td>
-                                {/* Price per unit */}
-                                <td className="">{`${data?.price} ₹`}</td>
-                                {/* Discount per unit */}
-                                <td className="">{data?.discount_per_unit ? `${data.discount_per_unit} ₹` : "0 ₹"}</td>
-
-
-                                <td className="">{data?.cgst}</td>
-
-                                <td className="">{data?.sgst}</td>
-
-                                <td className="">{data?.igst}</td>
-
-                                <td className="">{data?.cess}</td>
-
-                                {/* <td >
-                                  {moment(data?.order_details?.due_date).format(
-                                    "DD MMM YYYY"
-                                  )}
-                                </td> */}
-
-                                <td className="">{data?.total_amount ? `${data.total_amount} ₹` : "0 ₹"}</td>
-
-
-                                <td className="whitespace-nowrap">
-                                  {moment(data?.created_at).format(
-                                    "DD MMM YYYY, h:mm:ss a"
-                                  )}
+                                {/* Fitting Code */}
+                                <td style={{
+                                  whiteSpace: "nowrap",
+                                }}>{row?.fitting_Code}</td>
+                                {/* product Code */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="100001"
+                                    value={row?.product_code}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "product_code",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "90px" }}
+                                  />
                                 </td>
+                                {/* uom */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="UOM"
+                                    value={row?.uom}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "uom",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* weight */}
+                                <td>
+                                  <input
+                                    type="number"
+                                    placeholder="10 kg"
+                                    value={row?.weight}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "weight",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* quantity */}
+                                <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Quantity"
+                                    value={row?.quantity}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "quantity",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                  />
+                                </td>
+                                {/* price */}
+                                <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Price Per Unit"
+                                    value={row?.price}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "price_per_unit",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: '150px' }}
+                                  />
+                                </td>
+                                {/* discount */}
+                                <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Discount Per Unit"
+                                    value={row.discount_per_unit}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "discount_per_unit",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "150px" }}
+                                  />
+                                </td>
+                                {/* cgst */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="CGST"
+                                    value={row.cgst}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "cgst",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* sgst */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="SGST"
+                                    value={row.sgst}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "sgst",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* igst */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="IGST"
+                                    value={row.igst}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "igst",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* amount */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="100"
+                                    value={row?.amount}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "total_amount",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "90px" }}
+                                    disabled
+                                  />
+                                </td>
+                                {/* Verify checkbox */}
+                                {/* <td style={{
+                                  textAlign: 'center',
+                                }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedProducts.includes(row._id )}
+                                    onChange={(e) => {
+                                      const isChecked = e.target.checked;
+                                      setSelectedProducts((prev) =>
+                                        isChecked ? [...prev, row._id] : prev.filter((id) => id !== row._id)
+                                      );
 
-                                {/* <td>-</td> */}
-                                {/* <td>
-                                  <button
-                                    className="btn btn-xs sharp btn-primary me-1"
-                                  //   onClick={() => navigate(`/purchaseorderview/${data?._id}`)}
-                                  >
-                                    <i class="fa-solid fa-eye"></i>
-                                  </button>
+                                      if (!isChecked) {
+                                        setSelectAll(false);
+                                      } else if (
+                                        purchaseOrderProdcutList.length ===
+                                        [...selectedProducts, row._id].length
+                                      ) {
+                                        setSelectAll(true);
+                                      }
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{
+                                      width: '25px',
+                                      height: '25px',
+                                      cursor: 'pointer',
+                                      accentColor: '#007bff',
+                                      transition: 'transform 0.1s ease, box-shadow 0.2s ease',
+
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.target.style.transform = 'scale(1.3)';
+                                      e.target.style.boxShadow = '0 0 5px rgba(0, 123, 255, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.target.style.transform = 'scale(1)';
+                                      e.target.style.boxShadow = 'none';
+                                    }}
+                                  />
                                 </td> */}
+                                <td
+                                  style={{ textAlign: 'center' }}> <input type="checkbox" checked={selectedProducts.includes(row._id)} onChange={(e) => {
+                                    const isChecked = e.target.checked;
+
+
+
+                                    // Prevent unchecking if the row is verified
+                                    // if (row?.isVerified) return;
+
+                                    setSelectedProducts((prev) =>
+                                      isChecked
+                                        ? [...prev, row._id]
+                                        : prev.filter((id) => id !== row._id)
+                                    );
+
+                                    if (!isChecked) {
+                                      setSelectAll(false);
+                                    } else {
+                                      const newSelected = isChecked
+                                        ? [...selectedProducts, row._id]
+                                        : selectedProducts.filter((id) => id !== row._id);
+
+                                      if (purchaseOrderProdcutList.length === newSelected.length) {
+                                        setSelectAll(true);
+                                      }
+                                    }
+                                  }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{
+                                      width: '25px',
+                                      height: '25px',
+                                      cursor: row?.isVerified ? 'pointer' : 'pointer',
+                                      accentColor: '#007bff',
+                                      transition: 'transform 0.1s ease, box-shadow 0.2s ease',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.target.style.transform = 'scale(1.3)';
+                                      e.target.style.boxShadow = '0 0 5px rgba(0, 123, 255, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.target.style.transform = 'scale(1)';
+                                      e.target.style.boxShadow = 'none';
+                                    }}
+                                    disabled={false} // Optional: make true if you want to lock the box when verified
+                                  />
+
+                                </td>
                               </tr>
                             ))}
                           </tbody>
@@ -1540,7 +1980,7 @@ const VerifySaleOrder = () => {
             <div className="row justify-content-end ">
               <div className="summary-section col-md-5">
                 <table className="table table-bordered ">
-                  <h3>Summary</h3>
+                  <h3 className="p-2 mx-1">Summary</h3>
 
                   <tbody>
                     <tr>
@@ -1576,9 +2016,106 @@ const VerifySaleOrder = () => {
 
             {/* Footer Section */}
             <div className="footer-section">
-              <p>
-                Prepared By: <b>{orderDetails.footer.preparedBy}</b>
-              </p>
+
+              <table className="table table-bordered">
+                <thead>
+                  <tr>
+                    <th>Prepared By</th>
+                    <th>Verified By</th>
+                    <th>Verified</th>
+                    {/* <th>Authorized By</th>
+                    <th>Authorized</th> */}
+
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    {/* prepared By */}
+                    <td>
+                      {purchaseOrderData?.createdBy?.firstName || purchaseOrderData?.createdBy?.lastName
+                        ? `${purchaseOrderData?.createdBy?.firstName || ''} ${purchaseOrderData?.createdBy?.lastName || ''}`.trim()
+                        : '-'}
+                    </td>
+                    {/* verified By */}
+                    <td>
+                      {purchaseOrderData?.isVerifiedBy?.firstName || purchaseOrderData?.isVerifiedBy?.lastName
+                        ? `${purchaseOrderData?.isVerifiedBy?.firstName || ''} ${purchaseOrderData?.isVerifiedBy?.lastName || ''}`.trim()
+                        : '-'}
+                    </td>
+                    {/* verified  */}
+                    <td>
+                      {purchaseOrderData?.isVerified ? (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          padding: '4px 8px',
+                          backgroundColor: '#e6ffed',
+                          color: '#22c55e',
+                          border: '1px solid #a7f3d0',
+                          borderRadius: '999px',
+                          fontWeight: 'bold',
+                          fontSize: '0.9rem'
+                        }}>
+                          Verified ✅
+                        </span>
+                      ) : (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          padding: '4px 8px',
+                          backgroundColor: '#f3f4f6',
+                          color: '#6b7280',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '999px',
+                          fontWeight: 'bold',
+                          fontSize: '0.9rem'
+                        }}>
+                          Not Verified ❌
+                        </span>
+                      )}
+                    </td>
+                    {/* Authorized By  */}
+                    {/* <td>
+                      {purchaseOrderData?.isAuthorizedBy?.firstName
+                        ? `${purchaseOrderData?.isAuthorizedBy?.firstName || ''} ${purchaseOrderData?.isAuthorizedBy?.lastName || ''}`.trim()
+                        : '-'}
+                    </td> */}
+                    {/* Authorized  */}
+                    {/* <td>
+                      {purchaseOrderData?.isAuthorized ? (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          padding: '4px 8px',
+                          backgroundColor: '#e0f2fe',
+                          color: '#0284c7',
+                          border: '1px solid #bae6fd',
+                          borderRadius: '999px',
+                          fontWeight: 'bold',
+                          fontSize: '0.9rem'
+                        }}>
+                          Authorized🛡️
+                        </span>
+                      ) : (
+                        <span style={{
+                          display: 'inline-flex',
+                          alignItems: 'center',
+                          padding: '4px 8px',
+                          backgroundColor: '#f3f4f6',
+                          color: '#6b7280',
+                          border: '1px solid #d1d5db',
+                          borderRadius: '999px',
+                          fontWeight: 'bold',
+                          fontSize: '0.9rem'
+                        }}>
+                          Not Authorized❌
+                        </span>
+                      )}
+                    </td> */}
+                  </tr>
+                </tbody>
+              </table>
+
               <h4>Terms and Conditions:</h4>
               <ul>
                 {orderDetails.footer.terms.map((term, index) => (
@@ -1588,12 +2125,12 @@ const VerifySaleOrder = () => {
             </div>
 
             {/* Buttons  */}
-             <div className="d-flex gap-3 justify-content-end text-end mt-3 mt-md-0">
+            <div className="d-flex gap-3 justify-content-end text-end mt-3 mt-md-0">
               <button
                 type="submit"
                 onClick={handleVerify}
                 className="btn btn-success rounded-sm">
-                Verify 
+                Verify
               </button>
 
               {/* <button
@@ -1602,12 +2139,12 @@ const VerifySaleOrder = () => {
                 className="btn btn-primary rounded-sm">
                 Final Submission
               </button> */}
-            </div> 
+            </div>
           </div>
         </div>
       </div>
 
-      {/* <!-- Modal --> */}
+      {/* <!-- veridy bill seciton Modal --> */}
       <Modal className="fade card-body" show={contentModal} onHide={setContentModal} size="xl">
         <Modal.Header>
           <Modal.Title>Add Bill & Verify Bill Items</Modal.Title>
@@ -2433,6 +2970,122 @@ const VerifySaleOrder = () => {
           </div>
         </Modal.Footer>
       </Modal>
+
+      {/* Verify Modal */}
+      <Modal
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.5)", // Dim background effect
+        }}
+        centered
+        show={verifyShowModal} onHide={() => setVerifyShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Verify Item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedRowData && (
+            <div
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0)", // Fully transparent background
+                borderRadius: "8px",
+                padding: "12px",
+                // boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                border: "1px solid rgba(255, 255, 255, 0.3)", // Semi-transparent border
+                width: "100%",
+                fontSize: "13px",
+                backdropFilter: "blur(5px)", // Optional: Glassmorphism effect
+              }}
+            >
+              <h6 style={{ fontWeight: "600", marginBottom: "8px", color: "#222", textAlign: "center" }}>
+                Product Details
+              </h6>
+
+              {/* Table-like Grid with Borders */}
+              <div style={{ display: "grid", gridTemplateColumns: "140px auto", fontSize: "13px", border: "1px solid #D3D3D3", borderRadius: "8px", padding: "5px", }}>
+                {[
+                  { label: "Product Name", value: selectedRowData?.product_name },
+                  { label: "Product Code", value: selectedRowData?.product_code },
+                  { label: "Ordered Qty", value: selectedRowData?.quantity },
+                  { label: "Weight", value: selectedRowData?.weight || "N/A" },
+                  { label: "UOM", value: selectedRowData?.uom || "N/A" },
+                ].map((item, index) => (
+                  <React.Fragment key={index}>
+                    <div style={{ fontWeight: "600", color: "#444", padding: "6px 0" }}>{item.label}:</div>
+                    <div style={{ color: "#666", padding: "6px 0", borderBottom: "1px dotted #ccc" }}>{item.value}</div>
+                  </React.Fragment>
+                ))}
+              </div>
+
+              {/*Checkbox Inputs Row */}
+              <div
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  padding: '20px',
+                }}
+              >
+                <label
+                  style={{
+                    fontWeight: 'bold',
+                    color: '#333',
+                    marginBottom: '20px',
+                    fontSize: '16px',
+                  }}
+                >
+                  Verify Item
+                </label>
+                <input
+                  type="checkbox"
+                  checked={selectedProducts.includes(selectedRowData._id)}
+                  onChange={(e) => {
+                    const isChecked = e.target.checked;
+                    setSelectedProducts((prev) =>
+                      isChecked ? [...prev, selectedRowData._id] : prev.filter((id) => id !== selectedRowData._id)
+                    );
+
+                    if (!isChecked) {
+                      setSelectAll(false);
+                    } else if (
+                      purchaseOrderProdcutList.length ===
+                      [...selectedProducts, selectedRowData._id].length
+                    ) {
+                      setSelectAll(true);
+                    }
+                  }}
+                  onClick={(e) => e.stopPropagation()}
+                  style={{
+                    width: '25px',
+                    height: '25px',
+                    cursor: 'pointer',
+                    accentColor: '#007bff',
+                    transition: 'transform 0.1s ease, box-shadow 0.2s ease',
+                  }}
+                  onMouseEnter={(e) => {
+                    e.target.style.transform = 'scale(1.3)';
+                    e.target.style.boxShadow = '0 0 5px rgba(0, 123, 255, 0.5)';
+                  }}
+                  onMouseLeave={(e) => {
+                    e.target.style.transform = 'scale(1)';
+                    e.target.style.boxShadow = 'none';
+                  }}
+                />
+              </div>
+
+
+            </div>
+          )}
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => setVerifyShowModal(false)}>Close</Button>
+          <Button variant="success" onClick={() => setVerifyShowModal(false)}>Verify</Button>
+        </Modal.Footer>
+      </Modal>
+
     </>
   );
 };

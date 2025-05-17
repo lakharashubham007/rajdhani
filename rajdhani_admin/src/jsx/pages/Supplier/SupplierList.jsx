@@ -35,8 +35,13 @@ import { deleteSupplierApi, getSupplierApi, UpdateSupplierStatus } from "../../.
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
-  { heading: "Id", sortingVale: "_id" },
-  { heading: "Name", sortingVale: "name"},
+  { heading: "Image", sortingVale: "image"},
+  { heading: "supplier Name", sortingVale: "name"},
+  { heading: "Contact Person Name", sortingVale: "name"},
+  { heading: "Mobile No.", sortingVale: "name"},
+  { heading: "Email", sortingVale: "email"},
+  { heading: "Location", sortingVale: "location"},
+
 
   { heading: "Created At", sortingVale: "created_at" },
   { heading: "Status", sortingVale: "status" },
@@ -119,8 +124,8 @@ const navigate= useNavigate()
           setUpdateCategory(false);
         } catch (error) {
           // Catch and handle errors
-          console.error("Error fetching cuisines:", error);
-          Toaster.error("Failed to load cuisines. Please try again.");
+          console.error("Error fetching data:", error);
+          Toaster.error("Failed to load data. Please try again.");
         } finally {
           // Always set loading to false when the API call is done (whether successful or failed)
           setLoading(false);
@@ -374,17 +379,39 @@ const navigate= useNavigate()
                           <td>
                             <strong>{ind + 1}</strong>
                           </td>
-                          <td>{data?._id}</td>
+                          {/* <td>{data?._id}</td> */}
                           
                           <td className="d-flex align-items-center gap-2">
                           {data?.image ? (
-                            <img className='select-file-img' src={`https://api.i2rtest.in/v1/images/image/${data?.image}`} alt={data?.name}/>
+                            <img className='select-file-img' src={`https://api.i2rtest.in/v1/images/image/${data?.image}`} alt={data?.supplier_name}/>
                             ) : (
                              ""
                                 // <span>No Image Available</span>
-                            )} {data?.name}
+                            )} 
                           </td>
-                          
+                          <td>
+                            {data?.supplier_name ? data?.supplier_name : "N/A" }
+                          </td>
+                          <td
+                            style={{whiteSpace: 'nowrap'}}
+                          >
+                            {data?.fname ? `${data?.fname}  ${data?.lname}` : "N/A" }
+                          </td>
+                          <td
+                           style={{whiteSpace: 'nowrap'}}
+                          >
+                            {data?.mobile_no1 ? `+91-${data?.mobile_no1}` : "N/A" }
+                          </td>
+                          <td
+                           style={{whiteSpace: 'nowrap'}}
+                          >
+                            {data?.email ? data?.email : "N/A" }
+                          </td>
+                          <td>
+                            {data?.city ?  `${data?.city}, ${data?.state}, ${data?.country}   `: "N/A" }
+                          </td>
+                       
+                       
                        
                                                     
                           <td>

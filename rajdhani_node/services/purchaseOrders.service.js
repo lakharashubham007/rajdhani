@@ -4,31 +4,38 @@ const { PurchaseOrder } = require("../models");
 // Generate a new Purchase Order ID
 const generatePurchaseOrderId = async () => {
   try {
-    // Get the current fiscal year
     const now = new Date();
     const fiscalYearStart = now.getMonth() < 3 ? now.getFullYear() - 1 : now.getFullYear();
     const fiscalYearEnd = fiscalYearStart + 1;
     const fiscalYear = `${fiscalYearStart.toString().slice(-2)}-${fiscalYearEnd.toString().slice(-2)}`;
 
-    // Find the latest purchase order
-    const lastOrder = await PurchaseOrder.findOne().sort({ voucher_no: -1 });
+    const prefix = `SB/PO/${fiscalYear}/`;
 
-    console.log("last po ", lastOrder)
+    // Find all voucher_no starting with the fiscal year prefix
+    const purchaseOrders = await PurchaseOrder.find({
+      voucher_no: { $regex: `^${prefix}` }
+    });
 
-    let newCount = 1;
-    if (lastOrder) {
-      const lastPoId = lastOrder.voucher_no;
-      const lastCount = parseInt(lastPoId.split('/').pop(), 10);
-      newCount = lastCount + 1;
-    }
+    let maxCount = 0;
 
-    // Generate the new PO ID
-    return `SB/PO/${fiscalYear}/${String(newCount)}`;
+    purchaseOrders.forEach(order => {
+      const parts = order.voucher_no.split('/');
+      const count = parseInt(parts[parts.length - 1], 10);
+      if (!isNaN(count) && count > maxCount) {
+        maxCount = count;
+      }
+    });
+
+    const newCount = maxCount + 1;
+    const newVoucherNo = `${prefix}${newCount}`;
+
+    return newVoucherNo;
   } catch (error) {
     console.error("Error generating purchase order ID:", error);
     throw error;
   }
 };
+
 
 // Create a new Purchase Order
 const createPurchaseOrder = async (data) => {

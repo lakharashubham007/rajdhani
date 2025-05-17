@@ -28,5 +28,7 @@ router.patch("/edit-customer/:id",upload, Authorization,  customerController.upd
 router.get("/customer-list/:id", Authentication,  customerController.getCustomerById);
 router.delete("/delete-customer/:id", Authentication,  customerController.deleteCustomer);
 router.patch("/update-customer-status/:id", Authentication, customerController.updateCustomer);
+router.get("/search",  customerController.searchCustomer)
+
 
 module.exports = router; 

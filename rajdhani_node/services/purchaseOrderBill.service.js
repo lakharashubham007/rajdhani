@@ -62,7 +62,6 @@ const checkBillsByPurchaseOrderId = async (id) => {
   try {
     // Find bills by the given purchase_order_id
     const bills = await PurchaseOrderBill.find({ purchase_order_id: id });
-    
     return bills;
   } catch (error) {
     console.error("Error in service while checking bills:", error);
@@ -106,8 +105,6 @@ const getPurchaseOrderBillItemsByFilter = async (filter) => {
     throw error;
   }
 };
-
-
 
 module.exports = {
   createPurchaseOrderBill,

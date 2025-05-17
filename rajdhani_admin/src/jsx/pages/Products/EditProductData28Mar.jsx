@@ -182,8 +182,8 @@ const EditProductData = () => {
       setDesignOption(mappedData)
       // setfittingThreadOption(mappedData);
     } catch (error) {
-      // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -223,8 +223,8 @@ const EditProductData = () => {
       }));
       setHoseDashSizeOption(mappedData);
     } catch (error) {
-      // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -251,8 +251,8 @@ const EditProductData = () => {
       setfittingDashSizeOption(mappedData)
       // setHoseDashSizeOption(mappedData);
     } catch (error) {
-      // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -271,8 +271,8 @@ const EditProductData = () => {
       }));
       setStraightBendangleOption(mappedData);
     } catch (error) {
-      // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -291,8 +291,8 @@ const EditProductData = () => {
       }));
       setBrandLayLineOption(mappedData);
     } catch (error) {
-      // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }
@@ -311,8 +311,8 @@ const EditProductData = () => {
       }));
       setHoseTypeOption(mappedData);
     } catch (error) {
-      // console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      // console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }

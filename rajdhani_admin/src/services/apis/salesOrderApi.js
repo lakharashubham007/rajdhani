@@ -46,7 +46,7 @@ export const addSalesOrderApi = async (formData) => {
 };
 
 export const createSOItemApi = async (formData) => {
-  console.log("formdata in addBrandsApi", formData)
+  console.log("formdata in createSOItemApi", formData)
   const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
   try {
       const response = await axios.post(
@@ -85,7 +85,7 @@ export const getSaleOrdersApi = async (currentPage,sort,sortValue,searchInputVal
 }
 };
 
-
+//fetchSaleOrderViewData
 export const GetSaleOrderViewData = async (id) => {
   const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
   try {
@@ -103,7 +103,7 @@ export const GetSaleOrderViewData = async (id) => {
   throw error;
 }
 };
-
+//GetPurchaseOrderItemsData
 export const GetSaleOrderItemsData = async (id) => {
   const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
   try {
@@ -121,3 +121,91 @@ export const GetSaleOrderItemsData = async (id) => {
     throw error;
   }
 };
+
+
+export const verifyItemsInSalesOrderApi = async (formData) => {
+  console.log("Sending verification payload:", formData);
+
+  const token = localStorage.getItem("token")?.replace(/^"(.*)"$/, "$1");
+
+  try {
+    const response = await axios.post(
+      apis.salesorders.veridySOITems,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error verifying sales order:", error);
+    throw error;
+  }
+};
+
+
+export const verifyBySOApi = async (formData) => {
+
+  const token = localStorage.getItem("token")?.replace(/^"(.*)"$/, "$1");
+
+  try {
+    const response = await axios.post(
+      apis.salesorders.verifyBySO,
+      formData,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error verifying sales order:", error);
+    throw error;
+  }
+};
+
+
+//sell orders by customer id
+export const saleOrdersByCustomerIdApi = async (id) => {
+  const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+  try {
+    const response = await axios.get(`${apis.salesorders.saleOrderByCustomerId}/${id}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response;
+  } catch (error) {
+    console.error("Error creating facility:", error);
+    throw error;
+  }
+};
+
+
+//sell orders by customer id
+export const saleOrderItemsBySOIdApi = async (id) => {
+  const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+  try {
+    const response = await axios.get(`${apis.salesorders.saleOrderItemsBySOId}/${id}`,
+    {
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    }
+  );
+  return response;
+  } catch (error) {
+    console.error("Error creating facility:", error);
+    throw error;
+  }
+};
+

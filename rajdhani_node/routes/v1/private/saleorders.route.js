@@ -25,7 +25,7 @@ router.delete("/delete-sale-order/:id", Authentication, saleOrderController.dele
 router.patch("/update-so-status/:id", Authentication, saleOrderController.updateSaleOrderStatus);
 
 
-//PO Items
+//SO Items
 router.post("/create-so-item", Authentication, saleOrderItemController.createSaleOrderItem);
 router.get("/so-items/:id", Authentication, saleOrderItemController.getSaleOrderItemById);
 router.get("/so-items", Authentication, saleOrderItemController.getSaleOrderItems);
@@ -34,6 +34,16 @@ router.put('/update-so-items/:id',Authentication,saleOrderItemController.updateS
 
 //verifySellOrder
 router.post("/verify-so",Authentication, saleOrderVerifyController.verifySaleOrder)
+
+
+//Verify SO Items and Authorize SO Items Route
+router.post("/verifyby-so",Authentication, saleOrderController.verifySaleOrderBy)
+router.post("/verify-so-items",Authentication, saleOrderItemController.verifyItemInSaleOrder)
+
+//for production sheet sell orders list by customer id 
+router.get("/sale-orders/:id", Authentication, saleOrderController.getSaleOrderByCustomerId);
+router.get("/so-id-items/:id", Authentication, saleOrderItemController.getSaleOrderItemsBySOId);
+
 
 
 module.exports = router;

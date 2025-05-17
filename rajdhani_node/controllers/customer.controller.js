@@ -84,6 +84,26 @@ const updateCustomerStatus = async (req, res) => {
   }
 };
 
+
+// Controller to get all products
+const searchCustomer = async (req, res) => {
+    try {
+        const { query } = req.query; // Get search query from request
+
+        if (!query) {
+            return res.status(400).json({ success: false, message: "Query parameter is required" });
+        }
+
+        // Fetch matching products from the service
+        const cutomer = await customerService.searchCustomer(query);
+
+        res.json({ success: true, cutomer });
+    } catch (error) {
+        console.error("Error searching party:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 module.exports = {
   createCustomer,
   getCustomers,
@@ -92,4 +112,5 @@ module.exports = {
   deleteCustomer,
   updateCustomerStatus,
   getAllCustomers,
+  searchCustomer
 };

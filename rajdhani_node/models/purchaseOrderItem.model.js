@@ -6,6 +6,7 @@ const purchaseOrderItemSchema = new mongoose.Schema(
     product_id: {type: mongoose.Schema.Types.ObjectId, ref: 'Products'},
     product_name: { type: String },
     product_code: { type: String },
+    fitting_Code: { type: String },
     quantity: { type: Number },
     uom: { type: String },
     weight: { type: String },

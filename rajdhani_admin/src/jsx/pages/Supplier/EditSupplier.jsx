@@ -146,8 +146,8 @@ const fetchCountryStateCity=async()=>{
 
       } catch (error) {
         // Catch and handle errors
-        console.error("Error fetching cuisines:", error);
-        Toaster.error("Failed to load cuisines. Please try again.");
+        console.error("Error fetching data:", error);
+        Toaster.error("Failed to load data. Please try again.");
       } 
 }
 
@@ -183,8 +183,8 @@ const fetchSupplierData=async()=>{
         }
       } catch (error) {
         // Catch and handle errors
-        console.error("Error fetching cuisines:", error);
-        Toaster.error("Failed to load cuisines. Please try again.");
+        console.error("Error fetching data:", error);
+        Toaster.error("Failed to load data. Please try again.");
       } 
 }
 
@@ -347,8 +347,8 @@ const fetchSupplierData=async()=>{
       );
       setAllFittingSizeList(dropdownFittingSize)
     } catch (error) {
-      console.error("Error fetching cuisines:", error);
-      Toaster.error("Failed to load cuisines. Please try again.");
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
     } finally {
       setLoading(false);
     }

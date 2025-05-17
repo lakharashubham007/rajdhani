@@ -1,4 +1,4 @@
-const { SaleOrderItem } = require("../models");
+const { SaleOrderItem, Admins } = require("../models");
 // const mongoose = require("mongoose");
 
 // Create a new Sale Order Item
@@ -79,11 +79,111 @@ const updateSpecificSaleOrderItems = async (id, itemsToUpdate) => {
   }
 };
 
+// const verifySaleOrderItems = async (so_id, itemIds, userId) => {
+//   try {
+//     const result = await SaleOrderItem.updateMany(
+//       { _id: { $in: itemIds } },
+//       {
+//         $set: {
+//           isVerified: true,
+//           isVerifiedBy: userId,
+//         },
+//       }
+//     );
+
+//     return result;
+//   } catch (error) {
+//     console.error("Error in verifying sale order items:", error);
+//     throw error;
+//   }
+// };
+
+const verifySaleOrderItems = async (so_id, itemIds, userId) => {
+  try {
+    if (!so_id || !Array.isArray(itemIds)) {
+      throw new Error('Invalid input');
+    }
+
+    // Fetch any one item to get the createdBy field (they all share same so_id)
+    const sampleItem = await SaleOrderItem.findOne({ so_id }).lean();
+
+    if (!sampleItem) {
+      return new Error('Sale order item not found.');
+    }
+
+    // Prevent the creator from verifying
+    if (sampleItem.createdBy.toString() === userId.toString()
+    ) {
+    //userId.toString()) { 674668cf82ff5f6473104454
+      return { success: false, message: 'You are not allowed to verify items.'}
+    }
+
+    const verifyResult = await SaleOrderItem.updateMany(
+      {
+        _id: { $in: itemIds },
+        so_id,
+      },
+      {
+        $set: {
+          isVerified: true,
+          isVerifiedBy: userId,
+        },
+      }
+    );
+
+    const unverifyResult = await SaleOrderItem.updateMany(
+      {
+        so_id,
+        _id: { $nin: itemIds },
+      },
+      {
+        $set: {
+          isVerified: false,
+          isVerifiedBy: userId,
+        },
+      }
+    );
+
+    const totalSOItems = await SaleOrderItem.countDocuments({ so_id });
+
+    const user = await Admins.findById(userId).select('firstName lastName');
+
+    return {
+      success: true,
+      verifiedItemsCount: verifyResult.modifiedCount,
+      unverifiedItemsCount: unverifyResult.modifiedCount,
+      totalSOItems,
+      verifiedBy: `${user.firstName} ${user.lastName}` || 'Unknown',
+    };
+
+  } catch (error) {
+    console.error('verifySaleOrderItems error:', error);
+    throw error;
+  }
+};
+
+// Get all Sale Orders by Customer ID
+const getSaleOrderItemsBySOId = async (SOId) => {
+  try {
+    const saleOrders = await SaleOrderItem.find({ so_id: SOId }).populate([
+      { path: 'product_id' }
+    ]);
+    console.log(saleOrders)
+    return saleOrders;
+  } catch (error) {
+    console.error("Error fetching sale orders by customer ID:", error);
+    throw error;
+  }
+};
+
+
 module.exports = {
   createSaleOrderItem,
   getSaleOrderItems,
   getSaleOrderItemById,
   updateSaleOrderItem,
   deleteSaleOrderItem,
-  updateSpecificSaleOrderItems
+  updateSpecificSaleOrderItems,
+  verifySaleOrderItems,
+  getSaleOrderItemsBySOId
 };

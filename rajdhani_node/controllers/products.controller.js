@@ -74,6 +74,25 @@ const getSimilarProducts = async (req, res) => {
     }
 };
 
+// Controller to get all products with different brands but the same configuration
+const getSimilarHoseAssemblyItem = async (req, res) => {
+    try {
+        const { product_code } = req.query; // Get fitting code from request
+
+        if (!product_code) {
+            return res.status(400).json({ success: false, message: "product_code  is required" });
+        }
+
+        // Call service function to fetch similar products
+        const products = await productService.findSimilarHoseAssembly(product_code);
+
+        res.json({ success: true, products });
+    } catch (error) {
+        console.error("Error fetching similar products:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 // Get all Products with pagination, sorting, and search
 const getProducts = async (req, res) => {
     try {
@@ -332,5 +351,6 @@ module.exports = {
     searchProducts,
     getSimilarProducts,
     getProductByQrScannerCode,
-    generateQrForProduct
+    generateQrForProduct,
+    getSimilarHoseAssemblyItem
 };

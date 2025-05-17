@@ -15,6 +15,7 @@ import BillCard from "../../components/PurchaseOrder/BillCard";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import * as XLSX from "xlsx";
+import { GetSaleOrderItemsData, GetSaleOrderViewData } from "../../../services/apis/salesOrderApi";
 
 const billtheadData = [
   { heading: "PO Id", sortingVale: "purchase_order_id" },
@@ -25,68 +26,43 @@ const billtheadData = [
   { heading: "Created At", sortingVale: "created_at" },
 ];
 
-
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
-  // { heading: "Order Id", sortingVale: "_id" },
-  { heading: "Product Name", sortingVale: "name" },
-  { heading: "Variant", sortingVale: "variant" },
-  { heading: "Unit", sortingVale: "unit" },
+  { heading: "Product Name", sortingVale: "product_name" },
+  { heading: "Fitting Code", sortingVale: "fitting_code" },
+  { heading: "Code", sortingVale: "product_code" },
+  { heading: "UOM", sortingVale: "uom" },
+  { heading: "Weight(Kg)", sortingVale: "weight" },
   { heading: "QTY", sortingVale: "quantity" },
-  { heading: "Price", sortingVale: "price" },
+  { heading: "Price Per Unit", sortingVale: "price_per_unit" },
+  { heading: "Discount Per Unit", sortingVale: "discount_per_unit" },
   { heading: "CGST", sortingVale: "cgst" },
   { heading: "SGST", sortingVale: "sgst" },
   { heading: "IGST", sortingVale: "igst" },
-  { heading: "Cess", sortingVale: "Cess" },
-  { heading: "Per Item Tax Price", sortingVale: "Cess" },
   { heading: "Amount", sortingVale: "amount" },
-
   { heading: "Created At", sortingVale: "created_at" },
-  { heading: "Status", sortingVale: "status" },
-  { heading: "Action", sortingVale: "action" },
 ];
-
-
 
 const SaleOrderView = () => {
   const params = useParams()?.id;
   const navigate = useNavigate();
   const billTableRef = useRef(null);
-
   const [sort, setSortata] = useState(10);
-  const [purchaseOrderData, setPurchaseOrderData] = useState([]);
-  const [purchaseOrderProdcutList, setPurchaseOrderProdcutList] = useState([]);
+  const [saleOrderData,setSaleOrderData] = useState([])
+  const [salesOrderProdcutList, setSalesOrderProdcutList] = useState([]);
   const [billData, setBillData] = useState([]);
-
   const [searchInputValue, setSearchInputValue] = useState("");
   const [iconData, setIconDate] = useState({ complete: false, ind: Number });
   const [currentPage, setCurrentPage] = useState(1);
   const [singleBillData, setSingleBillData] = useState({});
   const [visibleCount, setVisibleCount] = useState(5);
-
-
-
-
+  const [focusedInputIndex, setFocusedInputIndex] = useState(null);
   const [isExpanded, setIsExpanded] = useState(false);
 
   const toggleExpand = () => {
     setIsExpanded(!isExpanded);
   };
-  // console.log("purchaseOrderData",purchaseOrderData)
-
-  // const exportToPDF = () => {
-  //   const input = document.querySelector(".purchase-order-container"); // Target the main container
-  //   html2canvas(input, { scale: 2 }).then((canvas) => {
-  //     const pdf = new jsPDF("p", "mm", "a4");
-  //     const imgData = canvas.toDataURL("image/png");
-  //     const imgWidth = 210; // A4 width in mm
-  //     const pageHeight = 297; // A4 height in mm
-  //     const imgHeight = (canvas.height * imgWidth) / canvas.width;
-
-  //     pdf.addImage(imgData, "PNG", 0, 0, imgWidth, imgHeight);
-  //     pdf.save("PurchaseOrder.pdf");
-  //   });
-  // };
+  
   const exportToPDF = () => {
     const input = document.querySelector(".purchase-order-container"); // Target the container
     const pdf = new jsPDF("p", "mm", "a4");
@@ -137,49 +113,29 @@ const SaleOrderView = () => {
     }
   }
 
-  const fetchPurchaseOrderViewData = async () => {
-    try {
-      const res = await GetPurchaseOrderViewData(params);
-      const data = res?.data?.purchaseOrder;
-      setPurchaseOrderData(data);
+  const fetchSaleOrderViewData = async () => {
+    try {  
+      const res = await GetSaleOrderViewData(params);
+      const data = res?.data?.saleOrder;
+      setSaleOrderData(data);
     } catch (err) {
       console.log("errror", err);
     }
   };
 
-  const fetchPurchaseOrderItemsData = async () => {
+  const fetchSaleOrderItemsData = async () => {
     try {
-      const res = await GetPurchaseOrderItemsData(params);
+      const res = await GetSaleOrderItemsData(params);
       const data = res?.data?.item;
-      setPurchaseOrderProdcutList(data);
-      // console.log("daaata",data)
-      //console.log("resss",data)
-      // setPurchaseOrderData(data);
-      // setPurchaseOrderProdcutList(data?.products);
-    } catch (err) {
-      console.log("errror", err);
-    }
-  };
-
-  const fetchPurchaseOrderCheckBill = async () => {
-    try {
-      const res = await GetPurchaseOrderCheckBill(params);
-      const data = res?.data;
-      if (data?.success) {
-        setBillData(data?.bills)
-      }
-      //console.log("resss",data)
-      // setPurchaseOrderData(data);
-      // setPurchaseOrderProdcutList(data?.products);
+      setSalesOrderProdcutList(data);
     } catch (err) {
       console.log("errror", err);
     }
   };
 
   useEffect(() => {
-    fetchPurchaseOrderViewData();
-    fetchPurchaseOrderItemsData();
-    fetchPurchaseOrderCheckBill();
+    fetchSaleOrderViewData();
+    fetchSaleOrderItemsData();
   }, []);
 
   const orderDetails = {
@@ -256,7 +212,7 @@ const SaleOrderView = () => {
       verify: "Verify Order Note",
     },
     footer: {
-      preparedBy: "Malviya Nagar",
+      preparedBy: "Rajdhani",
       terms: [
         "Delivery quantity should be as per SO only.",
         "Goods delivered beyond the expiry date will not be accepted.",
@@ -283,6 +239,7 @@ const SaleOrderView = () => {
   const handleSeeMore = () => {
     setVisibleCount(billData.length); // Show all bills
   };
+
   return (
     <>
       <div className="card">
@@ -298,7 +255,7 @@ const SaleOrderView = () => {
                   </div>
                   <div className="col-sm-6 col-xl-4">
                     <h2 className="header-title" style={{ display: 'inline', whiteSpace: 'nowrap' }}>
-                      Rajdhani - Sale Order
+                      Rajdhani - Sales Order
                     </h2>
                   </div>
                   <div className="col-sm-6 col-xl-4 d-flex justify-content-xl-end mt-3 mt-xl-0 mb-2" style={{ height: '40px' }}>
@@ -313,69 +270,73 @@ const SaleOrderView = () => {
                 <div className="addresses mt-3">
                   <div className="row">
                     <div className="col-sm-6 col-xl-4 d-flex justify-content-center address-block">
+                    <div className="order-info">
+                        <h5>Supplier (Bill from)</h5>
+                        <p className="po-view-p">
+                          {saleOrderData?.base_company_address?.name}
+                        </p>
+                        <p className="po-view-p">
+                          {saleOrderData?.base_company_address?.city} {saleOrderData?.base_company_address?.state_name} {saleOrderData?.base_company_address?.country}
+                        </p>
+                        <p className="po-view-p">
+                          State: {saleOrderData?.base_company_address?.state_name}
+                        </p>
+                        <p className="po-view-p">
+                          Email: {saleOrderData?.base_company_address?.email}
+                        </p>
+                      </div>
+                    
+                    </div>
+
+                    
+                    <div className="col-sm-6 col-xl-4 d-flex justify-content-center mt-3 mt-sm-0 address-block">
+                      {/* Divider */}
                       <div>
                         <h5>Invoice To</h5>
                         <p className="po-view-p">
-                          {purchaseOrderData?.billing_details?.name}
+                          {saleOrderData?.billing_details?.name}
                         </p>
                         <p className="po-view-p">
-                          {purchaseOrderData?.billing_details?.address}
+                          {saleOrderData?.billing_details?.address}
                         </p>
                         <p className="po-view-p">
-                          State: {purchaseOrderData?.billing_details?.state_name}{" "}
-                          {purchaseOrderData?.billing_details?.state_code}
+                          State: {saleOrderData?.billing_details?.state_name}{" "}
+                          {saleOrderData?.billing_details?.state_code}
                         </p>
                         <p className="po-view-p">
-                          Email: {purchaseOrderData?.billing_details?.email}
-                        </p>
-                      </div>
-                    </div>
-
-                    <div className="col-sm-6 col-xl-4 d-flex justify-content-center mt-3 mt-sm-0 address-block">
-                      <div className="divider">
-                        {/* Divider */}
-                        <h5>Consignee (Ship to)</h5>
-                        <p className="po-view-p">
-                          {purchaseOrderData?.shipping_details?.name}
-                        </p>
-                        <p className="po-view-p">
-                          {purchaseOrderData?.shipping_details?.address}
-                        </p>
-                        <p className="po-view-p">
-                          State: {purchaseOrderData?.shipping_details?.state_name}{" "}
-                          {purchaseOrderData?.shipping_details?.state_code}
-                        </p>
-                        <p className="po-view-p">
-                          Email: {purchaseOrderData?.shipping_details?.email}
+                          Email: {saleOrderData?.billing_details?.email}
                         </p>
                       </div>
                     </div>
 
                     <div className="col-sm-6 col-xl-4 d-flex justify-content-center mt-3 mt-xl-0 divider">
-                      {/* Divider */}
-                      <div className="order-info">
-                        <h5>Supplier (Bill from)</h5>
+                      <div className="divider">
+                        {/* Divider */}
+                        <h5>Consignee (Ship to)</h5>
                         <p className="po-view-p">
-                          {purchaseOrderData?.supplier_id?.name}
+                          {saleOrderData?.shipping_details?.name}
                         </p>
                         <p className="po-view-p">
-                          {purchaseOrderData?.supplier_id?.city}
+                          {saleOrderData?.shipping_details?.address}
                         </p>
                         <p className="po-view-p">
-                          State: {purchaseOrderData?.supplier_id?.state}
+                          State: {saleOrderData?.shipping_details?.state_name}{" "}
+                          {saleOrderData?.shipping_details?.state_code}
                         </p>
                         <p className="po-view-p">
-                          Email: {purchaseOrderData?.supplier_id?.email}
+                          Email: {saleOrderData?.shipping_details?.email}
                         </p>
                       </div>
                     </div>
+
+                   
                   </div>
                 </div>
               </div>
             </div>
 
             {/* Bill Details show */}
-            <div className="">
+            {/* <div className="">
               <div className="card-header pb-0 px-0" >
                 <h4 className="card-title">Bill Details</h4>
               </div>
@@ -411,10 +372,10 @@ const SaleOrderView = () => {
                     <p>No bills found for this Purchase Order ID</p>
                 }
               </div>
-            </div>
+            </div> */}
 
             {/* Bill Detail */}
-            <div ref={billTableRef}>
+            {/* <div ref={billTableRef}>
               {Object?.keys(singleBillData).length == 0 ? "" :
                 <Row>
                   <Col lg={12}>
@@ -540,7 +501,7 @@ const SaleOrderView = () => {
                               </tbody>
                             </table>
                             <div>
-                              {/* {brandList?.data?.length < brandList?.total && ( */}
+                            
                               <div className="d-sm-flex text-center justify-content-end align-items-center mt-3">
                                 <div className="pagination-container">
                                   <ReactPaginate
@@ -557,7 +518,7 @@ const SaleOrderView = () => {
                                   />
                                 </div>
                               </div>
-                              {/* )} */}
+                             
                             </div>
                           </div>
                         </div>
@@ -566,20 +527,21 @@ const SaleOrderView = () => {
                   </Col>
                 </Row>
               }
-            </div>
+            </div> */}
+
             {/* Product Table */}
             <Row>
               <Col lg={12}>
                 <div className="">
                   <div className="card-header px-0">
-                    <h4 className="card-title">SO Product Details</h4>
+                    <h4 className="card-title">Sales Order Products List</h4>
                   </div>
                   <div className="card-body px-0">
                     <div className="table-responsive">
                       <div
                         id="holidayList"
                         className="dataTables_wrapper no-footer">
-                        <div className="justify-content-between d-sm-flex">
+                        {/* <div className="justify-content-between d-sm-flex">
                           <div className="dataTables_length">
                             <label className="d-flex align-items-center">
                               Show
@@ -628,7 +590,7 @@ const SaleOrderView = () => {
                               />
                             </label>
                           </div>
-                        </div>
+                        </div> */}
 
                         <table id="example4" className="display dataTable no-footer w-100">
                           <thead>
@@ -672,162 +634,63 @@ const SaleOrderView = () => {
                             </tr>
                           </thead>
                           <tbody>
-                            {purchaseOrderProdcutList?.map((data, ind) => (
+                            {salesOrderProdcutList?.map((data, ind) => (
                               <tr key={ind}>
                                 <td>
                                   <strong>{ind + 1}</strong>{" "}
                                 </td>
-
-                                {/* <td>{data?._id}</td> */}
-
-                                {/* <td>
+                                {/* Product Name */}
+                                <td>
                                   <div
+                                    onClick={() =>
+                                      setFocusedInputIndex((prev) => (prev === ind ? null : ind))
+                                    }                                  
                                     style={{
-                                      whiteSpace: "nowrap",
-                                      width: "290px",
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      padding: "4px 8px",
-                                      border: "1px solid #ddd",
-                                      borderRadius: "8px",
-                                      backgroundColor: "#f5f5f5",
-                                      textAlign: "start",
-                                    }}
-                                  >
-                                    {data?.product_name}
-                                  </div>
-                                </td>  */}
-
-                                 <td>
-                                  <div
-                                    style={{
-                                      whiteSpace: "nowrap",
-                                      width: isExpanded ? "100%" : "290px", // Expands width on toggle
-                                      overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      padding: "4px 8px",
-                                      border: "1px solid #ddd",
-                                      borderRadius: "8px",
-                                      backgroundColor: "#f5f5f5",
-                                      textAlign: "start",
+                                      width: focusedInputIndex === ind ? "600px" : "600px",
+                                      transition: "width 0.3s ease",
                                       cursor: "pointer",
-                                      transition: "width 0.3s ease", // Smooth transition
-                                    }}
-                                    onClick={toggleExpand}
-                                  >
-                                    {data?.product_name}
-                                    {!isExpanded && (
-                                      <span
-                                        style={{
-                                          position: "absolute",
-                                          right: "8px",
-                                          top: "50%",
-                                          transform: "translateY(-50%)",
-                                          color: "#007bff",
-                                          fontSize: "12px",
-                                          cursor: "pointer",
-                                        }}
-                                      >
-                                        ...
-                                      </span>
-                                    )}
-                                  </div>
-                                </td> 
-
-                                {/* <td>
-                                  <div
-                                    style={{
-                                      whiteSpace: "nowrap",
-                                      width: isExpanded ? "100%" : "290px", // Expands width on toggle
+                                      // border: "1px solid #ccc",
+                                      borderRadius: "5px",
+                                      padding: "8px",
+                                      minHeight: "38px", // mimic input height
                                       overflow: "hidden",
-                                      textOverflow: "ellipsis",
-                                      padding: "4px 8px",
-                                      border: "1px solid #ddd",
-                                      borderRadius: "8px",
-                                      backgroundColor: "#f5f5f5",
-                                      textAlign: "start",
-                                      cursor: "pointer",
-                                      transition: "width 0.3s ease", // Smooth transition
-                                      position: "relative",
+                                      whiteSpace: "nowrap",
                                     }}
-                                    onClick={toggleExpand}
                                   >
                                     {data?.product_name}
-                                    <span
-                                      style={{
-                                        position: "absolute",
-                                        // left: "10px",
-                                        right: "2px",
-                                        top: "50%",
-                                        transform: "translateY(-50%)",
-                                        display: "flex",
-                                        alignItems: "center",
-                                        justifyContent: "center",
-                                        width: "20px",
-                                        height: "20px",
-                                        borderRadius: "50%",
-                                        // backgroundColor: "#007bff",
-                                        zIndex: '1111',
-                                        color: "#fff",
-                                        fontSize: "12px",
-                                        cursor: "pointer",
-                                        transition: "transform 0.3s ease", // Rotate arrow on toggle
-                                        transform: isExpanded ? "translateY(-50%) rotate(180deg)" : "translateY(-50%)",
-                                      }}
-                                    >
-                                      ➡️
-                                    </span>
                                   </div>
-                                </td> */}
-
-
-
-
-                                <td className="">{data?.variant}</td>
-
-                                <td className="">{data?.unit}</td>
-
-                                <td className="">{data?.quantity}</td>
-
-                                <td className="">{data?.price_per_unit}</td>
-
-                                <td className="">{data?.cgst}</td>
-
-                                <td className="">{data?.sgst}</td>
-
-                                <td className="">{data?.igst}</td>
-
-                                <td className="">{data?.cess}</td>
-
-                                <td className="">
-                                  {moment(data?.order_details?.due_date).format(
-                                    "DD MMM YYYY"
-                                  )}
                                 </td>
-
-                                <td className="">{data?.amount}</td>
-
+                                {/* Product Fitting Code */}
+                                <td style={{whiteSpace: 'nowrap'}}>{data?.fitting_Code}</td>
+                                <td className="">{data?.product_code}</td>
+                                <td className="">{data?.uom}</td>
+                                <td className="">{data?.weight}</td>
+                                <td className="">{data?.quantity}</td>
+                                <td className="">{data?.price} INR</td>
+                                <td className="">{data?.discount_per_unit}</td>
+                                <td className="">{data?.cgst}</td>
+                                <td className="">{data?.sgst}</td>
+                                <td className="">{data?.igst}</td>
+                                <td className="">{data?.taxable_amount} INR</td>
                                 <td>
                                   {moment(data?.created_at).format(
                                     "DD MMM YYYY, h:mm:ss a"
                                   )}
                                 </td>
-
-                                <td>-</td>
-                                <td>
+                                {/* <td>
                                   <button
                                     className="btn btn-xs sharp btn-primary me-1"
                                   //   onClick={() => navigate(`/purchaseorderview/${data?._id}`)}
                                   >
                                     <i class="fa-solid fa-eye"></i>
                                   </button>
-                                </td>
+                                </td> */}
                               </tr>
                             ))}
                           </tbody>
                         </table>
-                        <div>
-                          {/* {brandList?.data?.length < brandList?.total && ( */}
+                        {/* <div>
+                        
                           <div className="d-sm-flex text-center justify-content-end align-items-center mt-3">
                             <div className="pagination-container">
                               <ReactPaginate
@@ -844,8 +707,8 @@ const SaleOrderView = () => {
                               />
                             </div>
                           </div>
-                          {/* )} */}
-                        </div>
+                          
+                        </div> */}
                       </div>
                     </div>
                   </div>
@@ -858,34 +721,32 @@ const SaleOrderView = () => {
             <div className="row justify-content-end ">
               <div className="summary-section col-md-5">
                 <table className="table table-bordered ">
-                  <h3>Summary</h3>
+                  <h3 className="p-2 mx-1">Summary</h3>
 
                   <tbody>
                     <tr>
                       <td>Total Quantity</td>
-                      <td>{purchaseOrderData?.summary?.total_quantity}</td>
+                      <td>{saleOrderData?.summary?.total_quantity}</td>
                     </tr>
                     <tr>
                       <td>Sub Total</td>
-                      <td>{purchaseOrderData?.summary?.sub_total?.toFixed(2)}</td>
+                      <td>{saleOrderData?.summary?.sub_total?.toFixed(2)}</td>
                     </tr>
                     <tr>
                       <td>Discount</td>
-                      <td>{purchaseOrderData?.summary?.total_discount?.toFixed(2)}</td>
+                      <td>{saleOrderData?.summary?.total_discount?.toFixed(2)}</td>
                     </tr>
                     <tr>
                       <td>Total GST Amount</td>
-                      <td>{purchaseOrderData?.summary?.total_gst_amount?.toFixed(2)}</td>
+                      <td>{saleOrderData?.summary?.total_gst_amount?.toFixed(2)}</td>
                     </tr>
                     <tr>
                       <td>Shipping</td>
-                      <td>
-                        <td>{purchaseOrderData?.summary?.total_gst_amount?.toFixed(2)}</td>
-                      </td>
+                      <td>{saleOrderData?.summary?.total_gst_amount?.toFixed(2)}</td>
                     </tr>
                     <tr>
                       <td>Grand Total</td>
-                      <td>{purchaseOrderData?.summary?.grand_total?.toFixed(2)}</td>
+                      <td>{saleOrderData?.summary?.grand_total?.toFixed(2)}</td>
                     </tr>
                   </tbody>
                 </table>

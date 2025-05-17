@@ -123,6 +123,29 @@ const updateCustomerStatus = async (customerId, status) => {
   }
 };
 
+const searchCustomer = async (query) => {
+  try {
+    const searchRegex = new RegExp(query, 'i'); // 'i' makes it case-insensitive
+
+    const customers = await Customer.find({
+      $or: [
+        { fname: searchRegex },
+        { lname: searchRegex },
+        { company_name: searchRegex }
+      ]
+    })
+    .limit(10); // Limit results to 6
+    
+    return customers;
+  } catch (error) {
+    console.error("Error searching customers:", error);
+    throw error;
+  }
+};
+
+
+
+
 module.exports = {
   createCustomer,
   getCustomers,
@@ -131,4 +154,5 @@ module.exports = {
   deleteCustomer,
   updateCustomerStatus,
   getAllCustomers,
+  searchCustomer
 };

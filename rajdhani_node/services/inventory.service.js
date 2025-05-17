@@ -83,6 +83,8 @@ const addInventory = async (dataArray) => {
             product_id: productDetails._id,
             product_name: productDetails.product_name || data.product_name,
             product_unit: productDetails.uom || data?.uom,
+            fitting_Code: productDetails?.fitting_Code,
+            product_code: productDetails?.product_code,
             skive_type: productDetails.skive_type || null,
             wire_type: productDetails.wire_type || null,
             thread_type: productDetails.fitting_thread || null,
