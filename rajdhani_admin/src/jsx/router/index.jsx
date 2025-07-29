@@ -211,6 +211,16 @@ import ProductionManagement from "../pages/ProductionManagement/ProductionManage
 import ProductDetailsQR from "../pages/authentication/productDetails";
 import AuthorizeSaleOrder from "../pages/SalesOrder/AuthorizeSaleOrder";
 import EditSaleOrder from "../pages/SalesOrder/EditSaleOrder";
+import ProductionSheetList from "../pages/ProductionManagement/ProductionSheetList";
+import ProducitonSheetView from "../pages/ProductionManagement/ProducitonSheetView";
+import StoreManagement from "../pages/StoreManagement/Store";
+import ProductionProcess from "../pages/ProductionProcessManagement/ProductionProcess";
+import LogActivity from "../pages/ProductionProcessManagement/ActivityLogs/LogActivity";
+import AddOperator from "../pages/Operators/AddOperator";
+import OperatorsList from "../pages/Operators/OperatorsList";
+import ProductionProcessPendingList from "../pages/ProductionProcessManagement/ProductionProcessList/ProductionProcessPendingList";
+import ProductionProcessInProgressList from "../pages/ProductionProcessManagement/ProductionProcessList/ProductionProcessInProgressList";
+import ProductionProcessCompletedList from "../pages/ProductionProcessManagement/ProductionProcessList/ProductionProcessCompletedList";
 
 // import Todo from './pages/Todo';
 
@@ -221,7 +231,7 @@ const Markup = () => {
     { url: "", component: <Home /> },
     { url: "/productqr/:id", component: <ProductDetailsQR /> },
 
-   
+
     { url: "dashboard", component: <Home /> },
     { url: "dashboard/restaurant", component: <Dashboard2 /> },
 
@@ -229,36 +239,40 @@ const Markup = () => {
     { url: "index-3", component: <Dashboard3 /> },
     { url: "event-management", component: <EventManagement /> },
 
-    
+
     //Inventory
-    {url: 'inventory', component: <Inventory/>},
+    { url: 'inventory', component: <Inventory /> },
 
-     //Customer
-     {url: 'add-customer', component: <AddCustomer/>},
-     {url: 'customer-list', component: <CustomerList/>},
+    //Customer
+    { url: 'add-customer', component: <AddCustomer /> },
+    { url: 'customer-list', component: <CustomerList /> },
 
-     //sales Order
-     {url: 'add-sales-order', component: <AddSalesOrder/>},
-     {url: 'sales-order-list', component: <SaleOrderList/>},
-     { url: 'saleorderview/:id', component: <SaleOrderView /> },
-     { url: 'verifysSaleOrder/:id', component: <VerifySaleOrder/> },
-    {url: 'authorizeSaleOrder/:id', component: <AuthorizeSaleOrder/>},
-    {url: 'edit-sale-order/:id', component: <EditSaleOrder/>},
+     //Opertors
+    { url: 'add-operator', component: <AddOperator /> },
+    { url: 'operator-list', component: <OperatorsList /> },
+
+    //sales Order
+    { url: 'add-sales-order', component: <AddSalesOrder /> },
+    { url: 'sales-order-list', component: <SaleOrderList /> },
+    { url: 'saleorderview/:id', component: <SaleOrderView /> },
+    { url: 'verifysSaleOrder/:id', component: <VerifySaleOrder /> },
+    { url: 'authorizeSaleOrder/:id', component: <AuthorizeSaleOrder /> },
+    { url: 'edit-sale-order/:id', component: <EditSaleOrder /> },
     // edit-sale-order
-    
+
 
     //Brands
     { url: 'brands', component: <Brands /> },
     { url: 'categories', component: <Categories /> },
     { url: 'subcategories', component: <SubCategories /> },
     { url: 'subsubcategories', component: <SubSubCategories /> },
-    
+
     { url: 'fittingsize', component: <FittingSize /> },
     { url: 'threads', component: <Threads /> },
     { url: 'materials', component: <Materials /> },
     { url: 'variants', component: <Variants /> },
     { url: 'parts', component: <Parts /> },
-    
+
     // Design
     { url: 'design', component: <Design /> },
     // fittingthreads
@@ -270,10 +284,10 @@ const Markup = () => {
     // Bend Angle
     { url: 'bendangle', component: <BendAngle /> },
     // Brand Lay Line
-    { url: 'brandlayline', component: <BrandLayLine/> },
+    { url: 'brandlayline', component: <BrandLayLine /> },
     // Brand Lay Line
-    { url: 'hosetype', component: <HoseType/> },
-    
+    { url: 'hosetype', component: <HoseType /> },
+
 
     // Products
     { url: 'addnewproduct', component: <AddProduct /> },
@@ -286,26 +300,40 @@ const Markup = () => {
     { url: 'addnewsupplier', component: <AddNewSupplier /> },
     { url: 'supplierlist', component: <AllSupplierList /> },
     { url: 'editsupplierdata/:id', component: <EditSupplier /> },
-        
+
     // Purchase Order
     { url: 'addnewpurchaseorder', component: <AddSupplierPurchaseOrder /> },
     { url: 'purchaseorderlist', component: <SupplierPurchaseOrderList /> },
     { url: 'purchaseorderview/:id', component: <PurchaseOrderView /> },
-    { url: 'verifyPurchaseOrder/:id', component: <VerifyPurchaseOrder/> },
-    { url: 'billview/:id', component: <BillView/> },
-    
+    { url: 'verifyPurchaseOrder/:id', component: <VerifyPurchaseOrder /> },
+    { url: 'billview/:id', component: <BillView /> },
+
     // Production Management
-    { url: 'production-sheet', component: <ProductionManagement/> },
+    { url: 'production-sheet', component: <ProductionManagement /> },
+    { url: 'production-sheet-list', component: <ProductionSheetList /> },
+    { url: 'production-sheet-view/:id', component: <ProducitonSheetView /> },
+
+
+    // Store Management
+    { url: 'store', component: <StoreManagement /> },
+
+    //production-process
+
+    { url: 'production-process', component: <ProductionProcess /> },
+    { url: 'production-process-log-activity/:id', component: <LogActivity /> },
 
     // Returns Order View
     { url: 'returnorderview/:id', component: <ReturnOrderView /> },
-    { url: 'returnorders', component: <ReturnOrdersLits/> },
+    { url: 'returnorders', component: <ReturnOrdersLits /> },
+    { url: 'production-process-pending', component: <ProductionProcessPendingList /> },
+    { url: 'production-process-in-progress', component: <ProductionProcessInProgressList /> },
+    { url: 'production-process-completed', component: <ProductionProcessCompletedList /> },
 
     //Food Mangment
     { url: 'category', component: <OldCategories /> },
     { url: 'sub-category', component: <OldSubCategories /> },
 
-   
+
 
     //Orders
     { url: 'all/orders', component: <AllOrders /> },
@@ -316,7 +344,7 @@ const Markup = () => {
     { url: 'add-new-employee', component: <AddEmployee /> },
     { url: 'employee/list', component: <EmployeeList /> },
 
-    
+
 
 
 

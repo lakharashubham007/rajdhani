@@ -36,27 +36,29 @@ import useDebounce from "../../components/common/Debounce";
 import { deleteSupplierApi, getSupplierApi, UpdateSupplierStatus } from "../../../services/apis/Supplier";
 import { getSupplierPurchaseOrderApi } from "../../../services/apis/PurchaseOrder";
 import { getSaleOrdersApi } from "../../../services/apis/salesOrderApi";
+import { getProductionSheetsApi } from "../../../services/apis/productionSheetApi";
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
+  { heading: "Sheet No.", sortingVale: "sheet_no" },
   { heading: "Order Id", sortingVale: "_id" },
-  { heading: "Voucher No.", sortingVale: "voucher_no" },
-  { heading: "Customer Name", sortingVale: "name" },
-  { heading: "Customer Address", sortingVale: "address" },
   { heading: "Orderd Date", sortingVale: "date" },
-  { heading: "Due Date", sortingVale: "due_date" },
-  { heading: "SO Amount", sortingVale: "grand_total" },
+  { heading: "Party Name", sortingVale: "name" },
+  { heading: "Party Address", sortingVale: "address" },
+
+  // { heading: "Due Date", sortingVale: "due_date" },
+  // { heading: "SO Amount", sortingVale: "grand_total" },
   { heading: "Prepared By", sortingValue: "preparedBy" },
   { heading: "Verified By", sortingValue: "verifiedBy" },
   { heading: "Verified", sortingValue: "verified" },
-  { heading: "Authorized By", sortingValue: "authorizedBy" },
+  // { heading: "Authorized By", sortingValue: "authorizedBy" },
 
   // { heading: "Created At", sortingVale: "created_at" },
   { heading: "Status", sortingVale: "status" },
   { heading: "Action", sortingVale: "action" },
 ];
 
-const SaleOrderList = () => {
+const ProductionSheetList = () => {
   const [sort, setSortata] = useState(10);
   const [loading, setLoading] = useState(false);
   const [modalCentered, setModalCentered] = useState(false);
@@ -120,7 +122,7 @@ const SaleOrderList = () => {
     // Set loading to true when the API call starts
     setLoading(true);
     try {
-      const res = await getSaleOrdersApi(
+      const res = await getProductionSheetsApi(
         currentPage,
         sort,
         sortValue,
@@ -277,7 +279,7 @@ const SaleOrderList = () => {
       <ToastContainer />
       <Loader visible={loading} />
       <PageTitle
-        activeMenu={"Sales Order"}
+        activeMenu={"Production Sheets"}
         motherMenu={"Home"}
         motherMenuLink={"/dashboard"}
       />
@@ -286,15 +288,8 @@ const SaleOrderList = () => {
         <Col lg={12}>
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Sale Orders List</h4>
-              {/* <Link to={"/add-staff"} className="btn btn-primary">+ Add New</Link> */}
-              {/* <Button
-                variant="primary"
-                type="button"
-                className="mb-2 me-2"
-                onClick={handleAddNewBrand}>
-                + Add New Sub Category
-              </Button> */}
+              <h4 className="card-title">Production Sheet List</h4>
+
             </div>
             <div className="card-body">
               <div className="table-responsive">
@@ -381,89 +376,46 @@ const SaleOrderList = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {purchaseOrderList?.saleOrders?.map((data, ind) => (
+                      {purchaseOrderList?.productionSheets?.map((data, ind) => (
                         <tr key={ind}>
                           <td><strong>{ind + 1}</strong> </td>
 
-                          <td>{data?._id}</td>
+                          {/* <td>{data?._id}</td> */}
 
-                          <td
-                            style={{
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              maxWidth: '200px',
-                            }}
-                            title={data?.voucher_no}
-                          >
-                            {data?.voucher_no}
-                          </td>
+                          <td>{data?.sheet_no}</td>
 
-                          <td className="">
-                            {data?.customer_id?.fname} {data?.customer_id?.lname}
-
-                          </td>
-
-                          <td
-                            style={{
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              maxWidth: '200px',
-                              cursor: 'pointer',
-                            }}
-                            title={`${data?.customer_id?.city || ''} ${data?.customer_id?.state || ''}`}
-                          >
-                            {(data?.customer_id?.city + ' ' + data?.customer_id?.state).slice(0, 80)}
-                            {(data?.customer_id?.city + ' ' + data?.customer_id?.state).length > 80 && '...'}
-                          </td>
-
-
-
-
+                          <td style={{ whiteSpace: 'nowrap' }}>{data?.order_id?.voucher_no}</td>
 
                           <td className="whitespace-nowrap ">
                             {moment(data?.order_details?.date).format("DD MMM YYYY")}
                           </td>
 
-                          <td style={{
-                            whiteSpace: 'nowrap',
-                          }} >
-                            {moment(data?.order_details?.due_date).format("DD MMM YYYY")}
+                          <td className="">
+                            {data?.party_name}
                           </td>
 
-                          <td
+
+                           <td
                             style={{
-                              whiteSpace: 'nowrap',
-                              overflow: 'hidden',
-                              textOverflow: 'ellipsis',
-                              maxWidth: '200px',
+                              whiteSpace: "nowrap",
+                              overflow: "hidden",
+                              textOverflow: "ellipsis",
+                              maxWidth: "250px", // Adjust as needed
+                              cursor: "pointer", // Indicate it's hoverable
                             }}
-                            title={`₹ ${Number(data?.summary?.grand_total).toFixed(3)}`}
+                            title={data?.address || ''}
                           >
-                            ₹ {Number(data?.summary?.grand_total).toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 5 })}
+                            {data?.address}
+                          </td> 
+                          
+                          <td className="">
+                            {data?.created_by}
                           </td>
-
 
                           {/* <td>
                             {moment(data?.created_at).format("DD MMM YYYY, h:mm:ss a")}
                           </td> */}
 
-                          <td className="">
-                            <span style={{
-                              whiteSpace: 'nowrap',
-                              border: '0.5px solid black',
-                              padding: '5px 10px',
-                              borderRadius: '9999px', // fully rounded
-                              backgroundColor: 'white',
-                              boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
-                              fontSize: '0.875rem',
-                            }}>
-                              {data?.createdBy?.firstName && data?.createdBy?.lastName
-                                ? `${data?.createdBy?.firstName} ${data?.createdBy?.lastName}`
-                                : '-'}
-                            </span>
-                          </td>
 
                           <td>
                             <span style={{
@@ -516,22 +468,37 @@ const SaleOrderList = () => {
                               }
                           </td> */}
 
-                          <td className="">
+                          {/* <td className="">
                             {data?.isAuthorizedBy?.fname && data?.isAuthorizedBy?.lname
                               ? `${data?.isAuthorizedBy?.firstName} ${data?.isAuthorizedBy?.lastName}`
                               : '-'}
-                          </td>
-
+                          </td> */}
+                          {/* 
                           <td>
                             <span
-                              className={`badge ${data.status === "In Pending"
+                              className={`badge ${data.status === "In Pending" || data.status === "Pending"
                                 ? "bg-warning"
                                 : data.status === "Completed"
                                   ? "bg-success"
-                                  : "bg-secondary"
+                                  : "bg-#C4D9FF"
                                 }`}
                             >
                               {data?.status}
+                            </span>
+                          </td> */}
+                          <td>
+                            <span
+                              className={`badge`}
+                              style={{
+                                backgroundColor:
+                                  data.status === "Pending"
+                                    ? "#6c757d"   // Gray for Pending
+                                    : data.status === "Completed"
+                                      ? "#28a745" // Green for Completed
+                                      : "#2F3E9E" // Blue for In Progress
+                              }}
+                            >
+                              {data.status}
                             </span>
                           </td>
 
@@ -540,7 +507,7 @@ const SaleOrderList = () => {
                           <td className="d-flex justify-content-start align-items-center gap-2">
                             <button
                               className="btn btn-xs sharp btn-primary"
-                              onClick={() => navigate(`/saleorderview/${data?._id}`)}>
+                              onClick={() => navigate(`/production-sheet-view/${data?._id}`)}>
                               <i className="fa-solid fa-eye"></i>
                             </button>
 
@@ -551,7 +518,7 @@ const SaleOrderList = () => {
                               <i className="fa-solid fa-check"></i>
                             </button>
 
-                            <button
+                            {/* <button
                               className="btn btn-xs sharp"
                               onClick={() => navigate(`/authorizeSaleOrder/${data?._id}`)}
                               style={{ background: '#FFB456', color: 'black' }}
@@ -563,7 +530,7 @@ const SaleOrderList = () => {
                               onClick={() => navigate(`/edit-sale-order/${data?._id}`)}
                             >
                               <i className="fa fa-pencil" />
-                            </button>
+                            </button> */}
 
                             <button
                               className="btn btn-xs sharp btn-danger"
@@ -607,4 +574,4 @@ const SaleOrderList = () => {
   );
 };
 
-export default SaleOrderList;
+export default ProductionSheetList;

@@ -1,0 +1,84 @@
+.loader3-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background: rgba(20, 20, 20, 0.6);
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+}
+
+.loader3-box {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  padding: 30px 40px;
+  border-radius: 20px;
+  text-align: center;
+  box-shadow: 0 0 30px rgba(255, 0, 77, 0.15);
+}
+
+.loader3-logo {
+  width: 80px;
+  height: auto;
+  margin-bottom: 20px;
+}
+
+.loader3-bar-wrapper {
+  position: relative;
+  width: 350px;
+  height: 18px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.loader3-bar-fill {
+  height: 100%;
+  background: linear-gradient(to right, #ff1a4b, #ff6b81, #ffc3a0);
+  box-shadow: 0 0 10px rgba(255, 0, 64, 0.4);
+  transition: width 0.4s ease-in-out;
+  border-radius: 10px;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.loader3-bar-segments {
+  display: flex;
+  justify-content: space-between;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 100%;
+  pointer-events: none;
+}
+
+.loader3-segment {
+  width: 2px;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.2);
+  animation: flicker 1.5s infinite alternate;
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.4;
+  }
+  100% {
+    opacity: 1;
+  }
+}
+
+.loader3-percent {
+  margin-top: 15px;
+  color: #fff;
+  font-size: 18px;
+  font-weight: 600;
+  letter-spacing: 1px;
+}

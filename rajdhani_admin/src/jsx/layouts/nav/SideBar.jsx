@@ -6,6 +6,11 @@ import { useScrollPosition } from "@n8tb1t/use-scroll-position";
 import { ThemeContext } from "../../../context/ThemeContext";
 import { getSidebarMenusApi } from "../../../services/apis/SidebarMenuApi";
 
+import { useDispatch, useSelector } from 'react-redux';
+import { getSidebarMenusRequest } from '../../../store/actions/SidebarMenusActions';
+
+
+
 
 const reducer = (previousState, updatedState) => ({
   ...previousState,
@@ -26,6 +31,9 @@ const SideBar = () => {
     sidebarLayout,
     ChangeIconSidebar,
   } = useContext(ThemeContext);
+  const dispatch = useDispatch();
+
+  const sidebarMenus = useSelector(state => state?.sidebarMenus?.data);
 
   const [state, setState] = useReducer(reducer, initialState);
   const [hideOnScroll, setHideOnScroll] = useState(true);
@@ -71,77 +79,76 @@ const SideBar = () => {
     })
   }, [path]);
 
-  const [sidebarMenus, setSidebarMenus] = useState([]);
+  // console.log(sidebarMenus)
 
+  // useEffect(() => {
+  //   // Define the function to fetch sidebar menus
+  //   const fetchSidebarMenus = async () => {
+  //     try {
+  //       const response = await getSidebarMenusApi();
+  //       const menus = response?.data?.MenuList;
+  //       // Transform iconStyle strings into React elements
+  //       const updatedMenus = menus.map(menu => {
+  //         if (menu.iconStyle) {
+  //           // Extract the className from the string (e.g., 'la la-home')
+  //           const classNameMatch = menu.iconStyle.match(/className=['"]([^'"]+)['"]/);
 
-  useEffect(() => {
-    // Define the function to fetch sidebar menus
-    const fetchSidebarMenus = async () => {
-      try {
-        const response = await getSidebarMenusApi();
-        const menus = response?.data?.MenuList;
-        // Transform iconStyle strings into React elements
-        const updatedMenus = menus.map(menu => {
-          if (menu.iconStyle) {
-            // Extract the className from the string (e.g., 'la la-home')
-            const classNameMatch = menu.iconStyle.match(/className=['"]([^'"]+)['"]/);
+  //           if (classNameMatch && classNameMatch[1]) {
+  //             const iconClass = classNameMatch[1];
 
-            if (classNameMatch && classNameMatch[1]) {
-              const iconClass = classNameMatch[1];
+  //             // Convert the string into a React element
+  //             return {
+  //               ...menu,
+  //               iconStyle: <i className={iconClass} />
+  //             };
+  //           }
+  //         }
+  //         return menu;
+  //       });
+  //       // Organize menus by module_id and children
+  //       const formattedMenus = updatedMenus
+  //         .filter(menu => menu.module_id) // Get parent modules
+  //         .map(parent => ({
+  //           ...parent,
+  //           children: updatedMenus
+  //             .filter(child => child.parent_module_id === parent.module_id) // Match children
+  //             .sort((a, b) => a.module_menu_priority - b.module_menu_priority), // Sort by child priority
+  //         }))
+  //         .sort((a, b) => a.module_priority - b.module_priority);
+  //       // Extract Values individually
+  //       const extractIndividualEntries = (menus) => {
+  //         let result = [];
+  //         menus.forEach(menu => {
+  //           // Add parent menu
+  //           result.push({
+  //             ...menu,
+  //             children: undefined, // Remove children
+  //             content: undefined  // Remove content
+  //           });
 
-              // Convert the string into a React element
-              return {
-                ...menu,
-                iconStyle: <i className={iconClass} />
-              };
-            }
-          }
-          return menu;
-        });
-        // Organize menus by module_id and children
-        const formattedMenus = updatedMenus
-          .filter(menu => menu.module_id) // Get parent modules
-          .map(parent => ({
-            ...parent,
-            children: updatedMenus
-              .filter(child => child.parent_module_id === parent.module_id) // Match children
-              .sort((a, b) => a.module_menu_priority - b.module_menu_priority), // Sort by child priority
-          }))
-          .sort((a, b) => a.module_priority - b.module_priority);
-        // Extract Values individually
-        const extractIndividualEntries = (menus) => {
-          let result = [];
-          menus.forEach(menu => {
-            // Add parent menu
-            result.push({
-              ...menu,
-              children: undefined, // Remove children
-              content: undefined  // Remove content
-            });
+  //           // Add children menus
+  //           if (menu?.children && menu?.children?.length > 0) {
+  //             menu?.children.forEach(child => {
+  //               result.push({
+  //                 ...child,
+  //               });
+  //             });
+  //           }
+  //         });
+  //         return result;
+  //       };
+  //       const individualEntries = extractIndividualEntries(formattedMenus);
+  //       setSidebarMenus(individualEntries);
+  //     } catch (err) {
+  //       // Handle any errors
+  //       // setError(err.message);
+  //       // setLoading(false);
+  //     }
+  //   };
 
-            // Add children menus
-            if (menu?.children && menu?.children?.length > 0) {
-              menu?.children.forEach(child => {
-                result.push({
-                  ...child,
-                });
-              });
-            }
-          });
-          return result;
-        };
-        const individualEntries = extractIndividualEntries(formattedMenus);
-        setSidebarMenus(individualEntries);
-      } catch (err) {
-        // Handle any errors
-        // setError(err.message);
-        // setLoading(false);
-      }
-    };
-
-    // Call the function to fetch data
-    fetchSidebarMenus();
-  }, []);
+  //   // Call the function to fetch data
+  //   fetchSidebarMenus();
+  // }, []);
 
   const getBadgeColorClass = (status) => {
     switch (status) {
@@ -151,8 +158,10 @@ const SideBar = () => {
       case "Processing":
       case "Food on the way":
       case "Offline Payments":
+      case "In Progress":
         return "badge-primary"; // Blue for orders before Delivered
       case "Delivered":
+      case "Completed":
         return "badge-success"; // Green for Delivered
       case "Pending":
       case "Payment Failed":
@@ -163,6 +172,12 @@ const SideBar = () => {
         return "badge-secondary"; // Gray for unknown or other statuses
     }
   };
+
+
+
+  useEffect(() => {
+    dispatch(getSidebarMenusRequest());
+  }, [dispatch]);
 
   return (
     <div
@@ -188,7 +203,6 @@ const SideBar = () => {
               )
             }
             else {
-              // console.log("inside -=-=-=-",data.title)
               return (
                 <li className={` ${state.active === data.title ? 'mm-active' : ''}${data.to === path ? 'mm-active' : ''}`}
                   key={index}>
@@ -221,7 +235,7 @@ const SideBar = () => {
                                         {data.content && data.content.map((data, index) => {
                                           return (
                                             <li key={index}>
-                                              <Link className={`${path === data.to ? "mm-active" : ""}`} to={data.to}>
+                                              <Link className={`${path === data.to ? "mm-active" : ""}`} to={data?.to}>
                                                 {data.title}
                                               </Link>
                                             </li>
@@ -235,7 +249,7 @@ const SideBar = () => {
                                     className={`${data.to === path ? 'mm-active' : ''}`}>
                                     {data.title}
                                     <span className={`badge badge-xs style-1 ${getBadgeColorClass(data.title)}`}>
-                                      {data.update}
+                                      {data?.update}
                                     </span>
                                   </Link>
                                 }
@@ -256,6 +270,7 @@ const SideBar = () => {
             }
           })}
         </ul>
+        {/* Footer */}
         <div className="copyright">
           <p>Idea2Reality Admin © {dat.getFullYear()} All Rights Reserved</p>
           <p className="fs-12">Made with <span className="heart"

@@ -71,7 +71,7 @@ export function login(email, password) {
 export function getRolePermissions(roleId) {
     const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
 
-    return axios.get(`${apis.roles.getById}/${roleId}`, {
+    return axios.get(`${apis.roles?.getById}/${roleId}`, {
         headers: {
             Authorization: `Bearer ${token}`,
         },
@@ -122,7 +122,7 @@ export function formatError(errorResponse) {
 
 export function saveTokenInLocalStorage(tokenDetails) {
     console.log("token details", tokenDetails)
-    localStorage.setItem('tokens', JSON.stringify(tokenDetails.tokens));
-    localStorage.setItem('token', JSON.stringify(tokenDetails.tokens.token));
-    localStorage.setItem('user', JSON.stringify(tokenDetails.user));
+    localStorage.setItem('tokens', JSON.stringify(tokenDetails?.tokens));
+    localStorage.setItem('token', JSON.stringify(tokenDetails?.tokens?.token));
+    localStorage.setItem('user', JSON.stringify(tokenDetails?.user));
 }

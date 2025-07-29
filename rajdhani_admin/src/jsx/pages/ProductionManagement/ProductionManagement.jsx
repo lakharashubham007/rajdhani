@@ -23,14 +23,25 @@ import {
 import ProductionManagementTable from "../../components/ProductionManagement/ProductionManagementTable";
 import { getAllCusotmerListApi, SearchPartyApi } from "../../../services/apis/CustomerApi";
 import { saleOrderItemsBySOIdApi, saleOrdersByCustomerIdApi } from "../../../services/apis/salesOrderApi";
-import { useSelector } from "react-redux";
-import { createProductionSheetDetailsApi, createProductionSheetItemsApi, getLastCreatedSheetNoApi, SearchLastFiveProductsFromProductionSheetApi } from "../../../services/apis/productionSheetApi";
-
-
+import { useDispatch, useSelector } from "react-redux";
+import { createProductionSheetDetailsApi, createProductionSheetItemsApi, getLastCreatedSheetNoApi, SearchLastFiveProductsFromProductionSheetApi, updateSidebarMenuCountApi } from "../../../services/apis/productionSheetApi";
+import ExportSheetModal from "../../components/ProductionSheet/ExportSheetModal";
+import pdfIcon from '../../../assets/images/pdf.png'
+import SimilarSearchBox from "../../layouts/SimilarSearchBox";
+import { getSidebarMenusRequest } from "../../../store/actions/SidebarMenusActions";
 
 
 const ProductionManagement = () => {
-  const authData = useSelector((state) => state.auth.auth);
+  /*====================================================================| 🔄 useState Hook SECTION |====================================================================*/
+  const authData = useSelector((state) => state?.auth?.auth);
+  const dispatch = useDispatch();
+  const sidebarMenus = useSelector(state => state?.sidebarMenus?.data);
+  // Find the menu item with title === "Production"
+  const productionMenu = sidebarMenus?.find(menu => menu?.title === "Production Process List");
+  // Get its _id if found
+  const productionMenuId = productionMenu?._id;
+  // console.log("Production Menu ID:", productionMenuId);
+  // console.log("sidebarMenus in produciton sheet ", sidebarMenus)
   const [loading, setLoading] = useState(false);
   const [errors, setErrors] = useState({});
   const [sheetErrors, setSheetErrors] = useState({});
@@ -51,10 +62,11 @@ const ProductionManagement = () => {
   const [allCustomers, setAllCustomers] = useState(null);
   const [supplierDetail, setSupplierDetail] = useState({});
   const [customerDetails, setCustomerDetails] = useState();
-  const [latestSheetNumber, setLatestSheetNumber] = useState();
+  const [latestSheetNumber, setLatestSheetNumber] = useState("-");
   const [productShowModal, setProductShowModal] = useState(false);
   const [selectedHoseAssemblyItem, setSelectedHoseAssemblyItem] = useState();
   const [editHoseAssemblyShowModal, setEditHoseAssemblyShowModal] = useState(false);
+  const [exportPDFShowModal, setExportPDFShowModal] = useState(false);
   const [selectedRowData, setSelectedRowData] = useState();
   const [guardTypeOption, setGuardTypeOption] = useState([
     {
@@ -69,11 +81,65 @@ const ProductionManagement = () => {
       value: "vinyl cover",
       label: "Vinyl Cover",
     }]);
+  const [toggle, setToggle] = useState("");
+  const onClick = (name) => setToggle(toggle === name ? "" : name);
+  const [formData, setFormData] = useState({
+    make: "",
+    date_time: null,
+    created_by: "",
+    order_no: "",
+    order_date: "",
+    party_name: "",
+    address: "",
+    note: "",
+  });
+  const [productionSheetData, setProductionSheetData] = useState({});
+  const [isEdit, setIsEdit] = useState(false);
+  const [editProductionId, setEditProductionId] = useState("");
+  const [productformData, setProductFormData] = useState({
+    product_code: "",
+    quantity: "",
+    uom: "",
+    weight: "",
+    price: "",
+    discount_per_unit: "",
+    total_discount: "",
+    cgst: "",
+    sgst: "",
+    igst: "",
+    cess: "",
+    amount: "",
+  });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [searchTermFittingA, setSearchTermFittingA] = useState("");
+  const [searchTermFittingB, setSearchTermFittingB] = useState("");
+  const [searchTermGuard, setSearchTermGuard] = useState("");
+  const [searchPartyNameTerm, setSearchPartyNameTerm] = useState("");
+  const [similarProducts, setSimilarProducts] = useState([]);
+  const [similarProductsInLastFiveSheets, setSimilarProductsInLastFiveSheets] = useState([]);
+  const [rows, setRows] = useState([]);
+  const [draggedRow, setDraggedRow] = useState(null);
+  const [selectedHose, setSelectedHose] = useState();
+  const [selectedProduct, setSelectedProduct] = useState();
+  const [hoseOption, setHoseOption] = useState();
+  const [searchFirstTime, setSearchFirstTime] = useState(false);
+  const [searchFirstTimeFittingA, setSearchFirstTimeFittingA] = useState(false);
+  const [searchFirstTimeFittingB, setSearchFirstTimeFittingB] = useState(false);
+  const [searchFirstTimeGuard, setSearchFirstTimeGuard] = useState(false);
+  const [selectedFittingA, setSelectedFittingA] = useState();
+  const [selectedFittingB, setSelectedFittingB] = useState();
+  const [selectedGuardOption, setSelectedGuardOption] = useState();
+  const [selectedGuardTypeOption, setSelectedGuardTypeOption] = useState();
+  const [selectedAssemblyLength, setSelectedAssemblyLength] = useState();
+  const [selectedFittingLength, setSelectedFittingLength] = useState();
+  const [selectedCuttingLength, setSelectedCuttingLength] = useState();
+  const [selectedOA, setSelectedOA] = useState();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10); // default 10 rows
 
+  console.log("selectedSaleOrderItems=-=-=-=-=-=-=-=-=-=", selectedSaleOrderItems)
 
-
-  console.log("selected order items==============================================================================>", selectedSaleOrderItems, selectedRowData)
-
+  //This is used for create entry in db and also in other use
   const formattedProductionSheetItemData = selectedSaleOrderItems
     ?.filter((data) => data.product_type === "Hose Assembly")
     .map((data) => ({
@@ -103,10 +169,12 @@ const ProductionManagement = () => {
       guard: data?.product_id?.guard,
       guard_prodcut_code: data?.product_id?.guard_prodcut_code,
       guard_label: data?.product_id?.guard_label,
+      quantity: data?.quantity
     }));
 
-  console.log("formattedProductionSheetItemData", formattedProductionSheetItemData)
+  /*====================================================================| 🔄 FETCH METHODS SECTION |====================================================================*/
 
+  //API Call Method:- Fetch all Customers/Party 
   const fetchAllCustomerList = async () => {
     setLoading(true);
     try {
@@ -117,7 +185,6 @@ const ProductionManagement = () => {
       }));
       setCustomerOption(dopdownData);
       setAllCustomers(res?.data);
-      // setAllSupplier(res?.data?.suppliers);
     } catch (error) {
       console.error("Error fetching data:", error);
     } finally {
@@ -125,21 +192,410 @@ const ProductionManagement = () => {
     }
   };
 
-  const fetchLastCreatedSheetNo = async () => {
+  //API Call Method:- Fetch Last Sheet number from DB
+  // const fetchLastCreatedSheetNo = async () => {
+  //   try {
+  //     const res = await getLastCreatedSheetNoApi();
+  //     setLatestSheetNumber(Number(res?.data?.sheet_no) + 1);
+  //   } catch (error) {
+  //     console.log("getting error while fetching last sheet number", error);
+  //   }
+  // }
+
+  //API Call Method:- Fetch All Products
+  const fetchProductAllList = async () => {
+    setLoading(true);
     try {
-      const res = await getLastCreatedSheetNoApi();
-      setLatestSheetNumber(Number(res?.data?.sheet_no) + 1);
+      const res = await GetAllProductList();
+
+      const dropdownProductList = res?.data?.products?.map((product) => ({
+        // ...product,
+        product_id: { ...product },
+        value: product?.desc_Code,
+        label: `[${product?.product_code}] ${product?.desc_Code}`,
+        id: product?._id,
+        product_code: product?.product_code,
+        product_type: product?.product_type,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+      }));
+
+      setProductOption(dropdownProductList);
     } catch (error) {
-      console.log("getting error while fetching last sheet number", error);
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //API Call Method:- Search Product and fetch
+  const fetchProductSearchResults = async (query) => {
+    if (!query) return; // Prevent empty requests
+    // setLoading(true);
+
+    try {
+      const res = await SearchProductsApi(query); // API should support search
+      const dropdownProductList = res?.data?.products.map((product) => ({
+        // ...product,
+        product_id: { ...product },
+        value: product?.desc_Code,
+        // label: `[${product?.product_code}]  [${product?.desc_Code}]  ${product?.fitting_Code ? ` ⇨[${product?.fitting_Code}]` : ""
+        //   }`,
+        label: product?.product_type === "Hose Assembly"
+          ? `${product?.product_code}`
+          : `[${product?.product_code}]  [${product?.desc_Code}]${product?.fitting_Code ? ` ⇨[${product?.fitting_Code}]` : ""}`,
+
+        id: product?._id,
+        product_code: product?.product_code,
+        product_type: product?.product_type,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+      }));
+
+      setProductOption(dropdownProductList);
+
+    } catch (error) {
+      console.error("Error fetching products:", error);
+      Toaster.error("Failed to load products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //API Call Method:- Search Party and fetch
+  const fetchPartySearchResults = async (query) => {
+    if (!query) return; // Prevent empty requests
+    // setLoading(true);
+
+    try {
+      const res = await SearchPartyApi(query); // API should support search
+      const dopdownData = res?.data?.cutomer?.map((customer) => ({
+        value: customer?._id,
+        label: `${customer?.fname} ${customer?.lname}  ${customer?.company_name ? `(${customer?.company_name})` : ""}`,
+      }));
+      setCustomerOption(dopdownData);
+    } catch (error) {
+      console.error("Error fetching party:", error);
+      // Toaster.error("Failed to load customers. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //API Call Method:- Similar products
+  const fetchSimilarProducts = async (fittingCode) => {
+    // setLoading(true);
+    try {
+      const res = await SearchSimilarProductsApi(fittingCode);
+      // Transform the API response into dropdown format
+      const dropdownProductList = res?.products?.map((product) => ({
+        value: product?.desc_Code,
+        label: `[${product?.product_code}]  [${product?.desc_Code}]  ⇨[${product?.fitting_Code}]`,
+        id: product?._id,
+        product_code: product?.product_code,
+        product_type: product?.product_type,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+        desc_Code: product?.desc_Code,
+      }));
+
+      setSimilarProducts(dropdownProductList);
+    } catch (error) {
+      console.error("Error fetching similar products:", error);
+      Toaster.error("Failed to load similar products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //API Call Method:- Similar hose assemblies
+  const fetchSimilarHoseAssembly = async (hoseAssemblyProductCode) => {
+    // setLoading(true);
+    try {
+      const res = await SearchSimilarHoseAssemblyApi(hoseAssemblyProductCode);
+      // Transform the API response into dropdown format
+      const dropdownProductList = res?.products?.map((product) => ({
+        value: product?.desc_Code,
+        label: `[${product?.product_code}]  [${product?.desc_Code}]  ⇨[${product?.fitting_Code}]`,
+        id: product?._id,
+        product_code: product?.product_code,
+        product_type: product?.product_type,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+        desc_Code: product?.desc_Code,
+
+        part_no: product?.part_no,
+        hose: product?.hose,
+        hose_fitting_Code: product?.hose_fitting_Code,
+        hose_label: product?.hose_label,
+        hose_product_Code: product?.hose_product_Code,
+
+        fitting_a_description: product?.fitting_a_description,
+        fitting_a_fitting_Code: product?.fitting_a_fitting_Code,
+        fitting_a_label: product?.fitting_a_label,
+        fitting_a_product_Code: product?.fitting_a_product_Code,
+
+        fitting_b_description: product?.fitting_b_description,
+        fitting_b_fitting_Code: product?.fitting_b_fitting_Code,
+        fitting_b_product_Code: product?.fitting_b_product_Code,
+        fitting_b_label: product?.fitting_b_label,
+
+        assembly_length: product?.assembly_length,
+        fitting_length: product?.fitting_length,
+        cutting_length: product?.cutting_length,
+
+        guard: product?.guard,
+        guard_label: product?.guard_label,
+        guard_prodcut_code: product?.guard_prodcut_code,
+        guard_type: product?.guard_type,
+
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+
+      }));
+
+      setSimilarProducts(dropdownProductList);
+    } catch (error) {
+      console.error("Error fetching similar products:", error);
+      Toaster.error("Failed to load similar products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //API Call Method:- Fetch Last 5 products party wise
+  const fetchLastFiveProductsFromProductionSheetItems = async (product_id, party_id) => {
+    // setLoading(true);
+    try {
+      const res = await SearchLastFiveProductsFromProductionSheetApi(product_id, party_id);
+      // Transform the API response into dropdown format
+      const dropdownProductList = res?.items?.map((product) => ({
+        product_type: product?.product_id?.product_type,
+
+        part_no: product?.part_no,
+        hose: product?.hose,
+        hose_fitting_Code: product?.hose_fitting_Code,
+        hose_label: product?.hose_label,
+        hose_product_Code: product?.hose_product_Code,
+
+        fitting_a_description: product?.fitting_a_description,
+        fitting_a_fitting_Code: product?.fitting_a_fitting_Code,
+        fitting_a_label: product?.fitting_a_label,
+        fitting_a_product_Code: product?.fitting_a_product_Code,
+
+        fitting_b_description: product?.fitting_b_description,
+        fitting_b_fitting_Code: product?.fitting_b_fitting_Code,
+        fitting_b_product_Code: product?.fitting_b_product_Code,
+        fitting_b_label: product?.fitting_b_label,
+
+        assembly_length: product?.assembly_length,
+        fitting_length: product?.fitting_length,
+        cutting_length: product?.cutting_length,
+
+        guard: product?.guard,
+        guard_label: product?.guard_label,
+        guard_prodcut_code: product?.guard_prodcut_code,
+        guard_type: product?.guard_type,
+
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+
+
+
+        value: product?.product_code,
+        label: `[${product?.product_code}]  [${product?.hose}]  ⇨[${product?.fitting_Code}]`,
+
+
+
+
+        // value: product?.desc_Code,
+        // label: `[${product?.product_code}]  [${product?.desc_Code}]  ⇨[${product?.fitting_Code}]`,
+        // id: product?._id,
+        product_code: product?.product_code,
+        fitting_Code: product?.production_sheet_id?.sheet_no,
+        desc_Code: product?.production_sheet_id?.order_date,
+
+
+
+
+        orderDate: product?.production_sheet_id?.order_date,
+        orderNumber: product?.production_sheet_id?.order_no,
+        sheetNumber: product?.production_sheet_id?.sheet_no,
+      }));
+
+      setSimilarProductsInLastFiveSheets(dropdownProductList);
+    } catch (error) {
+      console.error("Error fetching similar products:", error);
+      Toaster.error("Failed to load similar products. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  //API Call Method:- Fetch SO Items
+  const fetchSaleOrderItems = async (so_id) => {
+    try {
+      const res = await saleOrderItemsBySOIdApi(so_id);
+      setSelectedSaleOrderItems(res?.data?.saleOrders)
+    } catch (error) {
+      console.log("error", error)
     }
   }
 
+  //API Call Method:- Fetch Orders By Customer
+  const fetchOrdersByCustomer = async (customer_id) => {
+    try {
+      const res = await saleOrdersByCustomerIdApi(customer_id);
+      const dropdownSaleOrdersList = res?.data?.saleOrders?.map((order) => ({
+        value: order?.voucher_no,
+        label: order?.voucher_no,
+        so_id: order?._id
+      }));
+      setSaleOrdersByParty(dropdownSaleOrdersList)
+      setAllSalesOrdersBySingleParty(res?.data?.saleOrders);
+    } catch (error) {
+      console.error("Error fetching sell orders:", error);
+      Toaster.error("Failed to load sell orders. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }
 
-  useEffect(() => {
-    fetchAllCustomerList();
-    fetchLastCreatedSheetNo();
-  }, []);
+  //API Call Method:- Fetch and prefill
+  const fetchAndPrefillHose = async (code) => {
+    try {
+      const res = await SearchProductsApi(code);
+      const product = res?.data?.products?.[0];
 
+      if (!product) return;
+
+      const formattedOption = {
+        value: product?.desc_Code,
+        label: `[${product?.product_code}] [${product?.desc_Code}] ${product?.fitting_Code ? `⇨ [${product?.fitting_Code}]` : ""}`,
+        id: product?._id,
+        product_code: product?.product_code,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+        bendAngle: product?.straight_bend_angle
+      };
+
+      setSelectedHose(formattedOption);
+      // setSelectedFittingA(formattedOption);
+      setSelectedProduct(formattedOption);
+
+    } catch (err) {
+      console.error("Failed to prefill hose:", err);
+    }
+  };
+
+  //API Call Method:- Fetch and prefill Fitting A
+  const fetchAndPrefillFittingA = async (code) => {
+    try {
+      const res = await SearchProductsApi(code);
+      const product = res?.data?.products?.[0];
+
+      if (!product) return;
+
+      const formattedOption = {
+        value: product?.desc_Code,
+        label: `[${product?.product_code}] [${product?.desc_Code}] ${product?.fitting_Code ? `⇨ [${product?.fitting_Code}]` : ""}`,
+        id: product?._id,
+        product_code: product?.product_code,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+        bendAngle: product?.straight_bend_angle
+      };
+
+      setSelectedFittingA(formattedOption)
+
+
+    } catch (err) {
+      console.error("Failed to prefill hose:", err);
+    }
+  };
+
+  //API Call Method:- Fetch and prefill Fitting B
+  const fetchAndPrefillFittingB = async (code) => {
+    try {
+      const res = await SearchProductsApi(code);
+      const product = res?.data?.products?.[0];
+
+      if (!product) return;
+
+      const formattedOption = {
+        value: product?.desc_Code,
+        label: `[${product?.product_code}] [${product?.desc_Code}] ${product?.fitting_Code ? `⇨ [${product?.fitting_Code}]` : ""}`,
+        id: product?._id,
+        product_code: product?.product_code,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+        bendAngle: product?.straight_bend_angle
+      };
+
+      setSelectedFittingB(formattedOption)
+
+
+    } catch (err) {
+      console.error("Failed to prefill hose:", err);
+    }
+  };
+
+  //API Call Method:- Fetch and prefill Guard
+  const fetchAndPrefillGuard = async (code) => {
+    try {
+      const res = await SearchProductsApi(code);
+      const product = res?.data?.products?.[0];
+
+      if (!product) return;
+
+      const formattedOption = {
+        value: product?.desc_Code,
+        label: `[${product?.product_code}] [${product?.desc_Code}] ${product?.fitting_Code ? `⇨ [${product?.fitting_Code}]` : ""}`,
+        id: product?._id,
+        product_code: product?.product_code,
+        uom: product?.uom,
+        weight: product?.weight,
+        price: product?.price,
+        gst: product?.gst,
+        fitting_Code: product?.fitting_Code,
+        bendAngle: product?.straight_bend_angle
+      };
+
+      setSelectedGuardOption(formattedOption)
+
+
+    } catch (err) {
+      console.error("Failed to prefill hose:", err);
+    }
+  };
+
+  /*====================================================================| 🔄 Handle Event Methods SECTION |====================================================================*/
 
   const getLocalDateTime = () => {
     const now = new Date();
@@ -147,8 +603,6 @@ const ProductionManagement = () => {
     const localTime = new Date(now.getTime() - offset * 60 * 1000); // adjust for timezone offset
     return localTime.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
   };
-
-
 
   const handleSupplierChange = (option) => {
     setFormData({ ...formData, supplier_id: option?.value });
@@ -198,69 +652,6 @@ const ProductionManagement = () => {
     setFormData({ ...formData });
     setSelectedorderByClientOption(option);
   };
-
-
-
-  //All Form Data is here
-  const [formData, setFormData] = useState({
-    sheet_no: "",
-    make: "",
-    date_time: null,
-    created_by: "",
-    order_no: "",
-    order_date: "",
-    party_name: "",
-    address: "",
-    note: "",
-  });
-
-  console.log("Production sheet deta is here: ---", formData)
-
-  const [productionSheetData, setProductionSheetData] = useState({});
-  const [isEdit, setIsEdit] = useState(false);
-  const [editProductionId, setEditProductionId] = useState("");
-
-  const [productformData, setProductFormData] = useState({
-    product_code: "",
-    quantity: "",
-    uom: "",
-    weight: "",
-    price: "",
-    discount_per_unit: "",
-    total_discount: "",
-    cgst: "",
-    sgst: "",
-    igst: "",
-    cess: "",
-    amount: "",
-  });
-
-  const [searchTerm, setSearchTerm] = useState("");
-  const [searchTermFittingA, setSearchTermFittingA] = useState("");
-  const [searchTermFittingB, setSearchTermFittingB] = useState("");
-  const [searchTermGuard, setSearchTermGuard] = useState("");
-
-
-
-
-
-
-
-
-
-  const [searchPartyNameTerm, setSearchPartyNameTerm] = useState("");
-  const [similarProducts, setSimilarProducts] = useState([]);
-  const [similarProductsInLastFiveSheets, setSimilarProductsInLastFiveSheets] = useState([]);
-
-  // console.log("Shipping Form", formShippingData)
-  // console.log(formBillingData.state_name)
-  // console.log(formShippingData.state_name)
-  // console.log(formBillingData.state_name === formShippingData.state_name)
-
-  //Rows Fields
-  const [rows, setRows] = useState([]);
-  const [draggedRow, setDraggedRow] = useState(null);
-  console.log("row  rows rows rows rows rows rows rows rows rowsdata is here : --------->", rows);
 
   const handleDragStart = (index) => {
     setDraggedRow(index);
@@ -325,9 +716,6 @@ const ProductionManagement = () => {
     setSelectedQuantity("");
   };
 
-  // console.log("aaa",errors)
-  // console.log("rows---------",rows)
-
   //Funciton to Delete Row
   const handleDeleteTableRow = (id) => {
     setRows(rows?.filter((row) => row.id !== id));
@@ -375,7 +763,6 @@ const ProductionManagement = () => {
       });
     }
   };
-
 
   const handleEditChange = (e) => {
     const { name, value } = e.target;
@@ -494,9 +881,6 @@ const ProductionManagement = () => {
     );
   }
 
-
-
-
   const resetForm = () => {
     setFormData({
       supplier_id: "",
@@ -530,39 +914,6 @@ const ProductionManagement = () => {
     // setSelectedSupplierOption(null);
     setSelectedHoseAssembly(null);
   };
-
-  const fetchProductAllList = async () => {
-    setLoading(true);
-    try {
-      const res = await GetAllProductList();
-      // console.log("res dropdownProductList res",res)
-      const dropdownProductList = res?.data?.products?.map((product) => ({
-        // ...product,
-        product_id: { ...product },
-        value: product?.desc_Code,
-        label: `[${product?.product_code}] ${product?.desc_Code}`,
-        id: product?._id,
-        product_code: product?.product_code,
-        product_type: product?.product_type,
-        uom: product?.uom,
-        weight: product?.weight,
-        price: product?.price,
-        gst: product?.gst,
-        fitting_Code: product?.fitting_Code,
-      }));
-
-      setProductOption(dropdownProductList);
-    } catch (error) {
-      console.error("Error fetching data:", error);
-      Toaster.error("Failed to load data. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProductAllList();
-  }, []);
 
   const calculateSummary = () => {
     let total_quantity = 0;
@@ -601,6 +952,36 @@ const ProductionManagement = () => {
   };
 
   const summary = calculateSummary();
+
+
+  const sidebarmenuUpdateQuantity = async (statusCount) => {
+    // console.log("statusCoubnt",statusCount)
+    try {
+      // const productionMenuId = sidebarMenus?.find(menu => menu.title === "Production")?._id;
+      // if (!productionMenuId) {
+      //   console.error("Production menu not found.");
+      //   return;
+      // }
+
+      const payload = {
+        _id: productionMenuId,
+        statusCount: {
+          Pending: statusCount?.Pending || 0,
+          "In Progress": statusCount?.["In Progress"] || 0,
+          Completed: statusCount?.Completed || 0,
+          Total: statusCount?.Total || 0
+        }
+      };
+
+      const res = await updateSidebarMenuCountApi(payload); // You must implement this API on backend
+      if (!res?.data?.success) {
+        console.error("Failed to update sidebar menu quantity:", res?.data?.message);
+      }
+    } catch (error) {
+      console.error("Error updating sidebar menu quantity:", error);
+    }
+  };
+
 
   const CreateProductionItems = async (ProductionSheet_id, party_id, order_id) => {
 
@@ -654,21 +1035,29 @@ const ProductionManagement = () => {
 
     try {
       const res = await createProductionSheetDetailsApi(formData);
-      if (res.data?.success) {
+      console.log("res is new ", res);
+      if (res?.data?.success) {
         setLoading(false);
-        //Validation from backend already sheet created for the pertocualar order id 
+        //Validation from backend already sheet created for the perticualar order id 
         if (res?.data?.productionSheetDetails?.alreadyExists) {
           Toaster.error(res?.data?.productionSheetDetails?.message)
           return;
         }
-        CreateProductionItems(res?.data?.productionSheetDetails?._id, res?.data?.productionSheetDetails?.party_id, res?.data?.productionSheetDetails?.order_id);
+        CreateProductionItems(res?.data?.productionSheetDetails?.data?._id, res?.data?.productionSheetDetails?.data?.party_id, res?.data?.productionSheetDetails?.data?.order_id);
+        //call api to update count for sidebar menu
+
+        sidebarmenuUpdateQuantity(res?.data?.productionSheetDetails?.statusCount);
+
+        // 👉 Fetch updated sidebar data
+        dispatch(getSidebarMenusRequest());
         Swal.fire({
           icon: "success",
-          title: "Purchase Order",
-          text: res.data?.message || "PurchaseOrder created successfully",
+          title: "Prodution Sheet",
+          text: res?.data?.message,
           showConfirmButton: false,
           timer: 1500,
         });
+        //update sidebar menu
         // resetForm(); // Reset form after success
         // navigate('/productlist');
       } else {
@@ -688,7 +1077,7 @@ const ProductionManagement = () => {
   };
 
   const handleProductDataChange = (selectedOption) => {
-    console.log("selected hose assemblye wheeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeenn selected", selectedOption)
+
     setSelectedHoseAssembly(selectedOption);
     setProductFormData(selectedOption);
   };
@@ -703,65 +1092,7 @@ const ProductionManagement = () => {
     handleChangeRow(index, "discount_per_unit", selectedDiscount);
   };
 
-
-
   const debounceTimer = useRef(null);
-
-  const fetchProductSearchResults = async (query) => {
-    if (!query) return; // Prevent empty requests
-    // setLoading(true);
-
-    try {
-      const res = await SearchProductsApi(query); // API should support search
-      const dropdownProductList = res?.data?.products.map((product) => ({
-        // ...product,
-        product_id: { ...product },
-        value: product?.desc_Code,
-        // label: `[${product?.product_code}]  [${product?.desc_Code}]  ${product?.fitting_Code ? ` ⇨[${product?.fitting_Code}]` : ""
-        //   }`,
-        label: product?.product_type === "Hose Assembly"
-          ? `${product?.product_code}`
-          : `[${product?.product_code}]  [${product?.desc_Code}]${product?.fitting_Code ? ` ⇨[${product?.fitting_Code}]` : ""}`,
-
-        id: product?._id,
-        product_code: product?.product_code,
-        product_type: product?.product_type,
-        uom: product?.uom,
-        weight: product?.weight,
-        price: product?.price,
-        gst: product?.gst,
-        fitting_Code: product?.fitting_Code,
-      }));
-
-      setProductOption(dropdownProductList);
-
-    } catch (error) {
-      console.error("Error fetching products:", error);
-      Toaster.error("Failed to load products. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchPartySearchResults = async (query) => {
-    if (!query) return; // Prevent empty requests
-    // setLoading(true);
-
-    try {
-      const res = await SearchPartyApi(query); // API should support search
-      const dopdownData = res?.data?.cutomer?.map((customer) => ({
-        value: customer?._id,
-        label: `${customer?.fname} ${customer?.lname}  ${customer?.company_name ? `(${customer?.company_name})` : ""}`,
-      }));
-      setCustomerOption(dopdownData);
-    } catch (error) {
-      console.error("Error fetching party:", error);
-      // Toaster.error("Failed to load customers. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
 
   // **Debounce Function (Delays API call until user stops typing)**
   const debounceSearch = (query) => {
@@ -781,8 +1112,8 @@ const ProductionManagement = () => {
 
 
   const handleSearch = (inputValue) => {
-    console.log("handleSearch Successfully called!!!!!!!", inputValue)
-    // console.log("input value is here", inputValue);
+
+
     setSearchTerm(inputValue);
     if (inputValue.length > 1) {
       debounceSearch(inputValue);
@@ -814,202 +1145,14 @@ const ProductionManagement = () => {
     }
   };
 
-
-
-
-
-
-
-
-
-  //handle search for party name 
   const handlePartyNameSearch = (inputValue) => {
-    // console.log("input value is here", inputValue);
+
     setSearchPartyNameTerm(inputValue);
     if (inputValue.length > 1) {
       debouncePartySearch(inputValue);
       // fetchProductSearchResults(inputValue); // Fetch matching products
     }
   };
-
-
-
-
-  const fetchSimilarProducts = async (fittingCode) => {
-    console.log("fittingCode ------------------------------------------->", fittingCode)
-    // setLoading(true);
-    try {
-      const res = await SearchSimilarProductsApi(fittingCode);
-      // Transform the API response into dropdown format
-      const dropdownProductList = res?.products?.map((product) => ({
-        value: product?.desc_Code,
-        label: `[${product?.product_code}]  [${product?.desc_Code}]  ⇨[${product?.fitting_Code}]`,
-        id: product?._id,
-        product_code: product?.product_code,
-        product_type: product?.product_type,
-        uom: product?.uom,
-        weight: product?.weight,
-        price: product?.price,
-        gst: product?.gst,
-        fitting_Code: product?.fitting_Code,
-        desc_Code: product?.desc_Code,
-      }));
-      console.log("fittingCode +++++ dropdownProductList ------------------------------------------->", dropdownProductList, fittingCode)
-      setSimilarProducts(dropdownProductList);
-    } catch (error) {
-      console.error("Error fetching similar products:", error);
-      Toaster.error("Failed to load similar products. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const fetchSimilarHoseAssembly = async (hoseAssemblyProductCode) => {
-    // setLoading(true);
-    try {
-      const res = await SearchSimilarHoseAssemblyApi(hoseAssemblyProductCode);
-      // Transform the API response into dropdown format
-      const dropdownProductList = res?.products?.map((product) => ({
-        value: product?.desc_Code,
-        label: `[${product?.product_code}]  [${product?.desc_Code}]  ⇨[${product?.fitting_Code}]`,
-        id: product?._id,
-        product_code: product?.product_code,
-        product_type: product?.product_type,
-        uom: product?.uom,
-        weight: product?.weight,
-        price: product?.price,
-        gst: product?.gst,
-        fitting_Code: product?.fitting_Code,
-        desc_Code: product?.desc_Code,
-
-        part_no: product?.part_no,
-        hose: product?.hose,
-        hose_fitting_Code: product?.hose_fitting_Code,
-        hose_label: product?.hose_label,
-        hose_product_Code: product?.hose_product_Code,
-
-        fitting_a_description: product?.fitting_a_description,
-        fitting_a_fitting_Code: product?.fitting_a_fitting_Code,
-        fitting_a_label: product?.fitting_a_label,
-        fitting_a_product_Code: product?.fitting_a_product_Code,
-
-        fitting_b_description: product?.fitting_b_description,
-        fitting_b_fitting_Code: product?.fitting_b_fitting_Code,
-        fitting_b_product_Code: product?.fitting_b_product_Code,
-        fitting_b_label: product?.fitting_b_label,
-
-        assembly_length: product?.assembly_length,
-        fitting_length: product?.fitting_length,
-        cutting_length: product?.cutting_length,
-
-        guard: product?.guard,
-        guard_label: product?.guard_label,
-        guard_prodcut_code: product?.guard_prodcut_code,
-        guard_type: product?.guard_type,
-
-        uom: product?.uom,
-        weight: product?.weight,
-        price: product?.price,
-        gst: product?.gst,
-
-      }));
-
-      setSimilarProducts(dropdownProductList);
-    } catch (error) {
-      console.error("Error fetching similar products:", error);
-      Toaster.error("Failed to load similar products. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // fetchLastFiveProductsFromProductionSheetItems
-  const fetchLastFiveProductsFromProductionSheetItems = async (product_id, party_id) => {
-    // setLoading(true);
-    try {
-      const res = await SearchLastFiveProductsFromProductionSheetApi(product_id, party_id);
-      console.log("response is here from last 5 sheet data for that product", res?.items)
-      // Transform the API response into dropdown format
-      const dropdownProductList = res?.items?.map((product) => ({
-        product_type: product?.product_id?.product_type,
-
-        part_no: product?.part_no,
-        hose: product?.hose,
-        hose_fitting_Code: product?.hose_fitting_Code,
-        hose_label: product?.hose_label,
-        hose_product_Code: product?.hose_product_Code,
-
-        fitting_a_description: product?.fitting_a_description,
-        fitting_a_fitting_Code: product?.fitting_a_fitting_Code,
-        fitting_a_label: product?.fitting_a_label,
-        fitting_a_product_Code: product?.fitting_a_product_Code,
-
-        fitting_b_description: product?.fitting_b_description,
-        fitting_b_fitting_Code: product?.fitting_b_fitting_Code,
-        fitting_b_product_Code: product?.fitting_b_product_Code,
-        fitting_b_label: product?.fitting_b_label,
-
-        assembly_length: product?.assembly_length,
-        fitting_length: product?.fitting_length,
-        cutting_length: product?.cutting_length,
-
-        guard: product?.guard,
-        guard_label: product?.guard_label,
-        guard_prodcut_code: product?.guard_prodcut_code,
-        guard_type: product?.guard_type,
-
-        uom: product?.uom,
-        weight: product?.weight,
-        price: product?.price,
-        gst: product?.gst,
-
-
-
-        value: product?.product_code,
-        label: `[${product?.product_code}]  [${product?.hose}]  ⇨[${product?.fitting_Code}]`,
-
-
-
-
-        // value: product?.desc_Code,
-        // label: `[${product?.product_code}]  [${product?.desc_Code}]  ⇨[${product?.fitting_Code}]`,
-        // id: product?._id,
-        product_code: product?.product_code,
-        fitting_Code: product?.production_sheet_id?.sheet_no,
-        desc_Code: product?.production_sheet_id?.order_date,
-
-
-
-
-        orderDate: product?.production_sheet_id?.order_date,
-        orderNumber: product?.production_sheet_id?.order_no,
-        sheetNumber: product?.production_sheet_id?.sheet_no,
-      }));
-
-      setSimilarProductsInLastFiveSheets(dropdownProductList);
-    } catch (error) {
-      console.error("Error fetching similar products:", error);
-      Toaster.error("Failed to load similar products. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    if (selectedHoseAssembly?.fitting_Code) {
-      fetchSimilarProducts(selectedHoseAssembly?.fitting_Code);
-    }
-
-    if (selectedHoseAssembly?.id && selectedHoseAssembly?.product_type === "Hose Assembly") {
-      fetchSimilarHoseAssembly(selectedHoseAssembly?.product_code)
-      fetchLastFiveProductsFromProductionSheetItems(selectedHoseAssembly?.id, formData?.party_id);
-    }
-
-    if (searchTerm == "") {
-      setSimilarProducts("");
-      setSimilarProductsInLastFiveSheets("");
-    }
-  }, [selectedHoseAssembly, searchTerm]);
 
   const sheetValidateForm = () => {
     const newErrors = {};
@@ -1070,92 +1213,8 @@ const ProductionManagement = () => {
     resetSheetForm();
   }
 
-  //fetch funtion for orders by customer id 
-  const fetchOrdersByCustomer = async (customer_id) => {
-    try {
-      const res = await saleOrdersByCustomerIdApi(customer_id);
-      const dropdownSaleOrdersList = res?.data?.saleOrders?.map((order) => ({
-        value: order?.voucher_no,
-        label: order?.voucher_no,
-        so_id: order?._id
-      }));
-      setSaleOrdersByParty(dropdownSaleOrdersList)
-      setAllSalesOrdersBySingleParty(res?.data?.saleOrders);
-    } catch (error) {
-      console.error("Error fetching sell orders:", error);
-      Toaster.error("Failed to load sell orders. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }
-
-  //useeffect hook for fetch order based on party/Customer selected
-  useEffect(() => {
-    if (selectedCustomerOption?.value) {
-      fetchOrdersByCustomer(selectedCustomerOption?.value)
-    }
-  }, [selectedCustomerOption])
-
-  //filter out selected sale order deaitls  
-  useEffect(() => {
-    let filterdSelsectedSaleOrderDetails = [];
-    if (selectedorderByClientOption) {
-      filterdSelsectedSaleOrderDetails = allSalesOrdersBySingleParty.filter((orders) => {
-        return orders?.voucher_no === selectedorderByClientOption?.value;
-      });
-    }
-    setSelectedSaleOrderDetails(filterdSelsectedSaleOrderDetails[0]);
-    setFormData((prevFormData) => ({
-      ...prevFormData,
-      sheet_no: latestSheetNumber,
-      date_time: getLocalDateTime(),
-      created_by: `${authData?.user?.firstName} ${authData?.user?.lastName}`,
-      order_no: filterdSelsectedSaleOrderDetails[0]?.voucher_no,
-      order_id: filterdSelsectedSaleOrderDetails[0]?._id,
-      order_date: filterdSelsectedSaleOrderDetails[0]?.order_details?.date,
-      party_name: `${filterdSelsectedSaleOrderDetails[0]?.customer_id?.fname} ${filterdSelsectedSaleOrderDetails[0]?.customer_id?.lname}`,
-      party_id: filterdSelsectedSaleOrderDetails[0]?.customer_id?._id,
-      address: filterdSelsectedSaleOrderDetails[0]?.shipping_details?.address,
-      note: filterdSelsectedSaleOrderDetails[0]?.notes
-    }));
-  }, [selectedorderByClientOption])
-
-
-  const fetchSaleOrderItems = async (so_id) => {
-    try {
-      const res = await saleOrderItemsBySOIdApi(so_id);
-      setSelectedSaleOrderItems(res?.data?.saleOrders)
-    } catch (error) {
-      console.log("error", error)
-    }
-  }
-
-  useEffect(() => {
-    if (selectedSaleOrderDetails?._id) {
-      fetchSaleOrderItems(selectedSaleOrderDetails?._id)
-    }
-  }, [selectedSaleOrderDetails])
-
-
-
-  const [selectedHose, setSelectedHose] = useState();
-  const [selectedProduct, setSelectedProduct] = useState();
-
-
-  console.log("-*-*-*-selectedProduct*-*-*-*-*-*-*selectedProduct*-*-*-*-*-*-*", selectedProduct)
-
-  const [hoseOption, setHoseOption] = useState();
-  const [searchFirstTime, setSearchFirstTime] = useState(false);
-  const [searchFirstTimeFittingA, setSearchFirstTimeFittingA] = useState(false);
-  const [searchFirstTimeFittingB, setSearchFirstTimeFittingB] = useState(false);
-  const [searchFirstTimeGuard, setSearchFirstTimeGuard] = useState(false);
-
-
-
-  console.log("selectedHose", selectedHose)
-
   const handleHoseDataChange = (selectedOption) => {
-    console.log("handleHoseDataChange Successfully called!!!!!!!", selectedOption)
+
     setSelectedHose(selectedOption);
     setSearchFirstTime(true)
 
@@ -1213,7 +1272,6 @@ const ProductionManagement = () => {
   };
 
   const handleFittingAEditDataChange = (selectedOption) => {
-    console.log("selectedOption 0000000000000000000000000000000 selectedOption selectedOption =====+++++++++>", selectedOption)
     setSelectedFittingA(selectedOption) //This is for isClearable needed
     setSearchFirstTimeFittingA(true)
     //update only selected row and update hose related fields only 
@@ -1246,7 +1304,6 @@ const ProductionManagement = () => {
       hose: null,
     });
   };
-
 
   const handleFittingBEditDataChange = (selectedOption) => {
     setSelectedFittingB(selectedOption) //This is for isClearable needed
@@ -1283,7 +1340,6 @@ const ProductionManagement = () => {
   };
 
   const handleGuardDataChange = (selectedOption) => {
-    console.log("*/-*/-*/-/-/-*/-*/-*selectedOption*/-*selectedOptionselectedOptionselectedOption999898989898989898989898989898989898", selectedOption);
     setSelectedGuardOption(selectedOption) //This is for isClearable needed
     setSearchFirstTimeGuard(true)
     //update only selected row and update hose related fields only 
@@ -1317,140 +1373,102 @@ const ProductionManagement = () => {
     });
   };
 
+  const handleSelectedItemFromSimilarBox = (item) => {
+    setSelectedHoseAssembly({
+      product_type: item?.product_type,
+      label: item?.product_code,
+      value: item?.product_code,
+      product_code: item?.product_code,
+      product_id: {
+        ...item
+      }
+    })
+  }
 
+  //--------------------------------------------Pagination Logic Section ------------------------------/
 
+  const hoseAssemblyRows = selectedSaleOrderItems?.filter(
+    (data) => data.product_type === "Hose Assembly"
+  ) || [];
 
+  const totalRows = hoseAssemblyRows.length;
+  const totalPages = Math.ceil(totalRows / rowsPerPage);
 
-  const [selectedFittingA, setSelectedFittingA] = useState();
-  const [selectedFittingB, setSelectedFittingB] = useState();
-  const [selectedGuardOption, setSelectedGuardOption] = useState();
-  const [selectedGuardTypeOption, setSelectedGuardTypeOption] = useState();
-  const [selectedAssemblyLength, setSelectedAssemblyLength] = useState();
-  const [selectedFittingLength, setSelectedFittingLength] = useState();
-  const [selectedCuttingLength, setSelectedCuttingLength] = useState();
-  const [selectedOA, setSelectedOA] = useState();
+  const paginatedData = hoseAssemblyRows.slice(
+    (currentPage - 1) * rowsPerPage,
+    currentPage * rowsPerPage
+  );
 
+  /*====================================================================| 🔄 useEffect Hook SECTION |====================================================================*/
 
-
-
-
-
-
-
-  const fetchAndPrefillHose = async (code) => {
-    try {
-      const res = await SearchProductsApi(code);
-      const product = res?.data?.products?.[0];
-
-      if (!product) return;
-
-      const formattedOption = {
-        value: product?.desc_Code,
-        label: `[${product?.product_code}] [${product?.desc_Code}] ${product?.fitting_Code ? `⇨ [${product?.fitting_Code}]` : ""}`,
-        id: product?._id,
-        product_code: product?.product_code,
-        uom: product?.uom,
-        weight: product?.weight,
-        price: product?.price,
-        gst: product?.gst,
-        fitting_Code: product?.fitting_Code,
-        bendAngle: product?.straight_bend_angle
-      };
-
-      setSelectedHose(formattedOption);
-      // setSelectedFittingA(formattedOption);
-      setSelectedProduct(formattedOption);
-
-    } catch (err) {
-      console.error("Failed to prefill hose:", err);
-    }
-  };
-  const fetchAndPrefillFittingA = async (code) => {
-    try {
-      const res = await SearchProductsApi(code);
-      const product = res?.data?.products?.[0];
-
-      if (!product) return;
-
-      const formattedOption = {
-        value: product?.desc_Code,
-        label: `[${product?.product_code}] [${product?.desc_Code}] ${product?.fitting_Code ? `⇨ [${product?.fitting_Code}]` : ""}`,
-        id: product?._id,
-        product_code: product?.product_code,
-        uom: product?.uom,
-        weight: product?.weight,
-        price: product?.price,
-        gst: product?.gst,
-        fitting_Code: product?.fitting_Code,
-        bendAngle: product?.straight_bend_angle
-      };
-
-      setSelectedFittingA(formattedOption)
-
-
-    } catch (err) {
-      console.error("Failed to prefill hose:", err);
-    }
-  };
-
-  const fetchAndPrefillFittingB = async (code) => {
-    try {
-      const res = await SearchProductsApi(code);
-      const product = res?.data?.products?.[0];
-
-      if (!product) return;
-
-      const formattedOption = {
-        value: product?.desc_Code,
-        label: `[${product?.product_code}] [${product?.desc_Code}] ${product?.fitting_Code ? `⇨ [${product?.fitting_Code}]` : ""}`,
-        id: product?._id,
-        product_code: product?.product_code,
-        uom: product?.uom,
-        weight: product?.weight,
-        price: product?.price,
-        gst: product?.gst,
-        fitting_Code: product?.fitting_Code,
-        bendAngle: product?.straight_bend_angle
-      };
-
-      setSelectedFittingB(formattedOption)
-
-
-    } catch (err) {
-      console.error("Failed to prefill hose:", err);
-    }
-  };
-
-  const fetchAndPrefillGuard = async (code) => {
-    try {
-      const res = await SearchProductsApi(code);
-      const product = res?.data?.products?.[0];
-
-      if (!product) return;
-
-      const formattedOption = {
-        value: product?.desc_Code,
-        label: `[${product?.product_code}] [${product?.desc_Code}] ${product?.fitting_Code ? `⇨ [${product?.fitting_Code}]` : ""}`,
-        id: product?._id,
-        product_code: product?.product_code,
-        uom: product?.uom,
-        weight: product?.weight,
-        price: product?.price,
-        gst: product?.gst,
-        fitting_Code: product?.fitting_Code,
-        bendAngle: product?.straight_bend_angle
-      };
-
-      setSelectedGuardOption(formattedOption)
-
-
-    } catch (err) {
-      console.error("Failed to prefill hose:", err);
-    }
-  };
-
+  // 1. useEffect to Fetch Data
   useEffect(() => {
-    console.log("selectedRowData?.hose_product_Code", selectedRowData)
+    fetchAllCustomerList();
+    // fetchLastCreatedSheetNo();
+  }, []);
+
+  // 2. useEffect to Fetch Data
+  useEffect(() => {
+    fetchProductAllList();
+  }, []);
+
+  // 3. useEffect to Fetch Data
+  useEffect(() => {
+    if (selectedHoseAssembly?.fitting_Code) {
+      fetchSimilarProducts(selectedHoseAssembly?.fitting_Code);
+    }
+
+    if (selectedHoseAssembly?.id && selectedHoseAssembly?.product_type === "Hose Assembly") {
+      fetchSimilarHoseAssembly(selectedHoseAssembly?.product_code)
+      fetchLastFiveProductsFromProductionSheetItems(selectedHoseAssembly?.id, formData?.party_id);
+    }
+
+    if (searchTerm == "") {
+      setSimilarProducts("");
+      setSimilarProductsInLastFiveSheets("");
+    }
+  }, [selectedHoseAssembly, searchTerm]);
+
+  // 4. useEffect hook for fetch order based on party/Customer selected
+  useEffect(() => {
+    if (selectedCustomerOption?.value) {
+      fetchOrdersByCustomer(selectedCustomerOption?.value)
+    }
+  }, [selectedCustomerOption])
+
+  // 5.useEffect filter out selected sale order deaitls  
+  useEffect(() => {
+    let filterdSelsectedSaleOrderDetails = [];
+    if (selectedorderByClientOption) {
+      filterdSelsectedSaleOrderDetails = allSalesOrdersBySingleParty.filter((orders) => {
+        return orders?.voucher_no === selectedorderByClientOption?.value;
+      });
+    }
+    setSelectedSaleOrderDetails(filterdSelsectedSaleOrderDetails[0]);
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      sheet_no: latestSheetNumber,
+      date_time: getLocalDateTime(),
+      created_by: `${authData?.user?.firstName} ${authData?.user?.lastName}`,
+      order_no: filterdSelsectedSaleOrderDetails[0]?.voucher_no,
+      order_id: filterdSelsectedSaleOrderDetails[0]?._id,
+      order_date: filterdSelsectedSaleOrderDetails[0]?.order_details?.date,
+      party_name: `${filterdSelsectedSaleOrderDetails[0]?.customer_id?.fname} ${filterdSelsectedSaleOrderDetails[0]?.customer_id?.lname}`,
+      party_id: filterdSelsectedSaleOrderDetails[0]?.customer_id?._id,
+      address: filterdSelsectedSaleOrderDetails[0]?.shipping_details?.address,
+      note: filterdSelsectedSaleOrderDetails[0]?.notes
+    }));
+  }, [selectedorderByClientOption])
+
+  // 6. useEffect
+  useEffect(() => {
+    if (selectedSaleOrderDetails?._id) {
+      fetchSaleOrderItems(selectedSaleOrderDetails?._id)
+    }
+  }, [selectedSaleOrderDetails])
+
+  // 7. useEffect
+  useEffect(() => {
     if (selectedRowData?.product_id?.hose_product_Code) {
       fetchAndPrefillHose(selectedRowData?.product_id?.hose_product_Code);
     }
@@ -1503,9 +1521,8 @@ const ProductionManagement = () => {
 
   }, [editHoseAssemblyShowModal])
 
-  //This useEffect is triggered during edit mode to prefill form fields by fetching and setting related similar items based on the current selection.
+  // 8. useEffect This useEffect is triggered during edit mode to prefill form fields by fetching and setting related similar items based on the current selection.
   useEffect(() => {
-    console.log("call comes here=--=-=-=-=-=-=-=-=-=-=---> ", selectedGuardOption)
     //In modal box search and set the value first time initially it shows empty
     if (selectedHose?.fitting_Code && searchFirstTime) {
       fetchSimilarProducts(selectedHose?.fitting_Code);
@@ -1533,44 +1550,13 @@ const ProductionManagement = () => {
     }
   }, [selectedHose, selectedFittingA, selectedFittingB, selectedGuardOption, searchTerm, searchFirstTimeFittingA, searchFirstTimeFittingB, searchFirstTimeGuard])
 
-
-  const handleSelectedItemFromSimilarBox = (item) => {
-    console.log("item item item item item item item item item item item ", item);
-    setSelectedHoseAssembly({
-      product_type: item?.product_type,
-      label: item?.product_code,
-      value: item?.product_code,
-      product_code: item?.product_code,
-      product_id: {
-        ...item
-      }
-    })
-  }
-
-
-  //pagination logic
-  const [currentPage, setCurrentPage] = useState(1);
-  const [rowsPerPage, setRowsPerPage] = useState(10); // default 10 rows
-
-
-  const hoseAssemblyRows = selectedSaleOrderItems?.filter(
-    (data) => data.product_type === "Hose Assembly"
-  ) || [];
-
-  const totalRows = hoseAssemblyRows.length;
-  const totalPages = Math.ceil(totalRows / rowsPerPage);
-
-  const paginatedData = hoseAssemblyRows.slice(
-    (currentPage - 1) * rowsPerPage,
-    currentPage * rowsPerPage
-  );
-
+  /*====================================================================| 🔄 UI HTML Section |====================================================================*/
   return (
     <>
       <ToastContainer />
       <Loader visible={loading} />
       <PageTitle
-        activeMenu={"Production Management"}
+        activeMenu={"Production Sheet Management"}
         motherMenu={"Home"}
         motherMenuLink={"/dashboard"}
       />
@@ -1741,7 +1727,7 @@ const ProductionManagement = () => {
                       value={selectedorderByClientOption}
                       onChange={handleOrderSelection}
                       defaultValue={selectedorderByClientOption}
-                      options={saleOrdersByParty}
+                      options={saleOrdersByParty || []}
                       style={{
                         lineHeight: "40px",
                         color: "#7e7e7e",
@@ -1917,7 +1903,6 @@ const ProductionManagement = () => {
                         {errors?.hose_assembly && (
                           <span className="text-danger fs-12">{errors?.hose_assembly}</span>
                         )}
-
                       </div>
                     </div>
                     {/* Qty and Discount */}
@@ -1938,6 +1923,9 @@ const ProductionManagement = () => {
                     <button onClick={addRow} className="btn btn-primary mt-4">
                       Add
                     </button>
+                    {/* <button   onClick={() => onClick("similarSearchItemBox")} className="btn btn-primary mt-4">
+                      Sidebar Toggle
+                    </button> */}
                   </div>
 
                   {/* Search Box  */}
@@ -2289,6 +2277,10 @@ const ProductionManagement = () => {
                       )}
                     </div>
                   </div>
+
+                  {/* <div>
+                    <SimilarSearchBox onClick={() => onClick("similarSearchItemBox")} toggle={toggle} />
+                   </div> */}
                 </div>
               </div>
               {/* Production Sheet View  */}
@@ -2296,6 +2288,29 @@ const ProductionManagement = () => {
                 <div className="card">
                   <div className="card-header">
                     <h4 className="card-title">Production Sheet View</h4>
+                    <div onClick={() => setExportPDFShowModal(true)} className="text-center cursor-pointer"
+                      style={{
+                        transition: "transform 0.3s ease, box-shadow 0.3s ease",
+                        border: "1px solid red",
+                        borderRadius: "5px",
+                        backgroundColor: "#fff",
+                      }}
+                      onMouseEnter={(e) => {
+                        e.currentTarget.style.transform = "scale(1.1)";
+                        e.currentTarget.style.boxShadow = "0 4px 8px rgba(0,0,0,0.2)";
+                      }}
+                      onMouseLeave={(e) => {
+                        e.currentTarget.style.transform = "scale(1)";
+                        e.currentTarget.style.boxShadow = "none";
+                      }}
+
+
+                    >
+                      <img src={pdfIcon} alt="Export PDF" width="40" height="40"
+
+                      />
+                      <div style={{ fontSize: '12px', color: '#000' }}>PDF</div>
+                    </div>
                   </div>
 
                   <div className="d-flex justify-content-between align-items-center pl-4 pt-4 pr-4">
@@ -2315,23 +2330,23 @@ const ProductionManagement = () => {
                       </select>
                     </div>
                     <div>
-                    {/* <span className="mx-2">Total Items: {totalRows}</span> */}
-                    <span
-                      style={{
-                        display: "inline-block",
-                        backgroundColor: "#ebf8ff",        // Light blue background (like bg-blue-50)
-                        color: "#2b6cb0",                  // Darker blue text (like text-blue-700)
-                        fontSize: "0.875rem",              // Equivalent to text-sm
-                        fontWeight: "500",                 // Medium font weight
-                        padding: "4px 12px",               // Similar to py-1 px-3
-                        borderRadius: "12px",              // Rounded corners
-                        boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)", // Light shadow
-                        border: "1px solid #bee3f8",       // Light border (like border-blue-200)
-                        margin: "0 8px"
-                      }}
-                    >
-                      Total Items: {totalRows}
-                    </span>
+                      {/* <span className="mx-2">Total Items: {totalRows}</span> */}
+                      <span
+                        style={{
+                          display: "inline-block",
+                          backgroundColor: "#ebf8ff",        // Light blue background (like bg-blue-50)
+                          color: "#2b6cb0",                  // Darker blue text (like text-blue-700)
+                          fontSize: "0.875rem",              // Equivalent to text-sm
+                          fontWeight: "500",                 // Medium font weight
+                          padding: "4px 12px",               // Similar to py-1 px-3
+                          borderRadius: "12px",              // Rounded corners
+                          boxShadow: "0 1px 2px rgba(0, 0, 0, 0.05)", // Light shadow
+                          border: "1px solid #bee3f8",       // Light border (like border-blue-200)
+                          margin: "0 8px"
+                        }}
+                      >
+                        Total Items: {totalRows}
+                      </span>
                     </div>
                   </div>
 
@@ -2406,7 +2421,6 @@ const ProductionManagement = () => {
           </button>
         </div>
       </div>
-
 
       {/* Hose Assembly details Modal Box*/}
       <Modal
@@ -2500,8 +2514,6 @@ const ProductionManagement = () => {
           <Button variant="success" onClick={() => setProductShowModal()}>Verify</Button>
         </Modal.Footer> */}
       </Modal>
-
-
 
       {/*  Edit Selected hose Assembly Modal Box*/}
       <Modal
@@ -2917,6 +2929,31 @@ const ProductionManagement = () => {
           <Button variant="danger" onClick={() => setEditHoseAssemblyShowModal(false)}>Close</Button>
           <Button variant="success" onClick={() => setEditHoseAssemblyShowModal(false)}>Save</Button>
         </Modal.Footer>
+      </Modal>
+
+      {/* Export button pdf */}
+      <Modal
+        size="md"
+        centered
+        show={exportPDFShowModal}
+        onHide={() => setExportPDFShowModal(false)}
+        style={{ backgroundColor: "rgba(0,0,0,0.5)" }}
+      >
+        <Modal.Header closeButton>
+          <Modal.Title>Download PDF Options</Modal.Title>
+        </Modal.Header>
+
+        <Modal.Body>
+          <ExportSheetModal
+            productionSheetDetailsData={formData}
+            productionSheetItemsDetailsData={selectedSaleOrderItems}
+            rowsPerPage={rowsPerPage}
+            currentPage={currentPage}
+
+          />
+        </Modal.Body>
+
+
       </Modal>
     </>
   );

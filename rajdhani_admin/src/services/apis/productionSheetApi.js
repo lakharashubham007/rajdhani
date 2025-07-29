@@ -44,6 +44,28 @@ export const createProductionSheetItemsApi = async (formData) => {
   }
   };
 
+  
+  export const updateSidebarMenuCountApi = async (payload) => {
+  const token = localStorage.getItem("token")?.replace(/^"(.*)"$/, "$1");
+
+  try {
+    const response = await axios.post(
+      apis.sidemenu.productionCount,
+      payload,
+      {
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error updating sidebar menu count:", error);
+    throw error;
+  }
+};
+
 //   getLastCreatedSheetNo
 
 export const getLastCreatedSheetNoApi = async () => {
@@ -86,4 +108,41 @@ export const SearchLastFiveProductsFromProductionSheetApi = async (product_id, p
       console.error("Error fetching similar products:", error);
       throw error;
     }
+  };
+
+  export const getProductionSheetsApi = async (currentPage,sort,sortValue,searchInputValue) => {
+    const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+    try {
+        const response = await axios.get(`${apis.producitonManagement.getProducitonSheets}?page=${currentPage}&limit=${sort}&sort=${sortValue?.value ? `${sortValue?.value}:`: ""}${sortValue?.type ? sortValue?.type : ""}&search=${searchInputValue}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error creating facility:", error);
+    throw error;
+  }
+  };
+
+
+  export const getProductionSheetDetailsWithItemsByID = async (productionSheetID,currentPage,sort,sortValue,searchInputValue) => {
+    const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
+    try {
+        const response = await axios.get(`${apis.producitonManagement.getProducitonSheetDetailsWithItemByID}?sheet_id=${productionSheetID}&page=${currentPage}&limit=${sort}&sort=${sortValue?.value ? `${sortValue?.value}:`: ""}${sortValue?.type ? sortValue?.type : ""}&search=${searchInputValue}`,
+      {
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error creating facility:", error);
+    throw error;
+  }
   };

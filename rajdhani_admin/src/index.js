@@ -11,18 +11,13 @@ const root = ReactDOM.createRoot(document.getElementById('root'));
 root.render(
   <React.StrictMode>
     <Provider store={store}>
-      
         <BrowserRouter basename='/'>
-        
           <ThemeContext>
-          
             <App />
           </ThemeContext>
-          
-          
         </BrowserRouter>
-      
     </Provider>
   </React.StrictMode>
 );
+
 reportWebVitals();

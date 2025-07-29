@@ -13,6 +13,7 @@ import ProductDetails from './jsx/pages/authentication/productDetails';
 
 
 const SignUp = lazy(() => import('./jsx/pages/authentication/Registration'));
+
 const Login = lazy(() => {
     return new Promise(resolve => {
         setTimeout(() => resolve(import('./jsx/pages/authentication/Login')), 500);
