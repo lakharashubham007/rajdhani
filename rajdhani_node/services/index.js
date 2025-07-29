@@ -47,10 +47,15 @@ module.exports.saleOrderVerifyService = require("./saleOrdersVerify.service");
 module.exports.productCodeSeriesService = require("./productCodeSeries.service");
 module.exports.productionSheetDetailsService = require("./productionSheetDetails.service");
 module.exports.productionSheetItemsService = require("./productionSheetItems.service");
+module.exports.productionProcessService = require("./productionProcess.service");
+module.exports.productionProcessItemService = require("./productionProcessItem.service");
+module.exports.productionProcessLogService = require("./productionProcessLog.service");
+module.exports.operatorService = require("./operator.service");
+module.exports.productionProcessItemLogService = require("./productionProcessItemLog.service");
 // module.exports. = require("./");
 // module.exports. = require("./");
 // module.exports. = require("./");
-// module.exports. = require("./");
+
 
 
 

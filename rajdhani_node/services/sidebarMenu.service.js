@@ -14,6 +14,26 @@ const getUserSidebarMenus = async (userId) => {
   }
 };
 
+const updateSidebarMenuCountsByTitle = async (_id, statusCount) => {
+
+  const menu = await SideBarMenu.findById(_id);
+  if (!menu) return null;
+
+  // Loop over top-level content array and update matching titles
+  menu.content = menu.content.map(item => {
+    const count = statusCount[item.title]; // Match by title
+    if (count !== undefined) {
+      // const current = parseInt(item.update || '0', 10);
+      item.update = (count).toString();
+    }
+    return item;
+  });
+
+  const savedMenu = await menu.save();
+  return savedMenu;
+};
+
+
 // const getSidebarMenus = async () => {
 //   try {
 //     const sidebarMenus = await SidebarMenu.find();
@@ -57,4 +77,5 @@ const getUserSidebarMenus = async (userId) => {
 
 module.exports = {
   getUserSidebarMenus,
+  updateSidebarMenuCountsByTitle
 };

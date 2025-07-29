@@ -31,9 +31,21 @@ const getLastFiveProductUsages = async (product_id, party_id) => {
   }
 };
 
+const getProductionSheetItemsById = async (productionSheetId) => {
+  try {
+    const items = await ProductionSheetItem.find({ production_sheet_id: productionSheetId });
+    return items;
+  } catch (error) {
+    console.error("Error getting production sheet items by ID:", error);
+    throw error;
+  }
+};
+
+
 
 module.exports = {
     createProductionSheetItems,
-    getLastFiveProductUsages
+    getLastFiveProductUsages,
+    getProductionSheetItemsById
   };
   

@@ -28,6 +28,9 @@ const customer = require('./customer.route')
 const saleorders = require('./saleorders.route')
 const productCodeSeries = require('./productCodeSeries.route')
 const productionSheet = require('./productionSheet.route')
+const productionProcess = require('./productionProcess.route')
+const operator = require('./operator.route')
+
 const router = express.Router();
 
 //rajdhani route
@@ -65,6 +68,9 @@ router.use("/series", productCodeSeries)
 
 //production Sheet
 router.use("/production-sheet", productionSheet)
+router.use("/production-process", productionProcess)
+router.use("/operator", operator)
+
 
 
 

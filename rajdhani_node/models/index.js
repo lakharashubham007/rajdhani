@@ -48,9 +48,16 @@ module.exports.StockArchive = require('./stockArchive.model').StockArchive
 module.exports.ProductCodeCounter = require('./productCodeCounter.model').ProductCodeCounter
 module.exports.ProductionSheetDetails = require('./productionSheetDetails.model').ProductionSheet
 module.exports.ProductionSheetItem = require('./productionSheetItems.model').ProductionSheetItem
+module.exports.SheetNumberCounter = require('./sheetNumberCounter.model').SheetNumberCounter
+module.exports.ProductionProcess = require('./productionProcess.model').ProductionProcess
+module.exports.ProductionProcessItem = require('./productionProcessItems.model').ProductionProcessItem
+module.exports.ProductionProcessLog = require('./produtionProcessLogs.model').ProductionProcessLog
+module.exports.ProductionProcessItemLogs = require('./productionProcessItemsLog.model').ProductionProcessItemLog
+module.exports.Operator = require('./operator.model').Operator
 // module.exports. = require('./').
 // module.exports. = require('./').
 // module.exports. = require('./').
+
 
 
 // module.exports.Clients = require('./clients.model').Clients

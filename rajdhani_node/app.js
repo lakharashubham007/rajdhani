@@ -19,7 +19,7 @@ app.use(cors());
 app.options("*", cors());
 
 //public routes for register
-app.use("/v1", public_routes);
+app.use("/v1", public_routes); // This is testing route
 
 // Use public routes for /v1
 app.use('/v1/public', publicRoutes); // Public routes

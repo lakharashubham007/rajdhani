@@ -4,14 +4,8 @@ const mongoose = require('mongoose');
 const SubmenuSchema = new mongoose.Schema({
     title: { type: String, required: true },
     to: { type: String },
-    hasMenu: { type: Boolean, default: false },
-    content: [
-        {
-            title: { type: String },
-            to: { type: String },
-        }
-    ]
-});
+    update: {type: String},
+},{ _id: false });
 
 // Define the schema for the main menu items
 const SideBarMenuSchema = new mongoose.Schema({

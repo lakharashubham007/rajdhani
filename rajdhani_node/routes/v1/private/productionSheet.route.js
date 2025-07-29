@@ -17,7 +17,11 @@ const upload = multer({
 }).fields([{ name: "image", maxCount: 1 }]);
 
 router.post("/create-production-sheet", Authentication, producitonSheetDetailsController.createProductionSheetDetails);
+router.get("/production-sheet-list", Authentication, producitonSheetDetailsController.getProductionSheets);
 router.get('/last-sheet-no', producitonSheetDetailsController.getLastSheetNo);
+router.get("/production-sheet-items", Authentication, producitonSheetDetailsController.getProductionSheetDetailsWithItems);
+
+
 
 // router.get("/purchase-order-list", Authentication, Authorization, purchaseOrderController.getPurchaseOrders);
 // router.get("/purchase-orders", Authentication, purchaseOrderController.getAllPurchaseOrders);
@@ -26,8 +30,12 @@ router.get('/last-sheet-no', producitonSheetDetailsController.getLastSheetNo);
 // router.delete("/delete-purchase-order/:id", Authentication, Authorization, purchaseOrderController.deletePurchaseOrder);
 // router.patch("/update-po-status/:id", Authentication, Authorization, purchaseOrderController.updatePurchaseOrderStatus);
 
+//Search Sheets
+router.get('/production-sheets', Authentication, producitonSheetDetailsController.searchProductionSheets);
 
-//PO Items
+//Production Sheet Items
+router.get("/production-sheet-items/:id", Authentication, producitonSheetItemsController.getProductionSheetItemsById);
+
 router.post("/create-productionsheet-items", Authentication, producitonSheetItemsController.createProductionSheetItems);
 router.get('/last-five-usage', Authentication, producitonSheetItemsController.getLastFiveProductUsages);
 

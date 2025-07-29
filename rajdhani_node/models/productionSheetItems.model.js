@@ -10,6 +10,7 @@ const productionSheetItemSchema = new mongoose.Schema({
   uom: { type: String },
   weight: { type: String },
   price: { type: String },
+  quantity: { type: String },
   gst: { type: String },
   hose: { type: String },
   hose_product_Code: { type: String },

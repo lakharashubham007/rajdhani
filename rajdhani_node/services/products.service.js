@@ -2,6 +2,7 @@ const { Products, ProductCodeCounter, Inventory } = require('../models'); // Ass
 const QRCode = require('qrcode');
 const BaseURL = "https://www.i2rtest.in";
 const LocalURL = "http://localhost:3001";
+const { buildFilters, buildSortOptions } = require("../utils/product/product.utils");
 
 const generateCodes = (formData, options) => {
   console.log('formData is herer0-=-=-=-=-=-=-', formData);
@@ -988,6 +989,57 @@ const generateQrForProduct = async (productId) => {
   return { qr_code: qrCodeUrl, qr_url: productUrl };
 };
 
+
+
+// Main service function to filter, paginate, and sort products
+const filterProducts = async (params) => {
+  try {
+    // Destructure and set default values for pagination parameters
+    const {
+      page = 1,
+      limit = 10
+    } = params;
+
+    // Convert pagination values to integers
+    const pageNum = parseInt(page);
+    const limitNum = parseInt(limit);
+    const skip = (pageNum - 1) * limitNum; // Calculate documents to skip
+
+    // Generate MongoDB filter query based on incoming params
+    const filter = buildFilters(params);
+
+    // Generate sorting options based on sort_by and sort_order fields
+    const sortOptions = buildSortOptions(params.sort_by, params.sort_order);
+
+    // Fetch products and total count in parallel using Promise.all for efficiency
+    const [products, totalProducts] = await Promise.all([
+      Products.find(filter)
+        .sort(sortOptions)
+        .skip(skip)
+        .limit(limitNum), // Apply sorting, pagination
+      Products.countDocuments(filter) // Count total filtered documents
+    ]);
+
+    // Return paginated response with product data and metadata
+    return {
+      products,               // Array of filtered and paginated products
+      totalProducts,          // Total number of matching products
+      totalPages: Math.ceil(totalProducts / limitNum), // Total number of pages
+      currentPage: pageNum,   // Current page number
+      rowsPerPage: limitNum   // Number of rows per page
+    };
+
+  } catch (error) {
+    // Handle any unexpected errors during the filtering process
+    console.error("Error in filterProducts service:", error);
+    throw new Error(`Filter products failed: ${error.message}`);
+  }
+};
+
+
+
+
+
 module.exports = {
   createProduct,
   getProducts,
@@ -1000,5 +1052,6 @@ module.exports = {
   findSimilarProducts,
   getProductByQRScannerCode,
   generateQrForProduct,
-  findSimilarHoseAssembly
+  findSimilarHoseAssembly,
+  filterProducts
 };

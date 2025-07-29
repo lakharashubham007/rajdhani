@@ -340,6 +340,37 @@ const updateProductStatus = async (req, res) => {
     }
 };
 
+
+//Filters
+const getFilteredProducts = async (req, res) => {
+  try {
+    const result = await productService(req.query);
+
+    if (!result || !result.products || result.products.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No products found matching the filter criteria.",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Filtered products fetched successfully!",
+      data: result,
+    });
+  } catch (error) {
+    console.error("Error in getFilteredProducts controller:", error);
+    res.status(500).json({
+      success: false,
+      message: "Internal Server Error",
+    });
+  }
+};
+
+
+
+
+
 module.exports = {
     createProduct,
     getProducts,
@@ -352,5 +383,6 @@ module.exports = {
     getSimilarProducts,
     getProductByQrScannerCode,
     generateQrForProduct,
-    getSimilarHoseAssemblyItem
+    getSimilarHoseAssemblyItem,
+    getFilteredProducts
 };

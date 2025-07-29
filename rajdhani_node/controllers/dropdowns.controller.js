@@ -96,6 +96,7 @@ const {
 } = require('../dropdowns/baseAddress')
 
 
+
 // Controller to fetch dropdown options
 const getBasicDetails = async (req, res) => {
     try {
@@ -113,7 +114,24 @@ const getBasicDetails = async (req, res) => {
 };
 
 
+const { lineNumbers } = require('../dropdowns/producitonProcessLineNumber')
+
+// Controller to fetch dropdown options
+const getLineNumber = async (req, res) => {
+    try {
+        res.json({
+            success: true, data: {
+                lineNumbers
+            }
+        });
+    } catch (error) {
+        console.error("Error fetching lineNumber details:", error);
+        res.status(500).json({ success: false, message: "Internal Server Error" });
+    }
+};
+
 module.exports = {
     getallOptions,
-    getBasicDetails
+    getBasicDetails,
+    getLineNumber
 };

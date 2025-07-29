@@ -28,8 +28,26 @@ const getLastFiveProductUsages = async (req, res) => {
   }
 };
 
+// Get Production Sheet Items by Production Sheet ID
+const getProductionSheetItemsById = async (req, res) => {
+  try {
+    const items = await productionSheetItemsService.getProductionSheetItemsById(req.params.id);
+
+    if (!items || items.length === 0) {
+      return res.status(404).json({ success: false, message: 'No production sheet items found for this ID' });
+    }
+
+    res.status(200).json({ success: true, items });
+  } catch (error) {
+    console.error("Error fetching production sheet items by ID:", error);
+    res.status(500).json({ success: false, message: 'Internal Server Error' });
+  }
+};
+
+
 module.exports = {
   createProductionSheetItems,
-  getLastFiveProductUsages
+  getLastFiveProductUsages,
+  getProductionSheetItemsById
   };
   
