@@ -1453,7 +1453,7 @@ const AllProductList = () => {
                                     padding: '10px',
                                     textAlign: 'center',
                                     cursor: 'pointer',
-                                    backgroundColor: '#f4f4f4',
+                                    backgroundColor: 'white',
                                     borderRadius: '5px',
                                     transition: 'background-color 0.3s ease',
                                   }}
@@ -1492,6 +1492,7 @@ const AllProductList = () => {
                                           cursor: 'pointer',
                                           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                                           transition: 'transform 0.1s ease-in-out',
+                                          
                                         }}
                                         onMouseEnter={(e) => {
                                           e.target.style.transform = 'scale(1.50)';
