@@ -81,7 +81,9 @@ const EndFittingForm = (props) => {
 
     setSelectedDesignOption,
     selectedDesignOption,
-    designOption
+    designOption,
+
+    isEditEndfitting
 
   } = props;
 
@@ -246,6 +248,7 @@ const EndFittingForm = (props) => {
                     <label className="col-form-label">Wire Type</label>
                     <Select
                       value={selectedWireTypeOption}
+                       isDisabled={isEditEndfitting}
                       onChange={(option) => {
                         setSelectedWireTypeOption(option);
                         setFormData({
@@ -290,6 +293,7 @@ const EndFittingForm = (props) => {
                       }}
                       defaultValue={selectedWithCapWithoutCapOption}
                       options={withCapWithoutCapOption}
+                      
                       style={{
                         lineHeight: "40px",
                         color: "#7e7e7e",
@@ -550,7 +554,6 @@ const EndFittingForm = (props) => {
                               setFormData({
                                 ...formData,
                                 fitting_dash_size: option.value,
-
                               });
                               setErrors({
                                 ...errors,

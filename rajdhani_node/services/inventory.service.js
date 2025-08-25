@@ -188,13 +188,19 @@ const checkProductInInventory = async (productId) => {
   }
 };
 
+
 // Check if multiple products exist in the inventory
 const checkProductsInInventory = async (productIds) => {
   try {
     const products = await Inventory.find({ product_id: { $in: productIds } });
     const productMap = new Map(products.map(product => [product?.product_id?.toString(), true]));
+     // Store complete product details instead of just 'true'
+    const productDetailsMap = new Map(
+      products.map(product => [product?.product_id?.toString(), product])
+    );
     return productIds.map(productId => ({
       product_id: productId,
+      inventoryDetails: productDetailsMap.get(productId.toString()),
       exists: productMap.has(productId.toString()),
       message: productMap.has(productId.toString()) ? "Product exists in the inventory" : "Product does not exist in the inventory",
     }));

@@ -213,7 +213,6 @@ import AuthorizeSaleOrder from "../pages/SalesOrder/AuthorizeSaleOrder";
 import EditSaleOrder from "../pages/SalesOrder/EditSaleOrder";
 import ProductionSheetList from "../pages/ProductionManagement/ProductionSheetList";
 import ProducitonSheetView from "../pages/ProductionManagement/ProducitonSheetView";
-import StoreManagement from "../pages/StoreManagement/Store";
 import ProductionProcess from "../pages/ProductionProcessManagement/ProductionProcess";
 import LogActivity from "../pages/ProductionProcessManagement/ActivityLogs/LogActivity";
 import AddOperator from "../pages/Operators/AddOperator";
@@ -221,6 +220,19 @@ import OperatorsList from "../pages/Operators/OperatorsList";
 import ProductionProcessPendingList from "../pages/ProductionProcessManagement/ProductionProcessList/ProductionProcessPendingList";
 import ProductionProcessInProgressList from "../pages/ProductionProcessManagement/ProductionProcessList/ProductionProcessInProgressList";
 import ProductionProcessCompletedList from "../pages/ProductionProcessManagement/ProductionProcessList/ProductionProcessCompletedList";
+import StoreHome from "../pages/StoreManagement/StoreHome";
+import StoreSaleOrdersLits from "../pages/StoreManagement/StoreComponents/StoreSaleOrdersLits";
+import AssignQuantityForSaleOrder from "../pages/StoreManagement/StoreComponents/AssignQuantityForSaleOrder";
+import StoreSaleOrderView from "../pages/StoreManagement/StoreComponents/StoreSaleOrderView";
+import StoreInventoryRejectionList from "../pages/StoreManagement/StoreComponents/StoreInventoryRejectionList";
+import RejectedItems from "../pages/StoreManagement/StoreComponents/RejectedItems";
+import StockJournal from "../pages/StockJournal/stockJournal";
+import StorePackingApprovalList from "../pages/StoreManagement/StoreComponents/PackingApproval/StorePackingApprovalList";
+import StorePackingApprovalitems from "../pages/StoreManagement/StoreComponents/PackingApproval/StorePackingApprovalitems";
+import PackingRequestList from "../pages/PackingManagement/PackingRequestList";
+import GatePassRequestList from "../pages/GatePassManagement/GatePassRequestList";
+import PackingItems from "../pages/PackingManagement/PackingItems";
+import GatePassItems from "../pages/GatePassManagement/GatePassItems";
 
 // import Todo from './pages/Todo';
 
@@ -315,7 +327,34 @@ const Markup = () => {
 
 
     // Store Management
-    { url: 'store', component: <StoreManagement /> },
+    { url: 'store', component: <StoreHome /> },
+    { url: '/store/saleorders', component: <StoreSaleOrdersLits /> },
+    { url: 'storeSaleRrderView/:id', component: <StoreSaleOrderView /> },
+    { url: 'assign-quantity/:id', component: <AssignQuantityForSaleOrder /> },
+    
+    { url: '/store/rejection-query', component: <StoreInventoryRejectionList /> },
+    { url: 'storeRejectionView/:id', component: <StoreSaleOrderView /> },
+    { url: 'rejected-items/:id', component: <RejectedItems /> },
+
+    //stock-journal Stock Journal
+    { url: 'stock-journal', component: <StockJournal /> },
+
+
+    //packing
+    
+    { url: '/packing', component: <PackingRequestList /> },
+    { url: '/pack-items/:id', component: <PackingItems /> },
+    
+    { url: '/store/packing-approval', component: <StorePackingApprovalList /> },
+    { url: 'packing-items/:id', component: <StorePackingApprovalitems /> },
+
+
+
+   //GatePass 
+    { url: '/gate-pass', component: <GatePassRequestList /> },
+    { url: '/gatePass-items/:id', component: <GatePassItems /> },
+    { url: '/gatePass-view/:id', component: <PackingItems /> },
+
 
     //production-process
 

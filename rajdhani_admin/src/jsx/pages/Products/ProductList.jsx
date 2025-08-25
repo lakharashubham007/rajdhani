@@ -114,8 +114,8 @@ const AllProductList = () => {
   const BASEURL = `https://api.i2rtest.in/v1`;
   const [galleryVisible, setGalleryVisible] = useState(false);
   const [galleryItems, setGalleryItems] = useState([]);
-
   const [sort, setSortata] = useState(10);
+  console.log("sort is here", sort)
   const [loading, setLoading] = useState(false);
   const [modalCentered, setModalCentered] = useState(false);
   const [logo, setLogo] = useState(null);
@@ -128,7 +128,7 @@ const AllProductList = () => {
     measurementUnit: ""
   });
   const [UpdateCategory, setUpdateCategory] = useState(false);
-  const [productList, setProductList] = useState([]);
+  const [productPaginationInfoByTab, setProductPaginationInfoByTab] = useState([]);
   const [hoseAssemblyProductList, setHoseAssemblyProductList] = useState([]);
   const [endFittingsProductList, setEndFittingsProductList] = useState([]);
   const [fittingAccessoriesProductList, setFittingAccessoriesProductList] = useState([]);
@@ -136,7 +136,7 @@ const AllProductList = () => {
   const [hovered, setHovered] = useState(null);
   const [isEdit, setIsEdit] = useState(false);
   const [editCategoryId, setEditCategoryId] = useState("");
-  const [currentPage, setCurrentPage] = useState(1);
+  const [currentPage, setCurrentPage] = useState(0);
   const [searchInputValue, setSearchInputValue] = useState("");
   const [iconData, setIconDate] = useState({ complete: false, ind: Number });
   const [error, setErrors] = useState(null);
@@ -285,10 +285,6 @@ const AllProductList = () => {
     }
   };
 
-
-
-
-
   const navigate = useNavigate()
   const resetForm = () => {
     setFormData({
@@ -342,33 +338,6 @@ const AllProductList = () => {
   };
 
   //   getSubCategoriesApi
-  // const fetchProductList = async (sortValue, productTypes = []) => {
-  //   console.log("productTypes in api call", productTypes)
-  //   // Set loading to true when the API call starts
-  //   setLoading(true);
-  //   try {
-  //     const res = await getProductApi(
-  //       currentPage,
-  //       sort,
-  //       sortValue,
-  //       searchInputValue,
-  //       productTypes
-  //     );
-
-  //     setProductList(res.data);
-
-  //     setUpdateCategory(false);
-  //   } catch (error) {
-  //     // Catch and handle errors
-  //   } finally {
-  //     // Always set loading to false when the API call is done (whether successful or failed)
-  //     setLoading(false);
-  //   }
-  // }
-
-
-
-  //   getSubCategoriesApi
   const fetchHoseAssemblyProductList = async (sortValue, productTypes = []) => {
     console.log("productTypes in api call", productTypes)
     // Set loading to true when the API call starts
@@ -383,6 +352,7 @@ const AllProductList = () => {
       );
 
       setHoseAssemblyProductList(res.data);
+      setProductPaginationInfoByTab(res?.data)
 
       setUpdateCategory(false);
     } catch (error) {
@@ -406,8 +376,10 @@ const AllProductList = () => {
         productTypes
       );
 
-      setEndFittingsProductList(res.data);
+      console.log("res.data", res.data)
 
+      setEndFittingsProductList(res.data);
+      setProductPaginationInfoByTab(res?.data)
       setUpdateCategory(false);
     } catch (error) {
       // Catch and handle errors
@@ -431,7 +403,7 @@ const AllProductList = () => {
       );
 
       setFittingAccessoriesProductList(res.data);
-
+      setProductPaginationInfoByTab(res?.data)
       setUpdateCategory(false);
     } catch (error) {
       // Catch and handle errors
@@ -455,6 +427,7 @@ const AllProductList = () => {
       );
 
       setTubeFittingsProductList(res.data);
+      setProductPaginationInfoByTab(res?.data)
 
       setUpdateCategory(false);
     } catch (error) {
@@ -464,8 +437,6 @@ const AllProductList = () => {
       setLoading(false);
     }
   }
-
-
 
   // useEffect(() => {
   //   fetchProductList();
@@ -497,7 +468,6 @@ const AllProductList = () => {
       setLoading(false); // Stop the loader
     }
   };
-
 
   const chageData = (frist, sec) => {
     for (var i = 0; i < data.length; ++i) {
@@ -538,7 +508,6 @@ const AllProductList = () => {
 
   const handleEditThread = async (id) => {
     navigate(`/editproductdata/${id}`)
-
   };
 
   const handleDeleteProduct = (id) => {
@@ -650,25 +619,26 @@ const AllProductList = () => {
   };
   // const buttons = Object.keys(categoryMap);
 
-
   useEffect(() => {
     if (active === "Hose Assembly") {
       const productTypes = categoryMap[active];
-      fetchHoseAssemblyProductList(0, productTypes)
+      fetchHoseAssemblyProductList(sort, productTypes)
     }
     if (active === "End Fittings and Parts") {
       const productTypes = categoryMap[active];
-      fetchEndFittingsPartsProductList(0, productTypes)
+      fetchEndFittingsPartsProductList(sort, productTypes)
     }
     if (active === "Fitting Accessories") {
       const productTypes = categoryMap[active];
-      fetchFittingAccessoriesProductList(0, productTypes)
+      fetchFittingAccessoriesProductList(sort, productTypes)
     }
     if (active === "Tube Fittings") {
       const productTypes = categoryMap[active];
-      fetchTubeFittingProductList(0, productTypes)
+      fetchTubeFittingProductList(sort, productTypes)
     }
-  }, [active])
+  }, [active, currentPage, sort])
+
+
 
   useEffect(() => {
     const fetchAllInitialOptions = async () => {
@@ -686,9 +656,6 @@ const AllProductList = () => {
     }
 
   }, [filterOpen]);
-
-
-
 
   return (
     <>
@@ -953,6 +920,25 @@ const AllProductList = () => {
                       </div>
                     )}
                   </div>
+
+                  <div
+                    style={{
+                      display: 'inline-block',
+                      padding: '6px 12px',
+                      background: '#e0f2fe', // light blue background
+                      borderRadius: '20px',
+                      fontSize: '14px',
+                      fontWeight: 500,
+                      color: '#0369a1', // deep blue text
+                      margin: '8px 0',
+                      float: 'right',
+                      boxShadow: '0 1px 3px rgba(0, 0, 0, 0.1)',
+                    }}
+                  >
+                    Total Items: <strong style={{ color: '#0c4a6e', marginLeft: 4 }}>{productPaginationInfoByTab?.totalProducts || 0}</strong>
+                  </div>
+
+
 
                   {active === "End Fittings and Parts" && (
                     <table id="example4" className="display dataTable no-footer w-100">
@@ -1492,7 +1478,7 @@ const AllProductList = () => {
                                           cursor: 'pointer',
                                           boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
                                           transition: 'transform 0.1s ease-in-out',
-                                          
+
                                         }}
                                         onMouseEnter={(e) => {
                                           e.target.style.transform = 'scale(1.50)';
@@ -2631,13 +2617,12 @@ const AllProductList = () => {
                   )}
 
                   <div>
-                    {/* {brandList?.data?.length < brandList?.total && ( */}
                     <div className="d-sm-flex text-center justify-content-end align-items-center mt-3">
                       <div className="pagination-container">
                         <ReactPaginate
                           pageCount={Math.ceil(
-                            productList?.totalProducts /
-                            productList?.rowsPerPage
+                            productPaginationInfoByTab?.totalProducts /
+                            productPaginationInfoByTab?.rowsPerPage
                           )}
                           pageRangeDisplayed={1}
                           marginPagesDisplayed={2}
@@ -2648,7 +2633,6 @@ const AllProductList = () => {
                         />
                       </div>
                     </div>
-                    {/* )} */}
                   </div>
                 </div>
               </div>

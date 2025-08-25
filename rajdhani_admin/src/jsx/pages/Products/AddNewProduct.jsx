@@ -133,6 +133,7 @@ const AddProduct = () => {
   const [selectedSkiveTypeOption, setSelectedSkiveTypeOption] = useState(null);
   const [selectedhoseDashSizeOption, setSelectedHoseDashSizeOption] = useState(null);
   const [selectedFittingDashSizeOption, setSelectedfittingDashSizeOption] = useState(null);
+  console.log("selectedFittingDashSizeOption",selectedFittingDashSizeOption)
   const [selectedFittingTypeOption, setSelectedFittingTypeOption] = useState(null);
   const [selectedFittingThreadOption, setSelectedFittingThreadOption] = useState(null);
   const [selectedStraightBendangleOption, setSelectedStraightBendangleOption] = useState(null);
@@ -1098,7 +1099,7 @@ const AddProduct = () => {
 
       }
     }
-  }, [formData?.fitting_thread, formData?.pipeOD, formData?.metric_type]);
+  }, [formData?.fitting_thread, formData?.pipeOD, formData?.metric_type]); 
 
   // For metric pipe od option select set fitting dash size ---> When fittingThreadOption is selected, reset variant and fitting_dash size inputs
   useEffect(() => {
@@ -1133,6 +1134,7 @@ const AddProduct = () => {
         setFormData({
           ...formData,
           OD: filteredOptions[0].value,
+          fitting_dash_size: filteredOptions[0].value, //added here when select on standard variant its showing from here
         });
       }
     }
@@ -1186,6 +1188,7 @@ const AddProduct = () => {
     }
   }, [selectedStraightBendangleOption]);
 
+  //when manually selected value then clear fitting dash size option 
   useEffect(() => {
     if (formData?.variant === "Manual") {
       setFormData((prevData) => ({

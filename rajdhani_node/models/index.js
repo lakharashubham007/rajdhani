@@ -54,8 +54,21 @@ module.exports.ProductionProcessItem = require('./productionProcessItems.model')
 module.exports.ProductionProcessLog = require('./produtionProcessLogs.model').ProductionProcessLog
 module.exports.ProductionProcessItemLogs = require('./productionProcessItemsLog.model').ProductionProcessItemLog
 module.exports.Operator = require('./operator.model').Operator
+module.exports.InventoryItemsLog = require('./inventoryItemsLog.model').InventoryItemsLog
+// module.exports.InventoryRejection = require('./inventoryRejections.model').InventoryRejection
+module.exports.InventoryRejectionDetails = require('./inventoryRejectionDetails.model').InventoryRejectionDetails
+module.exports.InventoryRejectionItems = require('./inventoryRejectionItems.model').InventoryRejectionItems
+module.exports.PackingDetails = require('./packingDetails.model').PackingDetails
+module.exports.PackingItems = require('./packingItems.model').PackingItems
+module.exports.GatePassDetails = require('./gatePassDetails.model').GatePassDetails
+module.exports.GatePassItems = require('./gatePassItems.model').GatePassItems
+
 // module.exports. = require('./').
+
 // module.exports. = require('./').
+
+// module.exports. = require('./').
+
 // module.exports. = require('./').
 
 

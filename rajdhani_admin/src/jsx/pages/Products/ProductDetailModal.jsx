@@ -19,12 +19,9 @@ const ProductDetailModal = ({
   fetchTubeFittingProductList
 
 }) => {
-  console.log("product details", productDetailData, productDetailData?.part)
-
+  console.log("productDetailData",productDetailData)
   const [showDeleteMdl, setShowDeleteMdl] = useState(false);
   const [deleteTableDataId, setDeleteTableDataId] = useState("");
-
-
   const navigate = useNavigate()
 
   const handleShareQRCode = (qrCode) => {
@@ -287,12 +284,13 @@ const ProductDetailModal = ({
                   </div>
                 </div>
                 {/* End Fittings and parts details */}
-                {["End Fittings", "Nut", "Nipple", "Cap","Hose Pipe"].includes(productDetailData?.product_type) && (
+                {["End Fittings", "Nut", "Nipple", "Cap", "Hose Pipe"].includes(productDetailData?.product_type) && (
                   <>
                     <div className="col-md-6">
                       <ul className="list-group">
                         <li className="list-group-item"><strong>Type:</strong> {productDetailData?.product_type}</li>
                         <li className="list-group-item"><strong>Code:</strong> {productDetailData?.product_code}</li>
+                        <li className="list-group-item"><strong>Skive Type:</strong> {productDetailData?.skive_type}</li>
                         <li className="list-group-item"><strong>UOM:</strong> {productDetailData?.uom}</li>
                       </ul>
                     </div>
@@ -316,11 +314,11 @@ const ProductDetailModal = ({
                     </div>
                   </>
                 )}
-                
+
                 {/*Hose Assembly */}
                 {["Hose Assembly"].includes(productDetailData?.product_type) && (
                   <>
-                  <div className="col-md-6">
+                    <div className="col-md-6">
                       <ul className="list-group">
                         <li className="list-group-item"><strong>Type:</strong> {productDetailData?.product_type}</li>
                       </ul>
@@ -371,7 +369,7 @@ const ProductDetailModal = ({
                         <hr className="my-2" />
                         <div><strong>Fitting Code:</strong> {productDetailData?.fitting_a_fitting_Code}</div>
                       </div>
-                      
+
                     </div>
                     <div className="col-md-12 mt-2 mb-2">
                       <div className="list-group-item">
@@ -392,7 +390,7 @@ const ProductDetailModal = ({
                 {/*Fitting Accessory*/}
                 {["Sleeve", "Packing", "Vinyl Cover", "Dust Cap", "O-ring", "Spring"].includes(productDetailData?.product_type) && (
                   <>
-                  <div className="col-md-6">
+                    <div className="col-md-6">
                       <ul className="list-group">
                         <li className="list-group-item"><strong>Type:</strong> {productDetailData?.product_type}</li>
                       </ul>
@@ -408,10 +406,10 @@ const ProductDetailModal = ({
                         <li className="list-group-item"><strong>Description :</strong> {productDetailData?.desc_Code}</li>
                       </ul>
                     </div>
-                    
+
                     <div className="col-md-6">
                       <ul className="list-group">
-                        <li className="list-group-item"><strong>Size:</strong> {productDetailData?.size ? productDetailData?.size: "N/A"}</li>
+                        <li className="list-group-item"><strong>Size:</strong> {productDetailData?.size ? productDetailData?.size : "N/A"}</li>
                       </ul>
                     </div>
                     <div className="col-md-6 mb-1">
@@ -454,7 +452,7 @@ const ProductDetailModal = ({
                 {/*Fitting Accessory*/}
                 {["Tube Fittings"].includes(productDetailData?.product_type) && (
                   <>
-                  <div className="col-md-6">
+                    <div className="col-md-6">
                       <ul className="list-group">
                         <li className="list-group-item"><strong>Type:</strong> {productDetailData?.product_type}</li>
                       </ul>
@@ -470,10 +468,10 @@ const ProductDetailModal = ({
                         <li className="list-group-item"><strong>Description :</strong> {productDetailData?.part_description}</li>
                       </ul>
                     </div>
-                    
+
                     <div className="col-md-6">
                       <ul className="list-group">
-                        <li className="list-group-item"><strong>Category :</strong> {productDetailData?.tube_fitting_category ? productDetailData?.tube_fitting_category: "N/A"}</li>
+                        <li className="list-group-item"><strong>Category :</strong> {productDetailData?.tube_fitting_category ? productDetailData?.tube_fitting_category : "N/A"}</li>
                       </ul>
                     </div>
                     <div className="col-md-6 mb-1">

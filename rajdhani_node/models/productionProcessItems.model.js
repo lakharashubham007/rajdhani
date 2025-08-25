@@ -112,6 +112,10 @@ const ProductionProcessItemSchema = new mongoose.Schema({
     ref: 'ProductionProcess',
     required: true
   },
+  production_sheet_items_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'ProductionSheetItem'
+  },
   sheet_no: String,
   part_no: String,
   sheet_total_quantity: String,

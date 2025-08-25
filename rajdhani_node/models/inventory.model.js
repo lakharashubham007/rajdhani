@@ -39,6 +39,26 @@ const inventorySchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    assign_quantity: {
+      type: Number,
+      default: 0,
+    },
+    lastAssignQuantity:{
+      type: Number,
+      default: 0,
+    },
+    reserve_quantity: {
+      type: Number,
+      default: 0,
+    },
+    available_quantity: {
+      type: Number,
+      default: 0,
+    },
+    rejected_quantity: {
+      type: Number,
+      default: 0,
+    },
     base_price: {
       type: Number,
     },

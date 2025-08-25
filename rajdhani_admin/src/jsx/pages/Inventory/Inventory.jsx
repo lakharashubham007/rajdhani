@@ -26,6 +26,7 @@ import useDebounce from "../../components/common/Debounce";
 import { filterInventoryItemApi, getProductsFromInventoryApi } from "../../../services/apis/InventoryApi";
 import Select from "react-select";
 import { FiRefreshCcw } from "react-icons/fi";
+import LogActivityItemsModal from "./LogActivityItemsModal";
 
 const theadData = [
     { heading: "S.No.", sortingVale: "sno" },
@@ -62,7 +63,7 @@ const Inventory = () => {
     const [UpdateCategory, setUpdateCategory] = useState(false);
     const [productList, setProductList] = useState([]);
     const [analyticsData, setAnalyticsData] = useState();
-    console.log("analyticsData", analyticsData)
+    console.log("analyticsData", productList)
     const [isEdit, setIsEdit] = useState(false);
     const [editCategoryId, setEditCategoryId] = useState("");
     const [currentPage, setCurrentPage] = useState(1);
@@ -95,6 +96,18 @@ const Inventory = () => {
     const [endFittingType, setEndFittingType] = useState("");
     const [wireType, setWireType] = useState("");
 
+
+    //Handele log activity
+    const [selectedItemId, setSelectedItemId] = useState(null);
+    const [selectedSOId, setSelectedSOId] = useState(null);
+    const [modalOpen, setModalOpen] = useState(false);
+
+    const handleOpenLogModal = (itemId, SaleOrderId) => {
+        
+        setSelectedItemId(itemId);
+        // setSelectedSOId(SaleOrderId);
+        setModalOpen(true);
+    };
 
     // Handle filter selection
     const handleEndFittingChange = (type) => {
@@ -578,8 +591,10 @@ const Inventory = () => {
                                         </thead>
                                         <tbody>
                                             {productList?.map((data, ind) => (
-                                                // console.log("data is here", data),
-                                                <tr key={ind}>
+                                                console.log("data is here", data),
+                                                <tr key={ind}
+                                                onClick={() => handleOpenLogModal(data?.product_id?._id)}
+                                                >
                                                     {/* Serial numbere  */}
                                                     <td>
                                                         <strong>{ind + 1}</strong>
@@ -783,9 +798,10 @@ const Inventory = () => {
                                                     </td>
                                                     {/* Actions Edit and Delete */}
                                                     <td>
-                                                        <button className="btn btn-xs sharp btn-primary me-1"
-                                                            onClick={() => handleEditThread(data?._id)}>
-                                                            <i className="fa fa-pencil" />
+                                                        <button className="btn btn-xs btn-warning sharp me-1"
+                                                        
+                                                            onClick={() => handleOpenLogModal(data?.product_id?._id)}>
+                                                            <i className="fa fa-history" />
                                                         </button>
 
                                                         <button className="btn btn-xs sharp btn-danger"
@@ -824,6 +840,17 @@ const Inventory = () => {
                     </div>
                 </Col>
             </Row>
+
+
+            {/* Item wise log activity modal box */}
+            <LogActivityItemsModal
+                show={modalOpen}
+                onHide={() => setModalOpen(false)}
+                itemId={selectedItemId}
+                saleOrderID={selectedSOId}
+                stage="Assign And Reserve Quantity Activity"
+            // productionProcessID={producitonProcessDetails?._id}
+            />
         </>
     );
 };

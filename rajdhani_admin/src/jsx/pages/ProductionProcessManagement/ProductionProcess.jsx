@@ -179,7 +179,7 @@ const ProductionProcess = () => {
   //API Call Method:- Search Product and fetch
 
   const [selectdAllSheetItem, setSelectedAllSheetItems] = useState([]);
-
+  console.log("selectdAllSheetItem",selectdAllSheetItem)
   //When sheet is selected then extract all items for production process from  produciton sheet Items
   const fetchSelectedSheetNumbersAllItems = async (id) => {
     if (!id) return; // Prevent empty requests
@@ -232,6 +232,7 @@ const ProductionProcess = () => {
   const storeProductionItems = async ({ productionProcessId }) => {
     const items = selectdAllSheetItem?.map(item => ({
       production_process_id: productionProcessId,
+      production_sheet_items_id: item._id,
       sheet_no: selectedSheetNumber?.sheet_no,
       part_no: item?.part_no,
       sheet_total_quantity: item?.quantity

@@ -52,10 +52,23 @@ module.exports.productionProcessLogController = require('./productionProcessLogs
 module.exports.productionProcessItemsController = require('./productionProcessItems.controller')
 module.exports.operatorController = require('./operator.controller')
 module.exports.productionProcessItemsLogController = require('./productionProcessItemLog.controller')
+module.exports.inventoryItemsLogController = require('./inventoryItemsLog.controller')
+module.exports.inventoryRejecitonDetailsController = require('./inventoryRejectionDetails.controller')
+module.exports.inventoryRejectionItemsController = require('./inventoryRejectionItems.controller')
+module.exports.packingDetailsController = require('./packingDetails.controller')
+module.exports.packingItemsController = require('./packingItems.controller')
+module.exports.gatePassDetailsController = require('./gatePassDetails.controller')
+module.exports.gatePassItemsController = require('./gatePassItems.controller')
 // module.exports. = require('./')
 // module.exports. = require('./')
 // module.exports. = require('./')
 // module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+// module.exports. = require('./')
+
 
 
 // module.exports.variantSubSubCategoriesController = require('./')

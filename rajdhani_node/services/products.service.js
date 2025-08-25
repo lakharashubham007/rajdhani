@@ -98,14 +98,14 @@ const oringCreation = async (data, files) => {
 
     console.log("Processed Spring product data:", oringData);
 
-     // Generate QR Code for the product
-     const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
-     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
- 
-     // Add QR code to the product data
-     oringData.qr_code = qrCodeUrl;  // Save the QR code in the product data
-     oringData.qr_url = productUrl;
- 
+    // Generate QR Code for the product
+    const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+    // Add QR code to the product data
+    oringData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    oringData.qr_url = productUrl;
+
 
     const oringProduct = await Products.create(oringData);
     return oringProduct;
@@ -143,13 +143,13 @@ const dustCapCreation = async (data, files) => {
 
     console.log("Processed Spring product data:", dustCapData);
 
-     // Generate QR Code for the product
-     const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
-     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
- 
-     // Add QR code to the product data
-     dustCapData.qr_code = qrCodeUrl;  // Save the QR code in the product data
-     dustCapData.qr_url = productUrl;
+    // Generate QR Code for the product
+    const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+    // Add QR code to the product data
+    dustCapData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    dustCapData.qr_url = productUrl;
 
     const dustCapProduct = await Products.create(dustCapData);
     return dustCapProduct;
@@ -363,13 +363,13 @@ const packingCreation = async (data, files) => {
 
     console.log("Processed packingData product data:", packingData);
 
-     // Generate QR Code for the product
-     const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
-     const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
- 
-     // Add QR code to the product data
-     packingData.qr_code = qrCodeUrl;  // Save the QR code in the product data
-     packingData.qr_url = productUrl;
+    // Generate QR Code for the product
+    const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+    // Add QR code to the product data
+    packingData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    packingData.qr_url = productUrl;
 
     const packing = await Products.create(packingData);
     return packing;
@@ -528,8 +528,8 @@ const createProduct = async (data, files) => {
       return await hoseAssembyCreation(data, files);
     }
 
-     //Tube Fittings
-     if (data?.product_type == "Tube Fittings") {
+    //Tube Fittings
+    if (data?.product_type == "Tube Fittings") {
       return await tubeFittingsCreation(data, files);
     }
 
@@ -701,7 +701,7 @@ const findSimilarProducts = async (fittingCode) => {
 
 
     return productsWithQuantity;
-    
+
   } catch (error) {
     console.error("Error finding similar products:", error);
     throw error;
@@ -711,7 +711,7 @@ const findSimilarProducts = async (fittingCode) => {
 //simi hoseAssembly
 const findSimilarHoseAssembly = async (productCode) => {
   try {
-    const products = await Products.find({product_code: productCode});
+    const products = await Products.find({ product_code: productCode });
     return products; // Return all products
   } catch (error) {
     console.error("Error finding similar products:", error);
@@ -877,6 +877,8 @@ const getProducts = async (page, limit, sort, search, prodctTypes) => {
       .skip(skip)
       .limit(limit);
 
+
+    //overall paginaiton calculation
     const totalProducts = await Products.countDocuments(filter);
 
     return {
@@ -960,9 +962,9 @@ const deleteProduct = async (id) => {
       isDeleted: true,
     });
 
-   
 
-   return deleted;
+
+    return deleted;
   } catch (error) {
     console.error('Error deleting product:', error);
   }
@@ -974,7 +976,7 @@ const generateQrForProduct = async (productId) => {
 
   // Already has QR
   if (product.qr_code && product.qr_url) {
-      return { qr_code: product.qr_code, qr_url: product.qr_url };
+    return { qr_code: product.qr_code, qr_url: product.qr_url };
   }
   const sanitizedPartNo = product?.product_code?.replace(/[^a-zA-Z0-9]/g, "-");
 

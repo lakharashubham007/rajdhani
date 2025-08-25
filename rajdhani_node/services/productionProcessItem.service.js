@@ -116,6 +116,7 @@ const getProductionProcessItems = async (productionProcessID, page, limit, sort,
 
     // 3. Fetch paginated items
     const productionProcessItems = await ProductionProcessItem.find(itemFilter)
+      .populate('production_sheet_items_id')
       .sort(sortOptions)
       .skip(skip)
       .limit(limit);

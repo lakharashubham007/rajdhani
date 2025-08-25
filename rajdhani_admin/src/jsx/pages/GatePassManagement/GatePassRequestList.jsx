@@ -11,10 +11,7 @@ import {
 } from "react-bootstrap";
 import { Link, useNavigate } from "react-router-dom";
 import PageTitle from "../../layouts/PageTitle";
-import {
-  addCuisinesApi,
-  getCuisinesApi,
-} from "../../../services/apis/cuisinesApi";
+
 import Loader from "../../components/Loader/Loader";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -22,41 +19,48 @@ import "../../../assets/css/brand.css";
 import { Toaster } from "../../components/Toaster/Toster";
 import Switch from "react-switch";
 import ReactPaginate from "react-paginate";
-
 import moment from "moment";
 import Select from "react-select";
-import {
-  addFittingSizeApi, deleteFittingSizeApi, GetEditFittingSizeData, getFittingSizeApi, UpdateFittingSize,
-  UpdateFittingSizeStatus
-} from "../../../services/apis/FittingSize";
 import { addThreadApi, deleteThreadApi, GetEditThreadData, getThreadApi, UpdateThread, UpdateThreadStatus } from "../../../services/apis/Thread";
-import { deleteProductApi, getProductApi, UpdateProductStatus } from "../../../services/apis/Product";
 import DeleteWarningMdl from "../../components/common/DeleteWarningMdl";
 import useDebounce from "../../components/common/Debounce";
 import { deleteSupplierApi, getSupplierApi, UpdateSupplierStatus } from "../../../services/apis/Supplier";
 import { getSupplierPurchaseOrderApi } from "../../../services/apis/PurchaseOrder";
-import { getSaleOrdersApi } from "../../../services/apis/salesOrderApi";
+import { getInventoryRejectionQueryApi } from "../../../services/apis/inventoryRejectionDetailsApi";
+import { getPackingOrderApi } from "../../../services/apis/InventoryItemLogsApi";
+import { getGatePassDetailsApi, getPackingDetailsApi } from "../../../services/apis/PackingApi";
 
 const theadData = [
   { heading: "S.No.", sortingVale: "sno" },
-  { heading: "Order Id", sortingVale: "_id" },
   { heading: "Voucher No.", sortingVale: "voucher_no" },
-  { heading: "Customer Name", sortingVale: "name" },
-  { heading: "Customer Address", sortingVale: "address" },
-  { heading: "Orderd Date", sortingVale: "date" },
-  { heading: "Due Date", sortingVale: "due_date" },
-  { heading: "SO Amount", sortingVale: "grand_total" },
-  { heading: "Prepared By", sortingValue: "preparedBy" },
-  { heading: "Verified By", sortingValue: "verifiedBy" },
-  { heading: "Verified", sortingValue: "verified" },
-  { heading: "Authorized By", sortingValue: "authorizedBy" },
+  { heading: "Party Name.", sortingVale: "party_name" },
+
+  // { heading: "Production Sheet No.", sortingVale: "production_sheet_no" },
+  // { heading: "Production Stage", sortingVale: "production_stage" },
+  // { heading: "Supervisor", sortingVale: "supervisor" },
+  { heading: "Order Date", sortingVale: "order_date" },
+  { heading: "Order Due Date", sortingVale: "order_due_date" },
+  { heading: "Verified Packing", sortingVale: "isFinalized" },
+
+  // { heading: "Sale order No.", sortingVale: "so_no" },
+  // { heading: "Order Id", sortingVale: "_id" },
+  // { heading: "Customer Name", sortingVale: "name" },
+  // { heading: "Customer Address", sortingVale: "address" },
+  // { heading: "Orderd Date", sortingVale: "date" },
+  // { heading: "Due Date", sortingVale: "due_date" },
+  // { heading: "SO Amount", sortingVale: "grand_total" },
+  // { heading: "Prepared By", sortingValue: "preparedBy" },
+  // { heading: "Verified By", sortingValue: "verifiedBy" },
+  // { heading: "Verified", sortingValue: "verified" },
+  // { heading: "Authorized By", sortingValue: "authorizedBy" },
+  // { heading: "Authorized", sortingValue: "authorized" },
 
   // { heading: "Created At", sortingVale: "created_at" },
-  { heading: "Status", sortingVale: "status" },
+  // { heading: "Status", sortingVale: "status" },
   { heading: "Action", sortingVale: "action" },
 ];
 
-const StoreManagement = () => {
+const GatePassRequestList = () => {
   const [sort, setSortata] = useState(10);
   const [loading, setLoading] = useState(false);
   const [modalCentered, setModalCentered] = useState(false);
@@ -120,14 +124,15 @@ const StoreManagement = () => {
     // Set loading to true when the API call starts
     setLoading(true);
     try {
-      const res = await getSaleOrdersApi(
+      const res = await getGatePassDetailsApi(
         currentPage,
         sort,
         sortValue,
         searchInputValue
       );
+      console.log(res.data, "-*/-/-*/-/-*/-*/-*/-*/854654654*-/-*/5465-*-*/5445-*")
 
-      setPurchaseOrderList(res?.data);
+      setPurchaseOrderList(res?.data?.gatePassDetails);
 
       setUpdateCategory(false);
     } catch (error) {
@@ -277,16 +282,16 @@ const StoreManagement = () => {
       <ToastContainer />
       <Loader visible={loading} />
       <PageTitle
-        activeMenu={"Store"}
+        activeMenu={"Packing Request Queries"}
         motherMenu={"Home"}
-        motherMenuLink={"/dashboard"}
+        motherMenuLink={"/home"}
       />
 
       <Row>
         <Col lg={12}>
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Orders</h4>
+              <h4 className="card-title">Packing Requests</h4>
               {/* <Link to={"/add-staff"} className="btn btn-primary">+ Add New</Link> */}
               {/* <Button
                 variant="primary"
@@ -381,43 +386,107 @@ const StoreManagement = () => {
                       </tr>
                     </thead>
                     <tbody>
-                      {purchaseOrderList?.saleOrders?.map((data, ind) => (
+                      {purchaseOrderList?.map((data, ind) => (
                         <tr key={ind}>
                           <td><strong>{ind + 1}</strong> </td>
 
-                          <td>{data?._id}</td>
+                          {/* <td>{data?._id}</td> */}
 
-                          <td>{data?.voucher_no}</td>
+                          <td>{data?.so_id?.voucher_no}</td>
+                          <td>
+                            <span
+                              style={{
+                                display: "inline-block",
+                                padding: "2px 14px",
+                                borderRadius: "20px",
+                                fontSize: "11px",
+                                fontWeight: "500",
+                                color: "#333",
+                                border: "1px solid #4facfe", // simple border
+                                background: "#fff", // white background
+                                letterSpacing: "0.5px",
+                              }}
+                            >
+                              {data?.party_name || "No Party Name"}
+                            </span>
+                          </td>
 
-                          <td className="">
+
+                          {/* <td>{data?.productionprocess_id?.process_uid}</td>
+                          <td>{data?.productionsheet_id?.sheet_no}</td>
+                          <td>{data?.productionprocess_stage}</td>
+
+                          <td>{data?.created_by?.firstName} {data?.created_by?.lastName}</td> */}
+                          < td className="whitespace-nowrap" >
+                            {moment(data?.so_id?.order_details?.date).format("DD MMM YYYY")}
+                          </td>
+                          <td className="whitespace-nowrap">
+                            {moment(data?.so_id?.order_details?.due_date).format("DD MMM YYYY")}
+                          </td>
+                          <td>
+                            {data?.isPacked ? (
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  padding: "2px 10px",
+                                  borderRadius: "20px",
+                                  fontSize: "11px",
+                                  fontWeight: "600",
+                                  backgroundColor: "rgba(0, 200, 0, 0.1)", // soft green bg
+                                  color: "green",
+                                  border: "1px solid rgba(0, 200, 0, 0.3)",
+                                }}
+                              >
+                                ✔ Verified
+                              </span>
+                            ) : (
+                              <span
+                                style={{
+                                  display: "inline-flex",
+                                  alignItems: "center",
+                                  padding: "2px 10px",
+                                  borderRadius: "20px",
+                                  fontSize: "11px",
+                                  fontWeight: "600",
+                                  backgroundColor: "rgba(255, 0, 0, 0.1)", // soft red bg
+                                  color: "red",
+                                  border: "1px solid rgba(255, 0, 0, 0.3)",
+                                }}
+                              >
+                                ✘ Not Verified
+                              </span>
+                            )}
+                          </td>
+
+
+                          {/* <td className="">
                             {data?.customer_id?.fname} {data?.customer_id?.lname}
 
-                          </td>
+                          </td> */}
 
-                          <td className="">
+                          {/* <td className="">
                             {data?.customer_id?.city} {data?.customer_id?.state}
-                          </td>
+                          </td> */}
 
 
 
-                          <td className="whitespace-nowrap ">
-                            {moment(data?.order_details?.date).format("DD MMM YYYY")}
-                          </td>
 
-                          <td style={{
-                              whiteSpace: 'nowrap',}} >
+                          {/* <td style={{
+                            whiteSpace: 'nowrap',
+                          }} >
                             {moment(data?.order_details?.due_date).format("DD MMM YYYY")}
-                          </td>
+                          </td> */}
 
-                          <td className="">
+                          {/* <td className="">
                             INR {data?.summary?.grand_total}
-                          </td>
+                          </td> */}
 
                           {/* <td>
                             {moment(data?.created_at).format("DD MMM YYYY, h:mm:ss a")}
                           </td> */}
 
-                          <td className="">
+                          {/* <td className="">
                           <span style={{
                               whiteSpace: 'nowrap',
                               border: '0.5px solid black',
@@ -431,9 +500,9 @@ const StoreManagement = () => {
                               ? `${data?.createdBy?.firstName} ${data?.createdBy?.lastName}`
                               : '-'}
                                </span>
-                          </td>
-                         
-                          <td>
+                          </td> */}
+
+                          {/* <td>
                             <span style={{
                               whiteSpace: 'nowrap',
                               border: '0.5px solid black',
@@ -445,29 +514,35 @@ const StoreManagement = () => {
                             }}>
                               {data?.isVerifiedBy?.firstName && data?.isVerifiedBy?.lastName
                                 ? `${data?.isVerifiedBy?.firstName} ${data?.isVerifiedBy?.lastName}`
-                                : '-'}
+                                : 'System'}
                             </span>
-                          </td>
+                          </td> */}
 
 
-                          <td>
+                          {/* <td>
                             {data?.isVerified ? (
                               <span
                                 className={`badge bg-success`}
                               >
-                                Verified
+                                Authorized
                                 <span className="ml-1">✅</span>
                               </span>
 
                             ) : (
-                              <span
-                                className={`badge bg-warning`}
+                              // <span
+                              //   className={`badge bg-warning`}
+                              // >
+                              //   Pending
+                              //   <span className="ml-1">🔄</span>
+                              // </span>
+                               <span
+                                className={`badge bg-success`}
                               >
-                                Pending
-                                <span className="ml-1">🔄</span>
+                                Authorized
+                                <span className="ml-1">✅</span>
                               </span>
                             )}
-                          </td>
+                          </td> */}
 
                           {/* <td className="text-center">
                             {data?.isVerified ? (
@@ -484,13 +559,13 @@ const StoreManagement = () => {
                               }
                           </td> */}
 
-                          <td className="">
+                          {/* <td className="">
                             {data?.isAuthorizedBy?.fname && data?.isAuthorizedBy?.lname
                               ? `${data?.isAuthorizedBy?.firstName} ${data?.isAuthorizedBy?.lastName}`
                               : '-'}
-                          </td>
+                          </td> */}
 
-                          <td>
+                          {/* <td>
                             <span
                               className={`badge ${data.status === "In Pending"
                                 ? "bg-warning"
@@ -501,33 +576,38 @@ const StoreManagement = () => {
                             >
                               {data?.status}
                             </span>
-                          </td>
+                          </td> */}
 
 
-
+                          {/* Actions */}
                           <td className="d-flex justify-content-start align-items-center gap-2">
-                            <button
+                            {/* <button
                               className="btn btn-xs sharp btn-primary"
-                              onClick={() => navigate(`/saleorderview/${data?._id}`)}>
+                              onClick={() => navigate(`/storeRejectionView/${data?._id}`)}>
                               <i className="fa-solid fa-eye"></i>
-                            </button>
+                            </button> */}
 
                             <button
                               className="btn btn-xs sharp btn-light"
-                              onClick={() => navigate(`/verifysSaleOrder/${data?._id}`)}
+                              // onClick={() => navigate(`/packing-items/${data?.so_id?._id}`)}
+                              onClick={() =>
+                                navigate(`/gatePass-items/${data?._id}`, {
+                                  state: { soDetails: data?.so_id }  // send full so_id object
+                                })
+                              }
                             >
                               <i className="fa-solid fa-check"></i>
                             </button>
 
-                            <button
+                            {/* <button
                               className="btn btn-xs sharp"
                               onClick={() => navigate(`/authorizeSaleOrder/${data?._id}`)}
                               style={{ background: '#FFB456', color: 'black' }}
                             >
                               <i className="fas fa-user-lock"></i>
-                            </button>
+                            </button> */}
 
-                            <button className="btn btn-xs sharp btn-primary"
+                            {/* <button className="btn btn-xs sharp btn-primary"
                               onClick={() => navigate(`/edit-sale-order/${data?._id}`)}
                             >
                               <i className="fa fa-pencil" />
@@ -538,7 +618,7 @@ const StoreManagement = () => {
                               onClick={() => handleDeleteSupplier(data?._id)}
                             >
                               <i className="fa fa-trash"></i>
-                            </button>
+                            </button> */}
                           </td>
 
                         </tr>
@@ -569,10 +649,10 @@ const StoreManagement = () => {
               </div>
             </div>
           </div>
-        </Col>
-      </Row>
+        </Col >
+      </Row >
     </>
   );
 };
 
-export default StoreManagement;
+export default GatePassRequestList;

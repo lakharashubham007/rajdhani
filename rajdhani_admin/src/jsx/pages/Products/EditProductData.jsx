@@ -127,7 +127,7 @@ const EditProductData = () => {
   const [skiveTypeOption, setSkiveTypeOption] = useState(dropdownOptions?.skiveTypeOptions);
   const [HoseDashSizeOption, setHoseDashSizeOption] = useState(null);
   const [fittingDashSizeOption, setfittingDashSizeOption] = useState(null);
-
+  console.log("fittingDashSizeOption",fittingDashSizeOption)
   const [fittingThreadOption, setfittingThreadOption] = useState(null);
   const [fittingTypeOption, setfittingTypeOption] = useState(dropdownOptions?.fittingTypeOptions);
   const [straightBendangleOption, setStraightBendangleOption] = useState(null);
@@ -147,8 +147,9 @@ const EditProductData = () => {
   const [selectedSkiveTypeOption, setSelectedSkiveTypeOption] = useState(null);
   const [selectedhoseDashSizeOption, setSelectedHoseDashSizeOption] = useState(null);
   const [selectedFittingDashSizeOption, setSelectedfittingDashSizeOption] = useState(null);
-  // console.log("selectedWithCapWithoutCapOption", selectedFittingDashSizeOption)
   const [selectedFittingTypeOption, setSelectedFittingTypeOption] = useState(null);
+    console.log("selectedFittingTypeOption", selectedFittingTypeOption)
+
   const [selectedFittingThreadOption, setSelectedFittingThreadOption] = useState(null);
   const [selectedStraightBendangleOption, setSelectedStraightBendangleOption] = useState(null);
   const [selectedDropLengthOption, setSelectedDropLengthOption] = useState(null);
@@ -940,7 +941,7 @@ const EditProductData = () => {
     if (
       formData?.fitting_thread &&
       formData?.variant &&
-      formData?.hose_dash_size
+      formData?.hose_dash_size && !isEdit // one line is here when standard is selected --- 31 july 2025
     ) {
       const filteredOptions = filterFittingDashSizeOptions();
       setSelectedfittingDashSizeOption(filteredOptions[0]);
@@ -953,6 +954,7 @@ const EditProductData = () => {
         });
       }
     }
+    setIsEdit(false)
   }, [formData?.fitting_thread, formData?.variant, formData?.hose_dash_size]);
 
 
@@ -969,7 +971,7 @@ const EditProductData = () => {
       }));
       setSelectedvariantOption(null); // Clear variant option
       setSelectedfittingDashSizeOption(null); // Clear fitting_dash size option
-      setSelectedFittingTypeOption(null);
+      // setSelectedFittingTypeOption(null); //4 august comented for fitting type male female not prefilled
       setSelectpipeODOption(null);
     }
   }, [selectedFittingThreadOption]); // Trigger this whenever fitting thread is selected
@@ -988,7 +990,7 @@ const EditProductData = () => {
       }));
       setSelectedvariantOption(null); // Clear variant option
       setSelectedfittingDashSizeOption(null); // Clear fitting_dash size option
-      setSelectedFittingTypeOption(null);
+      // setSelectedFittingTypeOption(null); //4 aug commented for fitting type male is not prefilled.
       setSelectpipeODOption(null);
     }
   }, [selectedhoseDashSizeOption]);
@@ -1583,14 +1585,16 @@ const EditProductData = () => {
       const filteredOption = fittingDashSizeOption
         ?.filter(option => option?.thread_type === formData?.fitting_thread)
         ?.find(option => option?.thread === formData?.fitting_dash_size);
-
+  
       if (filteredOption) {
+        console.log("Prefilled filteredOption",filteredOption)
         setSelectedfittingDashSizeOption({
           value: `${filteredOption.thread} (${filteredOption.dash_code})`,
           label: `${filteredOption.thread} (${filteredOption.dash_code})`,
           code: filteredOption.dash_code,
           dsc_code: filteredOption.dsc_code,
         });
+         console.log("fitting dash ",selectedFittingDashSizeOption)
       }
     }
 
@@ -1626,12 +1630,13 @@ const EditProductData = () => {
       const fittingType = dropdownOptions?.fittingTypeOptions?.find(
         option => option?.value === (formData?.fitting_type)
       );
-
+      
+      
       if (fittingType) {
         setSelectedFittingTypeOption({
           value: fittingType.value,
           label: fittingType.label,
-          code: fittingType.code || "",
+          code: fittingType.code,
           dsc_code: fittingType.dsc_code,
         });
       }
@@ -2377,6 +2382,7 @@ const EditProductData = () => {
       case "End Fittings":
         return (
           <EndFittingForm
+            isEditEndfitting={true}
             formData={formData}
             setFormData={setFormData}
             errors={errors}

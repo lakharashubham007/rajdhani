@@ -1,0 +1,145 @@
+.analytics-card {
+  border-radius: 16px;
+  padding: 20px;
+  height: 100%;
+  text-align: center;
+  transition: all 0.3s ease;
+  background-color: #fff;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.04);
+}
+
+.analytics-card:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.08);
+}
+
+.analytics-title {
+  font-size: 16px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.analytics-count {
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.view-all-btn {
+  margin-top: 15px;
+  padding: 6px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 50px;
+  transition: all 0.3s ease;
+}
+
+/* Color Themes */
+.blue {
+  background-color: #e6f0ff;
+}
+
+.blue .analytics-title {
+  color: #1e3a8a;
+}
+
+.blue .analytics-count {
+  color: #2563eb;
+}
+
+.blue-btn {
+  border: 1px solid #2563eb;
+  color: #2563eb;
+}
+
+.blue-btn:hover {
+  background-color: #2563eb;
+  color: #fff;
+}
+
+
+.green {
+  background-color: #e6f9f0;
+}
+
+.green .analytics-title {
+  color: #065f46;
+}
+
+.green .analytics-count {
+  color: #10b981;
+}
+
+.green-btn {
+  border: 1px solid #10b981;
+  color: #10b981;
+}
+
+.green-btn:hover {
+  background-color: #10b981;
+  color: #fff;
+}
+
+
+.orange {
+  background-color: #fff5e6;
+}
+
+.orange .analytics-title {
+  color: #9a3412;
+}
+
+.orange .analytics-count {
+  color: #f97316;
+}
+
+.orange-btn {
+  border: 1px solid #f97316;
+  color: #f97316;
+}
+
+.orange-btn:hover {
+  background-color: #f97316;
+  color: #fff;
+}
+
+
+.purple {
+  background-color: #f3e8ff;
+}
+
+.purple .analytics-title {
+  color: #6b21a8;
+}
+
+.purple .analytics-count {
+  color: #a855f7;
+}
+
+.purple-btn {
+  border: 1px solid #a855f7;
+  color: #a855f7;
+}
+
+.purple-btn:hover {
+  background-color: #a855f7;
+  color: #fff;
+}
+
+
+.view-all-btn {
+  background: linear-gradient(135deg, #6e8efb, #a777e3);
+  color: #fff;
+  border: none;
+  padding: 6px 14px;
+  font-size: 13px;
+  font-weight: 500;
+  border-radius: 6px;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.view-all-btn:hover {
+  background: linear-gradient(135deg, #5a75e5, #9a65dc);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+  transform: translateY(-1px);
+}

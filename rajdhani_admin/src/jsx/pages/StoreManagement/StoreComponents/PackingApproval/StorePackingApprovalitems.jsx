@@ -1,0 +1,2854 @@
+import { useLocation, useNavigate, useParams } from "react-router-dom";
+import React, { useState, useRef, useEffect } from "react";
+import { Row, Card, Col, Button, Modal, Container, Dropdown } from "react-bootstrap";
+import Select from "react-select";
+import Swal from "sweetalert2";
+import uplodIcon from "../../../../../assets/images/upload-icon.png";
+import Switch from "react-switch";
+import ReactPaginate from "react-paginate";
+import moment from "moment";
+import {
+  GetPurchaseOrderCheckBill,
+  GetPurchaseOrderItemsData,
+  GetPurchaseOrderViewData,
+  updatePurchaseOrderStatusApi,
+} from "../../../../../services/apis/PurchaseOrder";
+import rajdhanilogo from "../../../../../assets/images/cropped-Rparts-logo.png";
+import "../../../../../assets/css/AddSupplierPurchaseOrder.css";
+import { GetAllProductList } from "../../../../../services/apis/Product";
+import { addBillDetailsApi, createBillItemsApi, DownloadBill, updatePoItemForBillsApi } from "../../../../../services/apis/purchaseOrderBillApi";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import { Toaster } from "../../../../components/Toaster/Toster";
+import Loader from "../../../../components/Loader/Loader";
+import "../../../../../assets/css/PurchaseOrder.css";
+import { createBatchApi } from "../../../../../services/apis/BatchApi";
+import { addProductsInInvntory, checkProductsInInventoryApi } from "../../../../../services/apis/InventoryApi";
+import { addEntryInStock } from "../../../../../services/apis/StockMentainenaceApi";
+import { GetSaleOrderItemsData, GetSaleOrderViewData, verifyBySOApi, verifyItemsInSalesOrderApi, verifySalesOrderApi, verifySOApi } from "../../../../../services/apis/salesOrderApi";
+import { useSelector } from "react-redux";
+import { getPackingItemsForApprovalApi, updateItemQuantityWithLogsInInventoryApi } from "../../../../../services/apis/InventoryItemLogsApi";
+import { assign } from "lodash";
+import LogActivityItemsModal from "./../LogActivityItemsModal";
+import { getInventoryRejectionItemsApi } from "../../../../../services/apis/inventoryRejectionItemsApi";
+import { createPackingDetailsApi, createPackingItemsApi } from "../../../../../services/apis/PackingApi";
+
+
+const billtheadData = [
+  { heading: "PO Id", sortingVale: "purchase_order_id" },
+  { heading: "Bill Id", sortingVale: "bill_id" },
+  { heading: "Bill Name", sortingVale: "bill_doc" },
+  // { heading: "Bill Amount", sortingVale: "bill_amount" },
+  { heading: "Bill Date", sortingVale: "bill_date" },
+  { heading: "Created At", sortingVale: "created_at" },
+];
+
+const theadData = [
+  { heading: "S.No.", sortingVale: "sno" },
+  { heading: "Product Name", sortingVale: "name" },
+  { heading: "Fitting Code", sortingVale: "fitting_code" },
+  { heading: "Code", sortingVale: "product_code" },
+  { heading: "UOM", sortingVale: "uom" },
+  { heading: "Weight(kg)", sortingVale: "weight" },
+  // { heading: "Ordered Quantity", sortingVale: "ordered_quantity" },
+  { heading: "Available Packing Quantity", sortingVale: "avail_packing_quantity" },
+  { heading: "Packing Quantity", sortingVale: "packing_quantity" },
+  // { heading: "Requested Quantity", sortingVale: "requested_quantity" },
+  // { heading: "Last Assigned Quantity", sortingVale: "last_asign_quantity" },
+  // { heading: "Assign Quantity", sortingVale: "assign_quantity" },
+  // { heading: "Reserve Quantity", sortingVale: "reserve_quantity" },
+  // { heading: "Log Activity", sortingVale: "log_activity" },
+  // { heading: "Price", sortingVale: "price" },
+  // { heading: "Discount Per Unit", sortingVale: "discount_per_unit" },
+  // { heading: "CGST", sortingVale: "cgst" },
+  // { heading: "SGST", sortingVale: "sgst" },
+  // { heading: "IGST", sortingVale: "igst" },
+  // { heading: "Amount", sortingVale: "amount" },
+  // { heading: "Verify", sortingVale: "verify" },
+  // { heading: "Created At", sortingVale: "created_at" },
+  // { heading: "Status", sortingVale: "status" },
+  // { heading: "Action", sortingVale: "action" },
+];
+
+
+const StorePackingApprovalitems = () => {
+  const params = useParams()?.id;
+  const navigate = useNavigate();
+  const location = useLocation();
+  const soDetails = location.state?.soDetails;
+  console.log("soDetails=-=-=-=-=-------val", soDetails)
+  const authData = useSelector((state) => state.auth.auth);
+  const billTableRef = useRef(null);
+  const [sort, setSortata] = useState(10);
+  const [purchaseOrderData, setPurchaseOrderData] = useState([]);
+  const [purchaseOrderProdcutList, setPurchaseOrderProdcutList] = useState([]);
+  const [saleOrderItems, setSaleOrderItems] = useState([]);
+  const [billData, setBillData] = useState([]);
+  const [errors, setErrors] = useState({});
+  const [formBillingData, setFormBillingData] = useState({});
+  const [formData, setFormData] = useState({});
+  const [searchInputValue, setSearchInputValue] = useState("");
+  const [iconData, setIconDate] = useState({ complete: false, ind: Number });
+  const [currentPage, setCurrentPage] = useState(1);
+  const [singleBillData, setSingleBillData] = useState({});
+  const [contentModal, setContentModal] = useState(false);
+  const [productOption, setProductOption] = useState(null);
+  const [isPressed, setIsPressed] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [logo, setLogo] = useState(null);
+  const [apiSuccess, setApiSuccess] = useState(false);
+  const [visibleCount, setVisibleCount] = useState(5);
+  const [verifyShowModal, setVerifyShowModal] = useState(false);
+  const [focusedInputIndex, setFocusedInputIndex] = useState(null);
+  const [selectedRowData, setSelectedRowData] = useState();
+  const [selectedProducts, setSelectedProducts] = useState([]);
+  const [selectAll, setSelectAll] = useState(false);
+  const [inventoryData, setInventoryData] = useState([]);
+  const [selectedRowIndex, setSelectedRowIndex] = useState(null);
+  const [handleSubmitClick, setHandleSubmitClick] = useState(false)
+  console.log("inventoryData", inventoryData)
+
+
+
+  const [rows, setRows] = useState([
+    {
+      id: 1,
+      _id: "",
+      product_name: "",
+      sku: "",
+      unit: "",
+      variant: "",
+      variant_type: "",
+      uom: "",
+      uom_qty: "",
+      quantity: "",
+      price_per_unit: "",
+      discount_per_unit: "",
+      total_discount: "",
+      cgst: "",
+      sgst: "",
+      igst: "",
+      cess: "",
+      amount: "",
+      received_quantity: "",
+      verified_quantity: "",
+      ordered_quantity: "",
+      is_short_close: "",
+      lastAssignQuantity: ""
+    },
+  ]);
+
+  console.log("rows-=-=-=-=-=-=---->", rows)
+
+  const [isExpanded, setIsExpanded] = useState(false);
+
+  const toggleExpand = () => {
+    setIsExpanded(!isExpanded);
+  };
+
+  const handleBillingDetailChange = (e) => {
+    const { name, value } = e.target;
+    setFormBillingData((prevData) => ({
+      ...prevData,
+      [name]: value,
+      purchase_order_id: params,
+    }));
+  };
+
+  //pruducts dropdown
+  const fetchProductAllList = async () => {
+    setLoading(true);
+    try {
+      const res = await GetAllProductList();
+      const dropdownProductList = res?.data?.products?.map((product) => ({
+        value: product.desc_Code,
+        label: product.desc_Code,
+      }));
+      setProductOption(dropdownProductList);
+    } catch (error) {
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+
+  // Handle Short Close button click
+  const handleShortClose = (id) => {
+    Swal.fire({
+      title: 'Are you sure you want to Short Close this item?',
+      text: "Once Short Closed, you cannot reopen this item.",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#dd6b55',
+      cancelButtonColor: '#aaa',
+      confirmButtonText: 'Yes, Short Close it!',
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Update the is_short_close field to true for the specific row
+        const updatedRows = rows.map((row) =>
+          row.id === id ? { ...row, is_short_close: true } : row
+        );
+        setRows(updatedRows);
+
+        Swal.fire(
+          'Short Closed!',
+          'This item has been marked as Short Closed.',
+          'success'
+        );
+      }
+    });
+  };
+
+  const prefillRows = (data) => {
+    return data
+      .map((item, index) => {
+        // Check the first condition: Exclude if ordered_quantity, received_quantity, and verified_quantity are equal
+        const isQuantityMatched = item.ordered_quantity === item.received_quantity &&
+          item.received_quantity === item.verified_quantity;
+
+        // Check the second condition: Exclude if is_short_close is true
+        const isShortClose = item.is_short_close;
+
+        // Exclude row if any of the two conditions match
+        if (isQuantityMatched || isShortClose) {
+          return null; // Exclude this row (return null)
+        }
+        // Find matching inventory record by product_id
+        // const inventoryItem = inventoryData.find(
+        //   inv => inv?.product_id === item?.product_id
+        // );
+
+        // console.log("inventoryItem value is here",inventoryItem)
+
+        // Process the remaining rows
+        const selectedOption = productOption?.find(option => option?.value === item?.product_name);
+        return {
+          id: index + 1,
+          _id: item._id,
+          product_name: item.product_name,
+          product_code: item.product_code,
+          product_id: item?.product_id,
+          product_unit: item?.product_unit,
+          selectedOption: selectedOption || null,
+          weight: item.weight,
+          uom: item.uom,
+          quantity: item.quantity,
+          price: item.price,
+          discount_per_unit: item.discount_per_unit,
+          cgst: item.cgst,
+          sgst: item.sgst,
+          igst: item.igst,
+          cess: item.cess,
+          amount: item?.total_amount,
+          received_quantity: item?.received_quantity,
+          verified_quantity: item?.verified_quantity,
+          ordered_quantity: item?.quantity,
+          // available_quantity: inventoryItem?.inventoryDetails?.total_quantity,
+
+        };
+      })
+      .filter(item => item !== null); // Remove the excluded rows (null values)
+  };
+
+
+  useEffect(() => {
+    if (saleOrderItems?.length > 0 && rows.length === 1) {
+      // const formattedRows = prefillRows(saleOrderItems);
+      // setRows(formattedRows);
+    }
+  }, [saleOrderItems, contentModal]);
+
+
+  useEffect(() => {
+    if (!saleOrderItems) return;
+
+    const verifiedIds = saleOrderItems?.filter((row) => row?.isVerified).map((row) => row._id);
+
+    setSelectedProducts((prev) => { const updated = [...new Set([...prev, ...verifiedIds])]; return updated; });
+
+  }, [saleOrderItems]);
+
+
+
+  const calculateTotalAmount = () => {
+    return rows.reduce((total, row) => {
+      const quantity = parseFloat(row.quantity || 0);
+      const pricePerUnit = parseFloat(row.price_per_unit || 0);
+      const uomQty = parseFloat(row.uom_qty || 0); // Get the UOM Qty value
+      return total + quantity * pricePerUnit * uomQty; // Include UOM Qty in the calculation
+    }, 0);
+  };
+
+
+
+  const handleProductChange = (selectedOption, index) => {
+    const updatedRows = [...rows];
+    updatedRows[index].selectedOption = selectedOption; // Update only the specific row's selectedOption
+    updatedRows[index].product_name = selectedOption ? selectedOption?.value : ''; // Update product_name based on selectedOption
+    setRows(updatedRows);
+  };
+
+
+  //to add a new row
+  const addRow = () => {
+    setRows([
+      ...rows,
+      {
+        id: rows.length + 1,
+        product_name: "",
+        sku: "",
+        unit: "",
+        variant: "",
+        variant_type: "",
+        uom: "",
+        uom_qty: "",
+        quantity: "",
+        price_per_unit: "",
+        discount_per_unit: "",
+        total_discount: "",
+        cgst: "",
+        sgst: "",
+        igst: "",
+        cess: "",
+        amount: "",
+      },
+    ]);
+  };
+
+  const handleDeleteTableRow = (id) => {
+    // Filter out the row with the matching id
+    setRows(rows?.filter((row) => row.id !== id));
+  };
+
+  // Function to handle input changes
+  const handleChangeRow = (index, field, value) => {
+    const updatedRows = [...rows];
+    updatedRows[index][field] = value;
+    setRows(updatedRows);
+
+  };
+
+  //Handele log activity
+  const [selectedItemId, setSelectedItemId] = useState(null);
+  const [selectedSOId, setSelectedSOId] = useState(null);
+  const [modalOpen, setModalOpen] = useState(false);
+  const handleOpenLogModal = (itemId, SaleOrderId) => {
+    setSelectedItemId(itemId);
+    setSelectedSOId(SaleOrderId);
+    setModalOpen(true);
+  };
+
+
+  function SotingData(name, ind) {
+    if (iconData.complete) {
+      const sortValue = { value: name, type: "asc" };
+      // fetchPurchaseOrderData(sortValue);
+    } else {
+      const sortValue = { value: name, type: "dsc" };
+      // fetchPurchaseOrderData(sortValue);
+    }
+  }
+  const [inventoryRejectedItemData, setInventoryRejectedItemData] = useState();
+  console.log("inventoryRejectedItemData", inventoryRejectedItemData)
+  //   getSubCategoriesApi
+  const fetchSaleorders = async (sortValue) => {
+    // Set loading to true when the API call starts
+    setLoading(true);
+    try {
+      const res = await getPackingItemsForApprovalApi(
+        params,
+        currentPage,
+        sort,
+        sortValue,
+        searchInputValue
+      );
+      console.log(res, "-*/-/-*/-/-*/-*/-*/-*/854654654*-/-*/5465-*-*/5445-*")
+
+      setSaleOrderItems(res?.data?.data);
+      setInventoryRejectedItemData(res?.data?.data)
+      setRows(res?.data?.data)
+
+    } catch (error) {
+      // Catch and handle errors
+      console.error("Error fetching data:", error);
+      Toaster.error("Failed to load data. Please try again.");
+    } finally {
+      // Always set loading to false when the API call is done (whether successful or failed)
+      setLoading(false);
+    }
+  }
+
+  // const fetchSaleorders = async () => {
+  //   try {
+  //     const res = await GetSaleOrderItemsData(params);
+  //     const data = res?.data?.item;
+  //     setSaleOrderItems(data);
+  //     setRows(data); //data in table set from here
+  //   } catch (err) {
+  //     console.log("errror", err);
+  //   }
+  // };
+
+  useEffect(() => {
+    fetchSaleorders();
+  }, [handleSubmitClick]);
+
+
+  useEffect(() => {
+    const fetchInventory = async () => {
+      if (saleOrderItems?.length > 0) {
+        try {
+          const productIds = saleOrderItems?.map(item => item.product_id);
+          // Remove duplicates
+          const uniqueProductIds = [...new Set(productIds)];
+          const inventoryCheckRes = await checkProductsInInventoryApi({
+            product_ids: uniqueProductIds,
+          });
+
+          setInventoryData(inventoryCheckRes?.data?.products)
+
+
+
+        } catch (error) {
+          console.error("Error fetching inventory:", error);
+        }
+      }
+    };
+    fetchInventory();
+  }, [saleOrderItems, handleSubmitClick]);
+
+  // Merge available_quantity into rows once both data sets are loaded
+  useEffect(() => {
+    if (saleOrderItems?.length > 0 && inventoryData.length > 0) {
+      // Create a quick lookup map for inventory data
+      const inventoryMap = new Map(
+        inventoryData.map(inv => [
+          inv.product_id,
+          {
+            available_quantity: inv.inventoryDetails?.available_quantity || 0,
+            lastAssignQuantity: inv.inventoryDetails?.lastAssignQuantity || 0,
+            inventory_id: inv.inventoryDetails?._id
+          }
+        ])
+      );
+
+      // Merge both available_quantity and inventory_id into each row
+      const mergedRows = saleOrderItems.map(item => {
+        const invData = inventoryMap.get(item.product_id) || {};
+        console.log("invData", invData)
+        return {
+          ...item,
+          available_quantity: invData.available_quantity ?? 0,
+          lastAssignQuantity: invData?.lastAssignQuantity,
+          inventory_id: invData.inventory_id || null
+        };
+      });
+
+      setRows(mergedRows);
+    }
+  }, [saleOrderItems, inventoryData, handleSubmitClick]);
+
+
+  const handlePageClick = (selectedPage) => {
+    setCurrentPage(selectedPage.selected + 1);
+  };
+
+
+
+  // Inline styles
+  const styles = {
+    container: {
+      border: "2px dashed #ccc",
+      borderRadius: "8px",
+      width: "150px", // Logo size
+      height: "150px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      cursor: "pointer",
+      backgroundColor: "#f9f9f9",
+      position: "relative",
+      textAlign: "center",
+      overflow: "hidden",
+      // marginLeft: '110px'
+    },
+    coverContainer: {
+      border: "2px dashed #ccc",
+      borderRadius: "8px",
+      width: "250px", // Cover size (2:1 ratio)
+      height: "150px",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      cursor: "pointer",
+      backgroundColor: "#f9f9f9",
+      position: "relative",
+      textAlign: "center",
+      overflow: "hidden",
+    },
+    placeholder: {
+      width: "100%",
+      height: "100%",
+      display: "flex",
+      justifyContent: "center",
+      alignItems: "center",
+      position: "relative",
+      textAlign: "center",
+    },
+    img: {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      borderRadius: "8px",
+    },
+    hover: {
+      borderColor: "#007bff",
+      backgroundColor: "#e9f4ff",
+    },
+    uploadIcon: {
+      color: "#888",
+      fontSize: "16px",
+      fontWeight: "bold",
+    },
+    deleteIcon: {
+      position: "absolute",
+      top: "0px",
+      right: "0px",
+      backgroundColor: "#FF6D6D",
+      color: "white",
+      borderRadius: "100%",
+      padding: "5px 10px",
+      cursor: "pointer",
+      zIndex: 2,
+      fontSize: "10px",
+      fontWeight: "bold",
+    },
+  };
+
+  // Handle the BILL logo image change
+  const handleLogoChange = (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      const reader = new FileReader();
+      reader.onload = () => {
+        setLogo(reader.result);
+      };
+      reader.readAsDataURL(file);
+      setFormBillingData({
+        ...formBillingData,
+        bill_doc: file, // Update the image field with the selected file
+      });
+      setErrors({
+        ...errors,
+        image: null, // Update the image field with the selected file
+      });
+    }
+  };
+
+  const handleDeleteLogo = () => {
+    setLogo(null);
+    document.getElementById("logoUpload").value = "";
+  };
+
+
+  const parseFields = (item, additionalFields = {}) => ({
+    ...item,
+    ...additionalFields,
+    cess: parseFloat(item.cess || 0),
+    cgst: parseFloat(item.cgst || 0),
+    discount_per_unit: parseFloat(item.discount_per_unit || 0),
+    igst: parseFloat(item.igst || 0),
+    price_per_unit: parseFloat(item.price_per_unit || 0),
+    uom_qty: parseFloat(item.uom_qty || 0),
+    quantity: parseFloat(item.quantity || 0),
+    total_discount: parseFloat(item.total_discount || 0),
+    amount: parseFloat(item.amount || 0),
+    sgst: parseFloat(item.sgst || 0),
+  });
+
+  // Update Purchase Order Items
+  const updatePoItems = async (billId, poId) => {
+    const updatedPoItems = rows?.map(({ id, selectedOption, ...rest }) =>
+      parseFields(rest, { po_id: poId })
+    );
+    try {
+      const res = await updatePoItemForBillsApi(poId, updatedPoItems);
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Failed to update PO Items");
+      }
+    } catch (error) {
+      console.error("Error updating PO items:", error);
+      throw error; // Propagate the error
+    }
+  };
+
+  // Create Bill Items
+  const createBillItems = async (billId, poId, batchId) => {
+    const updatedBillItems = rows?.map(({ id, selectedOption, _id, ...rest }) =>
+      parseFields(rest, { bill_id: billId, po_id: poId, batch_id: batchId })
+    );
+
+    try {
+      const res = await createBillItemsApi(updatedBillItems);
+      if (!res.data?.success) {
+        throw new Error(res.data?.message || "Failed to create Bill Items");
+      }
+      setApiSuccess(true);
+      return res; // ✅ Return the API response
+    } catch (error) {
+      console.error("Error creating Bill items:", error);
+      throw error; // Propagate the error
+    }
+  };
+
+  const handleVerify = async (e) => {
+    e.preventDefault();
+
+    const payloadSOItems = {
+      so_id: params,
+      isVerified: selectedProducts, // Array of product IDs
+      isVerifiedBy: authData?.user?._id, // User ID
+    };
+
+    const soUpdateisVerifiedPayload = {
+      so_id: params,
+      isVerified: true, // Array of product IDs
+      isVerifiedBy: authData?.user?._id,
+
+    };
+
+    const soUpdateisNotVerifiedPayload = {
+      so_id: params,
+      isVerified: false, // Array of product IDs
+      isVerifiedBy: authData?.user?._id,
+
+    };
+
+
+    // console.log("payload is herer", payload)
+
+    try {
+      setLoading(true);
+
+      const response = await verifyItemsInSalesOrderApi(payloadSOItems);
+
+      console.log("response is here -*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-> Verification Response:", response);
+
+
+      if (response?.data?.success) {
+        //here condtion will be all So items are verified then only update SO isVarified or add verified by person name
+        if (response?.data?.totalItems === response?.data?.verifiedItems) {
+          const saleOrderResponse = await verifyBySOApi(soUpdateisVerifiedPayload);
+
+        } else {
+          const saleOrderResponse = await verifyBySOApi(soUpdateisNotVerifiedPayload);
+          console.log("response is here -*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-*-*-*--*-*-*-*-*-*-> ", saleOrderResponse);
+        }
+
+        Toaster.success(response?.data?.message)
+      } else {
+        Toaster.error(response?.data?.message)
+      }
+
+
+      // Optionally, show a toast or refresh the list
+    } catch (error) {
+      // Toaster.error(error?.message)
+      console.error("Verification failed:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSubmits = async (e) => {
+    e.preventDefault();
+
+    try {
+      const res = await addBillDetailsApi(formBillingData);
+
+      if (res.data?.success) {
+        const billId = res?.data?.bill?._id;
+        const poId = params;
+
+        // Update PO Items
+        await updatePoItems(billId, poId);
+
+        // ✅ Create Batch API
+        const batchPayload = {
+          batch_no: "Batch001",
+          lot_no: "LOT101",
+          po_id: poId,
+          bill_id: billId,
+        };
+
+        const batchResponse = await createBatchApi(batchPayload);
+
+        if (batchResponse.data?.success) {
+          const batchId = batchResponse.data?.batch?._id;
+
+          // ✅ Create Bill Items, now including batchId
+          const billitems = await createBillItems(billId, poId, batchId);
+
+          // console.log("billitems",billitems?.data?.bill_items[0]?.product_id)
+
+          // ✅ Extract all product IDs from bill items
+          const productIds = billitems?.data?.bill_items.map((item) => item?.product_id);
+
+          //   // ✅ Check if products exist in the inventory
+          // const inventoryCheckRes = await checkProductsInInventoryApi(billitems?.data?.bill_items[0]?.product_id);
+          console.log("Checking inventory for product IDs:", productIds);
+
+          // ✅ Check if products exist in the inventory
+          const inventoryCheckRes = await checkProductsInInventoryApi({ product_ids: productIds });
+
+          console.log("Inventory Check Response:", inventoryCheckRes?.data?.products);
+
+
+          // console.log("inventoryCheckRes???????????????????",inventoryCheckRes?.data?.exists)
+
+          // ✅ Separate products that exist and those that need to be added
+          const missingProducts = inventoryCheckRes?.data?.products.filter((p) => !p.exists);
+          const existingProducts = inventoryCheckRes?.data?.products.filter((p) => p.exists);
+
+          console.log("Missing Products (Need to be added to Inventory):", missingProducts);
+          console.log("Existing Products (Stock Maintenance Needed):", existingProducts);
+
+          // ✅ Add missing products to inventory
+          if (missingProducts.length > 0) {
+            const missingProductIds = new Set(missingProducts.map((p) => p.product_id));
+
+            const filteredBillItems = billitems?.data?.bill_items.filter(item =>
+              missingProductIds.has(item.product_id)
+            );
+            const addProductsInInventory = await addProductsInInvntory(filteredBillItems);
+            console.log("Added to Inventory:", addProductsInInventory);
+          }
+
+
+          // ✅ Maintain stock for existing products
+          if (existingProducts.length > 0) {
+            const existingProductIds = new Set(existingProducts.map((p) => p.product_id));
+
+            const filteredExistingItems = billitems?.data?.bill_items.filter(item =>
+              existingProductIds.has(item.product_id)
+            );
+
+            const stockEntries = filteredExistingItems.map(item => ({
+              batch_id: item?.batch_id,
+              lot_id: item?.batch_id, // Assuming lot_id is same as batch_id, update if needed
+              product_id: item?.product_id,
+              bill_id: item?.bill_id,
+              po_so_id: item?.po_id, // Replace with actual value
+              order_type_ref: "PurchaseOrder",
+              order_type: "PO",
+              original_quantity: item?.quantity || 0,
+              used_qty: 0,
+              remaining_qty: item?.quantity || 0,
+            }));
+
+            console.log("Stock Entries Payload:", stockEntries);
+
+            const res = await addEntryInStock(stockEntries);
+            console.log("Stock Updated:", res);
+          }
+
+
+
+          // if (inventoryCheckRes?.data?.exists === false) {
+          //   console.log("billitems?.data?.bill_items-------> item array goes into inventoooooooooooooooory:->", billitems?.data?.bill_items)
+
+          //   //create entry in invenotry
+          //   const addProductsInInventory = addProductsInInvntory(billitems?.data?.bill_items);
+          //   console.log("addProductsInInventory", addProductsInInventory)
+
+          //   const stockEntries = billitems?.data?.bill_items.map(item => ({
+          //     batch_id: item?.batch_id,
+          //     lot_id: item?.batch_id, // Assuming lot_id is same as batch_id, update if needed
+          //     product_id: item?.product_id,
+          //     bill_id: item?.bill_id,
+          //     po_so_id: item?.po_id, // Replace with actual value
+          //     order_type_ref: "PurchaseOrder",
+          //     order_type: "PO",
+          //     original_quantity: item?.quantity || 0, // Adjust based on actual data
+          //     used_qty: 0,
+          //     remaining_qty: item?.quantity || 0,
+          //   }));
+
+          //   console.log("Stock Entries Payload:", stockEntries);
+
+          //   const res = await addEntryInStock(stockEntries);
+          //   console.log("addStockEntry addStockEntry addStockEntry addStockEntry", res)
+          //   //
+          // } else {
+          //   //create entry in stock maintenanice table with details
+          //   const stockEntries = billitems?.data?.bill_items.map(item => ({
+          //     batch_id: item?.batch_id,
+          //     lot_id: item?.batch_id, // Assuming lot_id is same as batch_id, update if needed
+          //     product_id: item?.product_id,
+          //     bill_id: item?.bill_id,
+          //     po_so_id: item?.po_id, // Replace with actual value
+          //     order_type_ref: "PurchaseOrder",
+          //     order_type: "PO",
+          //     original_quantity: item?.quantity || 0, // Adjust based on actual data
+          //     used_qty: 0,
+          //     remaining_qty: item?.quantity || 0,
+          //   }));
+
+          //   console.log("elseeeeee part ------ >>>>> Stock Entries Payload:", stockEntries);
+
+          //   const res = await addEntryInStock(stockEntries);
+          //   console.log("addStockEntry addStockEntry addStockEntry addStockEntry", res)
+          // }
+
+        } else {
+          throw new Error(batchResponse.data?.message || "Failed to create batch");
+        }
+
+        // ✅ Show success alert only for Bill creation
+        Swal.fire({
+          icon: "success",
+          title: "Bill Created Successfully",
+          text: res.data?.message,
+          showConfirmButton: false,
+          timer: 1500,
+        });
+
+        setContentModal(false);
+
+        return res; // ✅ Return API response so it can be used in handleSubmitDraft
+      } else {
+        throw new Error(res.data?.message || "Failed to create Bill");
+      }
+    } catch (error) {
+      console.error("Error during form submission:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "An error occurred while processing your request.",
+      });
+
+      return { data: { success: false } }; // ✅ Return failure response
+    }
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setHandleSubmitClick(true);
+
+    try {
+      // 1️⃣ Filter rows that have packing_quantity
+      const payloadItems = rows?.flatMap((item) => {
+        if (item.packing_quantity) {
+          return { ...item };
+        }
+        return [];
+      });
+
+      // 2️⃣ Payload for Packing Details
+      // const payloadDetails = {
+      //   soDetails
+      // };
+
+      const payloadDetails = {
+        so_id: soDetails._id,
+        date: soDetails.order_details?.date,
+        voucher_no: soDetails.voucher_no,
+        created_by: soDetails.createdBy,
+      };
+
+      // 3️⃣ Validation
+      if (payloadItems.length === 0) {
+        Swal.fire({
+          icon: "warning",
+          title: "Note",
+          text: "No items with packing quantity!",
+          showConfirmButton: false,
+          timer: 1500,
+        });
+        // setHandleSubmitClick(false);
+        return;
+      }
+
+      // console.log("Packing Details Payload:", payloadDetails);
+
+
+
+      // 4️⃣ Call Packing Details API first
+      const packingDetailsRes = await createPackingDetailsApi(payloadDetails);
+      // Replace with your actual API call function
+      console.log("Packing Details Response:", packingDetailsRes);
+
+      const packingDetailsId = packingDetailsRes?.data?.data?._id; // Extract ID
+
+      if (!packingDetailsId) {
+        throw new Error("Packing Details ID not returned from API");
+      }
+
+      // 5️⃣ Add packingDetails_id to each item
+      // const payloadWithPackingId = payloadItems.map((item) => ({
+      //   ...item,
+      //   packingDetails_id: packingDetailsId,
+      // }));
+      const payloadWithPackingId = payloadItems.map((item) => ({
+        // item,
+        packingDetails_id: packingDetailsId,      // 1️⃣ from previous API response
+        so_id: soDetails._id,                     // 2️⃣ from Sales Order
+        product_id: item.product_id,              // 3️⃣ product reference
+        packing_quantity: item.packing_quantity,  // 4️⃣ user input
+        ordered_quantity: item.ordered_quantity,  // 5️⃣ from SO
+      }));
+
+
+
+      console.log("Payload for Packing Items API:", payloadWithPackingId);
+
+      // 6️⃣ Call Packing Items API
+      const packingItemsRes = await createPackingItemsApi(payloadWithPackingId);
+      // Replace with your actual API call function
+      console.log("Packing Items Response:", packingItemsRes);
+
+      // ✅ Success feedback
+      Swal.fire({
+        icon: "success",
+        title: "Success",
+        text: "Packing details and items saved successfully!",
+        showConfirmButton: false,
+        timer: 1500,
+      });
+
+      setHandleSubmitClick(false);
+    } catch (error) {
+      console.error("Error during form submission:", error);
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.message || "Something went wrong",
+        showConfirmButton: true,
+      });
+      setHandleSubmitClick(false);
+    }
+  };
+
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setHandleSubmitClick(true)
+  //   try {
+
+
+  //     // Filter rows that have either assign_quantity or reserve_quantity
+  //     const payload = rows?.flatMap((item) => {
+  //       console.log("items are here", item)
+  //       const logs = [];
+  //       if (item.packing_quantity) {
+  //         logs.push({
+  //           ...item,
+  //         });
+  //       }
+  //       return logs;
+  //     });
+
+  //     const payloadDetails = {
+  //       soDetails
+  //     }
+
+  //     //validation
+  //     if (payload.length === 0) {
+  //       // alert("No items with assign or reserve quantity!");
+  //       // ✅ Show success alert only for Bill creation
+  //       Swal.fire({
+  //         icon: "warning",
+  //         title: "Note",
+  //         text: "No items with assign or reserve quantity!",
+  //         showConfirmButton: false,
+  //         timer: 1500,
+  //       });
+  //       return;
+  //     }
+
+  //     console.log("Payload to API:", payload,payloadDetails);
+  //     // //api call is here
+  //     // const res = await updateItemQuantityWithLogsInInventoryApi(payload)
+  //     // console.log("res is here", res);
+
+  //     // setHandleSubmitClick(false)
+  //   } catch (error) {
+  //     console.error("Error during form submission:", error);
+  //     setHandleSubmitClick(false)
+  //   }
+  // };
+
+
+  const handleSubmitDraft = async (e) => {
+    e.preventDefault();
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to verify this sale order.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, verify order",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      const payload = { status: "In Pending" };
+
+      try {
+        const poId = params; // Replace `params` with the actual PO ID
+        // First, submit the form (handleSubmit)
+        const res = await handleSubmit(e); // ✅ Await handleSubmit and check success
+
+        if (res.data?.success) {
+          // Only proceed if the bill creation was successful
+          const response = await updatePurchaseOrderStatusApi(poId, payload);
+
+          if (response.data?.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Saved as Draft",
+              text: response.data?.message,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          } else {
+            throw new Error(response.data?.message || "Failed to save as draft");
+          }
+        } else {
+          throw new Error("Bill creation failed, draft not saved.");
+        }
+      } catch (error) {
+        console.error("Error saving as draft:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.message || "An error occurred while saving as draft.",
+        });
+      }
+    }
+  };
+
+  // Handle Submit Final
+  const handleSubmitFinal = async (e) => {
+    e.preventDefault();
+
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to finalize the submission.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, submit",
+      cancelButtonText: "Cancel",
+    });
+
+    if (result.isConfirmed) {
+      const payload = { status: "Completed" };
+
+      try {
+        const poId = params; // Replace `params` with the actual PO ID
+
+        // First, submit the form (handleSubmit)
+        const res = await handleSubmit(e); // ✅ Await and check success
+
+        if (res.data?.success) {
+          // Only proceed if the bill creation was successful
+          const response = await updatePurchaseOrderStatusApi(poId, payload);
+
+          if (response.data?.success) {
+            Swal.fire({
+              icon: "success",
+              title: "Final Submission Completed",
+              text: response.data?.message,
+              showConfirmButton: false,
+              timer: 1500,
+            });
+          } else {
+            throw new Error(response.data?.message || "Failed to finalize submission");
+          }
+        } else {
+          throw new Error("Bill creation failed, final submission not completed.");
+        }
+      } catch (error) {
+        console.error("Error during final submission:", error);
+        Swal.fire({
+          icon: "error",
+          title: "Error",
+          text: error.message || "An error occurred during final submission.",
+        });
+      }
+    }
+  };
+
+  const handleVerifyClick = (row, index) => {
+    // setSelectedRowData(row);
+    setSelectedRowData({ ...row }); // Set selected row data
+    setSelectedRowIndex(index);
+    setVerifyShowModal(true);
+  };
+
+
+  const handleSeeMore = () => {
+    setVisibleCount(billData.length); // Show all bills
+  };
+
+  const handleAddNewBill = () => {
+    if (purchaseOrderData?.status == "Completed") {
+      Swal.fire({
+        text: "No New Bills Can Be Added to a Completed Purchase Order",
+        icon: "warning",
+        showClass: {
+          popup: `
+            animate__animated
+            animate__fadeInUp
+            animate__faster
+          `
+        },
+        hideClass: {
+          popup: `
+            animate__animated
+            animate__fadeOutDown
+            animate__faster
+          `
+        }
+      });
+    } else {
+      setContentModal(true)
+    }
+  }
+
+  return (
+    <>
+      <ToastContainer />
+      <Loader visible={loading} />
+      <div className="card">
+        <div className="card-body">
+          <div className="purchase-order-container ">
+            {/* Header Section */}
+            <div className="">
+              <div className="header-section mb-3">
+
+
+                <div className="row">
+                  <div className="col-sm-4">
+                    <img src={rajdhanilogo} alt="logo" height={60} />
+                  </div>
+                  {/* <div className="col-sm-8">
+                    <h2 className="header-title">Rajdhani - Verify Order</h2>
+                  </div> */}
+                  <div className="col-sm-4">
+                    <h2 className="header-title" style={{ display: 'inline', whiteSpace: 'nowrap' }}>
+                      Rajdhani - Packing Items
+                    </h2>
+                  </div>
+                </div>
+
+                <div className="addresses mt-3">
+                  <hr />
+                  <div className="row">
+
+                    <div className="col-md-6 col-xl-4 address-block">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h5 style={{ margin: 0 }}>Voucher No.</h5>
+                        {/* <p style={{ margin: 0 }}>{inventoryRejectedItemData[0]?.inventoryrejectiondetails_id?.so_id?.voucher_no}</p> */}
+                      </div>
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h5 style={{ margin: 0 }}>Buyer’s Ref./Order No.</h5>
+                        {/* <p style={{ margin: 0 }}>{inventoryRejectedItemData[0]?.inventoryrejectiondetails_id?.so_id?.voucher_no}</p> */}
+                      </div>
+                    </div>
+
+                    <div className="col-md-6 col-xl-4 address-block">
+                      <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h5 style={{ margin: 0 }}>Dated</h5>
+                        <p style={{ margin: 0 }}>
+                          {/* {new Date(inventoryRejectedItemData[0]?.inventoryrejectiondetails_id?.created_at).toLocaleDateString('en-GB', {
+                            day: '2-digit',
+                            month: 'short',
+                            year: 'numeric'
+                          })} */}
+                        </p>
+                      </div>
+                      {/* <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                        <h5 style={{ margin: 0 }}>Mode/Terms of Payment</h5>
+                        <p style={{ margin: 0 }}>-</p>
+                      </div> */}
+                    </div>
+
+                    <div className="col-md-6 col-xl-4 address-block">
+                      {/* Terms of Delivery */}
+                      <div className="order-info">
+                        <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                          <h5 style={{ margin: 0 }}>Terms of Delivery</h5>
+                          <p style={{ margin: 0 }}></p>
+                        </div>
+
+                        {/* <p className="po-view-p">{purchaseOrderData?.customer_id?.company_name}</p>
+
+
+                        <p className="po-view-p">
+                          {purchaseOrderData?.customer_id?.address}
+                        </p>
+                        <p className="po-view-p">
+                          {purchaseOrderData?.customer_id?.state}, {purchaseOrderData?.customer_id?.city}, {purchaseOrderData?.customer_id?.country}
+                        </p>
+                    
+                        <p className="po-view-p">
+                          Email: {purchaseOrderData?.customer_id?.email}
+                        </p> */}
+
+                      </div>
+                    </div>
+
+                  </div>
+                  <hr />
+                </div>
+
+
+
+
+
+              </div>
+            </div>
+
+
+
+
+
+
+
+
+            {/* Product Table */}
+            <Row>
+              <Col lg={12}>
+                <div className="">
+                  <div className="card-header pb-0 px-0">
+                    <h4 className="card-title">Packing Items</h4>
+                    <div className="mb-3">
+                      {/* Analytics Badge Boxes */}
+                      <div class="d-flex flex-wrap gap-2 mt-2">
+                        <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#e7f3ff" }}>
+                          Total Items: {purchaseOrderData?.total_quantity ? purchaseOrderData?.total_quantity : 0}
+                        </div>
+                        {/* <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#e8f5e9" }}>
+                                    Total Verified Items: {purchaseOrderData?.total_amount ? purchaseOrderData?.total_amount : 0} INR
+                                </div> */}
+                        {/* <div class="p-2 text-dark fw-bold border rounded" style={{ backgroundColor: "#e0f7fa" }} >
+                                    Total Unverified Items: {purchaseOrderData?.total_products ? purchaseOrderData?.total_products : 0}
+                                </div> */}
+                      </div>
+
+                    </div>
+                  </div>
+                  <div className="card-body px-0">
+                    <div className="table-responsive">
+                      <div
+                        id="holidayList"
+                        className="dataTables_wrapper no-footer">
+                        <div className="justify-content-between d-sm-flex">
+                          {/* <div className="dataTables_length">
+                            <label className="d-flex align-items-center">
+                              Show
+                              <Dropdown className="search-drop">
+                                <Dropdown.Toggle
+                                  as="div"
+                                  className="search-drop-btn">
+                                  {sort}
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                  <Dropdown.Item
+                                    onClick={() => setSortata("2")}>
+                                    2
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() => setSortata("5")}>
+                                    5
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() => setSortata("10")}>
+                                    10
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() => setSortata("15")}>
+                                    15
+                                  </Dropdown.Item>
+                                  <Dropdown.Item
+                                    onClick={() => setSortata("20")}>
+                                    20
+                                  </Dropdown.Item>
+                                </Dropdown.Menu>
+                              </Dropdown>
+                              entries
+                            </label>
+                          </div> */}
+
+
+                        </div>
+
+                        <table id="example4" className="display dataTable no-footer w-100">
+                          {/* Table Headings */}
+                          <thead>
+                            <tr>
+                              {theadData?.map((item, ind) => {
+                                return (
+                                  <>
+                                    {item.sortingVale === "verify" ? (
+                                      <th
+                                        key={ind}
+                                        style={{
+                                          display: 'flex',
+                                          flexDirection: 'column', // stack text and checkbox vertically
+                                          alignItems: 'center',    // center horizontally
+                                          justifyContent: 'center', // center vertically if needed
+                                          padding: '10px',
+                                          userSelect: 'none',
+                                        }}
+                                      >
+                                        <span style={{ fontWeight: '600', marginBottom: '6px' }}>
+                                          {item.heading}
+                                        </span>
+
+                                        <label
+                                          style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            justifyContent: 'center',
+                                            width: '15px',
+                                            height: '15px',
+                                            borderRadius: '50%',
+                                            transition: 'background-color 0.2s ease, transform 0.2s ease',
+                                            cursor: 'pointer',
+                                          }}
+                                          onMouseEnter={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'rgba(0, 123, 255, 0.1)';
+                                          }}
+                                          onMouseLeave={(e) => {
+                                            e.currentTarget.style.backgroundColor = 'transparent';
+                                          }}
+                                        >
+                                          <input
+                                            type="checkbox"
+                                            checked={selectAll}
+                                            onChange={(e) => {
+                                              const checked = e.target.checked;
+                                              setSelectAll(checked);
+
+                                              if (checked) {
+                                                const allIds = purchaseOrderProdcutList.map((item) => item._id);
+                                                setSelectedProducts(allIds);
+                                              } else {
+                                                setSelectedProducts([]);
+                                              }
+                                            }}
+                                            onClick={(e) => e.stopPropagation()}
+                                            style={{
+                                              width: '20px',
+                                              height: '20px',
+                                              borderRadius: '50%',
+                                              accentColor: '#007bff',
+                                              cursor: 'pointer',
+                                              transition: 'transform 0.2s ease',
+                                            }}
+                                            onMouseDown={(e) => {
+                                              e.target.style.transform = 'scale(0.9)';
+                                            }}
+                                            onMouseUp={(e) => {
+                                              e.target.style.transform = 'scale(1)';
+                                            }}
+                                          />
+                                        </label>
+                                      </th>
+                                    ) : (
+                                      <th
+                                        key={ind}
+                                        onClick={() => {
+                                          SotingData(item?.sortingVale, ind);
+                                          setIconDate((prevState) => ({
+                                            complete: !prevState.complete,
+                                            ind: ind,
+                                          }));
+                                        }}
+                                      >
+                                        {item.heading}
+                                        <span>
+                                          {ind !== iconData.ind && (
+                                            <i className="fa fa-sort ms-2 fs-12" style={{ opacity: "0.3" }} />
+                                          )}
+                                          {ind === iconData.ind &&
+                                            (iconData.complete ? (
+                                              <i className="fa fa-arrow-down ms-2 fs-12" style={{ opacity: "0.7" }} />
+                                            ) : (
+                                              <i className="fa fa-arrow-up ms-2 fs-12" style={{ opacity: "0.7" }} />
+                                            ))}
+                                        </span>
+                                      </th>
+                                    )}
+
+                                  </>
+
+
+                                );
+                              })}
+                            </tr>
+                          </thead>
+
+                          <tbody >
+                            {rows?.map((row, index) => (
+                              <tr key={row.id}
+                                //  onClick={() => handleVerifyClick(row)} 
+                                onClick={(e) => {
+                                  const target = e.target;
+
+                                  // Prevent modal from opening when clicking on an active input or button
+                                  if (target.tagName === "BUTTON") return;
+                                  if (target.tagName === "INPUT" && !target.disabled) return;
+
+                                  // Open modal if clicking on a disabled input or any other row area
+                                  handleVerifyClick(row, index);
+                                }}
+                                style={{ cursor: "pointer" }}>
+                                <td><strong>{index + 1}</strong> </td>
+                                {/* Product Name */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="Product Name"
+                                    value={row?.product_name}
+                                    onClick={() =>
+                                      setFocusedInputIndex((prev) => (prev === index ? null : index))
+                                    }
+                                    // onChange={(e) =>
+                                    //   handleChangeRow(index, "product_name", e.target.value)
+                                    // }
+                                    className="form-control row-input"
+                                    style={{
+                                      width: focusedInputIndex === index ? "600px" : "300px",
+                                      transition: "width 0.3s ease",
+                                      cursor: "pointer",
+                                    }}
+                                  />
+                                </td>
+                                {/* Fitting Code */}
+                                <td style={{
+                                  whiteSpace: "nowrap",
+                                }}>{row?.product_details?.fitting_Code}</td>
+                                {/* product Code */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="100001"
+                                    value={row?.product_details?.product_code}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "product_code",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "90px" }}
+                                  />
+                                </td>
+                                {/* uom */}
+                                <td>
+                                  <input
+                                    type="text"
+                                    placeholder="UOM"
+                                    value={row?.product_details?.uom}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "uom",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+                                {/* weight */}
+                                <td>
+                                  <input
+                                    type="number"
+                                    placeholder="10 kg"
+                                    value={row?.product_details?.weight}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "weight",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control row-input"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td>
+
+                                <td style={{ minWidth: "120px" }}>
+                                  <div className="d-flex align-items-center gap-2">
+                                    {/* Total Assign Quantity */}
+                                    <span className="text-muted">{row?.total_assign_quantity || 0}</span>
+
+                                    {/* Small Progress Bar */}
+                                    <div
+                                      className="progress flex-grow-1"
+                                      style={{
+                                        height: "6px",
+                                        borderRadius: "3px",
+                                        backgroundColor: "#28a745", // light gray background
+                                        overflow: "hidden", // ensure bar fills correctly
+                                      }}
+                                    >
+
+                                    </div>
+                                  </div>
+                                </td>
+
+
+
+
+                                {/* Rejected quantity */}
+                                <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Packing Quantity"
+                                    value={row?.packing_quantity}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "packing_quantity",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                  />
+                                </td>
+
+                                {/* Rejected quantity */}
+                                {/* <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Replace Quantity"
+                                    value={row?.replace_quantity}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "replace_quantity",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                  />
+                                </td> */}
+
+
+                                {/* Requested quantity */}
+                                {/* <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Request Quantity"
+                                    value={row?.requested_quantity}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "replace_quantity",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                  />
+                                </td> */}
+
+
+
+
+                                {/* Assign quantity */}
+                                {/* <td className="flex items-center gap-2">
+
+                                  <span
+                                    style={{
+                                      backgroundColor: "#3B82F6", // blue-500
+                                      color: "white",
+                                      fontSize: "12px",
+                                      fontWeight: "600",
+                                      padding: "2px 8px",
+                                      borderRadius: "9999px", // makes it pill/round
+                                      display: "inline-block",
+                                    }}
+                                    title="Last Assigned Quantity"
+                                  >
+                                    {row.lastAssignQuantity}
+                                  </span>
+
+                                </td> */}
+
+
+
+                                {/* Assign quantity */}
+                                {/* <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Assign Quantity"
+                                    value={row.assign_quantity}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "assign_quantity",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "150px" }}
+                                    min="0"
+                                  />
+                                </td> */}
+                                {/* Reserve quantity */}
+                                {/* <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Reserve Quantity"
+                                    value={row.reserve_quantity}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "reserve_quantity",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "150px" }}
+                                    min="0"
+                                  />
+                                </td> */}
+                                {/* Log Activity button */}
+                                {/* <td>
+                                  <button
+                                    onClick={() => handleOpenLogModal(row?.product_id , row?.so_id)}
+                                    style={{
+                                      backgroundColor: '#f0f4ff',
+                                      border: '1px solid #3b82f6',
+                                      color: '#1e40af',
+                                      fontSize: '12px',
+                                      padding: '4px 10px',
+                                      borderRadius: '6px',
+                                      fontWeight: 500,
+                                      display: 'flex',
+                                      alignItems: 'center',
+                                      gap: '4px',
+                                      cursor: 'pointer',
+                                      transition: 'all 0.2s ease-in-out',
+                                      boxShadow: '0 1px 2px rgba(59, 130, 246, 0.1)',
+                                      whiteSpace: 'nowrap',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.currentTarget.style.backgroundColor = '#3b82f6';
+                                      e.currentTarget.style.color = '#ffffff';
+                                      e.currentTarget.style.boxShadow = '0 2px 6px rgba(59, 130, 246, 0.3)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.currentTarget.style.backgroundColor = '#f0f4ff';
+                                      e.currentTarget.style.color = '#1e40af';
+                                      e.currentTarget.style.boxShadow = '0 1px 2px rgba(59, 130, 246, 0.1)';
+                                    }}
+                                  >
+                                    <span style={{ fontSize: '13px' }}>🕒</span>
+                                    Log Activity
+                                  </button>
+                                </td> */}
+                                {/* price */}
+                                {/* <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Price Per Unit"
+                                    value={row?.price}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "price_per_unit",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: '150px' }}
+                                  />
+                                </td> */}
+                                {/* discount */}
+                                {/* <td>
+                                  <input
+                                    type="number"
+                                    placeholder="Discount Per Unit"
+                                    value={row.discount_per_unit}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "discount_per_unit",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "150px" }}
+                                  />
+                                </td> */}
+                                {/* cgst */}
+                                {/* <td>
+                                  <input
+                                    type="text"
+                                    placeholder="CGST"
+                                    value={row.cgst}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "cgst",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td> */}
+                                {/* sgst */}
+                                {/* <td>
+                                  <input
+                                    type="text"
+                                    placeholder="SGST"
+                                    value={row.sgst}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "sgst",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td> */}
+                                {/* igst */}
+                                {/* <td>
+                                  <input
+                                    type="text"
+                                    placeholder="IGST"
+                                    value={row.igst}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "igst",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "70px" }}
+                                  />
+                                </td> */}
+                                {/* amount */}
+                                {/* <td>
+                                  <input
+                                    type="text"
+                                    placeholder="100"
+                                    value={row?.amount}
+                                    onChange={(e) =>
+                                      handleChangeRow(
+                                        index,
+                                        "total_amount",
+                                        e.target.value
+                                      )
+                                    }
+                                    className="form-control"
+                                    style={{ width: "90px" }}
+                                    disabled
+                                  />
+                                </td> */}
+                                {/* Verify checkbox */}
+                                {/* <td style={{
+                                  textAlign: 'center',
+                                }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={selectedProducts.includes(row._id )}
+                                    onChange={(e) => {
+                                      const isChecked = e.target.checked;
+                                      setSelectedProducts((prev) =>
+                                        isChecked ? [...prev, row._id] : prev.filter((id) => id !== row._id)
+                                      );
+
+                                      if (!isChecked) {
+                                        setSelectAll(false);
+                                      } else if (
+                                        purchaseOrderProdcutList.length ===
+                                        [...selectedProducts, row._id].length
+                                      ) {
+                                        setSelectAll(true);
+                                      }
+                                    }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{
+                                      width: '25px',
+                                      height: '25px',
+                                      cursor: 'pointer',
+                                      accentColor: '#007bff',
+                                      transition: 'transform 0.1s ease, box-shadow 0.2s ease',
+
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.target.style.transform = 'scale(1.3)';
+                                      e.target.style.boxShadow = '0 0 5px rgba(0, 123, 255, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.target.style.transform = 'scale(1)';
+                                      e.target.style.boxShadow = 'none';
+                                    }}
+                                  />
+                                </td> */}
+                                {/* <td
+                                  style={{ textAlign: 'center' }}> <input type="checkbox" checked={selectedProducts.includes(row._id)} onChange={(e) => {
+                                    const isChecked = e.target.checked;
+
+
+
+                                    // Prevent unchecking if the row is verified
+                                    // if (row?.isVerified) return;
+
+                                    setSelectedProducts((prev) =>
+                                      isChecked
+                                        ? [...prev, row._id]
+                                        : prev.filter((id) => id !== row._id)
+                                    );
+
+                                    if (!isChecked) {
+                                      setSelectAll(false);
+                                    } else {
+                                      const newSelected = isChecked
+                                        ? [...selectedProducts, row._id]
+                                        : selectedProducts.filter((id) => id !== row._id);
+
+                                      if (purchaseOrderProdcutList.length === newSelected.length) {
+                                        setSelectAll(true);
+                                      }
+                                    }
+                                  }}
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{
+                                      width: '25px',
+                                      height: '25px',
+                                      cursor: row?.isVerified ? 'pointer' : 'pointer',
+                                      accentColor: '#007bff',
+                                      transition: 'transform 0.1s ease, box-shadow 0.2s ease',
+                                    }}
+                                    onMouseEnter={(e) => {
+                                      e.target.style.transform = 'scale(1.3)';
+                                      e.target.style.boxShadow = '0 0 5px rgba(0, 123, 255, 0.5)';
+                                    }}
+                                    onMouseLeave={(e) => {
+                                      e.target.style.transform = 'scale(1)';
+                                      e.target.style.boxShadow = 'none';
+                                    }}
+                                    disabled={false} // Optional: make true if you want to lock the box when verified
+                                  />
+
+                                </td> */}
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                        <div>
+                          {/* {brandList?.data?.length < brandList?.total && ( */}
+                          <div className="d-sm-flex text-center justify-content-end align-items-center mt-3">
+                            <div className="pagination-container">
+                              <ReactPaginate
+                                pageCount={Math.ceil(
+                                  purchaseOrderData?.totalRecords /
+                                  purchaseOrderData?.rowsPerPage
+                                )}
+                                pageRangeDisplayed={1}
+                                marginPagesDisplayed={2}
+                                onPageChange={handlePageClick}
+                                containerClassName="pagination"
+                                activeClassName="selected"
+                                disabledClassName="disabled"
+                              />
+                            </div>
+                          </div>
+                          {/* )} */}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Col>
+            </Row>
+
+
+
+            {/* Footer Section */}
+
+            {/* Buttons  */}
+            <div className="d-flex gap-3 justify-content-end text-end mt-3 mt-md-0">
+              <button
+                type="submit"
+                // onClick={handleVerify}
+                onClick={handleSubmit}
+                className="btn btn-primary rounded-sm">
+                Submit
+              </button>
+
+              {/* <button
+                type="submit"
+                onClick={handleSubmitFinal}
+                className="btn btn-primary rounded-sm">
+                Final Submission
+              </button> */}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* <!-- veridy bill seciton Modal --> */}
+      <Modal className="fade card-body" show={contentModal} onHide={setContentModal} size="xl">
+        <Modal.Header>
+          <Modal.Title>Add Bill & Verify Bill Items</Modal.Title>
+          <Button
+            variant=""
+            className="btn-close"
+            onClick={() => setContentModal(false)}>
+
+          </Button>
+        </Modal.Header>
+        <Modal.Body>
+
+          <div className="">
+            {/* Header Section */}
+            <div className="">
+              <div className="header-section mb-3">
+                <div className="row ">
+                  <div className="col-xl-3 d-flex justify-content-center justify-content-xl-start">
+                    <img src={rajdhanilogo} alt="logo" height={60} />
+                  </div>
+                  <div className="col-xl-9 d-flex justify-content-center justify-content-xl-start">
+                    <h2 className="header-title">Rajdhani - Add Bill & Verify Bill Items</h2>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* First Two sections for bill */}
+            {/* <div className="row">
+            
+            <div className="col-xl-6 col-lg-6">
+              <div className="card">
+                <div className="card-header">
+                  <h4 className="card-title">Bill Info</h4>
+                </div>
+                <div className="card-body">
+                  <div>
+
+                    <div className="mb-3 row">
+                      <div className="col-sm-12">
+                        <label className="col-sm-3 col-form-label">
+                          Bill No.
+                        </label>
+                        <input
+                          name="bill_no"
+                          value={formBillingData?.bill_no || ''}
+                          onChange={handleBillingDetailChange}
+                          type="text"
+                          className="form-control"
+                          placeholder="Ex: B12345"
+                        />
+                        {errors.name && <span className="text-danger fs-12">{errors.name}</span>}
+                      </div>
+                    </div>
+                    <div className="mb-3 row">
+                      <div className="col-sm-12">
+                        <label className="col-sm-3 col-form-label">
+                          Bill Amount
+                        </label>
+                        <input
+                          name="bill_amount"
+                          value={formBillingData?.bill_amount || ''}
+                          onChange={handleBillingDetailChange}
+                          type="number"
+                          className="form-control"
+                          placeholder="Ex: 1000"
+                        />
+                        {errors.billing_bill_amount && (
+                          <span className="text-danger fs-12">{errors.billing_bill_amount}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mb-3 row">
+                      <div className="col-sm-12">
+                        <label className="col-sm-3 col-form-label">
+                          Bill Date
+                        </label>
+                        <input
+                          name="bill_date"
+                          value={formBillingData?.bill_date || ''}  // Displays the selected date, or an empty string if not available
+                          onChange={handleBillingDetailChange}  // Updates the state when a new date is selected
+                          type="date"  // Specifies the input type as date, enabling the date picker
+                          className="form-control"
+                        />
+                        {errors.billing_bill_date && (
+                          <span className="text-danger fs-12">{errors.billing_bill_date}</span>
+                        )}
+                      </div>
+                    </div>
+
+                    <div className="mb-3 row">
+                      <div className="col-sm-12">
+                        <label className="col-sm-3 col-form-label">
+                          Note
+                        </label>
+                        
+                        <textarea
+                          name="note"
+                          className="form-control"
+                          rows="3"
+                          id="comment"
+                          placeholder="Ex: Add notes for bill"
+                          value={formBillingData?.note}
+                          onChange={handleBillingDetailChange}
+                        ></textarea>
+                        {errors.note && <span className="text-danger fs-12">{errors.note}</span>}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+
+           
+            <div className="col-xl-6 col-lg-6 flex ">
+              <div className="card">
+                <div className="card-header mb-4">
+                  <h4 className="card-title">Bill Image/File</h4>
+                </div>
+                <div className="col-sm-12" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' }}>
+                  <label className="col-form-label">Bill Image/File</label>
+                  <div style={styles.container}>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleLogoChange}
+                      style={{ display: 'none' }}
+                      id="logoUpload"
+                    />
+                    {logo ? (
+                      <>
+                        
+                        <div style={styles.deleteIcon} onClick={handleDeleteLogo}>
+                          ⛌
+                        </div>
+                        <img src={logo} alt="Logo" style={styles.img} />
+                      </>
+                    ) : (
+                      <label htmlFor="logoUpload" style={styles.placeholder}>
+                        <div style={styles.uploadIcon} className='flex flex-col cursor-pointer'>
+                          <img width="30" src={uplodIcon} alt="Upload Icon"></img>
+                          <p>Upload Image/File</p>
+                        </div>
+                      </label>
+                    )}
+                  </div>
+                  <p className='mt-2'>Image format - jpg png jpeg gif<br />Image Size - maximum size 2 MB<br />Image Ratio - 1:1</p>
+                  {errors.image && <span className="text-danger fs-12">{errors.image}</span>}
+                </div>
+
+
+              </div>
+            </div>
+
+          </div> */}
+
+            <div className="card">
+              <div className="card-body p-3">
+                <div className="row">
+                  {/* First Column: Bill Info Part 1 */}
+                  <div className="col-xl-4">
+                    <div className="mb-2">
+                      <label className="form-label fs-6">Bill No.</label>
+                      <input
+                        name="bill_no"
+                        value={formBillingData?.bill_no || ''}
+                        onChange={handleBillingDetailChange}
+                        type="text"
+                        className="form-control form-control-sm"
+                        placeholder="Ex: B12345"
+                      />
+                      {errors.name && <span className="text-danger fs-12">{errors.name}</span>}
+                    </div>
+
+                    {/* <div className="mb-2">
+                    <label className="form-label fs-6">Bill Amount</label>
+                    <input
+                      name="bill_amount"
+                      value={formBillingData?.bill_amount || ''}
+                      onChange={handleBillingDetailChange}
+                      type="number"
+                      className="form-control form-control-sm"
+                      placeholder="Ex: 1000"
+                    />
+                    {errors.billing_bill_amount && <span className="text-danger fs-12">{errors.billing_bill_amount}</span>}
+                   </div> */}
+
+                    <div className="mb-2">
+                      <label className="form-label fs-6">Note</label>
+                      <textarea
+                        name="note"
+                        className="form-control form-control-sm"
+                        rows="6"
+                        placeholder="Ex: Add notes for bill"
+                        value={formBillingData?.note}
+                        onChange={handleBillingDetailChange}
+                      ></textarea>
+                      {errors.note && <span className="text-danger fs-12">{errors.note}</span>}
+                    </div>
+                  </div>
+
+                  {/* Second Column: Bill Info Part 2 */}
+                  <div className="col-xl-4">
+                    <div className="mb-2">
+                      <label className="form-label fs-6">Bill Date</label>
+                      <input
+                        name="bill_date"
+                        value={formBillingData?.bill_date || ''}
+                        onChange={handleBillingDetailChange}
+                        type="date"
+                        className="form-control form-control-sm"
+                      />
+                      {errors.billing_bill_date && <span className="text-danger fs-12">{errors.billing_bill_date}</span>}
+                    </div>
+                    {/* 
+                  <div className="mb-2">
+                    <label className="form-label fs-6">Note</label>
+                    <textarea
+                      name="note"
+                      className="form-control form-control-sm"
+                      rows="2"
+                      placeholder="Ex: Add notes for bill"
+                      value={formBillingData?.note}
+                      onChange={handleBillingDetailChange}
+                    ></textarea>
+                    {errors.note && <span className="text-danger fs-12">{errors.note}</span>}
+                  </div>
+                   */}
+                  </div>
+
+                  {/* Third Column: Bill Image/File in a Card */}
+                  <div className="col-xl-4 mt-2">
+                    <div className="mb-2 ">
+                      <label className="form-label fs-6">Bill Image/File</label>
+                      <div style={styles.container}>
+                        <input
+                          type="file"
+                          accept="image/*,.pdf,.doc,.docx,.txt,.xls,.xlsx,.csv"
+                          onChange={handleLogoChange}
+                          style={{ display: 'none' }}
+                          id="logoUpload"
+                        />
+                        {logo ? (
+                          <>
+                            <div style={styles.deleteIcon} onClick={handleDeleteLogo}>⛌</div>
+                            <img src={logo} alt="Logo" style={{ ...styles.img, width: '80px', height: '80px' }} />
+                          </>
+                        ) : (
+                          <label htmlFor="logoUpload" style={styles.placeholder}>
+                            <div style={styles.uploadIcon} className="cursor-pointer">
+                              <img width="30" src={uplodIcon} alt="Upload Icon" />
+                              <p>Upload Image/File</p>
+                            </div>
+                          </label>
+                        )}
+                      </div>
+                      <p className="mt-2 text-muted fs-7" style={{ marginBottom: '5px' }}>
+                        Image format - jpg png jpeg gif<br />
+                        Max size - 2 MB<br />
+                        Ratio - 1:1
+                      </p>
+                      {errors.image && <span className="text-danger fs-12">{errors.image}</span>}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Purchase Order Item Table  */}
+            <div className="col-xl-12 col-lg-12 mt-5">
+              <div className="">
+                <h4 className="">Purchased Order Items</h4>
+                <div>
+                  <div className="" style={{ overflow: "auto" }}>
+                    {rows?.length > 0 && (
+                      <table
+                        id="dynamicTable"
+                        className="display dataTable no-footer w-100">
+                        <thead className="table-head">
+                          <tr>
+                            <th>SL</th>
+                            <th>Product Name</th>
+                            <th>Product Code</th>
+                            <th>UOM</th>
+                            <th>Weight(Kg)</th>
+                            <th>Quantity</th>
+                            <th>Price Per Unit</th>
+                            <th>Discount Per Unit</th>
+                            <th>CGST</th>
+                            <th>SGST</th>
+                            <th>IGST</th>
+                            <th>Cess</th>
+                            <th>Amount</th>
+                            <th>Ordered Quantity</th>
+                            <th>Received Quantity</th>
+                            <th>Verify Quantity</th>
+                            <th>Short Close</th>
+                            <th>Action</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {rows?.map((row, index) => (
+
+                            <tr key={row.id}>
+                              <td>{row.id}</td>
+                              {/* product Name */}
+                              <td>
+                                <Select
+                                  //value={row.selectedOption}
+                                  // onChange={(selectedOption) =>
+                                  //   handleProductChange(selectedOption, index)
+                                  // }
+                                  // defaultValue={row.selectedOption}
+
+                                  value={row?.selectedOption} // Prefill selected option
+                                  onChange={(selectedOption) => handleProductChange(selectedOption, index)}
+
+                                  options={productOption} // Ensure productOption is properly defined
+                                  styles={{
+                                    control: (provided) => ({
+                                      ...provided,
+                                      width: '200px', // Adjust the width as needed
+                                      lineHeight: "20px",
+                                      color: "#7e7e7e",
+                                      paddingLeft: "15px",
+                                    }),
+                                    menuPortal: (provided) => ({
+                                      ...provided,
+                                      zIndex: 9999, // Ensures dropdown appears on top of other content
+                                    }),
+                                    menu: (provided) => ({
+                                      ...provided,
+                                      top: '-100%', // Positions the dropdown above the select input
+                                    }),
+                                  }}
+                                  menuPortalTarget={document.body}
+                                />
+                              </td>
+                              {/* product Code */}
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="100001"
+                                  value={row?.product_code}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "product_code",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control row-input"
+                                  style={{ width: "90px" }}
+                                />
+                              </td>
+
+                              {/* <td>
+                                <input
+                                  type="text"
+                                  placeholder="Unit"
+                                  value={row.unit}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "unit",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control row-input"
+                                  style={{ width: "70px" }}
+                                />
+                              </td> */}
+
+                              {/* <td>
+                                <input
+                                  type="text"
+                                  placeholder="Variant"
+                                  value={row.variant}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "variant",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  style={{ width: "120px" }}
+                                />
+                              </td> */}
+
+                              {/* <td>
+                                <input
+                                  type="text"
+                                  placeholder="Variant Type"
+                                  value={row.variant_type}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "variant_type",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                />
+                              </td> */}
+                              {/* uom */}
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="UOM"
+                                  value={row?.uom}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "uom",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control row-input"
+                                  style={{ width: "70px" }}
+                                />
+                              </td>
+                              {/* weight */}
+                              <td>
+                                <input
+                                  type="number"
+                                  placeholder="10 kg"
+                                  value={row?.weight}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "weight",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control row-input"
+                                  style={{ width: "70px" }}
+                                />
+                              </td>
+                              {/* quantity */}
+                              <td>
+                                <input
+                                  type="number"
+                                  placeholder="Quantity"
+                                  value={row?.quantity}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "quantity",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                />
+                              </td>
+                              {/* price */}
+                              <td>
+                                <input
+                                  type="number"
+                                  placeholder="Price Per Unit"
+                                  value={row?.price}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "price_per_unit",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                />
+                              </td>
+                              {/* discount */}
+                              <td>
+                                <input
+                                  type="number"
+                                  placeholder="Discount Per Unit"
+                                  value={row.discount_per_unit}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "discount_per_unit",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  style={{ width: "70px" }}
+                                />
+                              </td>
+
+                              {/* <td>
+                                <input
+                                  type="number"
+                                  placeholder="Total Discount"
+                                  value={row.total_discount}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "total_discount",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  disabled
+                                />
+                              </td> */}
+
+                              {/* cgst */}
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="CGST"
+                                  value={row.cgst}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "cgst",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  style={{ width: "70px" }}
+                                />
+                              </td>
+                              {/* sgst */}
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="SGST"
+                                  value={row.sgst}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "sgst",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  style={{ width: "70px" }}
+                                />
+                              </td>
+                              {/* igst */}
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="IGST"
+                                  value={row.igst}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "igst",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  style={{ width: "70px" }}
+                                />
+                              </td>
+                              {/* cess */}
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="Cess"
+                                  value={row.cess}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "cess",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  style={{ width: "70px" }}
+                                />
+                              </td>
+                              {/* amount */}
+                              <td>
+                                <input
+                                  type="text"
+                                  placeholder="100"
+                                  value={row?.amount}
+                                  onChange={(e) =>
+                                    handleChangeRow(
+                                      index,
+                                      "total_amount",
+                                      e.target.value
+                                    )
+                                  }
+                                  className="form-control"
+                                  style={{ width: "90px" }}
+                                  disabled
+                                />
+                              </td>
+                              {/* amount */}
+                              {/* <td>
+                                {calculateTotalAmount()}
+                              </td> */}
+
+                              <td>
+                                {/* Ordered Quantity */}
+                                <input
+                                  type="number"
+                                  placeholder="Ordered Quantity"
+                                  value={row?.ordered_quantity || ""}
+                                  onChange={(e) => handleChangeRow(index, "ordered_quantity", e.target.value)}
+                                  className="form-control row-input"
+                                  disabled
+                                />
+                              </td>
+                              <td>
+                                {/* Received Quantity */}
+                                <input
+                                  type="number"
+                                  placeholder="Received Quantity"
+                                  value={row?.received_quantity || ""}
+                                  onChange={(e) => handleChangeRow(index, "received_quantity", e.target.value)}
+                                  className="form-control row-input"
+                                />
+                              </td>
+                              <td>
+                                {/* Verify Quantity */}
+                                <input
+                                  type="number"
+                                  placeholder="Verify Quantity"
+                                  value={row.verified_quantity || ""}
+                                  onChange={(e) => handleChangeRow(index, "verified_quantity", e.target.value)}
+                                  className="form-control row-input"
+                                />
+                              </td>
+                              <td>
+                                {(
+                                  <button
+                                    className="btn btn-warning mt-2"
+                                    style={{
+                                      whiteSpace: "nowrap",
+                                      backgroundColor: row.is_short_close ? "#ff9900" : "#ffc107", // Change color if short closed
+                                      borderColor: row.is_short_close ? "#cc7a00" : "#ffca2c",
+                                    }}
+                                    onMouseDown={() => setIsPressed(true)} // Detect button press
+                                    onMouseUp={() => setIsPressed(false)} // Reset after release
+                                    onMouseLeave={() => setIsPressed(false)} // Handle mouse exit
+                                    onClick={() => handleShortClose(row.id)} // Handle short close
+                                  >
+                                    {row.is_short_close ? "Closed" : "Short Close"}
+                                  </button>
+                                )}
+                              </td>
+                              <td>
+                                {index > 0 ? (
+                                  <button
+                                    className="btn btn-danger mt-2"
+                                    onClick={() => handleDeleteTableRow(row?.id)}>
+                                    Delete
+                                  </button>
+                                ) : null}
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    )}
+                  </div>
+                  <button onClick={addRow} className="btn btn-primary mt-2">
+                    Add New Row
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Summary Section */}
+          <div className="row justify-content-end ">
+            <div className="summary-section col-md-5">
+              <table className="table table-bordered ">
+                <h3>Summary</h3>
+
+                <tbody>
+                  <tr>
+                    <td>Total Quantity</td>
+                    <td>{purchaseOrderData?.summary?.total_quantity}</td>
+                  </tr>
+                  <tr>
+                    <td>Sub Total</td>
+                    <td>{purchaseOrderData?.summary?.sub_total?.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td>Discount</td>
+                    <td>{purchaseOrderData?.summary?.total_discount?.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td>Total GST Amount</td>
+                    <td>{purchaseOrderData?.summary?.total_gst_amount?.toFixed(2)}</td>
+                  </tr>
+                  <tr>
+                    <td>Shipping</td>
+                    <td>
+                      <td>{purchaseOrderData?.summary?.total_gst_amount?.toFixed(2)}</td>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>Grand Total</td>
+                    <td>{purchaseOrderData?.summary?.grand_total?.toFixed(2)}</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          {/* Details Summry Section */}
+          <div className="">
+            <div className="header-section mb-3">
+              <div className="row">
+                {/* <h5>Bill Address Details</h5> */}
+              </div>
+              <hr style={{ borderTop: '2px solid #ccc', margin: '20px 0' }} />
+              <div className="addresses mt-3">
+                <div className="row">
+                  <div className="col-md-4  address-block">
+                    <h5>Invoice To</h5>
+                    <p className="po-view-p">
+                      {purchaseOrderData?.billing_details?.name}
+                    </p>
+                    <p className="po-view-p">
+                      {purchaseOrderData?.billing_details?.address}
+                    </p>
+                    <p className="po-view-p">
+                      State: {purchaseOrderData?.billing_details?.state_name}{" "}
+                      {purchaseOrderData?.billing_details?.state_code}
+                    </p>
+                    <p className="po-view-p">
+                      Email: {purchaseOrderData?.billing_details?.email}
+                    </p>
+                  </div>
+
+                  <div className="col-md-4 d-flex justify-content-center address-block">
+                    <div className="divider">
+                      {/* Divider */}
+                      <h5>Consignee (Ship to)</h5>
+                      <p className="po-view-p">
+                        {purchaseOrderData?.shipping_details?.name}
+                      </p>
+                      <p className="po-view-p">
+                        {purchaseOrderData?.shipping_details?.address}
+                      </p>
+                      <p className="po-view-p">
+                        State: {purchaseOrderData?.shipping_details?.state_name}{" "}
+                        {purchaseOrderData?.shipping_details?.state_code}
+                      </p>
+                      <p className="po-view-p">
+                        Email: {purchaseOrderData?.shipping_details?.email}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="col-md-4 d-flex justify-content-center  divider">
+                    {/* Divider */}
+                    <div className="order-info">
+                      <h5>Supplier (Bill from)</h5>
+                      <p className="po-view-p">
+                        {purchaseOrderData?.supplier_id?.name}
+                      </p>
+                      <p className="po-view-p">
+                        {purchaseOrderData?.supplier_id?.city}
+                      </p>
+                      <p className="po-view-p">
+                        State: {purchaseOrderData?.supplier_id?.state}
+                      </p>
+                      <p className="po-view-p">
+                        Email: {purchaseOrderData?.supplier_id?.email}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <hr style={{ borderTop: '2px solid #ccc', margin: '20px 0' }} />
+            </div>
+          </div>
+
+
+        </Modal.Body>
+        <Modal.Footer>
+          {/* <Button
+            variant="danger light"
+            onClick={() => setContentModal(false)}
+          >
+            Close
+          </Button>
+          <Button variant="primary" onClick={handleSubmit}>Save</Button> */}
+          <div className="d-flex gap-3 justify-content-end text-end mt-3 mt-md-0">
+            <Button
+              variant="danger light"
+              onClick={() => setContentModal(false)}
+            >
+              Close
+            </Button>
+            <button
+              type="submit"
+              onClick={handleSubmitDraft}
+              className="btn btn-warning rounded-sm">
+              Save as draft
+            </button>
+
+            <button
+              type="submit"
+              onClick={handleSubmitFinal}
+              className="btn btn-primary rounded-sm">
+              Final Submission
+            </button>
+          </div>
+        </Modal.Footer>
+      </Modal>
+
+      {/* Verify Modal */}
+      <Modal
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          backgroundColor: "rgba(0, 0, 0, 0.5)", // Dim background effect
+        }}
+        centered
+        show={verifyShowModal} onHide={() => setVerifyShowModal(false)}>
+        <Modal.Header closeButton>
+          <Modal.Title>Verify Item</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {selectedRowData && (
+            <div
+              style={{
+                backgroundColor: "rgba(255, 255, 255, 0)", // Fully transparent background
+                borderRadius: "8px",
+                padding: "12px",
+                // boxShadow: "0 2px 8px rgba(0, 0, 0, 0.15)",
+                border: "1px solid rgba(255, 255, 255, 0.3)", // Semi-transparent border
+                width: "100%",
+                fontSize: "13px",
+                backdropFilter: "blur(5px)", // Optional: Glassmorphism effect
+              }}
+            >
+              <h6 style={{ fontWeight: "600", marginBottom: "8px", color: "#222", textAlign: "center" }}>
+                Product Details
+              </h6>
+
+              {/* Table-like Grid with Borders */}
+              <div style={{ display: "grid", gridTemplateColumns: "140px auto", fontSize: "13px", border: "1px solid #D3D3D3", borderRadius: "8px", padding: "5px", }}>
+                {[
+                  { label: "Product Name", value: selectedRowData?.product_name },
+                  { label: "Product Code", value: selectedRowData?.product_code },
+                  { label: "Ordered Qty", value: selectedRowData?.quantity },
+                  { label: "Weight", value: selectedRowData?.product_details?.weight || "N/A" },
+                  { label: "UOM", value: selectedRowData?.product_details?.uom || "N/A" },
+                ].map((item, index) => (
+                  <React.Fragment key={index}>
+                    <div style={{ fontWeight: "600", color: "#444", padding: "6px 0" }}>{item.label}:</div>
+                    <div style={{ color: "#666", padding: "6px 0", borderBottom: "1px dotted #ccc" }}>{item.value}</div>
+                  </React.Fragment>
+                ))}
+              </div>
+
+
+
+
+              <td style={{ minWidth: "420px", }}>
+                <div className="d-flex align-items-center gap-2" style={{ marginTop: '15px' }}>
+                  {/* Total Assign Quantity */}
+
+                  <span className="text-muted">{`Available Packing Quantity : ${selectedRowData?.total_assign_quantity}` || 0}</span>
+
+                  {/* Small Progress Bar */}
+                  <div
+                    className="progress flex-grow-1"
+                    style={{
+                      height: "6px",
+                      borderRadius: "3px",
+                      backgroundColor: "#28a745", // light gray background
+                      overflow: "hidden", // ensure bar fills correctly
+                    }}
+                  >
+
+                  </div>
+                </div>
+              </td>
+
+              <div
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "16px",
+                  flexWrap: "wrap", // allow wrapping instead of overflow
+                  overflow: "hidden", // prevent scrollbars if still too wide
+                  maxWidth: "100%", // restrict to parent width
+                  boxSizing: "border-box", // ensure padding doesn't push content out
+                  // justifyContent: 'space-around',
+                  marginTop: '15px',
+                }}
+              >
+
+
+                {/* Assign quantity */}
+                <div>
+                  <label style={{ color: 'black', margin: '5px' }}>Packing Quantity</label>
+                  <input
+                    type="number"
+                    placeholder="Packing Quantity"
+                    value={selectedRowData.packing_quantity}
+                    onChange={(e) =>
+                      handleChangeRow(
+                        selectedRowIndex,
+                        "packing_quantity",
+                        e.target.value
+                      )
+                    }
+                    className="form-control"
+                    style={{ width: "280px" }}
+                    min="0"
+                  />
+                </div>
+
+
+
+              </div>
+
+            </div>
+          )}
+
+        </Modal.Body>
+        <Modal.Footer>
+          <Button variant="danger" onClick={() => setVerifyShowModal(false)}>Close</Button>
+          <Button variant="success" onClick={() => setVerifyShowModal(false)}>Save</Button>
+        </Modal.Footer>
+      </Modal>
+
+
+      {/* Item wise log activity modal box */}
+      <LogActivityItemsModal
+        show={modalOpen}
+        onHide={() => setModalOpen(false)}
+        itemId={selectedItemId}
+        saleOrderID={selectedSOId}
+        stage="Assign And Reserve Quantity Activity"
+      // productionProcessID={producitonProcessDetails?._id}
+      />
+
+    </>
+  );
+};
+
+export default StorePackingApprovalitems;

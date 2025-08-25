@@ -52,9 +52,19 @@ module.exports.productionProcessItemService = require("./productionProcessItem.s
 module.exports.productionProcessLogService = require("./productionProcessLog.service");
 module.exports.operatorService = require("./operator.service");
 module.exports.productionProcessItemLogService = require("./productionProcessItemLog.service");
+module.exports.inventoryItemsLogService = require("./inventoryItemsLog.service");
+module.exports.inventoryRejectionDetailsService = require("./inventoryRejectionDetails.service");
+module.exports.inventoryRejectionItemsService = require("./inventoryRejectionItems.service");
+module.exports.packingDetailsService = require("./packingDetails.service");
+module.exports.packingItemsService = require("./packingItems.service");
+module.exports.gatePassDetailsService = require("./gatePassDetails.service");
+module.exports.gatePassItemsService = require("./gatePassItems.service");
 // module.exports. = require("./");
 // module.exports. = require("./");
 // module.exports. = require("./");
+// module.exports. = require("./");
+// module.exports. = require("./");
+
 
 
 

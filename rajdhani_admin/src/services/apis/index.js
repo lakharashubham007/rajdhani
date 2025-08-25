@@ -160,6 +160,25 @@ const apis = {
         getAllThreadList: `${BASE_URL}/private/variants/all-variants`,
     },
 
+    packing: {
+        createPackingDetails: `${BASE_URL}/private/packing-details/create-packing-details`, 
+        getPackingDetails: `${BASE_URL}/private/packing-details/get-packing-details`, 
+        savePackingDetailsApi: `${BASE_URL}/private/packing-details/save-packing-details`, 
+        
+        createPackingItems: `${BASE_URL}/private/packing-items/create-packing-items`, 
+        getPackingItems: `${BASE_URL}/private/packing-items/packing-approved-items`, 
+        savePackingItems: `${BASE_URL}/private/packing-items/save-packing-items`
+    },
+     gatePass: {
+         
+        getGatePassDetails: `${BASE_URL}/private/gatePass-details/get-gatepass-details`, 
+        savePackingDetailsApi: `${BASE_URL}/private/packing-details/save-packing-details`, 
+        
+        createPackingItems: `${BASE_URL}/private/packing-items/create-packing-items`, 
+        getGetPassItems: `${BASE_URL}/private/gatePass-items/gatepass-items`, 
+        savePackingItems: `${BASE_URL}/private/packing-items/save-packing-items`
+    },
+
     part: {
         addPart: `${BASE_URL}/private/parts/create-part`,
         partList: `${BASE_URL}/private/parts/parts-list`,
@@ -230,6 +249,27 @@ const apis = {
         addItemsInInventory: `${BASE_URL}/private/inventory/add-item`,
         getItemsInventory: `${BASE_URL}/private/inventory/items-inventory`,
         filterInventoryItems: `${BASE_URL}/private/inventory/filter-inventory`
+    },
+    inventoryItemLogs: {
+        updateQunaityAndLogsInInventory: `${BASE_URL}/private/inventory-item-log/update-qty-with-log`,
+        updateStockJournalLogAndInventory: `${BASE_URL}/private/inventory-item-log/update-stock-transfer-qty`,
+        getItemsInventory: `${BASE_URL}/private/inventory/items-inventory`,
+        filterInventoryItems: `${BASE_URL}/private/inventory/filter-inventory`,
+        getInventoryItemLogsByItemAndSO: `${BASE_URL}/private/inventory-item-log/get-items-log`,
+        getInventoryItemLogs: `${BASE_URL}/private/inventory-item-log/get-inventory-items-log`,
+        getPackingOrders: `${BASE_URL}/private/inventory-item-log/get-packing-orders`,
+        getPackingItems: `${BASE_URL}/private/inventory-item-log/get-packing-items`,
+
+
+
+    },
+    inventoryRejectionDetails: {
+        createInventoryRejectionDetails: `${BASE_URL}/private/inventoryrejectiondetails/create-rejection-details`,
+        getInventoryRejectionDetails: `${BASE_URL}/private/inventoryrejectiondetails/get-rejection-details`,
+    },
+    inventoryRejectionItems: {
+        createInventoryRejectionItems: `${BASE_URL}/private/inventoryrejectionitems/create-rejected-items`,
+        getInventoryRejectionItems: `${BASE_URL}/private/inventoryrejectionitems/get-rejected-items`,
     },
     stocks: {
         addStocksInMaintainenace: `${BASE_URL}/private/stock/add-stocks`,

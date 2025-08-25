@@ -30,7 +30,13 @@ const productCodeSeries = require('./productCodeSeries.route')
 const productionSheet = require('./productionSheet.route')
 const productionProcess = require('./productionProcess.route')
 const operator = require('./operator.route')
-
+const inventoryItemLog = require('./inventoryItemsLog.route')
+const inventoryRejectionDetails = require('./inventoryRejectionDetails.route')
+const inventoryRejectionItems = require('./inventoryRejectionItems.route')
+const packingDetails = require('./packingDetails.route')
+const packingItems = require('./packingItems.route')
+const gatePassDetails = require('./gatePassDetails.route')
+const gatePassItems = require('./gatePassItems.route')
 const router = express.Router();
 
 //rajdhani route
@@ -70,6 +76,23 @@ router.use("/series", productCodeSeries)
 router.use("/production-sheet", productionSheet)
 router.use("/production-process", productionProcess)
 router.use("/operator", operator)
+router.use("/inventory-item-log", inventoryItemLog)
+router.use("/inventoryrejectiondetails", inventoryRejectionDetails)
+router.use("/inventoryrejectionitems", inventoryRejectionItems)
+
+
+router.use("/inventory-item-log", inventoryItemLog)
+
+//packing
+router.use("/packing-details", packingDetails)
+router.use("/packing-items", packingItems)
+
+router.use("/gatePass-details", gatePassDetails)
+router.use("/gatePass-items", gatePassItems)
+
+
+//inventory rejection
+
 
 
 

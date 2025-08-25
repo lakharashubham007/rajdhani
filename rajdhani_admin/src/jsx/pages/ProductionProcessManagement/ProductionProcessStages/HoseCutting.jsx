@@ -22,6 +22,7 @@ import QualityAssuranceModal from "../component/QualityAssuranceModal";
 import StageCompletedCard from "../component/StageCompletedCard";
 import PauseCardComponent from "../component/PauseCardComponent";
 import StopCardComponent from "../component/StopCardComponent";
+import RejectRequestItemsModal from "../component/RejectRequestItemsModal";
 
 const HoseCuttingCheckPoints = [
     "Hose brand verified as per Production Sheet.",
@@ -63,7 +64,7 @@ const HoseCutting = () => {
     const [inputErrors, setInputErrors] = useState({});
     const [quantityUpdated, setQuantityUpdated] = useState(false)
     const [rows, setRows] = useState([]);
-    console.log("producitonProcessDetails ", producitonProcessDetails);
+    console.log("rows ", rows);
     const [lineNumberOptions, setLineNumberOptions] = useState();
     const [operatorsOption, setOpertorsOption] = useState();
     const [searchOperatorNameTerm, setSearchOperatorNameTerm] = useState("");
@@ -76,6 +77,8 @@ const HoseCutting = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const [selectedItemId, setSelectedItemId] = useState(null);
     const [showQAModal, setShowQAModal] = useState(false);
+    const [rejectedRequestModalOpen, setRejectedRequestModalOpen] = useState(false);
+
 
 
     //Fetch Line numbers from nodejs json
@@ -188,6 +191,12 @@ const HoseCutting = () => {
     const handleOpenLogModal = (itemId) => {
         setSelectedItemId(itemId);
         setModalOpen(true);
+    };
+    const [selectedRowsData,setSelectedRowsData] = useState();
+    const handleRejectRequestOpenModal = (itemId,data) => {
+        setSelectedRowsData(data)
+        // setSelectedItemId(itemId);
+        setRejectedRequestModalOpen(true);
     };
 
     const handleChangeRow = (index, field, value) => {
@@ -724,7 +733,8 @@ const HoseCutting = () => {
                 }),
                 log: item?.log || '',
                 sheet_total_quantity: item?.sheet_total_quantity,
-                part_no: item?.part_no
+                part_no: item?.part_no,
+                part_no_details: item?.production_sheet_items_id
             }));
             setRows(formattedRows);
             setQuantityUpdated(false)
@@ -794,30 +804,30 @@ const HoseCutting = () => {
                                             id="holidayList"
                                             className="dataTables_wrapper no-footer">
                                             {(() => {
-                                                                                              
+
                                                 const stageStatus = producitonProcessDetails?.data?.hose_cutting?.status;
                                                 const isStopped = producitonProcessDetails?.data?.production_process_is_running;
-                                                const isPaused = producitonProcessDetails?.data?.isPaused;  
+                                                const isPaused = producitonProcessDetails?.data?.isPaused;
                                                 // 🔁 Show pause card if paused
                                                 if (isPaused) {
                                                     return (
                                                         <PauseCardComponent
                                                             pausedAt={producitonProcessDetails?.data?.production_process_pause_start_date_time}
-                                                            pausedBy={producitonProcessDetails?.data?.paused_by || "Supervisor"}                                                    
+                                                            pausedBy={producitonProcessDetails?.data?.paused_by || "Supervisor"}
                                                         />
                                                     );
                                                 }
 
-                                                  if(isStopped === false){
-                                                    return(
+                                                if (isStopped === false) {
+                                                    return (
                                                         <StopCardComponent
                                                             stoppedAt={producitonProcessDetails?.data?.production_process_end_date_time}
-                                                            stoppedBy={producitonProcessDetails?.data?.paused_by || "Supervisor"}          
+                                                            stoppedBy={producitonProcessDetails?.data?.paused_by || "Supervisor"}
                                                         />
                                                     )
                                                 }
 
-                                                
+
 
                                                 if (stageStatus === "Not Started" || stageStatus == null) {
                                                     // Not started - check if Completed
@@ -886,7 +896,7 @@ const HoseCutting = () => {
                                                             <table id="example4" className="display dataTable no-footer w-100">
                                                                 {/* Table Headings */}
                                                                 <thead>
-                                                                    <tr>
+                                                                    <tr >
                                                                         {theadData?.map((item, ind) => {
                                                                             return (
                                                                                 <>
@@ -1024,7 +1034,9 @@ const HoseCutting = () => {
                                                                 </thead>
                                                                 <tbody >
                                                                     {rows?.map((row, index) => (
-                                                                        <tr key={row.id}
+                                                                        <tr 
+                                                                          onClick={() => handleRejectRequestOpenModal(true,row)}
+                                                                        key={row.id}
                                                                             //  onClick={() => handleVerifyClick(row)} 
                                                                             // onClick={(e) => {
                                                                             //     const target = e.target;
@@ -1360,8 +1372,8 @@ const HoseCutting = () => {
                                                     );
                                                 }
 
-                                              
-                                              
+
+
                                             })()}
 
 
@@ -1403,6 +1415,14 @@ const HoseCutting = () => {
                 show={modalOpen}
                 onHide={() => setModalOpen(false)}
                 itemId={selectedItemId}
+                stage="Hose-cutting"
+                productionProcessID={producitonProcessDetails?._id}
+            />
+            <RejectRequestItemsModal
+                show={rejectedRequestModalOpen}
+                onHide={() => setRejectedRequestModalOpen(false)}
+                itemId={selectedItemId}
+                rowData={selectedRowsData}
                 stage="Hose-cutting"
                 productionProcessID={producitonProcessDetails?._id}
             />
