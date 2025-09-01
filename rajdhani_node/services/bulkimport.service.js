@@ -775,7 +775,7 @@ const dustCapMatricOption = [
 const springTypeOption = [
     { value: "Compress", label: "Compress", dsc_code: "Compress" },
     { value: "Normal", label: "Normal", dsc_code: "" }
-  ];
+];
 
 
 // Function to get fitting dash size based on fitting thread and size
@@ -1541,7 +1541,7 @@ const dustCapBulkImport = async (sheetData, productType) => {
             const dustcap_color = row["dustcap_color"] || "";
             const male_female_type = row["male_female_type"] || "";
 
-            
+
 
             //For Product Code
             if (!categoryCodeMap[productType]) {
@@ -1559,9 +1559,9 @@ const dustCapBulkImport = async (sheetData, productType) => {
             console.log("Description: ", fittingThread, fittingDashSize, dustcap_color, male_female_type)
 
             const desc_Code = `${fittingDashSize ? (fittingDashSize ? "DUST CAP-" + fittingDashSize : "") : (fittingDashSize ? "DUST CAP-" + fittingDashSize : "")
-            }${fittingThreadDescription && fittingThreadDescription !== "METRIC"
-              ? " " + fittingThreadDescription + " "
-              : ""}${male_female_type ? male_female_type : ""}`.trim();
+                }${fittingThreadDescription && fittingThreadDescription !== "METRIC"
+                    ? " " + fittingThreadDescription + " "
+                    : ""}${male_female_type ? male_female_type : ""}`.trim();
 
 
             return {
@@ -1608,7 +1608,7 @@ const springBulkImport = async (sheetData, productType) => {
             const spring_length = row["spring_length"] || "";
             const spring_type = row["spring_type"] || "";
 
-            
+
 
 
             //For Product Code
@@ -1626,12 +1626,12 @@ const springBulkImport = async (sheetData, productType) => {
 
 
             const desc_Code = `${hoseDashSizeCode ? "Spring-" + hoseDashSizeCode : ""
-            }${springTypeDescription ? " " + (springTypeDescription).toUpperCase() + " " : ""}${spring_length ? "(" + spring_length + "mm" + ")" : ""}`.trim();
-    
-    
-            console.log("Description: ", springTypeDescription, hoseDashSizeCode,inner_diameter,spring_length)
+                }${springTypeDescription ? " " + (springTypeDescription).toUpperCase() + " " : ""}${spring_length ? "(" + spring_length + "mm" + ")" : ""}`.trim();
 
-            
+
+            console.log("Description: ", springTypeDescription, hoseDashSizeCode, inner_diameter, spring_length)
+
+
             return {
                 ...row,
                 product_code,
@@ -1674,9 +1674,9 @@ const sleeveBulkImport = async (sheetData, productType) => {
             const size = row["size"] || "";
             const inner_diameter = row["inner_diameter"] || "";
             const outer_diameter = row["outer_diameter"] || "";
-            
 
-            
+
+
 
 
             //For Product Code
@@ -1687,15 +1687,15 @@ const sleeveBulkImport = async (sheetData, productType) => {
             categoryCodeMap[productType] += 1;
             const product_code = categoryCodeMap[productType];
             //DESCRIPTION
-     
 
-            
+
+
             const desc_Code = `${size ? (size ? size : "") : (size ? size : "")
-            }${(inner_diameter  && outer_diameter) ? " SLEEVE " + "(" + inner_diameter + "X" + outer_diameter + ")" : ""}`.trim();
-    
-          
+                }${(inner_diameter && outer_diameter) ? " SLEEVE " + "(" + inner_diameter + "X" + outer_diameter + ")" : ""}`.trim();
 
-            
+
+
+
             return {
                 ...row,
                 product_code,
@@ -1739,9 +1739,9 @@ const vinylCoverBulkImport = async (sheetData, productType) => {
             const inner_diameter = row["inner_diameter"] || "";
             const outer_diameter = row["outer_diameter"] || "";
             const thickness = row["thickness"] || "";
-            
 
-            
+
+
 
 
             //For Product Code
@@ -1752,12 +1752,12 @@ const vinylCoverBulkImport = async (sheetData, productType) => {
             categoryCodeMap[productType] += 1;
             const product_code = categoryCodeMap[productType];
             //DESCRIPTION
-     
+
 
             const desc_Code = `${size ? size : ""}${(inner_diameter && outer_diameter) ? " VC " + "(" + inner_diameter + "X" + outer_diameter + ")" : ""}`.trim();
-    
 
-            
+
+
             return {
                 ...row,
                 product_code,
@@ -1798,9 +1798,9 @@ const packingBulkImport = async (sheetData, productType) => {
         const productData = sheetData.map((row) => {
             const productType = row["product_type"] || "";
             const item_name = row["item_name"] || "";
-            
 
-            
+
+
 
 
             //For Product Code
@@ -1811,12 +1811,12 @@ const packingBulkImport = async (sheetData, productType) => {
             categoryCodeMap[productType] += 1;
             const product_code = categoryCodeMap[productType];
             //DESCRIPTION
-     
+
 
             const desc_Code = `${item_name ? item_name : ""}`.trim();
-    
 
-            
+
+
             return {
                 ...row,
                 product_code,
@@ -1844,85 +1844,91 @@ const packingBulkImport = async (sheetData, productType) => {
 
 
 
-
-
 // Import products from an Excel file
+
 const bulkimport = async (filePath) => {
+    console.log("filePath", filePath);
     try {
         const workbook = XLSX.readFile(filePath);
         const sheetName = workbook.SheetNames[0];
         const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+        console.log("sheetData", sheetData, sheetName);
 
         if (!sheetData.length) {
             throw new Error("No data found in the uploaded file");
         }
 
-        // Fetch last assigned product codes for all unique categories in the sheet
-        const categories = [...new Set(sheetData.map(row => row["wire_type"]))];
+        // ✅ Step 1: Validate fitting_thread based on sheet name (BSP, BSPO, JIC)
+        const errors = [];
+        const validRows = [];
 
-        const partValues = [...new Set(sheetData.map(row => row["part"]))];
-
-        const productType = [...new Set(sheetData.map(row => row["product_type"]))];
-
-        
-
-        // 👉 If 'part-Nut' column exists and has values, redirect to part-specific bulk import
-        if (partValues.length && partValues[0] !== undefined && partValues[0] !== "" && partValues[0] === "Nut") {
-            return await partNutBulkImport(sheetData, partValues);
-        }
-        // 👉 If 'part-Nipple' column exists and has values, redirect to part-specific bulk import
-        if (partValues.length && partValues[0] !== undefined && partValues[0] !== "" && partValues[0] === "Nipple") {
-            return await partNippleBulkImport(sheetData, partValues);
-        }
-        // 👉 If 'part-Cap' column exists and has values, redirect to part-specific bulk import
-        if (partValues.length && partValues[0] !== undefined && partValues[0] !== "" && partValues[0] === "Cap") {
-            return await partCapBulkImport(sheetData, partValues);
-        }
-        // 👉 If 'Hose Pipe' column exists and has values, redirect to HP specific bulk import
-        if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Hose Pipe") {
-            return await hosePipeBulkImport(sheetData, productType);
-        }
-        // 👉 If 'Tube Fittings' column exists and has values, redirect to TF specific bulk import
-        if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Tube Fittings") {
-            return await tubeFittingsBulkImport(sheetData, productType);
-        }
-        // 👉 If 'O-ring' column exists and has values, redirect to O-ring specific bulk import
-        if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "O-ring") {
-            return await OringBulkImport(sheetData, productType);
-        }
-         // 👉 If 'DustCap' column exists and has values, redirect to O-ring specific bulk import
-         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Dust Cap") {
-            return await dustCapBulkImport(sheetData, productType);
-        }
-        // 👉 If 'Spring' column exists and has values, redirect to Spring specific bulk import
-        if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Spring") {
-            return await springBulkImport(sheetData, productType);
-        }
-           // 👉 If 'Spring' column exists and has values, redirect to Spring specific bulk import
-           if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Sleeve") {
-            return await sleeveBulkImport(sheetData, productType);
-        }
-         // 👉 If 'Spring' column exists and has values, redirect to Spring specific bulk import
-         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Vinyl Cover") {
-            return await vinylCoverBulkImport(sheetData, productType);
-        }
-         // 👉 If 'Spring' column exists and has values, redirect to Spring specific bulk import
-         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Packing") {
-            return await packingBulkImport(sheetData, productType);
+        if (["BSP", "BSPO", "JIC"].includes(sheetName)) {
+            sheetData.forEach((row, index) => {
+                if (row.fitting_thread !== sheetName) {
+                    errors.push(`Row No. ${index + 1} mismatch with selected sheet (${sheetName}/${row.fitting_thread})`);
+                } else {
+                    validRows.push(row);
+                }
+            });
+        } else {
+            // If sheet is not BSP/BSPO/JIC, use all rows
+            validRows.push(...sheetData);
         }
 
+        // ✅ If no valid rows, stop here
+        if (!validRows.length) {
+            return { insertedCount: 0, errors };
+        }
 
+        // ✅ Part-based or product-type based bulk imports
+        const partValues = [...new Set(validRows.map(row => row["part"]))];
+        const productType = [...new Set(validRows.map(row => row["product_type"]))];
 
+        if (partValues.includes("Nut")) {
+            return await partNutBulkImport(validRows, partValues, errors);
+        }
+        if (partValues.includes("Nipple")) {
+            return await partNippleBulkImport(validRows, partValues, errors);
+        }
+        if (partValues.includes("Cap")) {
+            return await partCapBulkImport(validRows, partValues, errors);
+        }
+        if (productType.includes("Hose Pipe")) {
+            return await hosePipeBulkImport(validRows, productType, errors);
+        }
+        if (productType.includes("Tube Fittings")) {
+            return await tubeFittingsBulkImport(validRows, productType, errors);
+        }
+        if (productType.includes("O-ring")) {
+            return await OringBulkImport(validRows, productType, errors);
+        }
+        if (productType.includes("Dust Cap")) {
+            return await dustCapBulkImport(validRows, productType, errors);
+        }
+        if (productType.includes("Spring")) {
+            return await springBulkImport(validRows, productType, errors);
+        }
+        if (productType.includes("Sleeve")) {
+            return await sleeveBulkImport(validRows, productType, errors);
+        }
+        if (productType.includes("Vinyl Cover")) {
+            return await vinylCoverBulkImport(validRows, productType, errors);
+        }
+        if (productType.includes("Packing")) {
+            return await packingBulkImport(validRows, productType, errors);
+        }
 
-        //Step 1 Extract category: 'Braided'
+        // ✅ Step 2: Extract product categories
+        const categories = [...new Set(validRows.map(row => row["wire_type"]))];
         const productCounters = await ProductCodeCounter.find({ category: { $in: categories } });
-        // Setp 2 Extract Last Assigned product code for that product like { Braided: 40001 }
+
         const categoryCodeMap = {};
         for (const counter of productCounters) {
             categoryCodeMap[counter.category] = counter.last_assigned_product_code;
         }
-        //Step 3 Process and save each product
-        const products = sheetData.map((row) => {
+
+        // ✅ Step 3: Process valid rows
+        const products = validRows.map((row) => {
             const design = row["design"] || "";
             const fittingThread = row["fitting_thread"] || "";
             const fittingType = row["fitting_type"] || "";
@@ -1936,18 +1942,17 @@ const bulkimport = async (filePath) => {
             const dropLength = row["drop_length"] || "";
             const metricType = row["metric_type"] || "";
             const pipeOD = row['pipe_od'] || "";
-            console.log("rowe ",row)
 
-
-            //For Product Code
+            // Ensure category exists
             if (!categoryCodeMap[wireType]) {
-                throw new Error(`Category series code not found for wire type: ${wireType}`);
+                errors.push(`Row has unknown wire_type: ${wireType}`);
+                return null;
             }
-            // Increment the last assigned product code for this category
+
             categoryCodeMap[wireType] += 1;
             const product_code = categoryCodeMap[wireType];
 
-            //Fitting code
+            // Generate codes
             const fittingThreadCode = fittingThreadMap[fittingThread] || "";
             const fittingTypeCode = fittingTypeMap[fittingType] || "";
             const straightBendAngleCode = straightBendangleMap[straightBendAngle.trim()] || "";
@@ -1956,12 +1961,9 @@ const bulkimport = async (filePath) => {
             const skiveTypeCode = skiveTypeMap[skiveType] || "";
             const hoseDashSizeCode = hoseDashSizeMap[hoseDashSize] || "";
             const designCode = designMap[design] || "";
-            // Get the corresponding dash size
             const fittingdashSizeCode = getFittingDashSize(fittingThread, fittingDashSize, metricType, pipeOD);
             const withCapCode = withFerruleMap[withCap] || "";
 
-
-            //DESCRIPTION
             const fittingThreadDscCode = fittingThreadDscMap[fittingThread] || "";
             const fittingTypeDscCode = fittingTypeDscMap[fittingType] || "";
             const hoseDashSizedscCode = hoseDashSizeDscMap[hoseDashSize] || "";
@@ -1971,27 +1973,25 @@ const bulkimport = async (filePath) => {
             const fittingdashSizeDscCode = getFittingDashdscSize(fittingThread, fittingDashSize, metricType, pipeOD);
             const withCapDscCode = withFerruleDscMap[withCap] || "";
 
-
-
             const desc_Code = `${wireTypeDscCode}-${fittingThreadDscCode} ${hoseDashSizedscCode}X${fittingdashSizeDscCode} ${fittingTypeDscCode} ${straightBendAngleDscCode} ${skiveTypeDscCode} ${dropLength ? "DL-" + dropLength : ""} ${withCapDscCode}`.trim();
 
-            const fitting_Code = `${row["design"] || ""}${wireTypeCode}${fittingPieceCode}-${skiveTypeCode}-${hoseDashSizeCode}${fittingdashSizeCode}${fittingThreadCode ? "-" + fittingThreadCode : ''}${fittingTypeCode ? "-" + fittingTypeCode : ""}${straightBendAngleCode}${dropLength ? "-" + dropLength : ""}${withCapCode ? '-' + withCapCode : ""}`.trim();
-
-            const variant = "Standard";
+            const fitting_Code = `${design}${wireTypeCode}${fittingPieceCode}-${skiveTypeCode}-${hoseDashSizeCode}${fittingdashSizeCode}${fittingThreadCode ? "-" + fittingThreadCode : ""}${fittingTypeCode ? "-" + fittingTypeCode : ""}${straightBendAngleCode}${dropLength ? "-" + dropLength : ""}${withCapCode ? "-" + withCapCode : ""}`.trim();
 
             return {
                 ...row,
                 product_code,
                 desc_Code,
                 fitting_Code,
-                variant
+                variant: "Standard"
             };
-        });
+        }).filter(p => p !== null);
 
-        //Step 4: Create Products in db
-        await Products.insertMany(products);
+        // ✅ Step 4: Save products
+        if (products.length > 0) {
+            await Products.insertMany(products);
+        }
 
-        //Step 5 Update productCounter table with the last assigned product codes
+        // ✅ Step 5: Update product counters
         await Promise.all(
             categories.map(category =>
                 ProductCodeCounter.updateOne(
@@ -2001,12 +2001,180 @@ const bulkimport = async (filePath) => {
             )
         );
 
-        return products.length;
+        return { insertedCount: products.length, errors };
+
     } catch (error) {
         console.error("Error importing products:", error);
         throw error;
     }
 };
+
+
+//last working version
+// Import products from an Excel file
+// const bulkimport = async (filePath) => {
+//     console.log("filePath", filePath)
+//     try {
+//         const workbook = XLSX.readFile(filePath);
+//         const sheetName = workbook.SheetNames[0];
+//         const sheetData = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+//         console.log("sheetData", sheetData, sheetName)
+
+//         if (!sheetData.length) {
+//             throw new Error("No data found in the uploaded file");
+//         }
+       
+
+//         // Fetch last assigned product codes for all unique categories in the sheet
+//         const categories = [...new Set(sheetData.map(row => row["wire_type"]))];
+
+//         const partValues = [...new Set(sheetData.map(row => row["part"]))];
+
+//         const productType = [...new Set(sheetData.map(row => row["product_type"]))];
+
+
+
+//         // 👉 If 'part-Nut' column exists and has values, redirect to part-specific bulk import
+//         if (partValues.length && partValues[0] !== undefined && partValues[0] !== "" && partValues[0] === "Nut") {
+//             return await partNutBulkImport(sheetData, partValues);
+//         }
+//         // 👉 If 'part-Nipple' column exists and has values, redirect to part-specific bulk import
+//         if (partValues.length && partValues[0] !== undefined && partValues[0] !== "" && partValues[0] === "Nipple") {
+//             return await partNippleBulkImport(sheetData, partValues);
+//         }
+//         // 👉 If 'part-Cap' column exists and has values, redirect to part-specific bulk import
+//         if (partValues.length && partValues[0] !== undefined && partValues[0] !== "" && partValues[0] === "Cap") {
+//             return await partCapBulkImport(sheetData, partValues);
+//         }
+//         // 👉 If 'Hose Pipe' column exists and has values, redirect to HP specific bulk import
+//         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Hose Pipe") {
+//             return await hosePipeBulkImport(sheetData, productType);
+//         }
+//         // 👉 If 'Tube Fittings' column exists and has values, redirect to TF specific bulk import
+//         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Tube Fittings") {
+//             return await tubeFittingsBulkImport(sheetData, productType);
+//         }
+//         // 👉 If 'O-ring' column exists and has values, redirect to O-ring specific bulk import
+//         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "O-ring") {
+//             return await OringBulkImport(sheetData, productType);
+//         }
+//         // 👉 If 'DustCap' column exists and has values, redirect to O-ring specific bulk import
+//         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Dust Cap") {
+//             return await dustCapBulkImport(sheetData, productType);
+//         }
+//         // 👉 If 'Spring' column exists and has values, redirect to Spring specific bulk import
+//         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Spring") {
+//             return await springBulkImport(sheetData, productType);
+//         }
+//         // 👉 If 'Sleeve' column exists and has values, redirect to Spring specific bulk import
+//         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Sleeve") {
+//             return await sleeveBulkImport(sheetData, productType);
+//         }
+//         // 👉 If 'Vinyle Cover' column exists and has values, redirect to Spring specific bulk import
+//         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Vinyl Cover") {
+//             return await vinylCoverBulkImport(sheetData, productType);
+//         }
+//         // 👉 If 'Packing' column exists and has values, redirect to Spring specific bulk import
+//         if (productType.length && productType[0] !== undefined && productType[0] !== "" && productType[0] === "Packing") {
+//             return await packingBulkImport(sheetData, productType);
+//         }
+
+
+
+
+//         //Step 1 Extract category: 'Braided'
+//         const productCounters = await ProductCodeCounter.find({ category: { $in: categories } });
+//         // Setp 2 Extract Last Assigned product code for that product like { Braided: 40001 }
+//         const categoryCodeMap = {};
+//         for (const counter of productCounters) {
+//             categoryCodeMap[counter.category] = counter.last_assigned_product_code;
+//         }
+//         //Step 3 Process and save each product
+//         const products = sheetData.map((row) => {
+//             const design = row["design"] || "";
+//             const fittingThread = row["fitting_thread"] || "";
+//             const fittingType = row["fitting_type"] || "";
+//             const straightBendAngle = row["straight_bend_angle"] || "";
+//             const wireType = row["wire_type"] || "";
+//             const withCap = row["ferrule"] || "";
+//             const fittingPiece = row["fitting_piece"] || "";
+//             const skiveType = row["skive_type"] || "";
+//             const hoseDashSize = row["hose_dash_size"] || "";
+//             const fittingDashSize = row["fitting_dash_size"] || row["od"] || "";
+//             const dropLength = row["drop_length"] || "";
+//             const metricType = row["metric_type"] || "";
+//             const pipeOD = row['pipe_od'] || "";
+//             console.log("rowe ", row)
+
+
+//             //For Product Code
+//             if (!categoryCodeMap[wireType]) {
+//                 throw new Error(`Category series code not found for wire type: ${wireType}`);
+//             }
+//             // Increment the last assigned product code for this category
+//             categoryCodeMap[wireType] += 1;
+//             const product_code = categoryCodeMap[wireType];
+
+//             //Fitting code
+//             const fittingThreadCode = fittingThreadMap[fittingThread] || "";
+//             const fittingTypeCode = fittingTypeMap[fittingType] || "";
+//             const straightBendAngleCode = straightBendangleMap[straightBendAngle.trim()] || "";
+//             const wireTypeCode = wireTypeMap[wireType] || "";
+//             const fittingPieceCode = fittingPieceMap[fittingPiece] || "";
+//             const skiveTypeCode = skiveTypeMap[skiveType] || "";
+//             const hoseDashSizeCode = hoseDashSizeMap[hoseDashSize] || "";
+//             const designCode = designMap[design] || "";
+//             // Get the corresponding dash size
+//             const fittingdashSizeCode = getFittingDashSize(fittingThread, fittingDashSize, metricType, pipeOD);
+//             const withCapCode = withFerruleMap[withCap] || "";
+
+
+//             //DESCRIPTION
+//             const fittingThreadDscCode = fittingThreadDscMap[fittingThread] || "";
+//             const fittingTypeDscCode = fittingTypeDscMap[fittingType] || "";
+//             const hoseDashSizedscCode = hoseDashSizeDscMap[hoseDashSize] || "";
+//             const straightBendAngleDscCode = straightBendangleDscMap[straightBendAngle] || "";
+//             const skiveTypeDscCode = skiveTypDsceMap[skiveType] || "";
+//             const wireTypeDscCode = wireTypeDscMap[wireType] || "";
+//             const fittingdashSizeDscCode = getFittingDashdscSize(fittingThread, fittingDashSize, metricType, pipeOD);
+//             const withCapDscCode = withFerruleDscMap[withCap] || "";
+
+
+
+//             const desc_Code = `${wireTypeDscCode}-${fittingThreadDscCode} ${hoseDashSizedscCode}X${fittingdashSizeDscCode} ${fittingTypeDscCode} ${straightBendAngleDscCode} ${skiveTypeDscCode} ${dropLength ? "DL-" + dropLength : ""} ${withCapDscCode}`.trim();
+
+//             const fitting_Code = `${row["design"] || ""}${wireTypeCode}${fittingPieceCode}-${skiveTypeCode}-${hoseDashSizeCode}${fittingdashSizeCode}${fittingThreadCode ? "-" + fittingThreadCode : ''}${fittingTypeCode ? "-" + fittingTypeCode : ""}${straightBendAngleCode}${dropLength ? "-" + dropLength : ""}${withCapCode ? '-' + withCapCode : ""}`.trim();
+
+//             const variant = "Standard";
+
+//             return {
+//                 ...row,
+//                 product_code,
+//                 desc_Code,
+//                 fitting_Code,
+//                 variant
+//             };
+//         });
+
+//         //Step 4: Create Products in db
+//         await Products.insertMany(products);
+
+//         //Step 5 Update productCounter table with the last assigned product codes
+//         await Promise.all(
+//             categories.map(category =>
+//                 ProductCodeCounter.updateOne(
+//                     { category },
+//                     { $set: { last_assigned_product_code: categoryCodeMap[category] } }
+//                 )
+//             )
+//         );
+
+//         return products.length;
+//     } catch (error) {
+//         console.error("Error importing products:", error);
+//         throw error;
+//     }
+// };
 
 module.exports = {
     bulkimport,
