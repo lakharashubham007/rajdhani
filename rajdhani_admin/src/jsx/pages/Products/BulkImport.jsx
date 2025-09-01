@@ -1001,11 +1001,33 @@ const BulkImport = () => {
       const response = await bulkImportApi(uploadedFile);
 
       if (response.status === 200) {
+        // Swal.fire({
+        //   icon: "success",
+        //   title: "Import Successful",
+        //   text: response?.data?.message || "Your data has been imported successfully!",
+        // });
+
         Swal.fire({
-          icon: "success",
-          title: "Import Successful",
-          text: response?.data?.message || "Your data has been imported successfully!",
+          icon: response?.data?.errors?.length ? "warning" : "success",
+          title: response?.data?.errors?.length
+            ? "Imported with Warnings"
+            : "Import Successful",
+          html: `
+            <p>${response?.data?.message || "Your data has been imported successfully!"}</p>
+            ${response?.data?.errors?.length
+              ? `<div style="text-align:left; margin-top:10px;">
+            <strong>Errors:</strong>
+            <ul style="padding-left:20px; margin-top:5px; color:#d33;">
+              ${response?.data?.errors
+                .map((err) => `<li>${err}</li>`)
+                .join("")}
+            </ul>
+           </div>`
+              : ""
+            }
+  `,
         });
+
         setUploadedFile(null); // Reset file input
       } else {
         Swal.fire({
@@ -1021,10 +1043,11 @@ const BulkImport = () => {
         title: "Import Failed",
         text: error.response?.data?.message || "Something went wrong. Please try again.",
       });
-    } finally{
+    } finally {
       setLoading(false);
     }
   };
+
 
 
   return (

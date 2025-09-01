@@ -124,7 +124,8 @@ const buttons = [
 ];
 
 const AllProductList = () => {
-  const BASEURL = `https://api.i2rtest.in/v1`;
+  // const BASEURL = `https://api.i2rtest.in/v1`;
+  const BASEURL = `http://localhost:8087/v1`;
   const [galleryVisible, setGalleryVisible] = useState(false);
   const [galleryItems, setGalleryItems] = useState([]);
   const [sort, setSortata] = useState(10);
