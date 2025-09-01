@@ -88,12 +88,12 @@ const EndFittingForm = (props) => {
   } = props;
 
   const [loading, setLoading] = useState(false);
-
+  console.log("selectedFittingDashSizeOption", selectedFittingDashSizeOption,selectedFittingThreadOption)
 
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
-    if(errors[name]) {
+    if (errors[name]) {
       setErrors({
         ...errors,
         [name]: null,
@@ -144,7 +144,7 @@ const EndFittingForm = (props) => {
         <div className="col-xl-12 col-lg-12">
           <div className="card">
             {/** Card Header */}
-            <div className="mb-3 row">
+            <div className="mb-3 row ">
               <div className="col-md-12">
                 <div className="">
                   {/* <h4 className="card-title">End Fitting</h4> */}
@@ -212,7 +212,7 @@ const EndFittingForm = (props) => {
               {/* SECTION 1ST Fitting Essentials */}
               <div>
                 <div className="mb-3 row">
-                  
+
                   <div className="col-md-3">
                     <label className="col-form-label">Design</label>
                     <Select
@@ -227,7 +227,7 @@ const EndFittingForm = (props) => {
                           ...errors,
                           design: null
                         })
-                        
+
                       }}
                       defaultValue={selectedDesignOption}
                       options={designOption}
@@ -248,7 +248,7 @@ const EndFittingForm = (props) => {
                     <label className="col-form-label">Wire Type</label>
                     <Select
                       value={selectedWireTypeOption}
-                       isDisabled={isEditEndfitting}
+                      isDisabled={isEditEndfitting}
                       onChange={(option) => {
                         setSelectedWireTypeOption(option);
                         setFormData({
@@ -293,7 +293,7 @@ const EndFittingForm = (props) => {
                       }}
                       defaultValue={selectedWithCapWithoutCapOption}
                       options={withCapWithoutCapOption}
-                      
+
                       style={{
                         lineHeight: "40px",
                         color: "#7e7e7e",
@@ -641,7 +641,7 @@ const EndFittingForm = (props) => {
                           </span>
                         )}
                       </div>
-                     
+
                       <div className="col-md-2">
                         <label className="col-form-label">Fitting Dash Size</label>
                         <Select
@@ -678,7 +678,7 @@ const EndFittingForm = (props) => {
               </div>
               {/* Second */}
               <div className="mb-3 row">
-                <div className="col-md-3">
+                {/* <div className="col-md-3">
                   <label className="col-form-label">Fitting Type</label>
                   <Select
                     value={selectedFittingTypeOption}
@@ -706,7 +706,68 @@ const EndFittingForm = (props) => {
                       {errors.fitting_type}
                     </span>
                   )}
+                </div> */}
+                <div className="col-md-3">
+                  {selectedFittingThreadOption?.label === "BANJO WITHOUT O" ||
+                    selectedFittingThreadOption?.label === "BANJO WITH O" ? (
+                    // Show Thickness input if BANJO selected
+                    <>
+                      <label className="col-form-label">Thickness <small style={{ color: "grey" }} >(In mm)*</small> </label>
+
+                      <input
+                        type="number"
+                        placeholder="Ex: 20 mm"
+                        className="form-control"
+                        value={formData?.thickness || ""}
+                        onChange={(e) => {
+                          setFormData({
+                            ...formData,
+                            thickness: e.target.value,
+                          });
+                          setErrors({
+                            ...errors,
+                            thickness: null,
+                          });
+                        }}
+                      />
+                      {errors.thickness && (
+                        <span className="text-danger fs-12">{errors.thickness}</span>
+                      )}
+                    </>
+                  ) : (
+                    // Otherwise show Fitting Type dropdown
+                    <>
+                      <label className="col-form-label">Fitting Type</label>
+                      <Select
+                        value={selectedFittingTypeOption}
+                        onChange={(option) => {
+                          setSelectedFittingTypeOption(option);
+                          setFormData({
+                            ...formData,
+                            fitting_type: option.value,
+                          });
+                          setErrors({
+                            ...errors,
+                            fitting_type: null
+                          })
+                        }}
+                        defaultValue={selectedFittingTypeOption}
+                        options={fittingTypeOption}
+                        style={{
+                          lineHeight: "40px",
+                          color: "#7e7e7e",
+                          paddingLeft: " 15px",
+                        }}
+                      />
+                      {errors.fitting_type && (
+                        <span className="text-danger fs-12">
+                          {errors.fitting_type}
+                        </span>
+                      )}
+                    </>
+                  )}
                 </div>
+
 
 
 
@@ -741,7 +802,7 @@ const EndFittingForm = (props) => {
                     </span>
                   )}
                 </div>
-                
+
                 <div className="col-md-3">
                   <label className="col-form-label">
                     Neck Length <small style={{ color: "grey" }} >(In mm)*</small>
@@ -809,31 +870,19 @@ const EndFittingForm = (props) => {
           </div>
         </div>
       </div>
-      {/* Section 3 Location and additional field */}
-      {/* <div className="row">
+      {/* Section 3 Additional field */}
+    
+      <div className="row">
         <div className="col-xl-12 col-lg-12">
           <div className="card">
             <div className="card-header">
-              <h4 className="card-title">Location</h4>
+              <h4 className="card-title">Additional</h4>
             </div>
             <div className="card-body">
               <div className="mb-3 row">
-              <div className="col-md-6">
-                    <label className="col-form-label">Location<small style={{ color: "grey" }} ></small></label>
-                    <input
-                      name="location"
-                      value={formData.location}
-                      onChange={handleChange}
-                      type="text"
-                      className="form-control"
-                      placeholder="Ex: Row-5, BucketNo.22, Rack-15"
-                    />
-                    {errors.location && (
-                      <span className="text-danger fs-12">{errors.location}</span>
-                    )}
-                  </div>
+
                   <div className="col-md-6">
-                    <label className="col-form-label">Fitting Additional<small style={{ color: "grey" }} >(Optional)*</small></label>
+                    <label className="col-form-label">Additional<small style={{ color: "grey" }} >(Optional Field)*</small></label>
                     <input
                       name="additional"
                       value={formData.additional}
@@ -850,7 +899,7 @@ const EndFittingForm = (props) => {
             </div>
           </div>
         </div>
-      </div>  */}
+      </div> 
 
 
     </>

@@ -24,12 +24,8 @@ export default function StockJournal() {
     const [availableDestQty, setAvailableDestQty] = useState(0);
     const authData = useSelector((state) => state.auth.auth);
     const [narration, setNarration] = useState("");
-
-
-
     const [sourceProductID, setSourceProductID] = useState("");
     const [destProductID, setDestProductID] = useState("");
-    console.log("sourceProductID", sourceProductID, "destProductID", destProductID)
     const [sourceDesc, setSourceDesc] = useState("");
     const [sourceCode, setSourceCode] = useState("");
     const [sourceQty, setSourceQty] = useState("");
@@ -38,9 +34,8 @@ export default function StockJournal() {
     const [destQty, setDestQty] = useState("");
     const [sourceRows, setSourceRows] = useState([]);
     const [destRows, setDestRows] = useState([]);
-
-
     const debounceTimer = useRef(null);
+
     const [productformData, setProductFormData] = useState({
         product_code: "",
         quantity: "",
@@ -57,7 +52,7 @@ export default function StockJournal() {
     });
 
     const fetchProductAllList = async () => {
-        setLoading(true);
+        // setLoading(true);
         try {
             const res = await GetAllProductList();
             const dropdownProductList = res?.data?.products?.map((product) => ({
@@ -293,8 +288,6 @@ export default function StockJournal() {
         setDestRows([]);
         setNarration("")
     }
-
-
 
     useEffect(() => {
         fetchProductAllList();
@@ -636,10 +629,7 @@ export default function StockJournal() {
                     </button>
                 </div>
             </div>
-
         </>
-
-
     );
 }
 

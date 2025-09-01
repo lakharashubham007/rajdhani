@@ -371,7 +371,7 @@ const Cap = (props) => {
                                         )}
                                 </div>
 
-                                <div className="col-md-3">
+                                {/* <div className="col-md-3">
                                     <label className="col-form-label">
                                        Additional 
                                     </label>
@@ -386,7 +386,7 @@ const Cap = (props) => {
                                     {errors.additional && (
                                         <span className="text-danger fs-12">{errors.additional}</span>
                                     )}
-                                </div>
+                                </div> */}
 
                             </div>
                             <div className="mb-3 row">

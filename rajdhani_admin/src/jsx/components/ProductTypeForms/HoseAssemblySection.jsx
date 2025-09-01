@@ -63,6 +63,7 @@ const HoseAssemblySection = (props) => {
     setSelectedGuardTypeOption
   } = props;
 
+
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
@@ -70,7 +71,7 @@ const HoseAssemblySection = (props) => {
   const [searchFB, setSearchFB] = useState("");
   const [searchGuard, setSearchGuard] = useState("");
   const [formErrors, setHoseFormErrors] = useState({});
-  console.log(errors,"formErrors  is hrere ......")
+  console.log(errors, "formErrors  is hrere ......")
   const [searchFittingCode, setSearchFittingCode] = useState({
     search: "",
     title: ""
@@ -78,6 +79,7 @@ const HoseAssemblySection = (props) => {
   const debounceTimer = useRef(null);
   const TodayDate = moment().format("YYYY-MM-DD");
   const [orientationAngle, setOrientationAngle] = useState(false);
+  const [isGuardEnabled, setIsGuardEnabled] = useState(false);
 
   //Billing Form Details Fields
   const [formBillingData, setBillingFormData] = useState({
@@ -567,7 +569,7 @@ const HoseAssemblySection = (props) => {
       ...errors,
       fitting_a_description: null,
     });
-    
+
   };
 
   const handleFittingBDataChange = (selectedOption) => {
@@ -588,7 +590,7 @@ const HoseAssemblySection = (props) => {
       ...errors,
       fitting_b_description: null,
     });
-    
+
   };
 
   const handleGuardDataChange = (selectedOption) => {
@@ -720,6 +722,9 @@ const HoseAssemblySection = (props) => {
       setSimilarProducts("");
     }
   }, [searchFittingCode?.search]);
+
+  console.log("OAOAOAOAOAOAOA--------->", orientationAngle, orientationAngleFromParent)
+
 
   return (
     <>
@@ -883,7 +888,7 @@ const HoseAssemblySection = (props) => {
                         )}
                       </div>
 
-                      {orientationAngle || orientationAngleFromParent && (
+                      {orientationAngle && (
                         <div className="col-md-3">
                           <label className="col-form-label">
                             OA
@@ -900,7 +905,20 @@ const HoseAssemblySection = (props) => {
                       )}
                     </div>
 
-                    <div className="row mb-3">
+                    {/* Checkbox Line */}
+                    <div className="form-check mb-3">
+                      <input
+                        type="checkbox"
+                        className="form-check-input"
+                        id="addGuardCheckbox"
+                        checked={isGuardEnabled}
+                        onChange={(e) => setIsGuardEnabled(e.target.checked)}
+                      />
+                      <label className="form-check-label" htmlFor="addGuardCheckbox">
+                        Do you want to add Guard for this part?
+                      </label>
+                    </div>
+                    {isGuardEnabled && (<div className="row mb-3">
                       <div className="col-md-6">
                         <label className="col-form-label">Guard Type</label>
                         <Select
@@ -936,7 +954,7 @@ const HoseAssemblySection = (props) => {
                         {/* Search Button */}
                         <Select
                           options={searchGuard ? guardOption : []}
-                          placeholder="Search Fitting A by name or code ..."
+                          placeholder="Search Guard ..."
                           isLoading={loading}
                           value={selectedGuardOption}
                           onChange={handleGuardDataChange}
@@ -952,8 +970,9 @@ const HoseAssemblySection = (props) => {
                         )}
                       </div>
                     </div>
+                    )}
 
-                    
+
                     {/* Add button */}
                     {/* <div className="d-flex gap-2">
                       <button onClick={addRow} className="btn btn-primary mt-4">
@@ -1294,6 +1313,36 @@ const HoseAssemblySection = (props) => {
         </div>
 
       </div>
+
+
+        <div className="row">
+          <div className="col-xl-12 col-lg-12">
+            <div className="card">
+              <div className="card-header">
+                <h4 className="card-title">Additional</h4>
+              </div>
+              <div className="card-body">
+                <div className="mb-3 row">
+
+                  <div className="col-md-6">
+                    <label className="col-form-label">Additional<small style={{ color: "grey" }} >(Optional Field)*</small></label>
+                    <input
+                      name="additional"
+                      value={formData.additional}
+                      onChange={handleChange}
+                      type="text"
+                      className="form-control"
+                      placeholder="Ex: Additional"
+                    />
+                    {errors.additional && (
+                      <span className="text-danger fs-12">{errors.additional}</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
     </>
   );
 };

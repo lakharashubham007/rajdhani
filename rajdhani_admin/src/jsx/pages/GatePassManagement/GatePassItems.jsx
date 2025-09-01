@@ -34,7 +34,12 @@ import { getInventoryRejectionItemsApi } from "../../../services/apis/inventoryR
 import { createPackingDetailsApi, createPackingItemsApi, getGatePassItemsApi, getPackingItemsApi, savePackingDetailsApi, savePackingItemsApi } from "../../../services/apis/PackingApi";
 import LogActivityItemsModal from "../StoreManagement/StoreComponents/LogActivityItemsModal";
 import { getAllOperatorListApi, searchOperatorApi } from "../../../services/apis/OperatorApi";
+import GatePassPDF from "./component/GatePassPDF";
+import jsPDF from 'jspdf';
+import html2canvas from 'html2canvas';
+// import moment from 'moment';
 // import FinalizeGatePassModal from "./FinalizeGatePassModal";
+import rlogo from '../../../assets/images/rlogo.png'
 
 
 const billtheadData = [
@@ -55,13 +60,13 @@ const theadData = [
   { heading: "UOM", sortingVale: "uom" },
   { heading: "Packing Type", sortingVale: "packing_type" },
   { heading: "Weight(kg)", sortingVale: "weight" },
-  { heading: "Price", sortingVale: "price" },
-  { heading: "Discount Per Unit", sortingVale: "discount_per_unit" },
-  { heading: "CGST", sortingVale: "cgst" },
-  { heading: "SGST", sortingVale: "sgst" },
-  { heading: "IGST", sortingVale: "igst" },
-  { heading: "Amount", sortingVale: "amount" },
-  { heading: "Action", sortingVale: "action" },
+  // { heading: "Price", sortingVale: "price" },
+  // { heading: "Discount Per Unit", sortingVale: "discount_per_unit" },
+  // { heading: "CGST", sortingVale: "cgst" },
+  // { heading: "SGST", sortingVale: "sgst" },
+  // { heading: "IGST", sortingVale: "igst" },
+  // { heading: "Amount", sortingVale: "amount" },
+  // { heading: "Action", sortingVale: "action" },
 
   // { heading: "Product Name", sortingVale: "name" },
   // { heading: "Order Quantity", sortingVale: "order_quantity" },
@@ -93,6 +98,26 @@ const theadData = [
   // { heading: "Status", sortingVale: "status" },
   // { heading: "Action", sortingVale: "action" },
 ];
+
+const itemsData = [
+  {
+    code: "20033",
+    description: `BR BSP 1/2"X1/2" FEMALE STRAIGHT (SKIVE) THK-20 
+                  -<b>KB2-SK-0808-B-FS-THK-20</b><br/>
+                  SAP:<u>85849012</u>`,
+    quantity: "50",
+    uom: "SET"
+  },
+  {
+    code: "40070",
+    description: `SP M 1/4"XM12X1.5 FEMALE STRAIGHT (SKIVE) Without Ferrule WITHOUT ORING POD-06 
+                  -<b>KS1-SK-0406-M-FS-WF</b><br/>
+                  Pack With PO-0072450/098`,
+    quantity: "30",
+    uom: "SET"
+  }
+];
+
 
 
 const GatePassItems = () => {
@@ -207,6 +232,560 @@ const GatePassItems = () => {
       debounceOperatorSearch(inputValue, index);
     }
   };
+
+  const gatePassDetails = { soDetails };
+  const gatePassItems = { rows };
+
+  // const exportPDF = async (gatePassDetails, gatePassItems) => {
+  //   setLoading(true);
+  //   try {
+  //     const pdf = new jsPDF("p", "pt", "a4");
+  //     const pageWidth = pdf.internal.pageSize.getWidth();
+  //     const rowsPerPage = 10; // max rows per page
+
+  //     const filteredItems = gatePassItems || [];
+  //     const totalPages = Math.ceil(filteredItems.length / rowsPerPage);
+
+  //     for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+  //       const startIndex = pageIndex * rowsPerPage;
+  //       const endIndex = startIndex + rowsPerPage;
+  //       const paginatedItems = filteredItems.slice(startIndex, endIndex);
+
+  //       const container = document.createElement("div");
+  //       container.style.padding = "15px";
+  //       container.style.background = "#fff";
+  //       container.style.width = "780px"; // fit to A4 width
+  //       document.body.appendChild(container);
+
+  //       // Header & Info only on first page
+  //       if (pageIndex === 0) {
+  //         container.innerHTML = `
+  //           <div style="font-size: 10pt; font-family: Arial;">
+  //             <!-- Title -->
+  //             <h2 style="text-align: center; font-weight: bold; margin-bottom: 8px;">GATE PASS</h2>
+
+  //             <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px; font-size: 9pt;">
+  //               <tr>
+
+
+
+
+  //                 <!-- Left Column -->
+  //     <td style="border: 1px solid #000; width: 50%; vertical-align: top; padding: 0;">
+  //       <table style="width: 100%; border-collapse: collapse; font-size: 8pt;">
+
+  //         <!-- Invoice To -->
+  //         <tr>
+  //           <td style="border-bottom: 1px solid #000; padding: 4px;">
+  //             <b>Invoice To:</b><br/>
+  //             ${gatePassDetails?.base_company_address?.name || ""}, 
+  //             ${gatePassDetails?.base_company_address?.address || ""}, 
+  //             ${gatePassDetails?.base_company_address?.city || ""}, 
+  //             ${gatePassDetails?.base_company_address?.state_name || ""}, 
+  //             ${gatePassDetails?.base_company_address?.country || ""}<br/>
+  //             GST: ${gatePassDetails?.base_company_address?.gstNumber || ""}
+  //           </td>
+  //         </tr>
+
+  //         <!-- Consignee -->
+  //         <tr>
+  //           <td style="border-bottom: 1px solid #000; padding: 4px;">
+  //             <b>Consignee (Ship To):</b><br/>
+  //             ${gatePassDetails?.shipping_details?.address || ""}, 
+  //             ${gatePassDetails?.shipping_details?.city || ""}, 
+  //             ${gatePassDetails?.shipping_details?.state_name || ""}, 
+  //             ${gatePassDetails?.shipping_details?.country || ""}<br/>
+  //             Mob: ${gatePassDetails?.shipping_details?.mobile_no1 || ""}, 
+  //             ${gatePassDetails?.shipping_details?.mobile_no2 || ""}
+  //           </td>
+  //         </tr>
+
+  //         <!-- Buyer -->
+  //         <tr>
+  //           <td style="padding: 4px;">
+  //             <b>Buyer (Bill To):</b><br/>
+  //             ${gatePassDetails?.customer_id?.company_name || ""} - 
+  //             ${gatePassDetails?.customer_id?.fname || ""} ${gatePassDetails?.customer_id?.lname || ""}<br/>
+  //             ${gatePassDetails?.customer_id?.address || ""}, 
+  //             ${gatePassDetails?.customer_id?.city || ""}, 
+  //             ${gatePassDetails?.customer_id?.state || ""}, 
+  //             ${gatePassDetails?.customer_id?.country || ""}<br/>
+  //             Email: ${gatePassDetails?.customer_id?.email || ""}, 
+  //             Mob: ${gatePassDetails?.customer_id?.mobile_no1 || ""}, 
+  //             ${gatePassDetails?.customer_id?.mobile_no2 || ""}
+  //           </td>
+  //         </tr>
+
+  //       </table>
+  //     </td>
+
+  //                 <!-- Right Column -->
+  //                 <td style="border: 1px solid #000; width: 50%; vertical-align: top; padding: 0;">
+  //   <table style="width: 100%; border-collapse: collapse; font-size: 9pt;">
+
+  //  <!-- Voucher No & Date in one line (with vertical separator) -->
+  // <tr>
+  //   <td style="border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 4px; width: 50%;">
+  //     <b>Voucher No:</b> ${gatePassDetails?.voucher_no || ""}
+  //   </td>
+  //   <td style="border-bottom: 1px solid #000; padding: 4px; width: 50%;">
+  //     <b>Date:</b> ${moment(gatePassDetails?.date).format("DD-MMM-YYYY")}
+  //   </td>
+  // </tr>
+
+  // <!-- Reference No & Other Reference -->
+  // <tr>
+  //   <td style="border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 4px; width: 50%;">
+  //     <b>Reference No:</b> ${gatePassDetails?.reference_no || ""}
+  //   </td>
+  //   <td style="border-bottom: 1px solid #000; padding: 4px; width: 50%;">
+  //     <b>Other Ref:</b> ${gatePassDetails?.other_reference || ""}
+  //   </td>
+  // </tr>
+
+  // <!-- Dispatched Through & Destination -->
+  // <tr>
+  //   <td style="border-bottom: 1px solid #000; border-right: 1px solid #000; padding: 4px; width: 50%;">
+  //     <b>Dispatched Through:</b> ${gatePassDetails?.dispatch_through || ""}
+  //   </td>
+  //   <td style="border-bottom: 1px solid #000; padding: 4px; width: 50%;">
+  //     <b>Destination:</b> ${gatePassDetails?.destination || ""}
+  //   </td>
+  // </tr>
+
+  // <!-- Mode/Terms of Payment -->
+  // <tr>
+  //   <td colspan="2" style="border-bottom: 1px solid #000; padding: 4px;">
+  //     <b>Mode/Terms of Payment:</b> ${gatePassDetails?.payment_terms || ""}
+  //   </td>
+  // </tr>
+
+  // <!-- Terms of Delivery -->
+  // <tr>
+  //   <td colspan="2" style="padding: 4px;">
+  //     <b>Terms of Delivery:</b> ${gatePassDetails?.delivery_terms || ""}
+  //   </td>
+  // </tr>
+
+
+
+  //   </table>
+  // </td>
+
+
+
+
+
+
+  //               </tr>
+  //             </table>
+  //           </div>
+  //         `;
+  //       }
+
+  //       // Items Table (always show)
+  //       container.innerHTML += `
+
+  //         <table style="width: 100%; border-collapse: collapse; font-size: 9pt; margin-top: 8px;">
+  //   <thead>
+  //     <tr style="background: #e0e0e0; font-weight: bold; text-align: center;">
+  //       <th style="border: 1px solid #000; padding: 4px; width: 40px;">Sl</th>
+  //       <th style="border: 1px solid #000; padding: 4px;">Description of Goods</th>
+  //       <th style="border: 1px solid #000; padding: 4px; width: 120px;">Quantity & UOM</th>
+  //       <th style="border: 1px solid #000; padding: 4px; width: 100px;">Due On</th>
+  //     </tr>
+  //   </thead>
+  //   <tbody>
+  //     ${paginatedItems.map((data, idx) => `
+  //       <tr style="background: ${idx % 2 === 0 ? "#fff" : "#f9f9f9"};">
+  //         <td style="border: 1px solid #000; padding: 4px; text-align: center;">
+  //           ${startIndex + idx + 1}
+  //         </td>
+  //         <td style="border: 1px solid #000; padding: 4px;">
+  //           <div style="font-weight: bold;">${data?.product_id?.desc_Code || ""}</div>
+  //           <div style="font-size: 8.5pt; font-weight: 500; color: #333;">
+  //             ${data?.product_id?.fitting_Code || ""}
+  //           </div>
+
+
+  //           ${data.Additional
+  //           ? `<div style="font-size: 8pt; background: #e0e0e0; color: #000; padding: 2px 4px; display: inline-block; margin-top: 2px; border-radius: 3px;">
+  //               ${data.Additional}
+  //               </div>`                
+  //           : ""}
+
+  //         </td>
+  //         <td style="border: 1px solid #000; padding: 4px; text-align: center;">
+  //           ${data.packing_quantity || ""} ${data?.product_id?.uom || ""}
+  //         </td>
+  //         <td style="border: 1px solid #000; padding: 4px; text-align: center;">
+  //           ${gatePassDetails.order_details?.due_date ? moment(gatePassDetails.order_details?.due_date).format("DD-MMM-YYYY") : ""}
+  //         </td>
+  //       </tr>
+  //     `).join("")}
+  //   </tbody>
+  // </table>
+
+  //       `;
+
+  //       // Footer only on last page
+  //       if (pageIndex === totalPages - 1) {
+  //         container.innerHTML += `
+  //           <div style="margin-top: 15px; font-size: 9pt;">
+  //             <p style="font-size: 8pt;">E. & O.E</p>
+  //             <div style="display: flex; justify-content: space-between; margin-top: 25px; font-size: 9pt;">
+  //               <span>Prepared by</span>
+  //               <span>Verified by</span>
+  //               <span>Authorised Signatory</span>
+  //             </div>
+  //             <p style="margin-top: 15px; font-size: 8pt; text-align:center;">This is a Computer Generated Document</p>
+  //           </div>
+  //         `;
+  //       }
+
+  //       // Convert to image
+  //       const canvas = await html2canvas(container, { scale: 1.5, useCORS: true });
+  //       const imgData = canvas.toDataURL("image/jpeg", 0.7);
+  //       const imgProps = pdf.getImageProperties(imgData);
+  //       const imgWidth = pageWidth;
+  //       const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+  //       if (pageIndex > 0) pdf.addPage();
+  //       pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
+
+  //       document.body.removeChild(container);
+  //     }
+
+  //     pdf.save(`GatePass_${gatePassDetails?.gatepass_no || "GP"}.pdf`);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const exportPDF = async (gatePassDetails) => {
+  //   setLoading(true);
+  //   try {
+  //     const pdf = new jsPDF("p", "pt", "a4");
+  //     const pageWidth = pdf.internal.pageSize.getWidth();
+
+  //     const container = document.createElement("div");
+  //     container.style.padding = "10px";
+  //     container.style.background = "#fff";
+  //     container.style.width = "780px"; // A4 fit
+  //     document.body.appendChild(container);
+
+
+  //     container.innerHTML = `
+  //       <div style="font-family: Arial, sans-serif; font-size: 10pt; color: #000;">
+
+  //         <!-- Top Grey Title -->
+  //         <div style="text-align: center; background: #f0f0f0; padding: 6px; border: 1px solid #000; font-size: 12pt; font-weight: bold; color:#000;">
+  //           GATE PASS
+  //         </div>
+
+  //         <!-- Logo + Company Info in same row -->
+  //         <table style="width: 100%; border: 1px solid #000; border-top: none; border-collapse: collapse;">
+  //           <tr>
+  //             <!-- Logo -->
+  //             <td style="width: 30%; padding: 4px; text-align: center; vertical-align: middle;">
+  //               <img src='${rlogo}' style="max-width:250px; height:auto;" />
+  //             </td>
+
+  //             <!-- Company Info -->
+  //             <td style="width: 70%; padding: 4px; text-align: center; vertical-align: middle; color:#000;">
+  //               <div style="font-size: 18pt; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">
+  //                 ${"S.B. PARTS PRIVATE LIMITED"}
+  //               </div>
+  //               <div style="font-size: 10pt; margin-top: 6px; font-weight: 600; color:#000;">
+  //                 ${"117, Hawa Magri Opp. Durga Marble, Sukher, Udaipur (Raj.) 313004"}
+  //               </div>
+  //             </td>
+  //           </tr>
+  //         </table>
+  //       </div>
+  //     `;
+
+  //     // Convert DOM to canvas & add to PDF
+  //     const canvas = await html2canvas(container, { scale: 1.5, useCORS: true });
+  //     const imgData = canvas.toDataURL("image/jpeg", 0.7);
+  //     const imgProps = pdf.getImageProperties(imgData);
+  //     const imgWidth = pageWidth;
+  //     const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+  //     pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
+
+  //     document.body.removeChild(container);
+
+  //     pdf.save(`GatePass_Header.pdf`);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // const exportPDF = async (gatePassDetails) => {
+  //   setLoading(true);
+  //   try {
+  //     const pdf = new jsPDF("p", "pt", "a4");
+  //     const pageWidth = pdf.internal.pageSize.getWidth();
+
+  //     const container = document.createElement("div");
+  //     container.style.padding = "10px";
+  //     container.style.background = "#fff";
+  //     container.style.width = "780px"; // A4 fit
+  //     document.body.appendChild(container);
+
+  //     container.innerHTML = `
+  //     <div style="font-family: Arial, sans-serif; font-size: 10pt; color: #000;">
+
+  //       <!-- Top Grey Title -->
+  //       <div style="text-align: center; background: #f0f0f0; padding: 6px; border: 1px solid #000; font-size: 12pt; font-weight: bold; color:#000;">
+  //         GATE PASS
+  //       </div>
+
+  //       <!-- Logo + Company Info -->
+  //       <table style="width: 100%; border: 1px solid #000; border-top: none; border-collapse: collapse;">
+  //         <tr>
+  //           <!-- Logo -->
+  //           <td style="width: 30%; padding: 4px; text-align: center; vertical-align: middle;">
+  //             <img src='${rlogo}' style="max-width:250px; height:auto;" />
+  //           </td>
+
+  //           <!-- Company Info -->
+  //           <td style="width: 70%; padding: 4px; text-align: center; vertical-align: middle; color:#000;">
+  //             <div style="font-size: 18pt; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">
+  //               ${"S.B. PARTS PRIVATE LIMITED"}
+  //             </div>
+  //             <div style="font-size: 10pt; margin-top: 6px; font-weight: 600; color:#000;">
+  //               ${"117, Hawa Magri Opp. Durga Marble, Sukher, Udaipur (Raj.) 313004"}
+  //             </div>
+  //           </td>
+  //         </tr>
+  //       </table>
+
+  //       <!-- Gate Pass Details Row -->
+  //           <!-- Details row with double top border that visually merges with header box -->
+  //       <table style="width: 100%; border: 1px solid #000; border-top: 3px double #000; border-collapse: collapse; font-size: 10pt;">
+  //         <tr>
+  //           <!-- LEFT -->
+  //           <td style="width: 50%; padding: 6px; border-right: 1px solid #000; vertical-align: top;">
+  //             Gate Pass No.: <b>${gatePassDetails?.gatepass_no || "SB/GP/001"}</b><br/>
+  //             Gate Pass Date: <b>${gatePassDetails?.date || "29/08/2025"}</b><br/>
+  //             Order No.: <b>${gatePassDetails?.order_no || "SB/SO/001"}</b><br/>
+  //             Order Date: <b>${gatePassDetails?.order_date || "28/08/2025"}</b>
+  //           </td>
+
+  //           <!-- RIGHT (nested table to create a separator line that spans the full right column only) -->
+  //           <td style="width: 50%; padding: 0; vertical-align: top;">
+  //             <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+  //               <tr>
+  //                 <td style="padding: 6px;">
+  //                   <b>No. of Parcels:</b> ${gatePassDetails?.no_of_parcels || "1 Bag & 1 Roll"}<br/>
+  //                   <b>Total Weight:</b> ${gatePassDetails?.total_weight || "96.500 Kg"}
+  //                 </td>
+  //               </tr>
+  //               <tr>
+  //                 <!-- This border-top creates the separator line connected to the right column edges -->
+  //                 <td style="border-top: 1px solid #000; padding: 6px;">
+  //                   <b>Terms of Delivery:</b> ${gatePassDetails?.delivery_terms || ""}
+  //                 </td>
+  //               </tr>
+  //             </table>
+  //           </td>
+  //         </tr>
+  //       </table>
+
+
+  //     </div>
+  //   `;
+
+  //     // Convert DOM to canvas & add to PDF
+  //     const canvas = await html2canvas(container, { scale: 1.5, useCORS: true });
+  //     const imgData = canvas.toDataURL("image/jpeg", 0.7);
+  //     const imgProps = pdf.getImageProperties(imgData);
+  //     const imgWidth = pageWidth;
+  //     const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+  //     pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
+
+  //     document.body.removeChild(container);
+
+  //     pdf.save(`GatePass_Header.pdf`);
+  //   } catch (error) {
+  //     console.log("error", error);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  const exportPDF = async (gatePassDetails) => {
+  setLoading(true);
+  try {
+    const pdf = new jsPDF("p", "pt", "a4");
+    const pageWidth = pdf.internal.pageSize.getWidth();
+
+    const container = document.createElement("div");
+    container.style.padding = "10px";
+    container.style.background = "#fff";
+    container.style.width = "780px"; // A4 fit
+    document.body.appendChild(container);
+
+    container.innerHTML = `
+      <div style="font-family: Arial, sans-serif; font-size: 10pt; color: #000;">
+
+       
+        
+
+     
+        <!-- Gate Pass Details -->
+        <table style="width: 100%;  border: 1px solid #000;  font-size: 10pt;">
+
+            <tr>
+              <div style="text-align: center; background: #f0f0f0; padding: 6px; font-size: 12pt; font-weight: bold; border-top: 1px solid #000; border-right: 1px solid #000; border-left: 1px solid #000;">
+                GATE PASS
+              </div>
+            </tr>
+
+            <!-- Logo Box -->
+          <tr>
+            <!-- Logo (30%) -->
+            <td style="width: 20%; text-align: left; vertical-align: middle; padding: 1px;">
+              <img src='${rlogo}' style="max-width: 220px; height: auto;" />
+            </td>
+
+            <!-- Company Info (70%) -->
+            <td style="width: 80%; text-align: center; vertical-align: middle; padding: 1px;">
+              <div style="font-size: 14pt; font-weight: bold; text-transform: uppercase; border-bottom: 2px solid #000; display: inline-block; padding-bottom: 2px;">
+                ${"S.B. PARTS PRIVATE LIMITED"}
+              </div>
+              <div style="font-size: 8pt; margin-top: 6px; font-weight: 600;">
+                ${"117, Hawa Magri Opp. Durga Marble , Sukher, Udaipur (Raj.) 313004"}
+              </div>
+            </td>
+          </tr>
+
+         <tr>
+            <td colspan="2" style="height: 10px; border-top: 1px solid #000;"></td>
+          </tr>
+        
+          <tr style="border-top: 1px solid #000; ">
+            <td style="width: 50%; padding: 6px; border-right: 1px solid #000; vertical-align: top;">
+              Gate Pass No.: <b>${gatePassDetails?.gatepass_no || "SB/GP/001"}</b><br/>
+              Gate Pass Date: <b>${gatePassDetails?.date || "29/08/2025"}</b><br/>
+              Order No.: <b>${gatePassDetails?.order_no || "SB/SO/001"}</b><br/>
+              Order Date: <b>${gatePassDetails?.order_date || "28/08/2025"}</b>
+            </td>
+            <td style="width: 50%; padding: 0; vertical-align: top;">
+              <table style="width: 100%; border-collapse: collapse; font-size: 10pt;">
+                <tr>
+                  <td style="padding: 6px;">
+                    <b>No. of Parcels:</b> ${gatePassDetails?.no_of_parcels || "1 Bag & 1 Roll"}<br/>
+                    <b>Total Weight:</b> ${gatePassDetails?.total_weight || "96.500 Kg"}
+                  </td>
+                </tr>
+                <tr>
+                  <td style="border-top: 1px solid #000; padding: 6px;">
+                    <b>Terms of Delivery:</b> ${gatePassDetails?.delivery_terms || ""}
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+
+          <tr>
+            <td colspan="2" style="height: 10px; border-top: 1px solid #000;"></td>
+          </tr>
+
+          <tr style="background: #f0f0f0; font-weight: bold; text-align: center;">
+            <!-- Left column: border only on left & top & bottom -->
+            <td style="width: 50%; border-top: 1px solid #000; border-left: 1px solid #000; border-right: 1px solid #000;  border-bottom: 1px solid #000; padding: 2px;font-size: 8pt;">
+              BILL TO
+            </td>
+
+            <!-- Right column: border on top, right & bottom + left border for separator -->
+            <td style="width: 50%; border-top: 1px solid #000; border-right: 1px solid #000; border-bottom: 1px solid #000;  padding: 2px;font-size: 8pt;">
+              SHIP TO
+            </td>
+          </tr>
+          <tr>
+            <td style="width: 50%; border-right: 1px solid #000; padding: 6px; vertical-align: top;">
+              <b>${gatePassDetails?.bill_to?.name || "XYZ Trade Pvt. Ltd."}</b><br/>
+              ${gatePassDetails?.bill_to?.address || "76/E, Jagdishpura Complex Vastuviher Naroda Ahmedabad, Gujarat-384758"}<br/><br/>
+              GSTIN: ${gatePassDetails?.bill_to?.gst || "241CSPP9377PIZB"}
+            </td>
+            <td style="width: 50%; padding: 6px; vertical-align: top;">
+              <b>${gatePassDetails?.ship_to?.name || "XYZ Trade Pvt. Ltd."}</b><br/>
+              ${gatePassDetails?.ship_to?.address || "76/E, Jagdishpura Complex Vastuviher Naroda Ahmedabad, Gujarat-384758"}<br/>
+                <br/>
+                GSTIN: ${gatePassDetails?.ship_to?.gst || "241CSPP9377PIZB"}
+              
+            </td>
+          </tr>
+        </table>
+
+
+
+<!-- Items Table -->
+<table style="width: 100%; border: 1px solid #000; border-collapse: collapse; font-size: 9pt; margin-top: 8px; text-align: left;">
+  <thead>
+    <tr style="background: #f0f0f0; font-weight: bold; text-align: center;">
+      <th style="width: 5%; border: 1px solid #000; padding: 4px;">S.N.</th>
+      <th style="width: 10%; border: 1px solid #000; padding: 4px;">CODE</th>
+      <th style="width: 69%; border: 1px solid #000; padding: 4px;">ITEM</th>
+      <th style="width: 8%; border: 1px solid #000; padding: 4px;">QUANTITY</th>
+      <th style="width: 8%; border: 1px solid #000; padding: 4px;">UOM</th>
+    </tr>
+  </thead>
+  <tbody>
+    ${(() => {
+      // Show at least 10 rows
+      const items = itemsData || [];
+      let rows = "";
+
+      for (let i = 0; i < Math.max(10, items.length); i++) {
+        const item = items[i] || {};
+        rows += `
+          <tr>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px;">${i + 1}</td>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px; font-weight: bold;">${item.code || ""}</td>
+            <td style="border: 1px solid #000; padding: 4px;">${item.description || ""}</td>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px; font-weight: bold;">${item.quantity || ""}</td>
+            <td style="border: 1px solid #000; text-align: center; padding: 4px;">${item.uom || ""}</td>
+          </tr>
+        `;
+      }
+      return rows;
+    })()}
+  </tbody>
+</table>
+
+ 
+        
+
+
+      </div>
+    `;
+
+    const canvas = await html2canvas(container, { scale: 1.5, useCORS: true });
+    const imgData = canvas.toDataURL("image/jpeg", 0.7);
+    const imgProps = pdf.getImageProperties(imgData);
+    const imgWidth = pageWidth;
+    const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
+
+    pdf.addImage(imgData, "JPEG", 0, 0, imgWidth, imgHeight, undefined, "FAST");
+    document.body.removeChild(container);
+    pdf.save(`GatePass_Header.pdf`);
+  } catch (error) {
+    console.log("error", error);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
 
@@ -543,13 +1122,14 @@ const GatePassItems = () => {
 
   const handleSaveAsDraft = async (e) => {
     e.preventDefault();
-    Swal.fire({
-      icon: "success",
-      title: "Gate Pass",
-      text: "Gate Pass is verfied and Genrated successfully!",
-      showConfirmButton: false,
-      timer: 1500,
-    });
+    exportPDF(soDetails, rows)
+    // Swal.fire({
+    //   icon: "success",
+    //   title: "Gate Pass",
+    //   text: "Gate Pass is verfied and Genrated successfully!",
+    //   showConfirmButton: false,
+    //   timer: 1500,
+    // });
     // try {
     //   // 1️⃣ Filter rows that have packing_quantity
     //   const payloadItems = rows?.flatMap((item) => {
@@ -637,6 +1217,7 @@ const GatePassItems = () => {
     setSelectedRowIndex(index);
     setVerifyShowModal(true);
   };
+
 
 
 
@@ -919,6 +1500,7 @@ const GatePassItems = () => {
 
                           <tbody >
                             {rows?.map((row, index) => (
+                              console.log("row's data is here----->", rows),
                               <tr key={row.id}
                                 //  onClick={() => handleVerifyClick(row)} 
                                 onClick={(e) => {
@@ -1064,7 +1646,7 @@ const GatePassItems = () => {
                                   />
                                 </td>
                                 {/* price */}
-                                <td>
+                                {/* <td>
                                   <input
                                     type="number"
                                     placeholder="Price Per Unit"
@@ -1079,9 +1661,9 @@ const GatePassItems = () => {
                                     className="form-control"
                                     style={{ width: "120px" }}
                                   />
-                                </td>
+                                </td> */}
                                 {/* discount */}
-                                <td>
+                                {/* <td>
                                   <input
                                     type="number"
                                     placeholder="Discount Per Unit"
@@ -1096,9 +1678,9 @@ const GatePassItems = () => {
                                     className="form-control"
                                     style={{ width: "170px" }}
                                   />
-                                </td>
+                                </td> */}
                                 {/* cgst */}
-                                <td>
+                                {/* <td>
                                   <input
                                     type="text"
                                     placeholder="CGST"
@@ -1113,9 +1695,9 @@ const GatePassItems = () => {
                                     className="form-control"
                                     style={{ width: "70px" }}
                                   />
-                                </td>
+                                </td> */}
                                 {/* sgst */}
-                                <td>
+                                {/* <td>
                                   <input
                                     type="text"
                                     placeholder="SGST"
@@ -1130,9 +1712,9 @@ const GatePassItems = () => {
                                     className="form-control"
                                     style={{ width: "70px" }}
                                   />
-                                </td>
+                                </td> */}
                                 {/* igst */}
-                                <td>
+                                {/* <td>
                                   <input
                                     type="text"
                                     placeholder="IGST"
@@ -1147,9 +1729,9 @@ const GatePassItems = () => {
                                     className="form-control"
                                     style={{ width: "70px" }}
                                   />
-                                </td>
+                                </td> */}
                                 {/* amount */}
-                                <td>
+                                {/* <td>
                                   <input
                                     type="text"
                                     placeholder="100"
@@ -1165,7 +1747,7 @@ const GatePassItems = () => {
                                     style={{ width: "90px" }}
                                     disabled
                                   />
-                                </td>
+                                </td> */}
 
 
 
@@ -1284,6 +1866,37 @@ const GatePassItems = () => {
             <div className="d-flex gap-3 justify-content-end text-end mt-3 mt-md-0">
               {/* Save Items Button */}
               <button
+                type="button"
+                onClick={handleSaveAsDraft}
+                style={{
+                  background: "linear-gradient(90deg, #2196F3, #1565C0)", // blue shades
+                  color: "white",
+                  padding: "10px 24px",
+                  border: "none",
+                  borderRadius: "8px",
+                  fontWeight: "600",
+                  fontSize: "14px",
+                  cursor: "pointer",
+                  transition: "all 0.3s ease-in-out",
+                  boxShadow: "0px 4px 8px rgba(0,0,0,0.15)",
+                }}
+                onMouseOver={(e) => {
+                  e.target.style.background = "linear-gradient(90deg, #1E88E5, #0D47A1)";
+                  e.target.style.transform = "translateY(-2px)";
+                  e.target.style.boxShadow = "0px 6px 12px rgba(0,0,0,0.2)";
+                }}
+                onMouseOut={(e) => {
+                  e.target.style.background = "linear-gradient(90deg, #2196F3, #1565C0)";
+                  e.target.style.transform = "translateY(0px)";
+                  e.target.style.boxShadow = "0px 4px 8px rgba(0,0,0,0.15)";
+                }}
+              >
+                Generate GatePass
+              </button>
+
+
+
+              <button
                 type="submit"
                 onClick={handleSaveAsDraft}
                 style={{
@@ -1308,7 +1921,7 @@ const GatePassItems = () => {
                   e.target.style.boxShadow = "0px 4px 8px rgba(0,0,0,0.15)";
                 }}
               >
-                Verify and Genrate GatePass
+                Verify
               </button>
 
               {/* Finalize for Gate Pass Button */}
@@ -1341,6 +1954,17 @@ const GatePassItems = () => {
                 Verify and Genrate GatePass
               </button> */}
             </div>
+
+
+            {/* 
+            <GatePassPDF
+              gatePassDetails={soDetails}
+              gatePassItems={rows}
+
+            // rowsPerPage={rowsPerPage}
+            // currentPage={currentPage}
+
+            /> */}
 
           </div>
         </div>
@@ -1664,6 +2288,8 @@ const GatePassItems = () => {
       // productionProcessID={producitonProcessDetails?._id}
       />
 
+
+
       {/* <FinalizeGatePassModal
         show={finalizeModal}
         onHide={() => setFinalizeModal(false)}
@@ -1676,3 +2302,6 @@ const GatePassItems = () => {
 };
 
 export default GatePassItems;
+
+
+

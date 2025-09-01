@@ -181,7 +181,7 @@ const HosePipe = (props) => {
                           fontWeight: 'bold',
                           marginRight: '100px'
                         }}>
-                          FittingCode :- {fittingCode}
+                          Hose Code :- {fittingCode}
                         </span>
                       </div>
                     </div>
@@ -231,6 +231,7 @@ const HosePipe = (props) => {
                       }}
                       defaultValue={selectedHosePipeMFCOption}
                       options={HosePipeMFCOption}
+                      isClearable
                       style={{
                         lineHeight: "40px",
                         color: "#7e7e7e",

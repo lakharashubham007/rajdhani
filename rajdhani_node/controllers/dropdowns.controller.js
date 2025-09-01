@@ -35,7 +35,8 @@ const {
     gstOption,
     nutFittingThreadOptions,
     nutFittingDashSize,
-    nippleFittingThreadOptions
+    nippleFittingThreadOptions,
+    springWireTypeOption
 } = require('../dropdowns/productOptions')
 
 
@@ -79,7 +80,8 @@ const getallOptions = async (req, res) => {
                 gstOption,
                 nutFittingThreadOptions,
                 nutFittingDashSize,
-                nippleFittingThreadOptions
+                nippleFittingThreadOptions,
+                springWireTypeOption
             }
         });
     } catch (error) {

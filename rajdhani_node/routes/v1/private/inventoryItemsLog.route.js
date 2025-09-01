@@ -28,6 +28,7 @@ router.get("/get-items-log", Authentication, inventoryItemsLogController.getInve
 router.get("/get-inventory-items-log", Authentication, inventoryItemsLogController.getInventoryItemLogs);
 router.get("/get-packing-orders", Authentication, inventoryItemsLogController.getUniqueSOIdsWithDetails);
 router.get("/get-packing-items/:id", Authentication, inventoryItemsLogController.getPackingItemsBySoId);
+router.post("/update-final-inventory-qty", Authentication, inventoryItemsLogController.bulkLogAndUpdateInventory);
 
 
 // router.get("/items-inventory",  Authentication,  inventoryItemsLogController.getAllInventories );

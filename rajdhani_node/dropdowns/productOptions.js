@@ -28,6 +28,11 @@ const WireTypeOptions = [
   { value: "Teflon", label: "TEFLON (TF) - T", code: "T", dsc_code: "TF" }
 ];
 
+const springWireTypeOption = [
+  { value: "Braided", label: "BRAIDED (BR) - B", code: "B", dsc_code: "BR" },
+  { value: "Spiral", label: "SPIRAL (SP) - S", code: "S", dsc_code: "SP" },
+]
+
 
 
 //added new options
@@ -112,7 +117,7 @@ const fittingThreadOptions = [
   // { value: "METRIC(LIGHT) WITH O", label: "METRIC(LIGHT) WITH O (DLO)", code: "DLO" },
   // { value: "METRIC(HEAVY)", label: "METRIC(HEAVY) (DH)", code: "DH" },
   // { value: "METRIC(HEAVY) WITH O", label: "METRIC(HEAVY) WITH O (DHO)", code: "DHO" },
-  { value: "NPT", label: "NPT (NPT)", code: "NPT", dsc_code: "NPT" },
+  { value: "NPT", label: "NPT (NPT)", code: "N", dsc_code: "NPT" },
   { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "BJ", dsc_code: "JIS" },
   { value: "SAE 61", label: "FLG CODE 61- 3000 PSI (3)", code: "", dsc_code: "", dsc: '61-(3)' },
   { value: "SAE 62", label: "FLG CODE 62- 6000 PSI (6)", code: "", dsc_code: "", dsc: '62-(6)' },
@@ -436,8 +441,8 @@ const pipeODOptions = [
   { value: "20", label: "20" },
   { value: "22", label: "22" },
   { value: "25", label: "25" },
-  { value: "30", label: "30" },
   { value: "28", label: "28" },
+  { value: "30", label: "30" },
   { value: "35", label: "35" },
   { value: "38", label: "38" },
   { value: "42", label: "42" },
@@ -452,7 +457,7 @@ const malefemaleOptions = [
 const MFCOptions = [
   { value: "MFC", label: "MFC", code: "MFC", dsc_code: "MFC" },
   { value: "IBL", label: "IBL", code: "IBL", dsc_code: "IBL" },
-  { value: "BPL", label: "BPL", code: "IBL", dsc_code: "BPL" },
+  { value: "BPL", label: "BPL", code: "BPL", dsc_code: "BPL" },
   { value: "BSR", label: "BSR", code: "BSR", dsc_code: "BSR" },
   { value: "IBN", label: "IBN", code: "IBN", dsc_code: "IBN" },
   { value: "BIN", label: "BIN", code: "BIN", dsc_code: "BIN" },
@@ -486,7 +491,7 @@ const HoseTypeOptions = [
   { value: "4XP", label: "4XP", code: "4XP", dsc_code: "4XP" },
   { value: "4XH", label: "4XH", code: "4XH", dsc_code: "4XH" },
   { value: "R15", label: "R15", code: "R15", dsc_code: "R15" },
-  { value: "TEFLON", label: "TEFLON", code: "R14", dsc_code: "R14" },
+  { value: "TEFLON", label: "TEFLON", code: "R14", dsc_code: "TEFLON" },
   { value: "R5", label: "R5", code: "R5", dsc_code: "R5" },
   { value: "R5R", label: "R5R", code: "R5R", dsc_code: "R5R" },
   { value: "R1(HT)", label: "R1(HT)", code: "R1(HT)", dsc_code: "R1(HT)" },
@@ -841,12 +846,13 @@ const gstOption = [
 
 const nutFittingThreadOptions = [
   { value: "BSP", label: "BSP (B)", code: "B", dsc_code: "BSP" },
+  { value: "NPT", label: "NPT (N)", code: "N", dsc_code: "NPT" },
   { value: "JIC", label: "JIC (J)", code: "J", dsc_code: "JIC" },
   { value: "ORFS", label: "ORFS (O)", code: "O", dsc_code: "ORFS" },
   { value: "METRIC KOMATSU", label: "METRIC KOMATSU (MK)", code: "MK", dsc_code: "METRIC KOMATSU" },
   { value: "METRIC LIGHT", label: "METRIC(LIGHT) (DL)", code: "DL", dsc_code: "METRIC LIGHT" },
   { value: "METRIC HEAVY", label: "METRIC(HEAVY) (DH)", code: "DH", dsc_code: "METRIC HEAVY" },
-  { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "BJ", dsc_code: "JIS" }
+  { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "JIS", dsc_code: "JIS" }
 ];
 
 const nutFittingDashSize = [
@@ -959,7 +965,7 @@ const nippleFittingThreadOptions = [
   { value: "METRIC LIGHT WITH O", label: "METRIC(LIGHT) WITH O (DLO)", code: "DLO", dsc_code: "METRIC LIGHT WITH O" },
   { value: "METRIC HEAVY", label: "METRIC(HEAVY) (DH)", code: "DH", dsc_code: "METRIC HEAVY" },
   { value: "METRIC HEAVY WITH O", label: "METRIC(HEAVY) WITH O (DHO)", code: "DHO", dsc_code: "METRIC HEAVY WITH O" },
-  { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "BJ", dsc_code: "JIS" },
+  { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "JIS", dsc_code: "JIS" },
   { value: "METRIC THREAD ORFS", label: "METRIC THREAD ORFS (MO)", code: "MO", dsc_code: "METRIC THREAD ORFS" }
 ];
 
@@ -1003,6 +1009,7 @@ module.exports = {
   gstOption,
   nutFittingThreadOptions,
   nutFittingDashSize,
-  nippleFittingThreadOptions
+  nippleFittingThreadOptions,
+  springWireTypeOption
 
 };

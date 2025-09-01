@@ -277,7 +277,9 @@ const bulkStockJournalLogAndUpdateInventory = async (items) => {
 
       // Fetch inventory record for product
       const inventoryRecord = await Inventory.findOne({ product_id }).session(session);
+
       console.log("items for  Stock inventoryRecord------> ", inventoryRecord)
+      
       if (!inventoryRecord) {
         throw new Error(`Inventory not found for product_id: ${product_id}`);
       }

@@ -284,7 +284,7 @@ const ProductDetailModal = ({
                   </div>
                 </div>
                 {/* End Fittings and parts details */}
-                {["End Fittings", "Nut", "Nipple", "Cap", "Hose Pipe"].includes(productDetailData?.product_type) && (
+                {["End Fittings", "Nut", "Nipple", "Cap"].includes(productDetailData?.product_type) && (
                   <>
                     <div className="col-md-6">
                       <ul className="list-group">
@@ -309,7 +309,39 @@ const ProductDetailModal = ({
                     </div>
                     <div className="col-md-12 mt-2">
                       <ul className="list-group">
-                        <li className="list-group-item"><strong>Desc Code:</strong> {productDetailData?.desc_Code}</li>
+                        <li className="list-group-item"><strong>Description:</strong> {productDetailData?.desc_Code}</li>
+                      </ul>
+                    </div>
+                  </>
+                )}
+
+                    {/* End Fittings and parts details */}
+                {["Hose Pipe"].includes(productDetailData?.product_type) && (
+                  <>
+                    <div className="col-md-6">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Type:</strong> {productDetailData?.product_type}</li>
+                        <li className="list-group-item"><strong>Code:</strong> {productDetailData?.product_code}</li>
+                        {/* <li className="list-group-item"><strong>Skive Type:</strong> {productDetailData?.skive_type}</li> */}
+                        <li className="list-group-item"><strong>UOM:</strong> {productDetailData?.uom}</li>
+                      </ul>
+                    </div>
+                    <div className="col-md-6">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Brand Lay Line:</strong> {productDetailData?.brand_lay_line ? productDetailData?.brand_lay_line : 'N/A'}</li>
+                        <li className="list-group-item"><strong>Hose Dash Size:</strong> {productDetailData?.hose_dash_size ? productDetailData?.hose_dash_size : 'N/A'}</li>
+                        <li className="list-group-item"><strong>Hose Type:</strong> {productDetailData?.hose_type ? productDetailData?.hose_type : 'N/A'}</li>
+                        {/* <li className="list-group-item"><strong>Thread:</strong> {productDetailData?.fitting_thread ? productDetailData?.fitting_thread : 'N/A'}</li> */}
+                      </ul>
+                    </div>
+                    <div className="col-md-12 mt-2">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Fitting Code:</strong> {productDetailData?.fitting_Code}</li>
+                      </ul>
+                    </div>
+                    <div className="col-md-12 mt-2">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Description:</strong> {productDetailData?.desc_Code}</li>
                       </ul>
                     </div>
                   </>
@@ -380,8 +412,16 @@ const ProductDetailModal = ({
                     </div>
                     <div className="col-md-12 mt-2 mb-2">
                       <div className="d-flex justify-content-between align-items-center list-group-item">
-                        <span><strong>Guard Type:</strong> {productDetailData?.guard_type}</span>
-                        <span><strong>Guard:</strong> {productDetailData?.guard}</span>
+                        <span><strong>Assembly Length:</strong> {productDetailData?.assembly_length ? productDetailData?.assembly_length : 'N/A' }</span>
+                        <span><strong>Fitting Length:</strong> {productDetailData?.fitting_length ? productDetailData?.fitting_length  : 'N/A' }</span>
+                        <span><strong>Cutting Length:</strong> {productDetailData?.cutting_length ? productDetailData?.cutting_length  : 'N/A' }</span>
+                        <span><strong>OA:</strong> {productDetailData?.oa ? productDetailData?.oa  : 'N/A' }</span>
+                      </div>
+                    </div>
+                    <div className="col-md-12 mt-2 mb-2">
+                      <div className="d-flex justify-content-between align-items-center list-group-item">
+                        <span><strong>Guard Type:</strong> {productDetailData?.guard_type ? productDetailData?.guard_type : 'N/A' }</span>
+                        <span><strong>Guard:</strong> {productDetailData?.guard ? productDetailData?.guard  : 'N/A' }</span>
                       </div>
                     </div>
                   </>
@@ -452,14 +492,19 @@ const ProductDetailModal = ({
                 {/*Fitting Accessory*/}
                 {["Tube Fittings"].includes(productDetailData?.product_type) && (
                   <>
-                    <div className="col-md-6">
+                    <div className="col-md-4">
                       <ul className="list-group">
                         <li className="list-group-item"><strong>Type:</strong> {productDetailData?.product_type}</li>
                       </ul>
                     </div>
-                    <div className="col-md-6 mb-1">
+                    <div className="col-md-4 mb-1">
                       <ul className="list-group">
                         <li className="list-group-item"><strong>Product Code :</strong> {productDetailData?.product_code}</li>
+                      </ul>
+                    </div>
+                     <div className="col-md-4 mb-1">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Part Code :</strong> {productDetailData?.part_code ? productDetailData?.part_code : '' }</li>
                       </ul>
                     </div>
 
@@ -471,12 +516,12 @@ const ProductDetailModal = ({
 
                     <div className="col-md-6">
                       <ul className="list-group">
-                        <li className="list-group-item"><strong>Category :</strong> {productDetailData?.tube_fitting_category ? productDetailData?.tube_fitting_category : "N/A"}</li>
+                        <li className="list-group-item"><strong>Category :</strong> {productDetailData?.tube_fitting_thread ? productDetailData?.tube_fitting_thread : "N/A"}</li>
                       </ul>
                     </div>
                     <div className="col-md-6 mb-1">
                       <ul className="list-group">
-                        <li className="list-group-item"><strong>Sub Category :</strong> {productDetailData?.tube_fitting_subcategory}</li>
+                        <li className="list-group-item"><strong>Sub Category :</strong> {productDetailData?.tube_fitting_category ? productDetailData?.tube_fitting_category : 'N/A'}</li>
                       </ul>
                     </div>
 

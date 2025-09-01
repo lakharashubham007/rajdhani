@@ -43,10 +43,10 @@ export const validateFormComponent = (formData, permissions) => {
     // if (!formData.fitting_dash_size) newErrors.fitting_dash_size = "Fitting dash size is required.";
 
     if (formData.fitting_thread !== "SAE 61" && formData.fitting_thread !== "SAE 62" && formData.fitting_thread !== "METRIC THREAD ORFS"
-      && formData.fitting_thread !== "BANJO WITHOUT O" && formData.fitting_thread !== "BANJO WITH O"  && formData.fitting_thread !== "BANJO WITH O"
+      && formData.fitting_thread !== "BANJO WITHOUT O" && formData.fitting_thread !== "BANJO WITH O" && formData.fitting_thread !== "BANJO WITH O"
       // && formData?.fitting_thread !== "METRIC"
     ) {
-      if (!formData.fitting_dash_size ) newErrors.fitting_dash_size = "Fitting dash size is required.";
+      if (!formData.fitting_dash_size) newErrors.fitting_dash_size = "Fitting dash size is required.";
     } else {
       if (!formData.OD) newErrors.OD = "OD is required.";
     }
@@ -60,24 +60,31 @@ export const validateFormComponent = (formData, permissions) => {
     }
 
     if (!formData.fitting_thread) newErrors.fitting_thread = "Fitting thread is required.";
-    if (!formData.fitting_type) newErrors.fitting_type = "Fitting type is required.";
+    if (
+      !formData.fitting_type &&
+      formData.fitting_thread !== "BANJO WITH O" &&
+      formData.fitting_thread !== "BANJO WITHOUT O"
+    ) {
+      newErrors.fitting_type = "Fitting type is required.";
+    }
+    // if (!formData.fitting_type) newErrors.fitting_type = "Fitting type is required.";
     if (!formData.straight_bend_angle) newErrors.straight_bend_angle = "Straight bend angle is required.";
     if (formData.straight_bend_angle !== "Straight") {
       // if (!formData.drop_length) newErrors.drop_length = "Drop length is required.";
     }
     // if (!formData.neck_length) newErrors.neck_length = "Neck length is required.";
- 
-  } 
+
+  }
   //Parts Validation NUT
-   else if (((formData?.product_type === "End Fittings") && (formData?.part === 'Nut'))) { 
+  else if (((formData?.product_type === "End Fittings") && (formData?.part === 'Nut'))) {
     if (!formData.part) newErrors.design = "Nut is required.";
     if (!formData.design) newErrors.design = "Design is required.";
     if (!formData.fitting_thread) newErrors.fitting_thread = "Fitting thread is required.";
     if (!formData.fitting_dash_size) newErrors.fitting_dash_size = "Fitting dash size is required.";
     if (!formData?.nut_hex) newErrors.nut_hex = "Nut Hex is required.";
     if (!formData?.nut_length) newErrors.nut_length = "Nut Length is required.";
- 
-    
+
+
   } else if (formData.product_type === "Hose Pipe") {
     // if (!formData.brand) newErrors.brand = "Brand is required.";
     if (!formData.brand_lay_line) newErrors.brand_lay_line = "Brand Lay Line is required.";
@@ -92,8 +99,8 @@ export const validateFormComponent = (formData, permissions) => {
     if (!formData.assembly_length) newErrors.assembly_length = "Assembly Length is required.";
     if (!formData.fitting_length) newErrors.fitting_length = "Fitting Length is required.";
     if (!formData.cutting_length) newErrors.cutting_length = "Cut Length is required.";
-    if (!formData.guard_type) newErrors.guard_type = "Guard Type is required.";
-    if (!formData.guard) newErrors.guard = "Hose Protection is required.";
+    // if (!formData.guard_type) newErrors.guard_type = "Guard Type is required.";
+    // if (!formData.guard) newErrors.guard = "Hose Protection is required.";
   } else if (formData.product_type === "Spring") {
     if (!formData.inner_diameter) newErrors.inner_diameter = "Inner Diameter is required.";
     if (!formData.spring_length) newErrors.spring_length = "Spring Length is required.";
@@ -128,7 +135,7 @@ export const validateFormComponent = (formData, permissions) => {
     if (!formData.tube_fitting_category) newErrors.tube_fitting_category = "Tube Fitting Category is required.";
     if (!formData.part_description) newErrors.part_description = "Part Description is required.";
     if (!formData.part_code) newErrors.part_code = "Part Code is required.";
-    
+
   }
   return newErrors;
 };

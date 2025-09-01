@@ -38,7 +38,6 @@ export const addProductApi = async (formData) => {
 
 
 export const getProductApi = async (currentPage,sort,sortValue,searchInputValue,productTypes = []) => {
- console.log("productTypes",productTypes)
   const token = localStorage.getItem("token").replace(/^"(.*)"$/, "$1");
   try {
       const response = await axios.get(`${apis.product.productList}?page=${currentPage}&limit=${sort}&sort=${sortValue?.value ? `${sortValue?.value}:`: ""}${sortValue?.type ? sortValue?.type : ""}&search=${searchInputValue}&productTypes=${productTypes?.join(",")}`,

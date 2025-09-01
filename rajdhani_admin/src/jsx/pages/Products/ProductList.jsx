@@ -56,6 +56,18 @@ const theadData = [
   { heading: "Status", sortingVale: "status" },
   { heading: "Action", sortingVale: "action" },
 ];
+const theadDataHosePipe = [
+  { heading: "S.No.", sortingVale: "sno" },
+  { heading: "Code", sortingVale: "product_code" },
+  { heading: "QR Code", sortingVale: "qr_code" },
+  { heading: "Image", sortingVale: "image" },
+  { heading: "Product", sortingVale: "product" },
+  { heading: "Description", sortingVale: "description" },
+  { heading: "Hose Code", sortingVale: "Fitting Code" },
+  { heading: "Created At", sortingVale: "created_at" },
+  { heading: "Status", sortingVale: "status" },
+  { heading: "Action", sortingVale: "action" },
+];
 const theadDataHoseAssembly = [
   { heading: "S.No.", sortingVale: "sno" },
   { heading: "Code", sortingVale: "product_code" },
@@ -106,6 +118,7 @@ const theadDataTubeFittings = [
 const buttons = [
   "Fitting Accessories",
   "End Fittings and Parts",
+  "Hose Pipe",
   "Hose Assembly",
   "Tube Fittings"
 ];
@@ -389,6 +402,33 @@ const AllProductList = () => {
     }
   }
 
+  
+  //   getSubCategoriesApi
+  const fetchHosePipeList = async (sortValue, productTypes = []) => {
+    // Set loading to true when the API call starts
+    setLoading(true);
+    try {
+      const res = await getProductApi(
+        currentPage,
+        sort,
+        sortValue,
+        searchInputValue,
+        productTypes
+      );
+
+      console.log("res.data", res.data)
+
+      setEndFittingsProductList(res.data);
+      setProductPaginationInfoByTab(res?.data)
+      setUpdateCategory(false);
+    } catch (error) {
+      // Catch and handle errors
+    } finally {
+      // Always set loading to false when the API call is done (whether successful or failed)
+      setLoading(false);
+    }
+  }
+
   //fetchFittingAccessoriesProductList
   const fetchFittingAccessoriesProductList = async (sortValue, productTypes = []) => {
     // Set loading to true when the API call starts
@@ -613,7 +653,8 @@ const AllProductList = () => {
 
   const categoryMap = {
     "Fitting Accessories": ["Sleeve", "Packing", "Vinyl Cover", "Dust Cap", "O-ring", "Spring"],
-    "End Fittings and Parts": ["End Fittings", "Nut", "Nipple", "Cap", "Hose Pipe"],
+    "End Fittings and Parts": ["End Fittings", "Nut", "Nipple", "Cap"],
+    "Hose Pipe": ["Hose Pipe"],
     "Hose Assembly": ["Hose Assembly"],
     "Tube Fittings": ["Tube Fittings"]
   };
@@ -635,6 +676,10 @@ const AllProductList = () => {
     if (active === "Tube Fittings") {
       const productTypes = categoryMap[active];
       fetchTubeFittingProductList(sort, productTypes)
+    }
+    if (active === "Hose Pipe") {
+      const productTypes = categoryMap[active];
+      fetchHosePipeList(sort, productTypes)
     }
   }, [active, currentPage, sort])
 
@@ -1055,7 +1100,7 @@ const AllProductList = () => {
                                     padding: '10px',
                                     textAlign: 'center',
                                     cursor: 'pointer',
-                                    backgroundColor: '#f4f4f4',
+                                    backgroundColor: '#ffffffff',
                                     borderRadius: '5px',
                                     transition: 'background-color 0.3s ease',
                                   }}
@@ -1323,6 +1368,348 @@ const AllProductList = () => {
                     </table>
                   )}
 
+                  {active === "Hose Pipe" && (
+                    <table id="example4" className="display dataTable no-footer w-100">
+                      <thead>
+                        <tr>
+                          {theadDataHosePipe?.map((item, ind) => {
+                            return (
+                              <th key={ind}
+                                onClick={() => {
+                                  SotingData(item?.sortingVale, ind);
+                                  setIconDate((prevState) => ({
+                                    complete: !prevState.complete,
+                                    ind: ind,
+                                  }));
+                                }}>
+                                {item.heading}
+                                <span>
+                                  {ind !== iconData.ind && (
+                                    <i
+                                      className="fa fa-sort ms-2 fs-12"
+                                      style={{ opacity: "0.3" }}
+                                    />
+                                  )}
+                                  {ind === iconData.ind &&
+                                    (iconData.complete ? (
+                                      <i
+                                        className="fa fa-arrow-down ms-2 fs-12"
+                                        style={{ opacity: "0.7" }}
+                                      />
+                                    ) : (
+                                      <i
+                                        className="fa fa-arrow-up ms-2 fs-12"
+                                        style={{ opacity: "0.7" }}
+                                      />
+                                    ))}
+                                </span>
+                              </th>
+                            );
+                          })}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          endFittingsProductList?.products?.length > 0 ? (
+                            endFittingsProductList?.products?.map((data, ind) => (
+                              <tr key={ind}
+
+                                onClick={async (e) => {
+                                  const target = e.target;
+                                  if (target.tagName === "BUTTON") return; // Prevent if it's a button
+                                  if (target.tagName === "INPUT" && !target.disabled) return; // Prevent if it's an input (and not disabled)
+                                  if (!data?.qr_code) {
+                                    try {
+                                      setLoading(true); // Optional: show a loader
+                                      const result = await generateQrCodeForProduct(data._id);
+                                      if (result.qr_code) {
+                                        data.qr_code = result.qr_code;
+                                        data.qr_url = result.qr_url;
+
+                                        // setShowProductQrDetailModal(true); // Show the modal with QR info
+                                        setShowProductDetailData(data);
+                                      }
+                                    } catch (err) {
+                                      console.error("QR Code generation failed", err);
+                                    } finally {
+                                      setLoading(false);
+                                    }
+                                  }
+                                  // Open modal if clicking on any other part of the row
+                                  setShowProductDetailModal(true);
+                                  setShowProductDetailData(data);
+                                }}
+
+                                style={{
+                                  cursor: "pointer"
+                                }}
+
+                              >
+                                <td>
+                                  <strong>{ind + 1}</strong>
+                                </td>
+                                {/* Product Code */}
+                                <td
+                                  // onClick={()=>{setShowProductDetailModal(true); setShowProductDetailData(data)}}
+
+                                  style={{
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: '55ch'
+                                  }}>
+                                  <span
+                                    style={{
+                                      fontSize: "0.875rem", // Smaller text size (adjust as needed)
+                                      backgroundColor: "transparent", // Transparent background
+                                      padding: "2px 6px", // Add padding for badge effect
+                                      borderRadius: "10px", // Rounded corners
+                                      display: "inline-block", // Ensure proper layout inside the td
+                                      color: "#686D76", // Text color
+                                      border: "1px solid gray", // Black border
+                                    }}>
+                                    {data?.product_code ? data?.product_code : "N/A"}
+                                  </span>
+                                </td>
+                                {/* Qr Code */}
+                                <td
+                                  onClick={(e) => {
+                                    // Prevent opening the QR detail modal if clicking on the QR code cell itself
+                                    e.stopPropagation(); // Prevent the row click handler from firing
+                                    setShowProductQrDetailModal(true);
+                                    setShowProductDetailData(data);
+                                  }}
+                                  style={{
+                                    padding: '10px',
+                                    textAlign: 'center',
+                                    cursor: 'pointer',
+                                    backgroundColor: '#ffffff',
+                                    borderRadius: '5px',
+                                    transition: 'background-color 0.3s ease',
+                                  }}
+                                >
+                                  <div>
+                                    {data?.qr_code ? (
+                                      <img
+                                        src={data?.qr_code}
+                                        alt="QR Code"
+                                        style={{
+                                          width: '40px',
+                                          height: '40px',
+                                          objectFit: 'contain',
+                                          borderRadius: '8px',
+                                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                          transition: 'transform 0.1s ease-in-out',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                          e.target.style.transform = 'scale(1.50)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          e.target.style.transform = 'scale(1)';
+                                        }}
+                                      />
+                                    ) : (
+                                      <img
+                                        src={dummyQR}
+                                        alt="Generate QR"
+                                        title="Click to Generate QR"
+                                        style={{
+                                          width: '40px',
+                                          height: '40px',
+                                          objectFit: 'contain',
+                                          borderRadius: '8px',
+                                          // opacity: 0.6,
+                                          cursor: 'pointer',
+                                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                          transition: 'transform 0.1s ease-in-out',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                          e.target.style.transform = 'scale(1.50)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          e.target.style.transform = 'scale(1)';
+                                        }}
+
+                                        onClick={async (e) => {
+                                          e.stopPropagation(); // prevent row click
+                                          try {
+                                            // Optional: You can show a spinner or loading text here
+                                            setLoading(true);
+                                            const result = await generateQrCodeForProduct(data._id);
+                                            if (result.qr_code) {
+                                              setLoading(false)
+                                              data.qr_code = result.qr_code; // update the current object
+                                              data.qr_url = result.qr_url
+                                              setShowProductQrDetailModal(true);
+                                              setShowProductDetailData(data);
+                                              // setEndFittingsProductList([...formData, {qr_code:data.qr_code} ,  ]); // trigger re-render
+                                            }
+                                          } catch (err) {
+                                            // alert("Failed to generate QR code");
+                                          }
+                                        }}
+                                      />
+                                    )}
+                                  </div>
+                                </td>
+                                {/**Product Image */}
+                                <td className="d-flex align-items-center gap-2">
+                                  {data?.image && (
+                                    <div
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+
+                                        const mainImage = {
+                                          original: `${BASEURL}/images/image/${data?.image}`,
+                                          thumbnail: `${BASEURL}/images/image/${data?.image}`,
+                                        };
+
+                                        const galleryImages =
+                                          data?.gallery?.map((img) => ({
+                                            original: `${BASEURL}/images/image/${img}`,
+                                            thumbnail: `${BASEURL}/images/image/${img}`,
+                                          })) || [];
+
+                                        const allImages = [mainImage, ...galleryImages];
+
+                                        setGalleryItems(allImages);
+                                        setGalleryVisible(true);
+                                      }}
+                                      style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}
+                                    >
+                                      <img
+                                        className="select-file-img"
+                                        src={`${BASEURL}/images/image/${data?.image}`}
+                                        alt={data?.name}
+                                        style={{
+                                          // height: 50,
+                                          // width: 50,
+                                          borderRadius: 6,
+                                          objectFit: 'cover',
+                                          transition: 'transform 0.2s ease',
+                                        }}
+                                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.3)')}
+                                        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                      />
+                                    </div>
+                                  )}
+                                  {data?.name}
+                                </td>
+                                {/* product_type */}
+                                <td
+                                  // onClick={()=>{setShowProductDetailModal(true); setShowProductDetailData(data)}}
+                                  style={{
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+
+                                  }}>
+                                  {data?.product_type}
+                                </td>
+                                
+                                {/* desc_Code */}
+                                <td
+                                  style={{
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: '75ch'
+                                  }}>
+                                  <span
+                                    style={{
+                                      fontSize: '0.875rem', // Smaller text size (adjust as needed)
+                                      backgroundColor: '#F5EFFF', // White badge background
+                                      padding: '2px 6px', // Add padding for badge effect
+                                      borderRadius: '4px', // Rounded corners
+                                      display: 'inline-block', // Ensure proper layout inside the td
+                                      color: '#686D76'
+                                    }}>
+                                    {data?.desc_Code ? data?.desc_Code : "N/A"}
+                                  </span>
+                                </td>
+                                {/* hose_Code */}
+                                <td
+                                  style={{
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: '45ch'
+                                  }}>
+                                  <span
+                                    style={{
+                                      fontSize: '0.875rem', // Smaller text size (adjust as needed)
+                                      backgroundColor: '#D9EAFD', // White badge background
+                                      padding: '2px 6px', // Add padding for badge effect
+                                      borderRadius: '4px', // Rounded corners
+                                      display: 'inline-block', // Ensure proper layout inside the td
+                                      color: '#686D76'
+                                    }}>
+                                    {data?.fitting_Code ? data?.fitting_Code : "N/A"}
+                                  </span>
+                                </td>
+                                {/* created_at */}
+                                <td>
+                                  {moment(data?.created_at).format(
+                                    "DD MMM YYYY, h:mm:ss a"
+                                  )}
+                                </td>
+                                {/* status */}
+                                <td>
+                                  <div onClick={(e) => e.stopPropagation()}>
+                                    <Switch
+                                      checked={data?.status}
+                                      onChange={() => handleStatusChange(data?._id, data?.status)}
+                                      offColor="#f0f1ff"
+                                      onColor="#6a73fa"
+                                      offHandleColor="#6a73fa"
+                                      onHandleColor="#fff"
+                                      uncheckedIcon={false}
+                                      checkedIcon={false}
+                                      width={40}
+                                      height={20}
+                                    />
+                                  </div>
+                                </td>
+                                {/* Edit and Delete */}
+                                <td>
+                                  <button className="btn btn-xs sharp btn-primary me-1"
+                                    // onClick={() => handleEditThread(data?._id)}
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Prevent row click handler from firing when button is clicked
+                                      handleEditThread(data?._id);
+                                    }}>
+                                    <i className="fa fa-pencil" />
+                                  </button>
+
+                                  <button className="btn btn-xs sharp btn-danger"
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Prevent row click handler from firing when button is clicked
+                                      handleDeleteProduct(data?._id);
+                                    }}
+                                  >
+                                    <i className="fa fa-trash" />
+                                  </button>
+                                </td>
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="10">
+                                <div style={{
+                                  textAlign: "center",
+                                  padding: "20px",
+                                  fontSize: "16px",
+                                  color: "#888"
+                                }}>
+                                  No Data Found
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                        }
+                      </tbody>
+                    </table>
+                  )}
+
                   {active === "Hose Assembly" && (
                     <table id="example4" className="display dataTable no-footer w-100">
                       <thead>
@@ -1439,7 +1826,7 @@ const AllProductList = () => {
                                     padding: '10px',
                                     textAlign: 'center',
                                     cursor: 'pointer',
-                                    backgroundColor: 'white',
+                                    backgroundColor: '#ffffff',
                                     borderRadius: '5px',
                                     transition: 'background-color 0.3s ease',
                                   }}
@@ -1969,7 +2356,7 @@ const AllProductList = () => {
                                     padding: '10px',
                                     textAlign: 'center',
                                     cursor: 'pointer',
-                                    backgroundColor: '#f4f4f4',
+                                    backgroundColor: '#ffffff',
                                     borderRadius: '5px',
                                     transition: 'background-color 0.3s ease',
                                   }}
@@ -2316,7 +2703,7 @@ const AllProductList = () => {
                                     padding: '10px',
                                     textAlign: 'center',
                                     cursor: 'pointer',
-                                    backgroundColor: '#f4f4f4',
+                                    backgroundColor: '#ffffff',
                                     borderRadius: '5px',
                                     transition: 'background-color 0.3s ease',
                                   }}
