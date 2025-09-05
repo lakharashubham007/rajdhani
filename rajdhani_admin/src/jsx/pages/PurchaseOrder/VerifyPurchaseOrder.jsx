@@ -27,7 +27,7 @@ import { createBatchApi } from "../../../services/apis/BatchApi";
 import { addProductsInInvntory, checkProductsInInventoryApi } from "../../../services/apis/InventoryApi";
 import { addEntryInStock } from "../../../services/apis/StockMentainenaceApi";
 import { FaFilePdf, FaFileWord, FaFileExcel, FaFileAlt, FaFileCsv } from "react-icons/fa"; // Icons from react-icons
-import ImageViewer from "./ImageViewer";
+// import ImageViewer from "./ImageViewer";
 import PdfView from "./PdfViewer";
 import * as XLSX from "xlsx";
 

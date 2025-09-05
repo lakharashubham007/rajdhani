@@ -36,7 +36,14 @@ const {
     nutFittingThreadOptions,
     nutFittingDashSize,
     nippleFittingThreadOptions,
-    springWireTypeOption
+    springWireTypeOption,
+    adaptorOption,
+    adaptorsThreadOptions,
+    additionaladaptoroptions,
+    adaptorMaleFemaleOptions,
+    elbowAngleOptions,
+    adaptorFittingDashSize,
+    adaptorMfcOption
 } = require('../dropdowns/productOptions')
 
 
@@ -81,7 +88,14 @@ const getallOptions = async (req, res) => {
                 nutFittingThreadOptions,
                 nutFittingDashSize,
                 nippleFittingThreadOptions,
-                springWireTypeOption
+                springWireTypeOption,
+                adaptorOption,
+                adaptorsThreadOptions,
+                additionaladaptoroptions,
+                adaptorMaleFemaleOptions,
+                elbowAngleOptions,
+                adaptorFittingDashSize,
+                adaptorMfcOption
             }
         });
     } catch (error) {

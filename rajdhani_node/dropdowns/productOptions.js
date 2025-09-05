@@ -9,13 +9,26 @@ const ProductOptions = [
   { value: "Sleeve", label: "Sleeve" },
   { value: "Vinyl Cover", label: "Vinyl Cover" },
   { value: "Packing", label: "Packing" },
-  { value: "Tube Fittings", label: "Tube Fittings" }
+  { value: "Tube Fittings", label: "Tube Fittings" },
+  { value: "Adaptor", label: "Adaptor" }
 ];
 
 const PartOptions = [
   { name: "Nut" },
   { name: "Nipple" },
   { name: "Cap" },
+];
+
+const adaptorOption = [
+  { value: "PLUG MALE", label: "PLUG MALE" },
+  { value: "PLUG FEMALE", label: "PLUG FEMALE" },
+  { value: "ADAPTOR", label: "ADAPTOR" },
+  { value: "REDUCER", label: "REDUCER" },
+  { value: "ELBOW", label: "ELBOW" },
+  { value: "MALE TEE", label: "MALE TEE" },
+  { value: "FEMALE TEE", label: "FEMALE TEE" },
+  { value: "RUN TEE", label: "RUN TEE" },
+  { value: "BRANCH TEE", label: "BRANCH TEE" },
 ];
 
 
@@ -448,6 +461,15 @@ const pipeODOptions = [
   { value: "42", label: "42" },
 ];
 
+const additionaladaptoroptions = [
+  { value: "CHUCKNUT", label: "CHUCKNUT" },
+  { value: "BULKHEAD", label: "BULKHEAD" },
+  { value: "BULKHEAD WITH CHUCKNUT", label: "BULKHEAD WITH CHUCKNUT" },
+  { value: "FIXED", label: "FIXED" },
+  { value: "SWIVEL", label: "SWIVEL" },
+];
+
+
 
 const malefemaleOptions = [
   { value: "Male", label: "Male" },
@@ -855,6 +877,25 @@ const nutFittingThreadOptions = [
   { value: "JIS", label: "JIS (BSP C-TYPE) (BJ)", code: "JIS", dsc_code: "JIS" }
 ];
 
+
+const adaptorsThreadOptions = [
+  { value: "BSP", label: "BSP (B)", code: "B", dsc_code: "BSP" },
+  { value: "NPT", label: "NPT (N)", code: "N", dsc_code: "NPT" },
+  { value: "JIC", label: "JIC (J)", code: "J", dsc_code: "JIC" },
+  { value: "ORFS", label: "ORFS (O)", code: "O", dsc_code: "ORFS" },
+  { value: "METRIC", label: "METRIC", code: "M", dsc_code: "METRIC" },
+];
+
+const adaptorMfcOption = [
+  { value: "A", label: "A", code: "A", dsc_code: "A" },
+  { value: "B", label: "B", code: "B", dsc_code: "B" },
+  { value: "H", label: "H", code: "H", dsc_code: "H" },
+  { value: "I", label: "I", code: "I", dsc_code: "I" },
+  { value: "L", label: "L", code: "L", dsc_code: "L" },
+
+]
+
+
 const nutFittingDashSize = [
 // BSP
 { thread_type: "BSP", dash: "04", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4\"", variant: "Standard" },
@@ -953,6 +994,120 @@ const nutFittingDashSize = [
 { thread_type: "METRIC HEAVY", dash: "30", pipe_od: "30", thread: "M42X2.0", variant: null, dsc_code: "M42X2.0" },
 { thread_type: "METRIC HEAVY", dash: "38", pipe_od: "38", thread: "M52X2.0", variant: null, dsc_code: "M52X2.0" },
 
+
+// Metric 
+{ thread_type: "METRIC", dash: "06", pipe_od: "06", thread: "M12X1.5", variant: null, dsc_code: "M12X1.5" },
+{ thread_type: "METRIC", dash: "06", pipe_od: "06", thread: "M14X1.5", variant: null, dsc_code: "M14X1.5" },
+{ thread_type: "METRIC", dash: "08", pipe_od: "08", thread: "M14X1.5", variant: null, dsc_code: "M14X1.5" },
+{ thread_type: "METRIC", dash: "08", pipe_od: "08", thread: "M16X1.5", variant: null, dsc_code: "M16X1.5" },
+{ thread_type: "METRIC", dash: "10", pipe_od: "10", thread: "M16X1.5", variant: null, dsc_code: "M16X1.5" },
+{ thread_type: "METRIC", dash: "10", pipe_od: "10", thread: "M18X1.5", variant: null, dsc_code: "M18X1.5" },
+{ thread_type: "METRIC", dash: "12", pipe_od: "12", thread: "M18X1.5", variant: null, dsc_code: "M18X1.5" },
+{ thread_type: "METRIC", dash: "12", pipe_od: "12", thread: "M20X1.5", variant: null, dsc_code: "M20X1.5" },
+{ thread_type: "METRIC", dash: "14", pipe_od: "14", thread: "M22X1.5", variant: null, dsc_code: "M22X1.5" },
+{ thread_type: "METRIC", dash: "15", pipe_od: "15", thread: "M22X1.5", variant: null, dsc_code: "M22X1.5" },
+{ thread_type: "METRIC", dash: "16", pipe_od: "16", thread: "M24X1.5", variant: null, dsc_code: "M24X1.5" },
+{ thread_type: "METRIC", dash: "18", pipe_od: "18", thread: "M26X1.5", variant: null, dsc_code: "M26X1.5" },
+{ thread_type: "METRIC", dash: "20", pipe_od: "20", thread: "M30X2.0", variant: null, dsc_code: "M30X2.0" },
+{ thread_type: "METRIC", dash: "22", pipe_od: "22", thread: "M30X2.0", variant: null, dsc_code: "M30X2.0" },
+{ thread_type: "METRIC", dash: "25", pipe_od: "25", thread: "M36X2.0", variant: null, dsc_code: "M36X2.0" },
+{ thread_type: "METRIC", dash: "28", pipe_od: "28", thread: "M36X2.0", variant: null, dsc_code: "M36X2.0" },
+{ thread_type: "METRIC", dash: "30", pipe_od: "30", thread: "M42X2.0", variant: null, dsc_code: "M42X2.0" },
+{ thread_type: "METRIC", dash: "35", pipe_od: "35", thread: "M45X2.0", variant: null, dsc_code: "M45X2.0" },
+{ thread_type: "METRIC", dash: "38", pipe_od: "38", thread: "M52X2.0", variant: null, dsc_code: "M52X2.0" },
+{ thread_type: "METRIC", dash: "42", pipe_od: "42", thread: "M52X2.0", variant: null, dsc_code: "M52X2.0" },
+
+
+
+
+
+
+
+
+
+
+
+
+];
+
+const adaptorFittingDashSize = [
+// BSP
+{ thread_type: "BSP", dash: "02", inch: "1/8\"", thread: "1/8\"", dsc_code: "1/8\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "04", inch: "1/4\"", thread: "1/4\"", dsc_code: "1/4\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "05", inch: "5/16\"", thread: "5/16\"", dsc_code: "5/16\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "06", inch: "3/8\"", thread: "3/8\"", dsc_code: "3/8\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "08", inch: "1/2\"", thread: "1/2\"", dsc_code: "1/2\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "10", inch: "5/8\"", thread: "5/8\"", dsc_code: "5/8\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "12", inch: "3/4\"", thread: "3/4\"", dsc_code: "3/4\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "16", inch: "1\"", thread: "1\"", dsc_code: "1\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "20", inch: "1-1/4\"", thread: "1-1/4\"", dsc_code: "1-1/4\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "24", inch: "1-1/2\"", thread: "1-1/2\"", dsc_code: "1-1/2\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "32", inch: "2\"", thread: "2\"", dsc_code: "2\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "40", inch: "2-1/2\"", thread: "2-1/2\"", dsc_code: "2-1/2\"", variant: "Standard" },
+{ thread_type: "BSP", dash: "48", inch: "3\"", thread: "3\"", dsc_code: "3\"", variant: "Standard" },
+
+
+ // NPT
+ { thread_type: "NPT", dash: "02", inch: "1/8\"", thread: "1/8\"", dsc_code: "1/8\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "04", inch: "1/4\"", thread: "7/16\"", dsc_code: "7/16\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "06", inch: "3/8\"", thread: "9/16\"", dsc_code: "9/16\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "08", inch: "1/2\"", thread: "3/4\"", dsc_code: "3/4\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "10", inch: "5/8\"", thread: "7/8\"", dsc_code: "7/8\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "12", inch: "3/4\"", thread: "1-1/16\"", dsc_code: "1-1/16\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "16", inch: "1\"", thread: "1-5/16\"", dsc_code: "1-5/16\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "20", inch: "1-1/4\"", thread: "1-5/8\"", dsc_code: "1-5/8\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "24", inch: "1-1/2\"", thread: "1-7/8\"", dsc_code: "1-7/8\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "32", inch: "2\"", thread: "2\"", dsc_code: "2\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "40", inch: "2-1/2\"", thread: "2-1/2\"", dsc_code: "2-1/2\"", variant: "Standard" },
+ { thread_type: "NPT", dash: "48", inch: "3\"", thread: "3\"", dsc_code: "3\"", variant: "Standard" },
+
+ 
+ // JIC
+  { thread_type: "JIC", dash: "04", inch: "1/4\"", thread: "7/16\"", dsc_code: "7/16\"", variant: "Standard" },
+  { thread_type: "JIC", dash: "05", inch: "5/16\"", thread: "1/2\"", dsc_code: "1/2\"", variant: "Standard" },
+  { thread_type: "JIC", dash: "06", inch: "3/8\"", thread: "9/16\"", dsc_code: "9/16\"", variant: "Standard" },
+  { thread_type: "JIC", dash: "08", inch: "1/2\"", thread: "3/4\"", dsc_code: "3/4\"", variant: "Standard" },
+  { thread_type: "JIC", dash: "10", inch: "5/8\"", thread: "7/8\"", dsc_code: "7/8\"", variant: "Standard" },
+  { thread_type: "JIC", dash: "12", inch: "3/4\"", thread: "1-1/16\"", dsc_code: "1-1/16\"", variant: "Standard" },
+  { thread_type: "JIC", dash: "16", inch: "1\"", thread: "1-5/16\"", dsc_code: "1-5/16\"", variant: "Standard" },
+  { thread_type: "JIC", dash: "20", inch: "1-1/4\"", thread: "1-5/8\"", dsc_code: "1-5/8\"", variant: "Standard" },
+  { thread_type: "JIC", dash: "24", inch: "1-1/2\"", thread: "1-7/8\"", dsc_code: "1-7/8\"", variant: "Standard" },
+  { thread_type: "JIC", dash: "32", inch: "2\"", thread: "2-1/2\"", dsc_code: "2-1/2\"", variant: "Standard" },
+
+
+ // ORFS
+ { thread_type: "ORFS", dash: "04", inch: "1/4\"", thread: "9/16\"", dsc_code: "9/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "06", inch: "3/8\"", thread: "11/16\"", dsc_code: "11/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "08", inch: "1/2\"", thread: "13/16\"", dsc_code: "13/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "10", inch: "5/8\"", thread: "1\"", dsc_code: "1\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "12", inch: "3/4\"", thread: "1-3/16\"", dsc_code: "1-3/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "16", inch: "1\"", thread: "1-7/16\"", dsc_code: "1-7/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "20", inch: "1-1/4\"", thread: "1-11/16\"", dsc_code: "1-11/16\"", variant: "Standard" },
+ { thread_type: "ORFS", dash: "24", inch: "1-1/2\"", thread: "2\"", dsc_code: "2\"", variant: "Standard" },
+
+
+// Metric 
+{ thread_type: "METRIC", dash: "06", pipe_od: "06", thread: "M12X1.5", variant: null, dsc_code: "M12X1.5" },
+{ thread_type: "METRIC", dash: "06", pipe_od: "06", thread: "M14X1.5", variant: null, dsc_code: "M14X1.5" },
+{ thread_type: "METRIC", dash: "08", pipe_od: "08", thread: "M14X1.5", variant: null, dsc_code: "M14X1.5" },
+{ thread_type: "METRIC", dash: "08", pipe_od: "08", thread: "M16X1.5", variant: null, dsc_code: "M16X1.5" },
+{ thread_type: "METRIC", dash: "10", pipe_od: "10", thread: "M16X1.5", variant: null, dsc_code: "M16X1.5" },
+{ thread_type: "METRIC", dash: "10", pipe_od: "10", thread: "M18X1.5", variant: null, dsc_code: "M18X1.5" },
+{ thread_type: "METRIC", dash: "12", pipe_od: "12", thread: "M18X1.5", variant: null, dsc_code: "M18X1.5" },
+{ thread_type: "METRIC", dash: "12", pipe_od: "12", thread: "M20X1.5", variant: null, dsc_code: "M20X1.5" },
+{ thread_type: "METRIC", dash: "14", pipe_od: "14", thread: "M22X1.5", variant: null, dsc_code: "M22X1.5" },
+{ thread_type: "METRIC", dash: "15", pipe_od: "15", thread: "M22X1.5", variant: null, dsc_code: "M22X1.5" },
+{ thread_type: "METRIC", dash: "16", pipe_od: "16", thread: "M24X1.5", variant: null, dsc_code: "M24X1.5" },
+{ thread_type: "METRIC", dash: "18", pipe_od: "18", thread: "M26X1.5", variant: null, dsc_code: "M26X1.5" },
+{ thread_type: "METRIC", dash: "20", pipe_od: "20", thread: "M30X2.0", variant: null, dsc_code: "M30X2.0" },
+{ thread_type: "METRIC", dash: "22", pipe_od: "22", thread: "M30X2.0", variant: null, dsc_code: "M30X2.0" },
+{ thread_type: "METRIC", dash: "25", pipe_od: "25", thread: "M36X2.0", variant: null, dsc_code: "M36X2.0" },
+{ thread_type: "METRIC", dash: "28", pipe_od: "28", thread: "M36X2.0", variant: null, dsc_code: "M36X2.0" },
+{ thread_type: "METRIC", dash: "30", pipe_od: "30", thread: "M42X2.0", variant: null, dsc_code: "M42X2.0" },
+{ thread_type: "METRIC", dash: "35", pipe_od: "35", thread: "M45X2.0", variant: null, dsc_code: "M45X2.0" },
+{ thread_type: "METRIC", dash: "38", pipe_od: "38", thread: "M52X2.0", variant: null, dsc_code: "M52X2.0" },
+{ thread_type: "METRIC", dash: "42", pipe_od: "42", thread: "M52X2.0", variant: null, dsc_code: "M52X2.0" },
+
 ];
 
 const nippleFittingThreadOptions = [
@@ -969,6 +1124,19 @@ const nippleFittingThreadOptions = [
   { value: "METRIC THREAD ORFS", label: "METRIC THREAD ORFS (MO)", code: "MO", dsc_code: "METRIC THREAD ORFS" }
 ];
 
+
+const adaptorMaleFemaleOptions = [
+  { value: "Female", label: "Female", code: "F", dsc_code: "FEMALE", fitting_thread: "normal" },
+  { value: "Male", label: "Male", code: "M", dsc_code: "MALE", fitting_thread: "normal" },
+  { value: "Plug Female", label: "Female", code: "F", dsc_code: "FEMALE", fitting_thread: "normal" },
+  { value: "Plug Male", label: "Male", code: "M", dsc_code: "MALE", fitting_thread: "normal" },
+
+];
+
+const elbowAngleOptions = [
+  { value: "45", label: "45", code: "45", dsc_code: "45",  },
+  { value: "90", label: "90", code: "90", dsc_code: "90",  },
+]
 
 
 
@@ -1010,6 +1178,14 @@ module.exports = {
   nutFittingThreadOptions,
   nutFittingDashSize,
   nippleFittingThreadOptions,
-  springWireTypeOption
+  springWireTypeOption,
+  adaptorOption,
+  adaptorsThreadOptions,
+  additionaladaptoroptions,
+  adaptorMaleFemaleOptions,
+  elbowAngleOptions,
+  adaptorFittingDashSize,
+  adaptorMfcOption
+  
 
 };
