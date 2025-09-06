@@ -129,6 +129,31 @@ const productSchema = new mongoose.Schema(
     tube_fitting_category: { type: String, trim: true },
     part_code: { type: String, trim: true },
     part_description: { type: String, trim: true },
+
+        // Adaptor specific fields
+    adaptor_type: { type: String, trim: true }, // e.g., BRANCH TEE
+    elbow_angle: { type: String, trim: true },  // optional
+    part_a: {
+      mfc: { type: String, trim: true },
+      fitting_thread: { type: String, trim: true },
+      size: { type: String, trim: true },
+      male_female_type: { type: String, trim: true },
+      additional_option: { type: String, trim: true },
+    },
+    part_b: {
+      mfc: { type: String, trim: true },
+      fitting_thread: { type: String, trim: true },
+      size: { type: String, trim: true },
+      male_female_type: { type: String, trim: true },
+      additional_option: { type: String, trim: true },
+    },
+    part_c: {
+      mfc: { type: String, trim: true },
+      size: { type: String, trim: true },
+      fitting_thread: { type: String, trim: true },
+      male_female_type: { type: String, trim: true },
+      additional_option: { type: String, trim: true },
+    },
     
 
     // Common optional fields

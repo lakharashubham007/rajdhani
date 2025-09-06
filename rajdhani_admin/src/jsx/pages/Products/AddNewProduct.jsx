@@ -1057,10 +1057,9 @@ const AddProduct = () => {
       dsc_code: `${option.dsc_code}`,
     }));
   };
-
-  const filterNutFittingDashSizeOptionsB = () => {
+   const filterAdaptorFittingDashSizeOptionsB = () => {
     // Basic filtering based on fitting_thread
-    const filteredOptions = dropdownOptions?.nutFittingDashSize?.filter(
+    const filteredOptions = dropdownOptions?.adaptorFittingDashSize?.filter(
       (option) => {
         return (
           option.thread_type === formData?.fitting_thread || option.thread_type === formData?.part_b?.fitting_thread &&   // Match the selected fitting_thread
@@ -1178,10 +1177,9 @@ const AddProduct = () => {
       dsc_code: `${option.dsc_code}`,
     }));
   };
-
-  const filterNutFittingDashSizeOptionsC = () => {
+   const filterAdaptorFittingDashSizeOptionsC = () => {
     // Basic filtering based on fitting_thread
-    const filteredOptions = dropdownOptions?.nutFittingDashSize?.filter(
+    const filteredOptions = dropdownOptions?.adaptorFittingDashSize?.filter(
       (option) => {
         return (
           option.thread_type === formData?.fitting_thread || option.thread_type === formData?.part_c?.fitting_thread &&   // Match the selected fitting_thread
@@ -1299,6 +1297,7 @@ const AddProduct = () => {
       dsc_code: `${option.dsc_code}`,
     }));
   };
+
 
 
 
@@ -1718,7 +1717,7 @@ const AddProduct = () => {
        ${selectedFittingThreadOptionC?.value ? ` ${selectedFittingThreadOptionC?.value}` : ''}
        ${selectedMaleFemaleoptionsForAdaptorC?.dsc_code ? ` ${selectedMaleFemaleoptionsForAdaptorC?.dsc_code}` : ''}
        ${selectedAdaptorAditionaOptionC?.value ? ` ${selectedAdaptorAditionaOptionC?.value}` : ''} 
-       
+       ${formData.additional ? ` ${formData.additional}` : ""}
       `.trim();
 
       const partA_Description = `
@@ -1764,6 +1763,7 @@ const AddProduct = () => {
       `.trim();
 
 
+      console.log("adaptor_Description",adaptor_Description)
 
       setAdaptorDescription(adaptor_Description);
       setAdaptorPartADescription(partA_Description)
@@ -1771,12 +1771,16 @@ const AddProduct = () => {
       setAdaptorPartCDescription(partC_Description)
       setFormData((prevData) => ({
         ...prevData,
-        desc_Code: adaptor_Description, // Clear variant value in formData
+        desc_Code: adaptor_Description
+            .replace(/\n/g, ' ')       // Replace all newlines with a space
+            .replace(/\s+/g, ' ')      // Replace multiple spaces with single space
+            .trim(), // Clear variant value in formData
       }));
     }
   }, [
     formData?.adaptor_type,
     formData?.elbow_angle,
+    formData.additional,
 
     selectedAdaptorMFCOption,
     selectedFittingThreadOption,
@@ -1796,26 +1800,32 @@ const AddProduct = () => {
     selectedMaleFemaleoptionsForAdaptorC,
     selectedAdaptorAditionaOptionC,
 
+
+
   ]);
 
   // Reset all values whenever product_type changes
   useEffect(() => {
     if (formData?.product_type) {
       // Reset all selected states
+      setSelectedAdaptorMFCOption(null)
       setSelectedFittingThreadOption(null);
       setSelectedfittingDashSizeOption(null);
       setSelectedMaleFemaleoptionsForAdaptor(null);
       setSelectedAdaptorAditionalOption(null);
 
+      setSelectedAdaptorMFCOptionB(null)
       setSelectedFittingThreadOptionB(null);
       setSelectedfittingDashSizeOptionB(null);
       setSelectedMaleFemaleoptionsForAdaptorB(null);
       setSelectedAdaptorAditionalOptionB(null);
 
+      setSelectedAdaptorMFCOptionC(null)
       setSelectedFittingThreadOptionC(null);
       setSelectedfittingDashSizeOptionC(null);
       setSelectedMaleFemaleoptionsForAdaptorC(null);
       setSelectedAdaptorAditionalOptionC(null);
+      
 
       // Reset descriptions
       setAdaptorDescription("");
@@ -2887,7 +2897,7 @@ const AddProduct = () => {
             selectedFittingThreadOption={selectedFittingThreadOption}
             setSelectedFittingThreadOption={setSelectedFittingThreadOption}
 
-            fittingDashSizeOption={filterNutFittingDashSizeOptions()}
+            fittingDashSizeOption={filterAdaptorFittingDashSizeOptions()}
             // setfittingDashSizeOption={setfittingDashSizeOption}
             selectedFittingDashSizeOption={selectedFittingDashSizeOption}
             setSelectedfittingDashSizeOption={setSelectedfittingDashSizeOption}
@@ -2911,7 +2921,7 @@ const AddProduct = () => {
             selectedFittingThreadOptionB={selectedFittingThreadOptionB}
             setSelectedFittingThreadOptionB={setSelectedFittingThreadOptionB}
 
-            fittingDashSizeOptionB={filterNutFittingDashSizeOptionsB()}
+            fittingDashSizeOptionB={filterAdaptorFittingDashSizeOptionsB()}
             selectedFittingDashSizeOptionB={selectedFittingDashSizeOptionB}
             setSelectedfittingDashSizeOptionB={setSelectedfittingDashSizeOptionB}
 
@@ -2934,7 +2944,7 @@ const AddProduct = () => {
             selectedFittingThreadOptionC={selectedFittingThreadOptionC}
             setSelectedFittingThreadOptionC={setSelectedFittingThreadOptionC}
 
-            fittingDashSizeOptionC={filterNutFittingDashSizeOptionsC()}
+            fittingDashSizeOptionC={filterAdaptorFittingDashSizeOptionsC()}
             // setfittingDashSizeOption={setfittingDashSizeOption}
             selectedFittingDashSizeOptionC={selectedFittingDashSizeOptionC}
             setSelectedfittingDashSizeOptionC={setSelectedfittingDashSizeOptionC}

@@ -429,6 +429,52 @@ const hoseAssembyCreation = async (data, files) => {
   }
 };
 
+//adaptorCreation
+const adaptorCreation = async (data, files) => {
+  try {
+    // Fetch last assigned product code for Spring
+    let productCounter = await ProductCodeCounter.findOne({ category: "Adaptor" });
+    if (!productCounter) {
+      throw new Error(`Product series not found for category: Tube Fittings`);
+    }
+
+    let newCode = productCounter.last_assigned_product_code + 1;
+
+    // Update last_assigned_product_code in productCounter table
+    await ProductCodeCounter.updateOne(
+      { category: "Adaptor" },
+      { last_assigned_product_code: newCode, updated_at: Date.now() }
+    );
+
+    console.log("Generated Product Code for Tube Fittings:", newCode);
+
+    const adaptorData = {
+      ...data,
+      product_code: newCode,
+      image: files?.image ? files.image[0]?.originalname : "rajdhani_product.jpg",
+      gallery: files?.gallery ? files.gallery.map((file) => file.originalname) : [],
+      part_a: data.part_a ? JSON.parse(data.part_a) : {},
+      part_b: data.part_b ? JSON.parse(data.part_b) : {},
+      part_c: data.part_c ? JSON.parse(data.part_c) : {},
+    };
+
+    console.log("Processed tubeFittingsData product data:", adaptorData);
+    // Generate QR Code for the product
+    const productUrl = `${BaseURL}/productqr/${newCode}`; // This can be a link to the product's page
+    const qrCodeUrl = await QRCode.toDataURL(productUrl); // Generate the QR code as a base64 string
+
+    // Add QR code to the product data
+    adaptorData.qr_code = qrCodeUrl;  // Save the QR code in the product data
+    adaptorData.qr_url = productUrl;
+
+    const adaptorsData = await Products.create(adaptorData);
+    return adaptorsData;
+  } catch (error) {
+    console.error("Error in Hose Pipe Creation:", error);
+    throw error;
+  }
+};
+
 // Create a new Product - Service
 const createProduct = async (data, files) => {
 
@@ -532,6 +578,12 @@ const createProduct = async (data, files) => {
     if (data?.product_type == "Tube Fittings") {
       return await tubeFittingsCreation(data, files);
     }
+
+    //Adaptor
+    if (data?.product_type == "Adaptor") {
+      return await adaptorCreation(data, files);
+    }
+
 
 
 

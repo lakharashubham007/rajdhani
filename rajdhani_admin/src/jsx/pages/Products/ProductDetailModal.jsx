@@ -19,7 +19,7 @@ const ProductDetailModal = ({
   fetchTubeFittingProductList
 
 }) => {
-  console.log("productDetailData",productDetailData)
+  console.log("productDetailData", productDetailData)
   const [showDeleteMdl, setShowDeleteMdl] = useState(false);
   const [deleteTableDataId, setDeleteTableDataId] = useState("");
   const navigate = useNavigate()
@@ -315,7 +315,7 @@ const ProductDetailModal = ({
                   </>
                 )}
 
-                    {/* End Fittings and parts details */}
+                {/* End Fittings and parts details */}
                 {["Hose Pipe"].includes(productDetailData?.product_type) && (
                   <>
                     <div className="col-md-6">
@@ -412,16 +412,16 @@ const ProductDetailModal = ({
                     </div>
                     <div className="col-md-12 mt-2 mb-2">
                       <div className="d-flex justify-content-between align-items-center list-group-item">
-                        <span><strong>Assembly Length:</strong> {productDetailData?.assembly_length ? productDetailData?.assembly_length : 'N/A' }</span>
-                        <span><strong>Fitting Length:</strong> {productDetailData?.fitting_length ? productDetailData?.fitting_length  : 'N/A' }</span>
-                        <span><strong>Cutting Length:</strong> {productDetailData?.cutting_length ? productDetailData?.cutting_length  : 'N/A' }</span>
-                        <span><strong>OA:</strong> {productDetailData?.oa ? productDetailData?.oa  : 'N/A' }</span>
+                        <span><strong>Assembly Length:</strong> {productDetailData?.assembly_length ? productDetailData?.assembly_length : 'N/A'}</span>
+                        <span><strong>Fitting Length:</strong> {productDetailData?.fitting_length ? productDetailData?.fitting_length : 'N/A'}</span>
+                        <span><strong>Cutting Length:</strong> {productDetailData?.cutting_length ? productDetailData?.cutting_length : 'N/A'}</span>
+                        <span><strong>OA:</strong> {productDetailData?.oa ? productDetailData?.oa : 'N/A'}</span>
                       </div>
                     </div>
                     <div className="col-md-12 mt-2 mb-2">
                       <div className="d-flex justify-content-between align-items-center list-group-item">
-                        <span><strong>Guard Type:</strong> {productDetailData?.guard_type ? productDetailData?.guard_type : 'N/A' }</span>
-                        <span><strong>Guard:</strong> {productDetailData?.guard ? productDetailData?.guard  : 'N/A' }</span>
+                        <span><strong>Guard Type:</strong> {productDetailData?.guard_type ? productDetailData?.guard_type : 'N/A'}</span>
+                        <span><strong>Guard:</strong> {productDetailData?.guard ? productDetailData?.guard : 'N/A'}</span>
                       </div>
                     </div>
                   </>
@@ -502,9 +502,9 @@ const ProductDetailModal = ({
                         <li className="list-group-item"><strong>Product Code :</strong> {productDetailData?.product_code}</li>
                       </ul>
                     </div>
-                     <div className="col-md-4 mb-1">
+                    <div className="col-md-4 mb-1">
                       <ul className="list-group">
-                        <li className="list-group-item"><strong>Part Code :</strong> {productDetailData?.part_code ? productDetailData?.part_code : '' }</li>
+                        <li className="list-group-item"><strong>Part Code :</strong> {productDetailData?.part_code ? productDetailData?.part_code : ''}</li>
                       </ul>
                     </div>
 
@@ -552,6 +552,213 @@ const ProductDetailModal = ({
                         <li className="list-group-item"><strong>Cutting Length:</strong> {productDetailData?.cutting_length}</li>
                       </ul>
                     </div> */}
+
+                  </>
+                )}
+
+
+                {/*Hose Assembly */}
+                {["Adaptor"].includes(productDetailData?.product_type) && (
+                  <>
+                    <div className="col-md-6">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Type:</strong> {productDetailData?.adaptor_type}</li>
+                      </ul>
+                    </div>
+                    <div className="col-md-6 mb-1">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Product Code:</strong> {productDetailData?.product_code}</li>
+                      </ul>
+                    </div>
+                    <div className="col-md-12 mt-1">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Product:</strong> {productDetailData?.desc_Code}</li>
+                      </ul>
+                    </div>
+                   
+                    {/* <div className="col-md-6 mb-1">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Assembly Length:</strong> {productDetailData?.cutting_length}</li>
+                      </ul>
+                    </div>
+                    <div className="col-md-6 mb-1">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Weight :</strong> {productDetailData?.weight}</li>
+                      </ul>
+                    </div>
+
+                    <div className="col-md-6 mb-1">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Fitting Length:</strong> {productDetailData?.assembly_length}</li>
+                      </ul>
+                    </div>
+                    <div className="col-md-6 mb-1">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>UOM :</strong> {productDetailData?.uom}</li>
+                      </ul>
+                    </div> 
+
+                    <div className="col-md-6 mb-1">
+                      <ul className="list-group">
+                        <li className="list-group-item"><strong>Cutting Length:</strong> {productDetailData?.cutting_length}</li>
+                      </ul>
+                    </div> */}
+                    {/* {Object.keys(productDetailData.part_a).length > 0 && 
+                      <div className="col-md-12 mt-2 mb-2">
+                      <div className="list-group-item">
+                        <div><strong>Part A</strong></div>
+                        <hr className="my-2" />
+                        <div><strong>MFC :</strong> {productDetailData?.part_a?.mfc}</div><br/>
+                        <div><strong>Size :</strong> {productDetailData?.part_a?.size}</div><br/>
+                        <div><strong>Thread :</strong> {productDetailData?.part_a?.fitting_thread}</div><br/>
+                        <div><strong>MALE/FEMALE Type :</strong> {productDetailData?.part_a?.male_female_type}</div><br/>
+                        <div><strong>Additional :</strong> {productDetailData?.part_a?.additional_option}</div><br/>
+                      </div>
+                    </div>
+                    } */}
+                    {Object.keys(productDetailData.part_a || {}).length > 0 && (
+                      <div className="col-md-12 mt-2 mb-2">
+                        <div className="list-group-item">
+
+                          {/* Badge Label */}
+                          <div className="text-start mb-2">
+                            <span
+                              style={{
+                                display: "inline-block",
+                                backgroundColor: "#4abbe4ff", // light gray (neutral industrial look)
+                                color: "#333",              // dark text for contrast
+                                fontWeight: "bold",
+                                textTransform: "uppercase", // ALL CAPS
+                                padding: "4px 12px",
+                                borderRadius: "20px",       // rounded pill-like badge
+                                border: "1px solid #ccc",   // subtle border for industry feel
+                                fontSize: "13px",
+                                letterSpacing: "1px",
+                              }}
+                            >
+                              Part A
+                            </span>
+                          </div>
+
+                          <hr className="my-2" />
+
+                          {/* First Row: MFC, Size, Thread, Male/Female */}
+                          <div className="d-flex flex-wrap justify-content-between">
+                            <div><strong>MFC:</strong> {productDetailData?.part_a?.mfc || "N/A"}</div>
+                            <div><strong>Size:</strong> {productDetailData?.part_a?.size || "N/A"}</div>
+                            <div><strong>Thread:</strong> {productDetailData?.part_a?.fitting_thread || "N/A"}</div>
+                            <div><strong>Male/Female Type:</strong> {productDetailData?.part_a?.male_female_type || "N/A"}</div>
+                          </div>
+
+                          {/* Additional Option - only show if available */}
+                          {productDetailData?.part_a?.additional_option && (
+                            <>
+                              <hr className="my-2" />
+                              <div>
+                                <strong>Additional:</strong> {productDetailData.part_a.additional_option}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {Object.keys(productDetailData.part_b || {}).length > 0 && (
+                      <div className="col-md-12 mt-2 mb-2">
+                        <div className="list-group-item">
+
+                          {/* Badge Label */}
+                          <div className="text-start mb-2">
+                            <span
+                              style={{
+                                display: "inline-block",
+                                backgroundColor: "#52e0a5ff", // light gray (neutral industrial look)
+                                color: "#333",              // dark text for contrast
+                                fontWeight: "bold",
+                                textTransform: "uppercase", // ALL CAPS
+                                padding: "4px 12px",
+                                borderRadius: "20px",       // rounded pill-like badge
+                                border: "1px solid #ccc",   // subtle border for industry feel
+                                fontSize: "13px",
+                                letterSpacing: "1px",
+                              }}
+                            >
+                              Part B
+                            </span>
+                          </div>
+
+                          <hr className="my-2" />
+
+                          {/* First Row: MFC, Size, Thread, Male/Female */}
+                          <div className="d-flex flex-wrap justify-content-between">
+                            <div><strong>MFC:</strong> {productDetailData?.part_b?.mfc || "N/A"}</div>
+                            <div><strong>Size:</strong> {productDetailData?.part_b?.size || "N/A"}</div>
+                            <div><strong>Thread:</strong> {productDetailData?.part_b?.fitting_thread || "N/A"}</div>
+                            <div><strong>Male/Female Type:</strong> {productDetailData?.part_b?.male_female_type || "N/A"}</div>
+                          </div>
+
+                          {/* Additional Option - only show if available */}
+                          {productDetailData?.part_b?.additional_option && (
+                            <>
+                              <hr className="my-2" />
+                              <div>
+                                <strong>Additional:</strong> {productDetailData.part_b.additional_option}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                    {Object.keys(productDetailData.part_c || {}).length > 0 && (
+                      <div className="col-md-12 mt-2 mb-2">
+                        <div className="list-group-item">
+
+                          {/* Badge Label */}
+                          <div className="text-start mb-2">
+                            <span
+                              style={{
+                                display: "inline-block",
+                                backgroundColor: "#dbca69ff", // light gray (neutral industrial look)
+                                color: "#333",              // dark text for contrast
+                                fontWeight: "bold",
+                                textTransform: "uppercase", // ALL CAPS
+                                padding: "4px 12px",
+                                borderRadius: "20px",       // rounded pill-like badge
+                                border: "1px solid #ccc",   // subtle border for industry feel
+                                fontSize: "13px",
+                                letterSpacing: "1px",
+                              }}
+                            >
+                              Part C
+                            </span>
+                          </div>
+
+                          <hr className="my-2" />
+
+                          {/* First Row: MFC, Size, Thread, Male/Female */}
+                          <div className="d-flex flex-wrap justify-content-between">
+                            <div><strong>MFC:</strong> {productDetailData?.part_c?.mfc || "N/A"}</div>
+                            <div><strong>Size:</strong> {productDetailData?.part_c?.size || "N/A"}</div>
+                            <div><strong>Thread:</strong> {productDetailData?.part_c?.fitting_thread || "N/A"}</div>
+                            <div><strong>Male/Female Type:</strong> {productDetailData?.part_c?.male_female_type || "N/A"}</div>
+                          </div>
+
+                          {/* Additional Option - only show if available */}
+                          {productDetailData?.part_c?.additional_option && (
+                            <>
+                              <hr className="my-2" />
+                              <div>
+                                <strong>Additional:</strong> {productDetailData.part_c.additional_option}
+                              </div>
+                            </>
+                          )}
+                        </div>
+                      </div>
+                    )}
+
+
+
+
+
 
                   </>
                 )}

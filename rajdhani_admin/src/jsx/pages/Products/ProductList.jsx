@@ -100,6 +100,18 @@ const theadDatafittingAccessory = [
   { heading: "Action", sortingVale: "action" },
 ];
 
+const theadDataAdaptors = [
+  { heading: "S.No.", sortingVale: "sno" },
+  { heading: "Code", sortingVale: "product_code" },
+  { heading: "QR Code", sortingVale: "qr_code" },
+  { heading: "Image", sortingVale: "image" },
+  { heading: "Product", sortingVale: "product" },
+  { heading: "Description", sortingVale: "description" },
+  { heading: "Created At", sortingVale: "created_at" },
+  { heading: "Status", sortingVale: "status" },
+  { heading: "Action", sortingVale: "action" },
+];
+
 const theadDataTubeFittings = [
   { heading: "S.No.", sortingVale: "sno" },
   { heading: "Code", sortingVale: "product_code" },
@@ -116,6 +128,7 @@ const theadDataTubeFittings = [
 ];
 
 const buttons = [
+  "Adaptor",
   "Fitting Accessories",
   "End Fittings and Parts",
   "Hose Pipe",
@@ -144,6 +157,7 @@ const AllProductList = () => {
   const [UpdateCategory, setUpdateCategory] = useState(false);
   const [productPaginationInfoByTab, setProductPaginationInfoByTab] = useState([]);
   const [hoseAssemblyProductList, setHoseAssemblyProductList] = useState([]);
+  const [adaptorsProductList, setAdaptorsProductList] = useState([]);
   const [endFittingsProductList, setEndFittingsProductList] = useState([]);
   const [fittingAccessoriesProductList, setFittingAccessoriesProductList] = useState([]);
   const [tubeFittingsProductList, setTubeFittingsProductList] = useState([]);
@@ -208,6 +222,7 @@ const AllProductList = () => {
   ]);
   const [selectedSortOptions, setSelectedSortOptions] = useState("");
   const [active, setActive] = useState("End Fittings and Parts");
+  const [focusedBadgeIndex, setFocusedBadgeIndex] = useState(null);
 
 
   // skiveTypeOptions
@@ -351,6 +366,30 @@ const AllProductList = () => {
     });
   };
 
+  const fetchAdaptorsProductList = async (sortValue, productTypes = []) => {
+    // Set loading to true when the API call starts
+    setLoading(true);
+    try {
+      const res = await getProductApi(
+        currentPage,
+        sort,
+        sortValue,
+        searchInputValue,
+        productTypes
+      );
+
+      setAdaptorsProductList(res.data);
+      setProductPaginationInfoByTab(res?.data)
+
+      setUpdateCategory(false);
+    } catch (error) {
+      // Catch and handle errors
+    } finally {
+      // Always set loading to false when the API call is done (whether successful or failed)
+      setLoading(false);
+    }
+  }
+
   //   getSubCategoriesApi
   const fetchHoseAssemblyProductList = async (sortValue, productTypes = []) => {
     console.log("productTypes in api call", productTypes)
@@ -403,7 +442,7 @@ const AllProductList = () => {
     }
   }
 
-  
+
   //   getSubCategoriesApi
   const fetchHosePipeList = async (sortValue, productTypes = []) => {
     // Set loading to true when the API call starts
@@ -572,6 +611,8 @@ const AllProductList = () => {
           fetchFittingAccessoriesProductList(0, productTypes);
         } else if (active === "Tube Fittings") {
           fetchTubeFittingProductList(0, productTypes);
+        } else if (active === "Adaptor") {
+          fetchAdaptorsProductList(0, productTypes);
         }
         setDeleteTableDataId("");
         setShowDeleteMdl(false);
@@ -654,6 +695,7 @@ const AllProductList = () => {
 
   const categoryMap = {
     "Fitting Accessories": ["Sleeve", "Packing", "Vinyl Cover", "Dust Cap", "O-ring", "Spring"],
+    "Adaptor": ["Adaptor"],
     "End Fittings and Parts": ["End Fittings", "Nut", "Nipple", "Cap"],
     "Hose Pipe": ["Hose Pipe"],
     "Hose Assembly": ["Hose Assembly"],
@@ -662,6 +704,10 @@ const AllProductList = () => {
   // const buttons = Object.keys(categoryMap);
 
   useEffect(() => {
+    if (active === "Adaptor") {
+      const productTypes = categoryMap[active];
+      fetchAdaptorsProductList(sort, productTypes)
+    }
     if (active === "Hose Assembly") {
       const productTypes = categoryMap[active];
       fetchHoseAssemblyProductList(sort, productTypes)
@@ -984,6 +1030,357 @@ const AllProductList = () => {
                     Total Items: <strong style={{ color: '#0c4a6e', marginLeft: 4 }}>{productPaginationInfoByTab?.totalProducts || 0}</strong>
                   </div>
 
+
+
+
+
+                  {active === "Adaptor" && (
+                    <table id="example4" className="display dataTable no-footer w-100">
+                      <thead>
+                        <tr>
+                          {theadDataAdaptors?.map((item, ind) => {
+                            return (
+                              <th key={ind}
+                                onClick={() => {
+                                  SotingData(item?.sortingVale, ind);
+                                  setIconDate((prevState) => ({
+                                    complete: !prevState.complete,
+                                    ind: ind,
+                                  }));
+                                }}>
+                                {item.heading}
+                                <span>
+                                  {ind !== iconData.ind && (
+                                    <i
+                                      className="fa fa-sort ms-2 fs-12"
+                                      style={{ opacity: "0.3" }}
+                                    />
+                                  )}
+                                  {ind === iconData.ind &&
+                                    (iconData.complete ? (
+                                      <i
+                                        className="fa fa-arrow-down ms-2 fs-12"
+                                        style={{ opacity: "0.7" }}
+                                      />
+                                    ) : (
+                                      <i
+                                        className="fa fa-arrow-up ms-2 fs-12"
+                                        style={{ opacity: "0.7" }}
+                                      />
+                                    ))}
+                                </span>
+                              </th>
+                            );
+                          })}
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {
+                          adaptorsProductList?.products?.length > 0 ? (
+                            adaptorsProductList?.products?.map((data, ind) => (
+                              <tr key={ind}
+                                onClick={async (e) => {
+                                  const target = e.target;
+                                  if (target.tagName === "BUTTON") return; // Prevent if it's a button
+                                  if (target.tagName === "INPUT" && !target.disabled) return; // Prevent if it's an input (and not disabled)
+                                  if (!data?.qr_code) {
+                                    try {
+                                      setLoading(true); // Optional: show a loader
+                                      const result = await generateQrCodeForProduct(data._id);
+                                      if (result.qr_code) {
+                                        data.qr_code = result.qr_code;
+                                        data.qr_url = result.qr_url;
+
+                                        // setShowProductQrDetailModal(true); // Show the modal with QR info
+                                        setShowProductDetailData(data);
+                                      }
+                                    } catch (err) {
+                                      console.error("QR Code generation failed", err);
+                                    } finally {
+                                      setLoading(false);
+                                    }
+                                  }
+                                  // Open modal if clicking on any other part of the row
+                                  setShowProductDetailModal(true);
+                                  setShowProductDetailData(data);
+                                }}
+
+                                style={{
+                                  cursor: "pointer"
+                                }}
+                              >
+                                {/* Index */}
+                                <td>
+                                  <strong>{ind + 1}</strong>
+                                </td>
+                                {/* Product Code */}
+                                <td
+                                  // onClick={()=>{setShowProductDetailModal(true); setShowProductDetailData(data)}}
+                                  style={{
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+                                    textOverflow: 'ellipsis',
+                                    maxWidth: '55ch'
+                                  }}
+                                >
+                                  <span
+                                    style={{
+                                      fontSize: "0.875rem", // Smaller text size (adjust as needed)
+                                      backgroundColor: "transparent", // Transparent background
+                                      padding: "2px 6px", // Add padding for badge effect
+                                      borderRadius: "10px", // Rounded corners
+                                      display: "inline-block", // Ensure proper layout inside the td
+                                      color: "#686D76", // Text color
+                                      border: "1px solid gray", // Black border
+                                    }}
+                                  >
+                                    {data?.product_code ? data?.product_code : "N/A"}
+                                  </span>
+                                </td>
+                                {/* QR Code */}
+
+                                <td
+                                  onClick={(e) => {
+                                    // Prevent opening the QR detail modal if clicking on the QR code cell itself
+                                    e.stopPropagation(); // Prevent the row click handler from firing
+                                    setShowProductQrDetailModal(true);
+                                    setShowProductDetailData(data);
+                                  }}
+                                  style={{
+                                    padding: '10px',
+                                    textAlign: 'center',
+                                    cursor: 'pointer',
+                                    backgroundColor: '#ffffff',
+                                    borderRadius: '5px',
+                                    transition: 'background-color 0.3s ease',
+                                  }}
+                                >
+                                  <div>
+                                    {data?.qr_code ? (
+                                      <img
+                                        src={data?.qr_code}
+                                        alt="QR Code"
+                                        style={{
+                                          width: '40px',
+                                          height: '40px',
+                                          objectFit: 'contain',
+                                          borderRadius: '8px',
+                                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                          transition: 'transform 0.1s ease-in-out',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                          e.target.style.transform = 'scale(1.50)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          e.target.style.transform = 'scale(1)';
+                                        }}
+                                      />
+                                    ) : (
+                                      <img
+                                        src={dummyQR}
+                                        alt="Generate QR"
+                                        title="Click to Generate QR"
+                                        style={{
+                                          width: '40px',
+                                          height: '40px',
+                                          objectFit: 'contain',
+                                          borderRadius: '8px',
+                                          // opacity: 0.6,
+                                          cursor: 'pointer',
+                                          boxShadow: '0 2px 8px rgba(0, 0, 0, 0.1)',
+                                          transition: 'transform 0.1s ease-in-out',
+                                        }}
+                                        onMouseEnter={(e) => {
+                                          e.target.style.transform = 'scale(1.50)';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                          e.target.style.transform = 'scale(1)';
+                                        }}
+
+                                        onClick={async (e) => {
+                                          e.stopPropagation(); // prevent row click
+                                          try {
+                                            // Optional: You can show a spinner or loading text here
+                                            setLoading(true);
+                                            const result = await generateQrCodeForProduct(data._id);
+                                            if (result.qr_code) {
+                                              setLoading(false)
+                                              data.qr_code = result.qr_code; // update the current object
+                                              data.qr_url = result.qr_url
+                                              setShowProductQrDetailModal(true);
+                                              setShowProductDetailData(data);
+                                              // setEndFittingsProductList([...formData, {qr_code:data.qr_code} ,  ]); // trigger re-render
+                                            }
+                                          } catch (err) {
+                                            // alert("Failed to generate QR code");
+                                          }
+                                        }}
+                                      />
+                                    )}
+                                  </div>
+                                </td>
+                                {/**Product Image */}
+                                <td className="d-flex align-item-center"
+
+                                  style={{
+                                    padding: '10px',
+                                    textAlign: 'center',
+                                    cursor: 'pointer',
+                                    // backgroundColor: '#f4f4f4',
+                                    // borderRadiusColor:"ff7a41",
+                                    borderRadius: '5px',
+
+                                    transition: 'background-color 0.3s ease',
+                                  }}
+                                >
+                                  {data?.image && (
+                                    <div
+                                      onClick={(e) => {
+                                        e.stopPropagation();
+
+                                        const mainImage = {
+                                          original: `${BASEURL}/images/image/${data?.image}`,
+                                          thumbnail: `${BASEURL}/images/image/${data?.image}`,
+                                        };
+
+                                        const galleryImages =
+                                          data?.gallery?.map((img) => ({
+                                            original: `${BASEURL}/images/image/${img}`,
+                                            thumbnail: `${BASEURL}/images/image/${img}`,
+                                          })) || [];
+
+                                        const allImages = [mainImage, ...galleryImages];
+
+                                        setGalleryItems(allImages);
+                                        setGalleryVisible(true);
+                                      }}
+                                      style={{ position: 'relative', display: 'inline-block', cursor: 'pointer' }}
+                                    >
+                                      <img
+                                        className="select-file-img"
+                                        src={`${BASEURL}/images/image/${data?.image}`}
+                                        alt={data?.name}
+                                        style={{
+                                          // height: 50,
+                                          // width: 50,
+                                          borderRadius: 6,
+                                          objectFit: 'cover',
+                                          transition: 'transform 0.2s ease',
+                                        }}
+                                        onMouseEnter={(e) => (e.currentTarget.style.transform = 'scale(1.3)')}
+                                        onMouseLeave={(e) => (e.currentTarget.style.transform = 'scale(1)')}
+                                      />
+                                    </div>
+                                  )}
+                                  {data?.name}
+                                </td>
+                                {/* Product Type*/}
+                                <td
+                                  // onClick={()=>{setShowProductDetailModal(true); setShowProductDetailData(data)}}
+                                  style={{
+                                    whiteSpace: 'nowrap',
+                                    overflow: 'hidden',
+
+                                  }}
+                                >
+                                  {data?.adaptor_type}
+                                </td>
+                                {/* desc_Code */}
+                                <td>
+                                  <span
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // 🔥 prevent opening modal
+                                      setFocusedBadgeIndex((prev) => (prev === ind ? null : ind));
+                                    }}
+                                    style={{
+                                      backgroundColor: "rgb(255 205 227)",
+                                      fontSize: "12px",
+                                      fontWeight: "bold",
+                                      padding: "4px 6px",
+                                      borderRadius: "10px",
+                                      display: "inline-block",
+                                      color: "black",
+                                      cursor: "pointer",
+                                      width: focusedBadgeIndex === ind ? "650px" : "350px",
+                                      transition: "width 0.3s ease",
+                                      whiteSpace: "normal",
+                                      wordWrap: "break-word",
+                                      overflow: "hidden",
+                                      textOverflow: "ellipsis",
+                                    }}
+                                  >
+                                    {focusedBadgeIndex === ind
+                                      ? data?.desc_Code || "N/A"
+                                      : (data?.desc_Code?.length > 65
+                                        ? data?.desc_Code.slice(0, 65) + "..."
+                                        : data?.desc_Code || "N/A")}
+                                  </span>
+                                </td>
+
+                                <td>
+                                  {moment(data?.created_at).format(
+                                    "DD MMM YYYY, h:mm:ss a"
+                                  )}
+                                </td>
+
+                                <td>
+                                  <div onClick={(e) => e.stopPropagation()}>
+                                    <Switch
+                                      checked={data?.status}
+                                      onChange={() => handleStatusChange(data?._id, data?.status)}
+                                      offColor="#f0f1ff"
+                                      onColor="#6a73fa"
+                                      offHandleColor="#6a73fa"
+                                      onHandleColor="#fff"
+                                      uncheckedIcon={false}
+                                      checkedIcon={false}
+                                      width={40}
+                                      height={20}
+                                    />
+                                  </div>
+                                </td>
+
+                                <td>
+                                  <button className="btn btn-xs sharp btn-primary me-1"
+                                    // onClick={() => handleEditThread(data?._id)}
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Prevent row click handler from firing when button is clicked
+                                      handleEditThread(data?._id);
+                                    }}>
+                                    <i className="fa fa-pencil" />
+                                  </button>
+
+                                  <button className="btn btn-xs sharp btn-danger"
+                                    onClick={(e) => {
+                                      e.stopPropagation(); // Prevent row click handler from firing when button is clicked
+                                      handleDeleteProduct(data?._id);
+                                    }}
+                                  >
+                                    <i className="fa fa-trash" />
+                                  </button>
+                                </td>
+
+                              </tr>
+                            ))
+                          ) : (
+                            <tr>
+                              <td colSpan="10">
+                                <div style={{
+                                  textAlign: "center",
+                                  padding: "20px",
+                                  fontSize: "16px",
+                                  color: "#888"
+                                }}>
+                                  No Data Found
+                                </div>
+                              </td>
+                            </tr>
+                          )
+                        }
+                      </tbody>
+
+                    </table>
+                  )}
 
 
                   {active === "End Fittings and Parts" && (
@@ -1606,7 +2003,7 @@ const AllProductList = () => {
                                   }}>
                                   {data?.product_type}
                                 </td>
-                                
+
                                 {/* desc_Code */}
                                 <td
                                   style={{

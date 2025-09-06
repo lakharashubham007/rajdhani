@@ -2,16 +2,27 @@ import axios from "axios";
 import apis from './index'
 
 export const addProductApi = async (formData) => {
+  console.log("formData",formData)
     const form = new FormData();
 
-    for (const key in formData) {
-      if (key !== 'image' && key !== 'gallery' && formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+    // for (const key in formData) {
+    //   if (key !== 'image' && key !== 'gallery' && formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+    //     form.append(key, formData[key]);
+    //   }
+    // }
+    // if (formData.image) {
+    //   form.append("image", formData.image);
+    // }
+      for (const key in formData) {
+    if (key !== 'image' && key !== 'gallery' && formData[key] !== null && formData[key] !== undefined && formData[key] !== '') {
+      // If value is an object (and not an array), convert to JSON string
+      if (typeof formData[key] === 'object' && !Array.isArray(formData[key])) {
+        form.append(key, JSON.stringify(formData[key]));
+      } else {
         form.append(key, formData[key]);
       }
     }
-    if (formData.image) {
-      form.append("image", formData.image);
-    }
+  }
 
     formData?.gallery?.forEach((file) => {
       form.append("gallery", file);
